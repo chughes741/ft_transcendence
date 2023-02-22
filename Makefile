@@ -3,7 +3,7 @@
 #------------------------------------------------------------------------------#
 
 # Special variables
-DEFAULT_GOAL: all
+DEFAULT_GOAL: up
 .DELETE_ON_ERROR:
 .PHONY: build up down clean fclean re
 

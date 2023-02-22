@@ -1,0 +1,55 @@
+version: '3.9'
+
+services:
+  frontend:
+    container_name: frontend
+    build: frontend/
+    ports:
+      - "443:443"
+    volumes:
+      - frontend_data:/etc/config
+    networks:
+      - frontend
+    restart: unless-stopped
+    # env_file:
+      # - frontend.env
+
+  backend:
+    container_name: backend
+    build: backend/
+    expose:
+      - "9000"
+    volumes:
+      - backend_data:/etc/config
+    depends_on:
+      - postgres
+    networks:
+      - frontend
+      - backend
+    restart: unless-stopped
+    # env_file:
+      # - backend.env
+
+  postgres:
+    container_name: postgres
+    build: postgres/
+    expose:
+      - "5432"
+    volumes:
+      - postgres_data:/var/data
+    networks:
+      - backend
+    restart: unless-stopped
+    # env_file:
+      # - postgres.env
+
+
+volumes:
+  frontend_data:
+  backend_data:
+  postgres_data:
+
+
+networks:
+  frontend:
+  backend:
