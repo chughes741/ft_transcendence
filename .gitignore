@@ -1,4 +1,4 @@
 
 # Docker environment files
-*.env
-.env
+# *.env
+# .env
