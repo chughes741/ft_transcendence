@@ -6,11 +6,16 @@ services:
     build: frontend/
     ports:
       - "443:443"
-    volumes:
-      - frontend_data:/etc/config
     networks:
       - frontend
+    volumes:
+      - type: bind
+        source: ./frontend/src
+        target: /usr/app/src
+        read_only: true
     restart: unless-stopped
+    # depends_on:
+      # - serviceName
     env_file:
       - .env/frontend.env
 
@@ -19,14 +24,17 @@ services:
     build: backend/
     expose:
       - "9000"
-    volumes:
-      - backend_data:/etc/config
-    depends_on:
-      - postgres
     networks:
       - frontend
       - backend
+    volumes:
+      - type: bind
+        source: ./backend/src
+        target: /usr/app/src
+        read_only: true
     restart: unless-stopped
+    # depends_on:
+      # - postgres
     env_file:
       - .env/backend.env
 
@@ -35,12 +43,17 @@ services:
     build: engine/
     ports: # should be expose
       - "6969:6969"
-    # depends_on:
-      # - serviceName
     networks:
       - frontend
       - backend
+    volumes:
+      - type: bind
+        source: ./engine/src
+        target: /usr/app/src
+        read_only: true
     restart: unless-stopped
+    # depends_on:
+      # - serviceName
     env_file:
       - .env/engine.env
 
@@ -49,11 +62,13 @@ services:
     build: postgres/
     expose:
       - "5432"
-    volumes:
-      - postgres_data:/var/data
     networks:
       - backend
+    volumes:
+      - postgres_data:/var/data
     restart: unless-stopped
+    # depends_on:
+      # - serviceName
     env_file:
       - .env/postgres.env
 
