@@ -11,8 +11,8 @@ services:
     networks:
       - frontend
     restart: unless-stopped
-    # env_file:
-      # - frontend.env
+    env_file:
+      - .env/frontend.env
 
   backend:
     container_name: backend
@@ -27,8 +27,22 @@ services:
       - frontend
       - backend
     restart: unless-stopped
-    # env_file:
-      # - backend.env
+    env_file:
+      - .env/backend.env
+
+  engine:
+    container_name: engine
+    build: engine/
+    ports: # should be expose
+      - "6969:6969"
+    # depends_on:
+      # - serviceName
+    networks:
+      - frontend
+      - backend
+    restart: unless-stopped
+    env_file:
+      - .env/engine.env
 
   postgres:
     container_name: postgres
@@ -40,8 +54,8 @@ services:
     networks:
       - backend
     restart: unless-stopped
-    # env_file:
-      # - postgres.env
+    env_file:
+      - .env/postgres.env
 
 
 volumes:
