@@ -1,50 +1,40 @@
 version: '3.9'
 
 services:
-  frontend:
-    container_name: frontend
-    build: frontend/
-    ports:
+  load-balancer:
+    container_name: nginx
+    build: load-balancer/
+    ports: 
       - "443:443"
     networks:
       - frontend
-    volumes:
-      - type: bind
-        source: ./frontend/src
-        target: /usr/app/src
-        read_only: true
     restart: unless-stopped
-    # depends_on:
-      # - serviceName
-    env_file:
-      - .env/frontend.env
+    depends_on:
+      - app
 
-  backend:
-    container_name: backend
-    build: backend/
-    expose:
-      - "9000"
+  app:
+    container_name: app
+    build:
+      context: backend/
+      target: production
+    ports:
+      - "8080:8080"
     networks:
       - frontend
       - backend
-    volumes:
-      - type: bind
-        source: ./backend/src
-        target: /usr/app/src
-        read_only: true
     restart: unless-stopped
-    # depends_on:
-      # - postgres
+    depends_on:
+      - engine
+      - postgres
     env_file:
       - .env/backend.env
 
   engine:
     container_name: engine
     build: engine/
-    ports: # should be expose
-      - "6969:6969"
+    expose:
+      - "5000"
     networks:
-      - frontend
       - backend
     volumes:
       - type: bind
@@ -52,8 +42,6 @@ services:
         target: /usr/app/src
         read_only: true
     restart: unless-stopped
-    # depends_on:
-      # - serviceName
     env_file:
       - .env/engine.env
 
@@ -67,15 +55,11 @@ services:
     volumes:
       - postgres_data:/var/data
     restart: unless-stopped
-    # depends_on:
-      # - serviceName
     env_file:
       - .env/postgres.env
 
 
 volumes:
-  frontend_data:
-  backend_data:
   postgres_data:
 
 
