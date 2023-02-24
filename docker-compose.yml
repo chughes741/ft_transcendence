@@ -31,16 +31,13 @@ services:
 
   engine:
     container_name: engine
-    build: engine/
+    build:
+      context: backend/
+      target: production
     expose:
       - "5000"
     networks:
       - backend
-    volumes:
-      - type: bind
-        source: ./engine/src
-        target: /usr/app/src
-        read_only: true
     restart: unless-stopped
     env_file:
       - .env/engine.env
