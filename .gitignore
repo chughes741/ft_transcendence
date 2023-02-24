@@ -2,3 +2,6 @@
 # Docker environment files
 # *.env
 # .env
+
+# Node Modules
+node_modules
