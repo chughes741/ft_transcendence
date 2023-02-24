@@ -50,7 +50,7 @@ services:
     networks:
       - backend
     volumes:
-      - postgres_data:/var/data
+      - postgres_data:/var/lib/pgsql/data
     restart: unless-stopped
     env_file:
       - .env/postgres.env
