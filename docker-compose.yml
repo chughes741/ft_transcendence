@@ -44,7 +44,7 @@ services:
 
   postgres:
     container_name: postgres
-    image: postgres:latest
+    build: postgres/
     expose:
       - "5432"
     networks:

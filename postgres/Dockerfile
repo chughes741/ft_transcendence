@@ -1,3 +1,3 @@
 FROM postgres:15
 
-CMD [ "tail", "-f", "/dev/null" ]
+CMD [ "postgres", "-D", "/var/lib/pgsql/data" ]
