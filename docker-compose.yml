@@ -15,7 +15,7 @@ services:
   app:
     container_name: app
     build:
-      context: backend/
+      context: app/
       target: production
     ports:
       - "8080:8080"
@@ -27,12 +27,12 @@ services:
       - engine
       - postgres
     env_file:
-      - .env/backend.env
+      - .env/app.env
 
   engine:
     container_name: engine
     build:
-      context: backend/
+      context: engine/
       target: production
     expose:
       - "5000"
