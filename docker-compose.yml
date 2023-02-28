@@ -26,8 +26,6 @@ services:
     depends_on:
       - engine
       - postgres
-    env_file:
-      - .env/app.env
 
   engine:
     container_name: engine
@@ -39,8 +37,6 @@ services:
     networks:
       - backend
     restart: unless-stopped
-    env_file:
-      - .env/engine.env
 
   postgres:
     container_name: postgres
@@ -53,7 +49,7 @@ services:
       - postgres_data:/var/lib/pgsql/data
     restart: unless-stopped
     env_file:
-      - .env/postgres.env
+      - app/backend/.env
 
 
 volumes:

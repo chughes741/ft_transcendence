@@ -69,6 +69,7 @@ COPY --chown=node:node --from=build /usr/app/frontend/build ./build
 # NestJS copy source files
 WORKDIR /usr/app/backend
 
+COPY --chown=node:node backend/.env .
 COPY --chown=node:node --from=build /usr/app/backend/node_modules ./node_modules
 COPY --chown=node:node --from=build /usr/app/backend/dist ./dist
 
