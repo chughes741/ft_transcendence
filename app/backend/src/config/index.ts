@@ -14,15 +14,15 @@ export default {
   /**
    * PostgreSQL database name
    */
-  databasename: process.env.PGDATABASE,
+  databasename: process.env.POSTGRES_DB,
 
   /**
    * PostgreSQL username
    */
-  databaseuser: process.env.PGUSER,
+  databaseuser: process.env.POSTGRES_USER,
 
   /**
    * PostgreSQL password
    */
-  databasepw: process.env.PGPASSWORD,
+  databasepw: process.env.POSTGRES_PASSWORD,
 };

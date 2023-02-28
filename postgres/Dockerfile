@@ -1,3 +1,3 @@
 FROM postgres:15
 
-CMD [ "postgres", "-D", "/var/lib/pgsql/data" ]
+COPY config/world.sql /docker-entrypoint-initdb.d/
