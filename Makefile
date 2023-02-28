@@ -41,7 +41,7 @@ down: prune
 clean:
 	docker system prune -f
 
-fclean:
+fclean: clean
 	docker system prune -f --volumes
 
 # Remove all dangling images
