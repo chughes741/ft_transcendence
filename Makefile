@@ -28,7 +28,7 @@ build:
 
 # Builds, (re)creates, starts, and attaches to containers for a service.
 #	docker compose up [OPTIONS] [SERVICE...]
-up:
+up: down
 	docker compose up --build -d
 
 # Stop and remove containers, networks
