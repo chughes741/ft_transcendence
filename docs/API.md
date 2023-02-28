@@ -1,19 +1,21 @@
 # API syntax models
 
 ## Client -> Server
-### Login
+### Login request
 ```json
 {
-	"email": "example@test.com"
+	"username": "string",
+	"password": "string"
 }
 ```
 
 ### Logout
 ```json
 {
-	"token": "13456asdf"
+	"token": "string"
 }
 ```
+
 ### Send Message
 ```json
 {
@@ -23,19 +25,13 @@
 }
 ```
 
-### Match start
-```json
-{
-	"matchid": "123456asdf"
-}
-```
-
 
 ## Server -> Client
-### New Messages
+### Login response
 ```json
 {
-	"messages": [{"mid": "message"}, {"mid": "message"}]
+	"session token": "string",
+	"success": true
 }
 ```
 
