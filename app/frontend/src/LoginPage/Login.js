@@ -1,6 +1,6 @@
 export default function Login() {
   return (
-    <div>
+    <div class="wrapper">
       <div class="login-info-container">
         <input class="login-field" type="text" placeholder="put your fucking nick right here" />
       </ div>
