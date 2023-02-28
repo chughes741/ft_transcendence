@@ -8,7 +8,7 @@ FROM node:19-alpine3.17 As dev
 WORKDIR /usr/app
 
 COPY --chown=node:node package*.json ./
-RUN npm install
+RUN npm ci
 
 COPY . .
 
@@ -40,9 +40,11 @@ USER node
 
 FROM node:19-alpine3.17 As production
 
+RUN apk add dumb-init
+
 WORKDIR /usr/app
 
 COPY --chown=node:node --from=build /usr/app/node_modules ./node_modules
 COPY --chown=node:node --from=build /usr/app/dist ./dist
 
-CMD [ "node", "dist/main.js"]
+CMD [ "dumb-init", "node", "dist/main.js"]
