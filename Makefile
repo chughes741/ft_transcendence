@@ -33,7 +33,7 @@ up:
 
 # Stop and remove containers, networks
 #	docker compose create [OPTIONS] [SERVICE...]
-down:
+down: prune
 	docker compose down
 
 # Remove all unused containers, networks, images (both dangling and unreferenced), and optionally, volumes.
@@ -43,5 +43,9 @@ clean:
 
 fclean:
 	docker system prune -f --volumes
+
+# Remove all dangling images
+prune:
+	docker image prune -f
 
 re: fclean up
