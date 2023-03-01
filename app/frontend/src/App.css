@@ -3,12 +3,18 @@
 }
 
 .wrapper {
-  max-width: 750px;
+  width: 500px;
   margin: 0 auto;
-  background-color: lawngreen;
 }
 
-.login-info-container {
-  line-height: 19px;
+.bouton {
+  width: 250px;
+  font-size: 20px;
+  margin: 30px auto;
+}
 
+label {
+  display: inline-block;
+  font-size: 15px;
+  padding: 10px;
 }
