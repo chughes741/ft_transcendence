@@ -16,16 +16,16 @@ services:
     container_name: app
     build:
       context: app/
-      target: dev
+      target: production
     ports:
       - "80:80"
     networks:
       - frontend
       - backend
     restart: unless-stopped
-    # depends_on:
+    depends_on:
+      - postgres
       # - engine
-      # - postgres
 
   # engine:
     # container_name: engine
