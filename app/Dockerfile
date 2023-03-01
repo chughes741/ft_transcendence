@@ -8,7 +8,8 @@ FROM node:19-alpine3.17 As dev
 # React install
 WORKDIR /usr/app/frontend
 COPY --chown=node:node frontend/package*.json ./
-RUN npm ci
+COPY --chown=node:node frontend/yarn.lock ./
+RUN yarn install
 
 COPY ./frontend .
 
@@ -16,7 +17,8 @@ COPY ./frontend .
 WORKDIR /usr/app/backend
 
 COPY --chown=node:node backend/package*.json .
-RUN npm ci
+COPY --chown=node:node backend/yarn.lock .
+RUN yarn install
 
 COPY ./backend .
 
@@ -35,7 +37,7 @@ WORKDIR /usr/app/frontend
 COPY --chown=node:node --from=dev /usr/app/frontend/node_modules ./node_modules
 COPY --chown=node:node ./frontend .
 
-RUN npm run build
+RUN yarn run build
 
 # NestJS build
 WORKDIR /usr/app/backend
@@ -43,11 +45,11 @@ WORKDIR /usr/app/backend
 COPY --chown=node:node --from=dev /usr/app/backend/node_modules ./node_modules
 COPY --chown=node:node ./backend .
 
-RUN npm run build
+RUN yarn run build
 
 ENV NODE_ENV production
 
-RUN npm ci --only=production && npm cache clean --force
+RUN yarn --production && yarn cache clean
 
 USER node
 
