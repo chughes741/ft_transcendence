@@ -1,42 +1,42 @@
 version: '3.9'
 
 services:
-  load-balancer:
-    container_name: nginx
-    build: load-balancer/
-    ports: 
-      - "443:443"
-    networks:
-      - frontend
-    restart: unless-stopped
-    depends_on:
-      - app
+  # load-balancer:
+    # container_name: nginx
+    # build: load-balancer/
+    # ports: 
+      # - "443:443"
+    # networks:
+      # - frontend
+    # restart: unless-stopped
+    # depends_on:
+      # - app
 
   app:
     container_name: app
     build:
       context: app/
-      target: production
+      target: dev
     ports:
       - "8080:8080"
     networks:
       - frontend
       - backend
     restart: unless-stopped
-    depends_on:
-      - engine
-      - postgres
+    # depends_on:
+      # - engine
+      # - postgres
 
-  engine:
-    container_name: engine
-    build:
-      context: engine/
-      target: production
-    expose:
-      - "5000"
-    networks:
-      - backend
-    restart: unless-stopped
+  # engine:
+    # container_name: engine
+    # build:
+      # context: engine/
+      # target: dev
+    # expose:
+      # - "5000"
+    # networks:
+      # - backend
+    # restart: unless-stopped
 
   postgres:
     container_name: postgres
