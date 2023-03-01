@@ -23,6 +23,8 @@ services:
       - frontend
       - backend
     restart: unless-stopped
+    volumes: 
+      - ./app/frontend/src/:/usr/app/frontend/src
     depends_on:
       - postgres
       # - engine
