@@ -31,15 +31,17 @@ RUN apk add dumb-init
 # React copy source files
 WORKDIR /usr/app/frontend
 
-COPY --chown=node:node --from=build /usr/app/frontend/node_modules ./node_modules
-COPY --chown=node:node --from=build /usr/app/frontend/build ./build
+# COPY --chown=node:node --from=build /usr/app/frontend/node_modules ./node_modules
+# COPY --chown=node:node --from=build /usr/app/frontend/build ./build
+COPY --chown=node:node --from=build /usr/app/frontend/ ./
 
 
 # NestJS copy source files
 WORKDIR /usr/app/backend
 
-COPY --chown=node:node backend/.env .
-COPY --chown=node:node --from=build /usr/app/backend/node_modules ./node_modules
-COPY --chown=node:node --from=build /usr/app/backend/dist ./dist
+# COPY --chown=node:node backend/.env .
+# COPY --chown=node:node --from=build /usr/app/backend/node_modules ./node_modules
+# COPY --chown=node:node --from=build /usr/app/backend/dist ./dist
+COPY --chown=node:node --from=build /usr/app/backend/ ./
 
 CMD [ "dumb-init", "node", "dist/main.js"]
