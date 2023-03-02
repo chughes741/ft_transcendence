@@ -14,12 +14,12 @@ code {
 */
 @import url('https://fonts.googleapis.com/css2?family=Raleway:wght@300&display=swap');
 
-
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
 }
+
 body {
   font-family: 'Raleway', sans-serif;
   background-image: url('../shared/assets/background.png');

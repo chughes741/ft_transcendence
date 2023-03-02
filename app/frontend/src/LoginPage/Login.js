@@ -22,41 +22,23 @@ export default function Login() {
   };
 
    function handleSubmit(){
-    if (nick === 'BigBoss') {
+    if (nick == 'BigBoss') {
       console.log("AFDHDHFA");
       return;
     }
   };
   return (
-
-/*    <div className="wrapper">
-      <form className="form" onSubmit={handleSubmit} action="/login">
-        <div className="login-container">
-          <div className="login-info-container">
-            <input required value={nick} onChange={handleNick} className="login-field" type="text" placeholder="Nickname" />
-          </ div>
-          <div className="login-info-container">
-            <input value={pass} onChange={handlePass} required className="login-field" type="password" placeholder="Password" />
-          </div>
-          <div className="login-info-container">
-            <button className="bouton main" type="submit">Connect</button>
-          </div>
-        </div>
-      </form>
-      NICK = {nick}
-      <br/>
-      PASS = {pass}
-    </div>
-*/
     <MainContainer>
     <WelcomeText>welcome</WelcomeText>
-    <InputContainer>
-      <Input type="text" placeholder="nickname" />
-      <Input type="password" placeholder="password" />
-    </InputContainer>
-    <ButtonContainer>
-      <Button content="Stay a while and listen" />
-    </ButtonContainer>
+    <Form>
+      <InputContainer>
+        <Input value={nick} onChange={handleNick} type="text" placeholder="nickname" />
+        <Input value={pass} onChange={handlePass}  type="password" placeholder="password" />
+      </InputContainer>
+      <ButtonContainer>
+        <Button onSubmit={handleSubmit} content="Stay a while and listen" />
+      </ButtonContainer>
+    </Form>
     <LoginWith>or login with </LoginWith>
     <HorizontalRule />
     <IconsContainer>
@@ -68,8 +50,11 @@ export default function Login() {
       </Icon>
     </IconsContainer>
     <ForgotPassword>forgot password</ForgotPassword>
+    NICK = {nick}
+    <br />
+    PASS = {pass}
   </MainContainer>
-  )
+  );
 }
 
 
@@ -118,10 +103,43 @@ const MainContainer = styled.div`
 
   @media only screen and (min-width:1024px) {
     width: 30vw;
-    height: 90vh;
+    height: 85vh;
   }
 `;
 
+const Form = styled.form`
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  height: 30vh;
+  margin: 0;
+  width: 30vw;
+  border-radius: 10px;
+  letter-spacing: 0.4rem;
+
+  @media only screen and (min-width:360px) {
+    width: 80vw;
+    height: 90vh;
+    p {
+      font-size: small;
+    }
+  }
+
+  @media only screen and (min-width:411px) {
+    width: 80vw;
+    height: 90vh;
+  }
+
+  @media only screen and (min-width:768px) {
+    width: 80vw;
+    height: 90vh;
+  }
+
+  @media only screen and (min-width:1024px) {
+    width: 30vw;
+    height: 85vh;
+  }
+`;
 
 const WelcomeText = styled.p`
   margin: 3rem auto 2rem;
@@ -135,7 +153,7 @@ const InputContainer = styled.div`
   flex-direction: column;
   justify-content: space-around;
   align-items: center;
-  height: 20%;
+  height: 60%;
   width: 100%;
 `;
 

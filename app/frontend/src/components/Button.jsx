@@ -1,9 +1,9 @@
 import styled from 'styled-components';
 
 
-export default function Button({ content }) {
+export default function Button({ content, onSubmit }) {
 	return (
-		<StyledButton>{content}</StyledButton>
+		<StyledButton onSubmit={onSubmit}>{content}</StyledButton>
 	);
 }
 
