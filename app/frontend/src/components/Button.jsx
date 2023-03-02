@@ -1,6 +1,5 @@
 import styled from 'styled-components';
 
-
 export default function Button({ content, onSubmit }) {
 	return (
 		<StyledButton onSubmit={onSubmit}>{content}</StyledButton>

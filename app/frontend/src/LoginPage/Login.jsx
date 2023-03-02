@@ -6,6 +6,7 @@ import Input from "../components/Input";
 import Button from "../components/Button";
 import Icon from "../components/Icon";
 
+
 export default function Login() {
   const [nick, setNick] = useState('');
   const [pass, setPass] = useState('');
@@ -21,22 +22,25 @@ export default function Login() {
     setPass(event.target.value);
   };
 
-   function handleSubmit(){
-    if (nick == 'BigBoss') {
-      console.log("AFDHDHFA");
-      return;
-    }
+  function HandleSubmit(){
+    if (nick === 'BigBoss' && pass === "Test123!") {
+      var obj = {};
+      obj.nick = nick;
+      obj.pass = pass;
+        alert(JSON.stringify(obj, null, 2));
+      }
+    return;
   };
   return (
     <MainContainer>
     <WelcomeText>welcome</WelcomeText>
-    <Form>
+    <Form onSubmit={HandleSubmit}>
       <InputContainer>
         <Input value={nick} onChange={handleNick} type="text" placeholder="nickname" />
         <Input value={pass} onChange={handlePass}  type="password" placeholder="password" />
       </InputContainer>
       <ButtonContainer>
-        <Button onSubmit={handleSubmit} content="Stay a while and listen" />
+        <Button onSubmit={HandleSubmit} content="Stay a while and listen" />
       </ButtonContainer>
     </Form>
     <LoginWith>or login with </LoginWith>
@@ -56,7 +60,6 @@ export default function Login() {
   </MainContainer>
   );
 }
-
 
 const MainContainer = styled.div`
   display: flex;
@@ -85,7 +88,7 @@ const MainContainer = styled.div`
 
   @media only screen and (min-width:360px) {
     width: 80vw;
-    height: 90vh;
+    height: 80vh;
     p {
       font-size: small;
     }
@@ -93,17 +96,17 @@ const MainContainer = styled.div`
 
   @media only screen and (min-width:411px) {
     width: 80vw;
-    height: 90vh;
+    height: 80vh;
   }
 
   @media only screen and (min-width:768px) {
     width: 80vw;
-    height: 90vh;
+    height: 80vh;
   }
 
   @media only screen and (min-width:1024px) {
     width: 30vw;
-    height: 85vh;
+    height: 90vh;
   }
 `;
 
@@ -119,7 +122,7 @@ const Form = styled.form`
 
   @media only screen and (min-width:360px) {
     width: 80vw;
-    height: 90vh;
+    height: 30vh;
     p {
       font-size: small;
     }
@@ -127,17 +130,17 @@ const Form = styled.form`
 
   @media only screen and (min-width:411px) {
     width: 80vw;
-    height: 90vh;
+    height: 30vh;
   }
 
   @media only screen and (min-width:768px) {
     width: 80vw;
-    height: 90vh;
+    height: 30vh;
   }
 
   @media only screen and (min-width:1024px) {
     width: 30vw;
-    height: 85vh;
+    height: 30vh;
   }
 `;
 
@@ -189,4 +192,3 @@ const IconsContainer = styled.div`
 const ForgotPassword = styled.h4`
   cursor: pointer;
 `;
-

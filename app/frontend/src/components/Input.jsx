@@ -2,7 +2,12 @@ import styled from 'styled-components';
 
 export default function Input({value,type,placeholder,onChange}) {
 	return (
-		<StyledInput required type={type} placeholder={placeholder} value={value} onChange={onChange}/>
+		<StyledInput
+		required
+		type={type}
+		placeholder={placeholder}
+		value={value}
+		onChange={onChange}/>
 	);
 }
 

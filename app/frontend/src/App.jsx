@@ -1,11 +1,11 @@
-import Login from './LoginPage/Login.js'
+import Views from './components/Views.jsx'
 
 function App() {
- 
   return (
-        <Login />
-    );
+    <>
+    <Views/>
+    </>
+  );
 }
-
 
 export default App;
