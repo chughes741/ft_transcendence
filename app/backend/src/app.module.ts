@@ -1,21 +1,24 @@
 import { Module } from "@nestjs/common";
-import { AppController } from "./app.controller";
 import { AppService } from "./app.service";
 
-import { LoginService } from "./login/login.service";
-import { LoginController } from "./login/login.controller";
 import { ServeStaticModule } from "@nestjs/serve-static";
 import { join } from "path";
-import { MessageModule } from './message/message.module';
+import { AuthModule } from "./auth/auth.module";
+import { ChatModule } from "./chat/chat.module";
+import { GameModule } from "./game/game.module";
+import { ProfileModule } from "./profile/profile.module";
 
 @Module({
   imports: [
     ServeStaticModule.forRoot({
       rootPath: join(__dirname, "..", "..", "frontend", "build"),
     }),
-    MessageModule,
+    AuthModule,
+    ChatModule,
+    GameModule,
+    ProfileModule,
   ],
-  controllers: [AppController, LoginController],
-  providers: [AppService, LoginService],
+  controllers: [],
+  providers: [AppService],
 })
 export class AppModule {}
