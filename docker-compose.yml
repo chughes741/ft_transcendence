@@ -54,6 +54,15 @@ services:
       - app/backend/.env
 
 
+  test-db:
+    image: postgres:13
+    ports:
+      - 5435:5432
+    env_file:
+      - ./.env.test
+    networks:
+      - backend
+
 volumes:
   postgres_data:
 
