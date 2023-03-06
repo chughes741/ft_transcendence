@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import styled from 'styled-components';
 import { FcGoogle } from 'react-icons/fc';
 import { FaFacebookF } from 'react-icons/fa';
@@ -8,14 +8,20 @@ import Icon from "../components/Icon";
 import { useNavigate } from "react-router-dom";
 
 export default function Login() {
-  document.body.classList.add('Login');
+  
+  const GoogleBackground = "white";
+  const FacebookBackground = "linear-gradient(to right, #14163c 0%, #03217b 79%)";
 
   const [nick, setNick] = useState('');
   const [pass, setPass] = useState('');
   const navigate = useNavigate();
 
-  const GoogleBackground = "white";
-  const FacebookBackground = "linear-gradient(to right, #14163c 0%, #03217b 79%)";
+  useEffect(() => {
+    document.body.classList.add('Login');
+    return () => {
+      document.body.classList.remove('Login');
+    };
+  });
 
   const handleNick = (event) => {
   setNick(event.target.value);
@@ -23,14 +29,15 @@ export default function Login() {
   const handlePass = (event) => {
     setPass(event.target.value);
   };
-
   function HandleSubmit(){
+
     if (nick === 'BigBoss' && pass === "Test123!")
       navigate("/login");
     else
       navigate("");
     return;
   };
+
   return (
     <MainContainer>
       <WelcomeText>welcome</WelcomeText>

@@ -1,8 +1,15 @@
+import { useEffect } from 'react';
 export default function WelcomeTest() {
-document.body.classList.add('Welcome');
-	return (
-		<>
-			<div>ashdgaskjdhalkhdsalkjdahs</div>
-		</>
-	);
+
+  useEffect(() => {
+    document.body.classList.add('Welcome');
+    return () => {
+      document.body.classList.remove('Welcome');
+    };
+  });
+  return (
+      <>
+          <div>ashdgaskjdhalkhdsalkjdahs</div>
+      </>
+  );
 }
