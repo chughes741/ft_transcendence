@@ -8,7 +8,7 @@ import Icon from "../components/Icon";
 import { useNavigate } from "react-router-dom";
 
 export default function Login() {
-  
+
   const GoogleBackground = "white";
   const FacebookBackground = "linear-gradient(to right, #14163c 0%, #03217b 79%)";
 
@@ -30,9 +30,8 @@ export default function Login() {
     setPass(event.target.value);
   };
   function HandleSubmit(){
-
     if (nick === 'BigBoss' && pass === "Test123!")
-      navigate("/login");
+      navigate("/welcome");
     else
       navigate("");
     return;

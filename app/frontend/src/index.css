@@ -31,9 +31,9 @@ body {
 }
 
 .Welcome {
-  background-image: url('../shared/assets/background2.png');
+  background-image: url('../shared/assets/bng_welcome.png');
 }
 
 .Login {
-  background-image: url('../shared/assets/background.png');
+  background-image: url('../shared/assets/bng_login.png');
 }
