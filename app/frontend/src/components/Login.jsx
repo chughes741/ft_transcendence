@@ -27,12 +27,8 @@ export default function Login() {
   };
 
   function HandleSubmit(){
-    if (nick === 'BigBoss' && pass === "Test123!") {
-      var obj = {};
-      obj.nick = nick;
-      obj.pass = pass; 
+    if (nick === 'BigBoss' && pass === "Test123!")
       navigate("/login");
-    }
     else
       navigate("");
     return;

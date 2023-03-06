@@ -1,5 +1,4 @@
 import styled from 'styled-components';
-import back from "./assets/background2.png"
 
 export default function WelcomeTest() {
 document.body.style.backgroundImage = "url(http://localhost:3000/static/media/background2.c2f6421db81c6882bc64.png)";
