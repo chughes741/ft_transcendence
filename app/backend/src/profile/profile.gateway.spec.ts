@@ -1,8 +1,8 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { ProfileGateway } from './profile.gateway';
-import { ProfileService } from './profile.service';
+import { Test, TestingModule } from "@nestjs/testing";
+import { ProfileGateway } from "./profile.gateway";
+import { ProfileService } from "./profile.service";
 
-describe('ProfileGateway', () => {
+describe("ProfileGateway", () => {
   let gateway: ProfileGateway;
 
   beforeEach(async () => {
@@ -13,7 +13,7 @@ describe('ProfileGateway', () => {
     gateway = module.get<ProfileGateway>(ProfileGateway);
   });
 
-  it('should be defined', () => {
+  it("should be defined", () => {
     expect(gateway).toBeDefined();
   });
 });

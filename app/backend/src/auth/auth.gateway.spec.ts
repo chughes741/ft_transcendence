@@ -1,8 +1,8 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { AuthGateway } from './auth.gateway';
-import { AuthService } from './auth.service';
+import { Test, TestingModule } from "@nestjs/testing";
+import { AuthGateway } from "./auth.gateway";
+import { AuthService } from "./auth.service";
 
-describe('AuthGateway', () => {
+describe("AuthGateway", () => {
   let gateway: AuthGateway;
 
   beforeEach(async () => {
@@ -13,7 +13,7 @@ describe('AuthGateway', () => {
     gateway = module.get<AuthGateway>(AuthGateway);
   });
 
-  it('should be defined', () => {
+  it("should be defined", () => {
     expect(gateway).toBeDefined();
   });
 });
