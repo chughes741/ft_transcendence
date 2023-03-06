@@ -5,15 +5,19 @@ import { FaFacebookF } from 'react-icons/fa';
 import Input from "../components/Input";
 import Button from "../components/Button";
 import Icon from "../components/Icon";
+import { useNavigate } from "react-router-dom";
+import "../index.css";
 
 
 export default function Login() {
   const [nick, setNick] = useState('');
   const [pass, setPass] = useState('');
+  const navigate = useNavigate();
 
   const GoogleBackground = "white";
   const FacebookBackground = "linear-gradient(to right, #14163c 0%, #03217b 79%)";
 
+  document.body.style.backgroundImage = "url(http://localhost:3000/static/media/background.4770a08c545390b05791.png)";
   const handleNick = (event) => {
     setNick(event.target.value);
   };
@@ -26,38 +30,40 @@ export default function Login() {
     if (nick === 'BigBoss' && pass === "Test123!") {
       var obj = {};
       obj.nick = nick;
-      obj.pass = pass;
-        alert(JSON.stringify(obj, null, 2));
-      }
+      obj.pass = pass; 
+      navigate("/login");
+    }
+    else
+      navigate("");
     return;
   };
   return (
     <MainContainer>
-    <WelcomeText>welcome</WelcomeText>
-    <Form onSubmit={HandleSubmit}>
-      <InputContainer>
-        <Input value={nick} onChange={handleNick} type="text" placeholder="nickname" />
-        <Input value={pass} onChange={handlePass}  type="password" placeholder="password" />
-      </InputContainer>
-      <ButtonContainer>
-        <Button onSubmit={HandleSubmit} content="Stay a while and listen" />
-      </ButtonContainer>
-    </Form>
-    <LoginWith>or login with </LoginWith>
-    <HorizontalRule />
-    <IconsContainer>
-      <Icon color={GoogleBackground}>
-       <FcGoogle />
-      </Icon>
-      <Icon color={FacebookBackground}>
-        <FaFacebookF />
-      </Icon>
-    </IconsContainer>
-    <ForgotPassword>forgot password</ForgotPassword>
-    NICK = {nick}
-    <br />
-    PASS = {pass}
-  </MainContainer>
+      <WelcomeText>welcome</WelcomeText>
+      <Form onSubmit={HandleSubmit}>
+        <InputContainer>
+          <Input value={nick} onChange={handleNick} type="text" placeholder="nickname" />
+          <Input value={pass} onChange={handlePass}  type="password" placeholder="password" />
+        </InputContainer>
+        <ButtonContainer>
+          <Button onSubmit={HandleSubmit} content="Stay a while and listen" />
+        </ButtonContainer>
+      </Form>
+      <LoginWith>or login with </LoginWith>
+      <HorizontalRule />
+      <IconsContainer>
+        <Icon color={GoogleBackground}>
+         <FcGoogle />
+        </Icon>
+        <Icon color={FacebookBackground}>
+          <FaFacebookF />
+        </Icon>
+      </IconsContainer>
+      <ForgotPassword>forgot password</ForgotPassword>
+      NICK = {nick}
+      <br />
+      PASS = {pass}
+    </MainContainer>
   );
 }
 

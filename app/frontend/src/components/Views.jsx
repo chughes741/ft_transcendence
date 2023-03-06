@@ -1,5 +1,5 @@
 import { Routes, Route } from 'react-router-dom';
-import Login from "../LoginPage/Login";
+import Login from "./Login";
 import WelcomeTest from './WelcomeTest';
 
 const Views = () => {
