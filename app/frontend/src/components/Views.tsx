@@ -1,6 +1,6 @@
 import { Routes, Route } from 'react-router-dom';
-import Login from "./Login";
-import WelcomeTest from './WelcomeTest';
+import Login from "./Login.tsx";
+import WelcomeTest from './WelcomeTest.tsx';
 
 const Views = () => {
 	return <Routes>

@@ -2,9 +2,9 @@ import { useState, useEffect } from 'react'
 import styled from 'styled-components';
 import { FcGoogle } from 'react-icons/fc';
 import { FaFacebookF } from 'react-icons/fa';
-import Input from "../components/Input";
-import Button from "../components/Button";
-import Icon from "../components/Icon";
+import Input from "../components/Input.tsx";
+import Button from "../components/Button.tsx";
+import Icon from "../components/Icon.tsx";
 import { useNavigate } from "react-router-dom";
 
 export default function Login() {
