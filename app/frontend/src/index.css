@@ -22,11 +22,18 @@ code {
 
 body {
   font-family: 'Raleway', sans-serif;
-  background-image: url('../shared/assets/background2.png');
   background-size: cover;
   display: flex;
   justify-content: center;
   align-items: center;
   height: 100vh;
   width: 100vw;
+}
+
+.Welcome {
+  background-image: url('../shared/assets/background2.png');
+}
+
+.Login {
+  background-image: url('../shared/assets/background.png');
 }

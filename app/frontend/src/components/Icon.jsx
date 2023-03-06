@@ -6,7 +6,6 @@ export default function Icon({ color, children}) {
 	);
 }
 
-
 const StyledIcon = styled.div`
 	height: 3.5rem;
 	width: 3.5rem;

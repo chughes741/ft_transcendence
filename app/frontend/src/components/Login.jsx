@@ -6,10 +6,10 @@ import Input from "../components/Input";
 import Button from "../components/Button";
 import Icon from "../components/Icon";
 import { useNavigate } from "react-router-dom";
-import "../index.css";
-
 
 export default function Login() {
+  document.body.classList.add('Login');
+
   const [nick, setNick] = useState('');
   const [pass, setPass] = useState('');
   const navigate = useNavigate();
@@ -17,11 +17,9 @@ export default function Login() {
   const GoogleBackground = "white";
   const FacebookBackground = "linear-gradient(to right, #14163c 0%, #03217b 79%)";
 
-  document.body.style.backgroundImage = "url(http://localhost:3000/static/media/background.4770a08c545390b05791.png)";
   const handleNick = (event) => {
-    setNick(event.target.value);
+  setNick(event.target.value);
   };
-
   const handlePass = (event) => {
     setPass(event.target.value);
   };
