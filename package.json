@@ -1,0 +1,17 @@
+{
+  "dependencies": {
+    "@nestjs/config": "^2.3.1",
+    "@nestjs/jwt": "^10.0.2",
+    "@nestjs/passport": "^9.0.3",
+    "class-transformer": "^0.5.1",
+    "class-validator": "^0.14.0",
+    "passport": "^0.6.0",
+    "passport-jwt": "^4.0.1",
+    "passport-local": "^1.0.0"
+  },
+  "devDependencies": {
+    "@types/passport-jwt": "^3.0.8",
+    "prisma": "^4.11.0",
+    "prisma-client": "^0.0.0"
+  }
+}
