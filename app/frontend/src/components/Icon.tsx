@@ -1,8 +1,8 @@
 import styled from 'styled-components';
 
-export default function Icon({ color, children}) {
+export default function Icon({ color, children, onClick}) {
 	return (
-		<StyledIcon background={color}>{children}</StyledIcon>
+		<StyledIcon onClick={onClick} background={color}>{children}</StyledIcon>
 	);
 }
 
