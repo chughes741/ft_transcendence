@@ -3,6 +3,6 @@ import { LoginService } from "./login.service";
 import { LoginGateway } from "./login.gateway";
 
 @Module({
-  providers: [LoginGateway, LoginService],
+  providers: [LoginGateway, LoginService]
 })
 export class LoginModule {}

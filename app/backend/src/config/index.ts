@@ -23,5 +23,5 @@ export default {
   /**
    * PostgreSQL password
    */
-  databasepw: process.env.POSTGRES_PASSWORD,
+  databasepw: process.env.POSTGRES_PASSWORD
 };

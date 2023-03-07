@@ -3,6 +3,6 @@ import { ProfileService } from "./profile.service";
 import { ProfileGateway } from "./profile.gateway";
 
 @Module({
-  providers: [ProfileGateway, ProfileService],
+  providers: [ProfileGateway, ProfileService]
 })
 export class ProfileModule {}

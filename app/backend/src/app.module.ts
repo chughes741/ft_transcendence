@@ -11,14 +11,14 @@ import { LoginModule } from "./login/login.module";
 @Module({
   imports: [
     ServeStaticModule.forRoot({
-      rootPath: join(__dirname, "..", "..", "frontend", "build"),
+      rootPath: join(__dirname, "..", "..", "frontend", "build")
     }),
     ChatModule,
     GameModule,
     ProfileModule,
-    LoginModule,
+    LoginModule
   ],
   controllers: [],
-  providers: [AppService],
+  providers: [AppService]
 })
 export class AppModule {}

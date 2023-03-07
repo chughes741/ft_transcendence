@@ -1,14 +1,14 @@
 import {
   WebSocketGateway,
   SubscribeMessage,
-  MessageBody,
+  MessageBody
 } from "@nestjs/websockets";
 import { LoginService } from "./login.service";
 import { LoginDto } from "./dto/login.dto";
 
 export enum LoginEnum {
   login = "login",
-  signup = "signup",
+  signup = "signup"
 }
 
 /**

@@ -1,7 +1,7 @@
 import {
   WebSocketGateway,
   SubscribeMessage,
-  MessageBody,
+  MessageBody
 } from "@nestjs/websockets";
 import { ProfileService } from "./profile.service";
 import { CreateProfileDto } from "./dto/create-profile.dto";
