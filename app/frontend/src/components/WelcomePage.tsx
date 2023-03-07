@@ -18,13 +18,14 @@ export default function WelcomePage() {
     };
   });
 
-  function clickPopup() {
-    
+  function clickPopup()   {
+    document.querySelector("#popup").classList.add('active');
+
   };
 
   return (
       <>
-      <PopUp className="active"/>
+      <PopUp id="popup"/>
         <MainContainer>
         <IconsContainer>
           <Icon color={bngColor} onClick={clickPopup}>
@@ -59,7 +60,7 @@ const MainContainer = styled.div`
     }
   }
 
-  @media only screen and (min-width:360px) {
+  @<p></p>media only screen and (min-width:360px) {
     width: 95vw;
     height: 95vh;
     p {
