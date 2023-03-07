@@ -1,12 +1,12 @@
 import { Routes, Route } from 'react-router-dom';
-import Login from "./Login.tsx";
-import WelcomeTest from './WelcomeTest.tsx';
+import LoginPage from "./LoginPage.tsx";
+import WelcomePage from './WelcomePage.tsx';
 
 const Views = () => {
 	return <Routes>
-		<Route path="/" element={<Login />} />
-		<Route path="/welcome" element={<WelcomeTest />} />
-		<Route path="*" element={<Login />} />
+		<Route path="/" element={<LoginPage />} />
+		<Route path="/welcome" element={<WelcomePage />} />
+		<Route path="*" element={<LoginPage />} />
 	</Routes>;
 };
 

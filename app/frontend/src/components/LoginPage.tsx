@@ -7,7 +7,7 @@ import Button from "../components/Button.tsx";
 import Icon from "../components/Icon.tsx";
 import { useNavigate } from "react-router-dom";
 
-export default function Login() {
+export default function LoginPage() {
 
   const GoogleBackground = "white";
   const FacebookBackground = "linear-gradient(to right, #14163c 0%, #03217b 79%)";
