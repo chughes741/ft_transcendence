@@ -1,9 +1,8 @@
-import dotenv from "dotenv";
+import * as dotenv from "dotenv";
+dotenv.config();
 
 // Set the NODE_ENV to 'development' by default
 process.env.NODE_ENV = process.env.NODE_ENV || "development";
-
-require("dotenv").config();
 
 export default {
   /**
