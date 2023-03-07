@@ -39,9 +39,6 @@ down: prune
 # Remove all unused containers, networks, images (both dangling and unreferenced), and optionally, volumes.
 #	docker system prune [OPTIONS]
 clean:
-	docker system prune -f
-
-fclean: clean
 	docker system prune -f --volumes
 
 # Remove all dangling images
