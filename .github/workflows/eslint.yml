@@ -38,6 +38,6 @@ jobs:
 
       - name: Run ESLint frontend
         run: |
-          cd ../frontend
+          cd app/frontend
           yarn add @typescript-eslint/eslint-plugin
           yarn lint
