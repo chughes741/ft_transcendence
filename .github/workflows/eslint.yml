@@ -28,13 +28,16 @@ jobs:
 
       - name: Install ESLint
         run: |
-          npm install eslint@8.10.0
-          npm install @typescript-eslint/eslint-plugin
+          yarn global add eslint@8.10.0
 
       - name: Run ESLint backend
-        run: yarn --cwd app/backend lint
-        continue-on-error: true
+        run: |
+          cd app/backend
+          yarn add @typescript-eslint/eslint-plugin
+          yarn lint
 
       - name: Run ESLint frontend
-        run: yarn --cwd app/frontend lint
-        continue-on-error: true
+        run: |
+          cd ../frontend
+          yarn add @typescript-eslint/eslint-plugin
+          yarn lint
