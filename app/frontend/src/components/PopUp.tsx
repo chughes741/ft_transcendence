@@ -43,12 +43,20 @@ const PopUpContainer = styled.div`
   function navGame() {
     navigate("/gametest");
   }
+  function navChat() {
+    navigate("/chattest");
+  }
+  function navLogin() {
+    navigate("/loginpage")
+  }
 
   return (
     <>
       <PopUpContainer id={id}>
         <ButtonContainer>
           <Button onClick={navGame} onSubmit={null} content="Game" />
+          <Button onClick={navChat} onSubmit={null} content="Chat" />
+          <Button onClick={navLogin} onSubmit={null} content="Login" />
         </ButtonContainer>
           <CloseButton onClick={closePopUp}>Fermer</CloseButton>
       </PopUpContainer>

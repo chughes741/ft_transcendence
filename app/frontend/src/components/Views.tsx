@@ -6,9 +6,9 @@ import ChatTest from "./ChatTest";
 
 const Views = () => {
 	return <Routes>
-		<Route path="/" element={<LoginPage />} />
-		<Route path="/welcome" element={<WelcomePage />} />
-		<Route path="*" element={<LoginPage />} />
+		<Route path="/" element={<WelcomePage />} />
+		<Route path="/login" element={<LoginPage />} />
+		<Route path="*" element={<WelcomePage />} />
 		<Route path="/gametest" element={<GameTest />} />
 		<Route path="/chattest" element={<ChatTest />} />
 	</Routes>;
