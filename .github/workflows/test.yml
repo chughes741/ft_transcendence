@@ -19,6 +19,7 @@ jobs:
 
       - name: Install Jest
         run: yarn global add jest
+        run: yarn global add ts-jest
 
       - name: Run Jest
         run: yarn --cwd app/backend test
