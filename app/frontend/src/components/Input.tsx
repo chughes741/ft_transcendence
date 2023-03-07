@@ -1,16 +1,6 @@
 import styled from 'styled-components';
 
 export default function Input({value,type,placeholder,onChange}) {
-	return (
-		<StyledInput
-		required
-		type={type}
-		placeholder={placeholder}
-		value={value}
-		onChange={onChange}/>
-	);
-}
-
 const StyledInput = styled.input`
 	background: rgba(255,255,255,0.15);
 	box-shadow: 0 8px 32px 0 rgba(31,38,135,0.37);
@@ -36,3 +26,14 @@ const StyledInput = styled.input`
 		font-size: 1rem;
 	}
 `;
+
+	return (
+		<StyledInput
+		required
+		autofocus
+		type={type}
+		placeholder={placeholder}
+		value={value}
+		onChange={onChange}/>
+	);
+}

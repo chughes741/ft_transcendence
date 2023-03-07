@@ -2,71 +2,12 @@ import { useState, useEffect } from 'react'
 import styled from 'styled-components';
 import { FcGoogle } from 'react-icons/fc';
 import { FaFacebookF } from 'react-icons/fa';
-import Input from "./Input.tsx";
-import Button from "./Button.tsx";
-import Icon from "./Icon.tsx";
+import Input from "./Input";
+import Button from "./Button";
+import Icon from "./Icon";
 import { useNavigate } from "react-router-dom";
 
 export default function LoginPage() {
-
-  const GoogleBackground = "white";
-  const FacebookBackground = "linear-gradient(to right, #14163c 0%, #03217b 79%)";
-
-  const [nick, setNick] = useState('');
-  const [pass, setPass] = useState('');
-  const navigate = useNavigate();
-
-  useEffect(() => {
-    document.body.classList.add('Login');
-    return () => {
-      document.body.classList.remove('Login');
-    };
-  });
-
-  const handleNick = (event) => {
-  setNick(event.target.value);
-  };
-  const handlePass = (event) => {
-    setPass(event.target.value);
-  };
-  function HandleSubmit(){
-    if (nick === 'BigBoss' && pass === "Test123!")
-      navigate("/welcome");
-    else
-      navigate("");
-    return;
-  };
-
-  return (
-    <MainContainer>
-      <WelcomeText>welcome</WelcomeText>
-      <Form onSubmit={HandleSubmit}>
-        <InputContainer>
-          <Input value={nick} onChange={handleNick} type="text" placeholder="nickname" />
-          <Input value={pass} onChange={handlePass}  type="password" placeholder="password" />
-        </InputContainer>
-        <ButtonContainer>
-          <Button onSubmit={HandleSubmit} content="Stay a while and listen" />
-        </ButtonContainer>
-      </Form>
-      <LoginWith>or login with </LoginWith>
-      <HorizontalRule />
-      <IconsContainer>
-        <Icon color={GoogleBackground}>
-         <FcGoogle />
-        </Icon>
-        <Icon color={FacebookBackground}>
-          <FaFacebookF />
-        </Icon>
-      </IconsContainer>
-      <ForgotPassword>forgot password</ForgotPassword>
-      NICK = {nick}
-      <br />
-      PASS = {pass}
-    </MainContainer>
-  );
-}
-
 const MainContainer = styled.div`
   display: flex;
   align-items: center;
@@ -198,3 +139,62 @@ const IconsContainer = styled.div`
 const ForgotPassword = styled.h4`
   cursor: pointer;
 `;
+
+  const GoogleBackground = "white";
+  const FacebookBackground = "linear-gradient(to right, #14163c 0%, #03217b 79%)";
+
+  const [nick, setNick] = useState('');
+  const [pass, setPass] = useState('');
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    document.body.classList.add('Login');
+    return () => {
+      document.body.classList.remove('Login');
+    };
+  });
+
+  const handleNick = (event) => {
+  setNick(event.target.value);
+  };
+  const handlePass = (event) => {
+    setPass(event.target.value);
+  };
+  function HandleSubmit(){
+    if (nick === 'BigBoss' && pass === "Test123!")
+      navigate("/welcome");
+    else
+      navigate("");
+    return;
+  }
+
+  return (
+    <MainContainer>
+      <WelcomeText>welcome</WelcomeText>
+      <Form onSubmit={HandleSubmit}>
+        <InputContainer>
+          <Input value={nick} onChange={handleNick} type="text" placeholder="nickname" />
+          <Input value={pass} onChange={handlePass}  type="password" placeholder="password" />
+        </InputContainer>
+        <ButtonContainer>
+          <Button onSubmit={HandleSubmit} onClick={null} content="Stay a while and listen" />
+        </ButtonContainer>
+      </Form>
+      <LoginWith>or login with </LoginWith>
+      <HorizontalRule />
+      <IconsContainer>
+        <Icon onClick={null} color={GoogleBackground}>
+         <FcGoogle />
+        </Icon>
+        <Icon onClick={null} color={FacebookBackground}>
+          <FaFacebookF />
+        </Icon>
+      </IconsContainer>
+      <ForgotPassword>forgot password</ForgotPassword>
+      NICK = {nick}
+      <br />
+      PASS = {pass}
+    </MainContainer>
+  );
+}
+

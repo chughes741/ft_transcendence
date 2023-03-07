@@ -1,7 +1,8 @@
 import { Routes, Route } from 'react-router-dom';
-import LoginPage from "./LoginPage.tsx";
-import WelcomePage from './WelcomePage.tsx';
-import GameTest from "./GameTest.tsx";
+import LoginPage from "./LoginPage";
+import WelcomePage from './WelcomePage';
+import GameTest from "./GameTest";
+import ChatTest from "./ChatTest";
 
 const Views = () => {
 	return <Routes>
@@ -9,6 +10,7 @@ const Views = () => {
 		<Route path="/welcome" element={<WelcomePage />} />
 		<Route path="*" element={<LoginPage />} />
 		<Route path="/gametest" element={<GameTest />} />
+		<Route path="/chattest" element={<ChatTest />} />
 	</Routes>;
 };
 

@@ -1,41 +1,11 @@
 import { useEffect } from 'react';
 import styled from 'styled-components';
-import Icon from "./Icon.tsx";
-import PopUp from './PopUp.tsx';
+import Icon from "./Icon";
+import PopUp from './PopUp';
 import { FiMenu } from 'react-icons/fi';
-import { useNavigate } from "react-router-dom";
 
 
 export default function WelcomePage() {
-
-  const navigate = useNavigate();
-  const bngColor = "linear-gradient(to right, #14163c 0%, #03217b 79%)";
-
-  useEffect(() => {
-    document.body.classList.add('Welcome');
-    return () => {
-      document.body.classList.remove('Welcome');
-    };
-  });
-
-  function clickPopup()   {
-    document.querySelector("#popup").classList.add('active');
-
-  };
-
-  return (
-      <>
-      <PopUp id="popup"/>
-        <MainContainer>
-        <IconsContainer>
-          <Icon color={bngColor} onClick={clickPopup}>
-            <FiMenu />
-          </Icon>
-        </IconsContainer>
-        </MainContainer>
-      </>
-  );
-}
 
 const MainContainer = styled.div`
   display: flex;
@@ -89,3 +59,30 @@ const IconsContainer = styled.div`
   margin: 1rem 0 0 1rem;
   width: 80%;
 `;
+
+  const bngColor = "linear-gradient(to right, #14163c 0%, #03217b 79%)";
+
+  useEffect(() => {
+    document.body.classList.add('Welcome');
+    return () => {
+      document.body.classList.remove('Welcome');
+    };
+  });
+
+  function clickPopup()   {
+    document.querySelector("#popup").classList.add('active');
+  }
+
+  return (
+      <>
+      <PopUp id="popup"/>
+        <MainContainer>
+        <IconsContainer>
+          <Icon color={bngColor} onClick={clickPopup}>
+            <FiMenu />
+          </Icon>
+        </IconsContainer>
+        </MainContainer>
+      </>
+  );
+}

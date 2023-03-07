@@ -1,4 +1,4 @@
-import Views from './components/Views.tsx'
+import Views from './components/Views'
 
 function App() {
   return (
