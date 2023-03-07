@@ -47,7 +47,7 @@ const PopUpContainer = styled.div`
     navigate("/chattest");
   }
   function navLogin() {
-    navigate("/loginpage")
+    navigate("/login");
   }
 
   return (
