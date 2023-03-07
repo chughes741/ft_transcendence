@@ -15,12 +15,7 @@
     },
     "rules": {
         // Prevents using objects before they're defined
-        "no-use-before-define": ["error", {
-            "functions": true,
-            "classes": true,
-            "variables": true,
-            "allowNamedExports": false
-        }],
+        "no-use-before-define": ["error", { "variables": true } ],
         // == and != not allowed, only === and !==
         "eqeqeq": ["error", "always"]
     }
