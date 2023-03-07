@@ -1,0 +1,24 @@
+name: Test
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  test:
+    name: Run jest tests
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      security-events: write
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Install Jest
+        run: yarn --cwd app/backend add jest ts-jest
+
+      - name: Run Jest
+        run: yarn --cwd app/backend test

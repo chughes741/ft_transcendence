@@ -1,3 +1,6 @@
+![Testing](https://github.com/chughes741/ft_transcendence/actions/workflows/eslint.yml/badge.svg)
+![Testing](https://github.com/chughes741/ft_transcendence/actions/workflows/test.yml/badge.svg)
+
 # ft_transcendence
 
 ## Mandatory part
