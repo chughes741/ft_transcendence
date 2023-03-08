@@ -1,5 +1,4 @@
 import styled from 'styled-components';
-import Button from '../components/Button';
 import "./PopUp.tsx.css";
 import { useNavigate } from 'react-router-dom';
 import Icon from "../components/Icon";
@@ -15,13 +14,8 @@ const IconsContainer = styled.div`
 export default function PopUp({ id }) {
 
   const navigate = useNavigate();
-    const bngColor = "linear-gradient(to right, #14163c 0%, #03217b 79%)";
+  const bngColor = "linear-gradient(to right, #14163c 0%, #03217b 79%)";
 
-
-  function closePopUp() {
-    document.querySelector("#popup").classList.remove('active');
-    return ;
-  }
     function clickPopup()   {
       if (document.querySelector("#popup").classList.contains('active')) {
         document.querySelector("#popup-button-game").classList.remove('active');
