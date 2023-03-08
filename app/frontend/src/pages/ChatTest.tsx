@@ -1,5 +1,9 @@
+import PopUp from "../popups/PopUp";
+
 export default function ChatTest() {
 	return(
-		<div>sdadahsgags</div>
+		<>
+			<PopUp id="popup" />
+		</>
 	);
 }

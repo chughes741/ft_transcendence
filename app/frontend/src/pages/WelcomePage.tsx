@@ -1,8 +1,7 @@
 import { useEffect } from 'react';
+import PopUp from '../popups/PopUp'
 import styled from 'styled-components';
-import Icon from "../components/Icon";
-import PopUp from '../components/PopUp';
-import { FiMenu } from 'react-icons/fi';
+
 
 
 const MainContainer = styled.div`
@@ -53,15 +52,10 @@ const MainContainer = styled.div`
   }
 `;
 
-const IconsContainer = styled.div`
-  display: flex;
-  margin: 1rem 0 0 1rem;
-  width: 80%;
-`;
+
 export default function WelcomePage() {
 
 
-  const bngColor = "linear-gradient(to right, #14163c 0%, #03217b 79%)";
 
   useEffect(() => {
     document.body.classList.add('Welcome');
@@ -70,19 +64,12 @@ export default function WelcomePage() {
     };
   });
 
-  function clickPopup()   {
-    document.querySelector("#popup").classList.add('active');
-  }
+
 
   return (
       <>
-      <PopUp id="popup"/>
         <MainContainer>
-        <IconsContainer>
-          <Icon color={bngColor} onClick={clickPopup}>
-            <FiMenu />
-          </Icon>
-        </IconsContainer>
+          <PopUp id="popup"/>
         </MainContainer>
       </>
   );

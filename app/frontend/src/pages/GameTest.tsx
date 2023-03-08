@@ -1,5 +1,6 @@
 import React from 'react';
 import { Canvas, useFrame } from '@react-three/fiber';
+import PopUp from "../popups/PopUp";
 
 import styled from 'styled-components';
 
@@ -28,8 +29,8 @@ const MyMesh = () => {
 }
 
 const GameWindow = styled.div`
-	height: 80vh;
-	width: 30vw;
+	height: 100vh;
+	width: 100vw;
 	color: #fff;
 `;
 
@@ -47,13 +48,16 @@ export default function Game() {
 
 
 	return (
-		<GameWindow>
-			<Canvas>
-				<MyMesh />
-				<ambientLight args={[0xff0000]} intensity={0.1} />
-				<directionalLight position={[0, 5, 3]} intensity={0.5} />
-			</Canvas>
-		</GameWindow>
+		<>
+			<GameWindow>
+			<PopUp id="popup" />
+				<Canvas>
+					<MyMesh />
+					<ambientLight args={[0xff0000]} intensity={0.1} />
+					<directionalLight position={[0, 5, 3]} intensity={0.5} />
+				</Canvas>
+			</GameWindow>
+		</>
 	);
 }
 

@@ -1,0 +1,39 @@
+
+.popup-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  background-color: gray;
+  height: 95vh;
+  width: 20vw;
+  z-index: 99;
+  transition: opacity 0.5s;
+  opacity: 0;
+}
+
+.popup-container.active {
+  opacity: 1;
+  transition: opacity 0.5s;
+}
+
+.button-container {
+  margin: 1rem;
+  display: flex;
+  justify-content: center;
+}
+
+.button-popup {
+  width: 5vw;
+  height: 8vh;
+  opacity: 0;
+}
+
+.button-popup.active {
+  width: 5vw;
+  transition: opacity 0.5s;
+  opacity: 1;
+}
+
+.icon {
+  z-index: 1001;
+}
