@@ -34,6 +34,16 @@
   opacity: 1;
 }
 
+.blocker {
+  position: fixed;
+  top: 0;
+  left: 20vw;
+  bottom: 0;
+  right: 0;
+  content: ' ';
+  background: rgba(0,0,0,.2);
+}
+
 .icon {
   z-index: 1001;
   display: flex;

@@ -1,6 +1,6 @@
 import "./PopUp.tsx.css";
-import { useNavigate } from 'react-router-dom';
 import Icon from "../components/Icon";
+import { useNavigate } from 'react-router-dom';
 import { FiMenu } from 'react-icons/fi';
 
 export default function PopUp({ id }) {
@@ -43,6 +43,7 @@ export default function PopUp({ id }) {
         </Icon>
       </div>
       <div className="popup-container" id={id}>
+      <div className="blocker" onClick={clickPopup} />
         <div className="button-container">
          <button className="button-popup" id="popup-button-game" onClick={navGame}>Game</button>
         </div>
