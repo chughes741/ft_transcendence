@@ -1,6 +1,5 @@
 import styled from 'styled-components';
 
-export default function Button({ content, onSubmit, onClick }) {
 const StyledButton = styled.button`
 	background: linear-gradient(to right, #14163c 0%, #03217b 79%);
 	text-transform: uppercase;
@@ -12,6 +11,8 @@ const StyledButton = styled.button`
 	border-radius: 2rem;
 	cursor: pointer;
 `;
+
+export default function Button({ content, onSubmit, onClick }) {
 
 	return (
 		<StyledButton onClick={onClick} onSubmit={onSubmit}>{content}</StyledButton>

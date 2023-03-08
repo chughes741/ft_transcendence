@@ -1,0 +1,30 @@
+.close-button {
+  width: 5vw;
+  height: 10vh;
+  color: blue;
+}
+
+.popup-container {
+  position: absolute;
+  display: none;
+  z-index: -1;
+}
+
+.popup-container.active {
+    width: 20vw;
+    height: 95vh;
+    color: red;
+    position: absolute;
+    background-color: green;
+    z-index: 1000;
+    display: flex;
+    color: #fff;
+  }
+
+.button-container {
+  margin: 1rem 0 2rem 0;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}

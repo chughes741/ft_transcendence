@@ -27,12 +27,13 @@ const MyMesh = () => {
 	)
 }
 
-export default function Game() {
 const GameWindow = styled.div`
 	height: 80vh;
 	width: 30vw;
 	color: #fff;
 `;
+
+export default function Game() {
 
 
 

@@ -1,38 +1,9 @@
 import styled from 'styled-components';
 import Button from './Button';
+import "./PopUp.tsx.css";
 import { useNavigate } from 'react-router-dom';
 
 export default function PopUp({ id }) {
-
-const CloseButton = styled.button`
-  width: 5vw;
-  height: 10vh;
-  color: blue;
-`;
-
-const ButtonContainer = styled.div`
-  margin: 1rem 0 2rem 0;
-  width: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-`;
-
-const PopUpContainer = styled.div`
-  position: absolute;
-  display: none;
-  z-index: -1;
-  &.active {
-    width: 20vw;
-    height: 95vh;
-    color: red;
-    position: absolute;
-    background-color: green;
-    z-index: 1000;
-    display: flex;
-    color: #fff;
-  }
-`;
 
   const navigate = useNavigate();
 
@@ -40,26 +11,29 @@ const PopUpContainer = styled.div`
     document.querySelector("#popup").classList.remove('active');
     return ;
   }
+
   function navGame() {
     navigate("/gametest");
   }
+
   function navChat() {
     navigate("/chattest");
   }
+
   function navLogin() {
     navigate("/login");
   }
 
   return (
     <>
-      <PopUpContainer id={id}>
-        <ButtonContainer>
+      <div className="popup-container" id={id}>
+        <div className="button-container">
           <Button onClick={navGame} onSubmit={null} content="Game" />
           <Button onClick={navChat} onSubmit={null} content="Chat" />
           <Button onClick={navLogin} onSubmit={null} content="Login" />
-        </ButtonContainer>
-          <CloseButton onClick={closePopUp}>Fermer</CloseButton>
-      </PopUpContainer>
+        </div>
+          <button className="close-button" onClick={closePopUp}>Fermer</button>
+      </div>
     </>
   );
 }

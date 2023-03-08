@@ -2,12 +2,11 @@ import { useState, useEffect } from 'react'
 import styled from 'styled-components';
 import { FcGoogle } from 'react-icons/fc';
 import { FaFacebookF } from 'react-icons/fa';
-import Input from "./Input";
-import Button from "./Button";
-import Icon from "./Icon";
+import Input from "../components/Input";
+import Button from "../components/Button";
+import Icon from "../components/Icon";
 import { useNavigate } from "react-router-dom";
 
-export default function LoginPage() {
 const MainContainer = styled.div`
   display: flex;
   align-items: center;
@@ -139,6 +138,8 @@ const IconsContainer = styled.div`
 const ForgotPassword = styled.h4`
   cursor: pointer;
 `;
+
+export default function LoginPage() {
 
   const GoogleBackground = "white";
   const FacebookBackground = "linear-gradient(to right, #14163c 0%, #03217b 79%)";

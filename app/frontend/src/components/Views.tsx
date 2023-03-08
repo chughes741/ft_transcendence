@@ -1,8 +1,8 @@
 import { Routes, Route } from 'react-router-dom';
-import LoginPage from "./LoginPage";
-import WelcomePage from './WelcomePage';
-import GameTest from "./GameTest";
-import ChatTest from "./ChatTest";
+import LoginPage from "../pages/LoginPage";
+import WelcomePage from '../pages/WelcomePage';
+import GameTest from "../pages/GameTest";
+import ChatTest from "../pages/ChatTest";
 
 const Views = () => {
 	return <Routes>

@@ -1,11 +1,9 @@
 import { useEffect } from 'react';
 import styled from 'styled-components';
-import Icon from "./Icon";
-import PopUp from './PopUp';
+import Icon from "../components/Icon";
+import PopUp from '../components/PopUp';
 import { FiMenu } from 'react-icons/fi';
 
-
-export default function WelcomePage() {
 
 const MainContainer = styled.div`
   display: flex;
@@ -19,6 +17,7 @@ const MainContainer = styled.div`
   text-transform: uppercase;
   letter-spacing: 0.4rem;
   user-select: none;
+
   @media only screen and (max-width:320px) {
     width: 95vw;
     height: 95vh;
@@ -30,7 +29,7 @@ const MainContainer = styled.div`
     }
   }
 
-  @<p></p>media only screen and (min-width:360px) {
+  @media only screen and (min-width:360px) {
     width: 95vw;
     height: 95vh;
     p {
@@ -59,6 +58,8 @@ const IconsContainer = styled.div`
   margin: 1rem 0 0 1rem;
   width: 80%;
 `;
+export default function WelcomePage() {
+
 
   const bngColor = "linear-gradient(to right, #14163c 0%, #03217b 79%)";
 

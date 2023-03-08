@@ -1,6 +1,5 @@
 import styled from 'styled-components';
 
-export default function Icon({ color, children, onClick}) {
 const StyledIcon = styled.div`
 	height: 3.5rem;
 	width: 3.5rem;
@@ -16,6 +15,9 @@ const StyledIcon = styled.div`
 		height: 1.5rem;
 	}
 `;
+
+export default function Icon({ color, children, onClick}) {
+	
 	return (
 		<StyledIcon onClick={onClick} background={color}>{children}</StyledIcon>
 	);
