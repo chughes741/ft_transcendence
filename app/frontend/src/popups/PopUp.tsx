@@ -1,19 +1,7 @@
-import styled from 'styled-components';
-import Button from '../components/Button';
 import "./PopUp.tsx.css";
 import { useNavigate } from 'react-router-dom';
 import Icon from "../components/Icon";
 import { FiMenu } from 'react-icons/fi';
-
-const IconsContainer = styled.div`
-  display: flex;
-  position: fixed;
-  top: 0;
-  left: 0;
-  margin: 1rem 0 0 1rem;
-  width: 5vw;
-  height: 8vh;
-`;
 
 export default function PopUp({ id }) {
 
@@ -49,11 +37,11 @@ export default function PopUp({ id }) {
 
   return (
     <>
-     <IconsContainer className="icon">
+     <div className="icon">
         <Icon color={bngColor} onClick={clickPopup}>
           <FiMenu />
         </Icon>
-      </IconsContainer>
+      </div>
       <div className="popup-container" id={id}>
         <div className="button-container">
          <button className="button-popup" id="popup-button-game" onClick={navGame}>Game</button>
