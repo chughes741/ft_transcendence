@@ -55,16 +55,12 @@ const MainContainer = styled.div`
 
 export default function WelcomePage() {
 
-
-
   useEffect(() => {
     document.body.classList.add('Welcome');
     return () => {
       document.body.classList.remove('Welcome');
     };
   });
-
-
 
   return (
       <>

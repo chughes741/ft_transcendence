@@ -3,12 +3,16 @@ import Icon from "../components/Icon";
 import { useNavigate } from 'react-router-dom';
 import { FiMenu } from 'react-icons/fi';
 
-export default function PopUpMenu({ id }) {
+class IdCtx {
+  id: string;
+}
+
+export default function PopUpMenu(IdCtx: IdCtx) {
 
   const navigate = useNavigate();
   const bngColor = "linear-gradient(to right, #14163c 0%, #03217b 79%)";
 
-  function clickPopup()   {
+  function clickPopup() {
     if (document.querySelector("#popup").classList.contains('active')) {
       document.querySelector("#popup-button-game").classList.remove('active');
       document.querySelector("#popup-button-login").classList.remove('active');
@@ -42,7 +46,7 @@ export default function PopUpMenu({ id }) {
           <FiMenu />
         </Icon>
       </div>
-      <div className="popup-container" id={id}>
+      <div className="popup-container" id={IdCtx.id}>
       <div className="blocker" onClick={clickPopup} />
         <div className="button-container">
          <button className="button-popup" id="popup-button-game" onClick={navGame}>Game</button>

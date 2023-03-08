@@ -6,89 +6,8 @@ import Input from "../components/Input";
 import Button from "../components/Button";
 import Icon from "../components/Icon";
 import { useNavigate } from "react-router-dom";
-
-const MainContainer = styled.div`
-  display: flex;
-  align-items: center;
-  flex-direction: column;
-  height: 80vh;
-  width: 30vw;
-  background: rgba(255, 255, 255, 0.15);
-  box-shadow: 0 8px 32px 0 rgba(31,38,135,0.37);
-  backdrop-filter: blur(8.5px);
-  border-radius: 10px;
-  color: #fff;
-  text-transform: uppercase;
-  letter-spacing: 0.4rem;
-  user-select: none;
-  @media only screen and (max-width:320px) {
-    width: 80vw;
-    height: 90vh;
-    hr {
-      margin-bottom: 0.3rem;
-    }
-    p {
-      font-size: small;
-    }
-  }
-
-  @media only screen and (min-width:360px) {
-    width: 80vw;
-    height: 80vh;
-    p {
-      font-size: small;
-    }
-  }
-
-  @media only screen and (min-width:411px) {
-    width: 80vw;
-    height: 80vh;
-  }
-
-  @media only screen and (min-width:768px) {
-    width: 80vw;
-    height: 80vh;
-  }
-
-  @media only screen and (min-width:1024px) {
-    width: 30vw;
-    height: 90vh;
-  }
-`;
-
-const Form = styled.form`
-  display: flex;
-  align-items: center;
-  flex-direction: column;
-  height: 30vh;
-  margin: 0;
-  width: 30vw;
-  border-radius: 10px;
-  letter-spacing: 0.4rem;
-
-  @media only screen and (min-width:360px) {
-    width: 80vw;
-    height: 30vh;
-    p {
-      font-size: small;
-    }
-  }
-
-  @media only screen and (min-width:411px) {
-    width: 80vw;
-    height: 30vh;
-  }
-
-  @media only screen and (min-width:768px) {
-    width: 80vw;
-    height: 30vh;
-  }
-
-  @media only screen and (min-width:1024px) {
-    width: 30vw;
-    height: 30vh;
-  }
-`;
+import React from 'react';
+import "./LoginPage.tsx.css";
 
 const WelcomeText = styled.p`
   margin: 3rem auto 2rem;
@@ -166,13 +85,12 @@ export default function LoginPage() {
       navigate("/welcome");
     else
       navigate("");
-    return;
   }
 
   return (
-    <MainContainer>
+    <div className="main-container">
       <WelcomeText>welcome</WelcomeText>
-      <Form onSubmit={HandleSubmit}>
+      <form className="styled-form" onSubmit={HandleSubmit}>
         <InputContainer>
           <Input value={nick} onChange={handleNick} type="text" placeholder="Nickname" />
           <Input value={pass} onChange={handlePass}  type="password" placeholder="Password" />
@@ -180,7 +98,7 @@ export default function LoginPage() {
         <ButtonContainer>
           <Button onSubmit={HandleSubmit} onClick={null} content="Stay a while and listen" />
         </ButtonContainer>
-      </Form>
+      </form>
       <LoginWith>or login with </LoginWith>
       <HorizontalRule />
       <IconsContainer>
@@ -195,7 +113,7 @@ export default function LoginPage() {
       NICK = {nick}
       <br />
       PASS = {pass}
-    </MainContainer>
+    </div>
   );
 }
 

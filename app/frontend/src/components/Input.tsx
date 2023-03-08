@@ -25,15 +25,22 @@ const StyledInput = styled.input`
 	}
 `;
 
-export default function Input({value,type,placeholder,onChange}) {
+class InputCtx {
+	value: string;
+	type: string;
+	placeholder: string;
+	onChange: (event:any)=>void;
+}
+
+export default function Input(InputCtx: InputCtx) : styled {
 
 	return (
 		<StyledInput
 		required
 		autoFocus
-		type={type}
-		placeholder={placeholder}
-		value={value}
-		onChange={onChange}/>
+		type={InputCtx.type}
+		placeholder={InputCtx.placeholder}
+		value={InputCtx.value}
+		onChange={InputCtx.onChange}/>
 	);
 }

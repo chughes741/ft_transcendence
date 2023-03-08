@@ -16,9 +16,18 @@ const StyledIcon = styled.div`
 	}
 `;
 
-export default function Icon({ color, children, onClick}) {
-	
+class IconCtx {
+	color: string;
+	children: JSX.Element;
+	onClick: ()=>void;
+}
+
+export default function Icon(IconCtx: IconCtx) : styled {
 	return (
-		<StyledIcon onClick={onClick} background={color}>{children}</StyledIcon>
+		<StyledIcon
+		onClick={IconCtx.onClick}
+		background={IconCtx.color}>
+			{IconCtx.children}
+		</StyledIcon>
 	);
 }
