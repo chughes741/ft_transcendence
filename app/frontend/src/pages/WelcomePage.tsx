@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import PopUp from '../popups/PopUp'
+import PopUpMenu from '../popups/PopUpMenu'
 import styled from 'styled-components';
 
 
@@ -69,7 +69,7 @@ export default function WelcomePage() {
   return (
       <>
         <MainContainer>
-          <PopUp id="popup"/>
+          <PopUpMenu id="popup"/>
         </MainContainer>
       </>
   );

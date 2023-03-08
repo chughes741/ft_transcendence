@@ -9,7 +9,6 @@ const StyledInput = styled.input`
 	padding: 1rem;
 	border: none;
 	outline: none;
-	text-transform: capitalize;
 	color: #3c354e;
 	font-size: 1.2rem;
 	font-weight: bold;

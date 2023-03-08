@@ -174,8 +174,8 @@ export default function LoginPage() {
       <WelcomeText>welcome</WelcomeText>
       <Form onSubmit={HandleSubmit}>
         <InputContainer>
-          <Input value={nick} onChange={handleNick} type="text" placeholder="nickname" />
-          <Input value={pass} onChange={handlePass}  type="password" placeholder="password" />
+          <Input value={nick} onChange={handleNick} type="text" placeholder="Nickname" />
+          <Input value={pass} onChange={handlePass}  type="password" placeholder="Password" />
         </InputContainer>
         <ButtonContainer>
           <Button onSubmit={HandleSubmit} onClick={null} content="Stay a while and listen" />

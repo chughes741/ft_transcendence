@@ -1,4 +1,4 @@
-import PopUp from "../popups/PopUp";
+import PopUp from "../popups/PopUpMenu";
 
 export default function ChatTest() {
 	return(

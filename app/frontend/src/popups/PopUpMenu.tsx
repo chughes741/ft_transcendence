@@ -1,9 +1,9 @@
-import "./PopUp.tsx.css";
+import "./PopUpMenu.tsx.css";
 import Icon from "../components/Icon";
 import { useNavigate } from 'react-router-dom';
 import { FiMenu } from 'react-icons/fi';
 
-export default function PopUp({ id }) {
+export default function PopUpMenu({ id }) {
 
   const navigate = useNavigate();
   const bngColor = "linear-gradient(to right, #14163c 0%, #03217b 79%)";

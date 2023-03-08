@@ -38,10 +38,10 @@
   position: fixed;
   top: 0;
   left: 20vw;
-  bottom: 0;
+  bottom: 5vh;
   right: 0;
   content: ' ';
-  background: rgba(0,0,0,.2);
+  background: rgba(0,0,0,.3);
 }
 
 .icon {
