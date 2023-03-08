@@ -12,7 +12,7 @@ export default function PopUpMenu(IdCtx: IdCtx) {
   const navigate = useNavigate();
   const bngColor = "linear-gradient(to right, #14163c 0%, #03217b 79%)";
 
-  function clickPopup() {
+  function clickPopUp() {
     if (document.querySelector("#popup").classList.contains('active')) {
       document.querySelector("#popup-button-game").classList.remove('active');
       document.querySelector("#popup-button-login").classList.remove('active');
@@ -39,15 +39,22 @@ export default function PopUpMenu(IdCtx: IdCtx) {
     navigate("/login");
   }
 
+  function closePopUp() {
+    document.querySelector("#popup").classList.remove('active');
+    document.querySelector("#popup-button-game").classList.remove('active');
+    document.querySelector("#popup-button-login").classList.remove('active');
+    document.querySelector("#popup-button-chat").classList.remove('active');
+  }
+
   return (
     <>
      <div className="icon">
-        <Icon color={bngColor} onClick={clickPopup}>
+        <Icon color={bngColor} onClick={clickPopUp}>
           <FiMenu />
         </Icon>
       </div>
       <div className="popup-container" id={IdCtx.id}>
-      <div className="blocker" onClick={clickPopup} />
+      <div className="blocker" onClick={closePopUp} />
         <div className="button-container">
          <button className="button-popup" id="popup-button-game" onClick={navGame}>Game</button>
         </div>
