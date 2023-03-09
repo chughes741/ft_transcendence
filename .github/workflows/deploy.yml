@@ -24,6 +24,7 @@ jobs:
 
   deployment:
     name: Redeploy webhook call
+    environment: production
     runs-on: ubuntu-latest
     needs: [test]
     steps:
