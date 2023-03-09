@@ -1,0 +1,33 @@
+name: Release - Test, Build & Redeploy
+
+concurrency: production
+environment: production
+
+on:
+  push:
+    branches: [ "release/*" ]
+
+jobs:
+  test:
+    name: Test - unit, integration, and e2e
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Install Jest
+        run: yarn --cwd app/backend add jest ts-jest
+
+      - name: Run Jest
+        run: yarn --cwd app/backend test
+
+  deployment:
+    name: Redeploy webhook call
+    runs-on: ubuntu-latest
+    needs: [docker]
+    steps:
+      - name: Deploy docker container webhook
+        uses: joelwmale/webhook-action@master
+        with:
+          url: ${{ secrets.DEPLOY_WEBHOOK_URL }}
