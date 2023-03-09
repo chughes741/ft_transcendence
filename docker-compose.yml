@@ -16,7 +16,6 @@ services:
       context: app/
       target: production
     ports:
-      - "80:80"
       - "80:3000"
     networks:
       - frontend
