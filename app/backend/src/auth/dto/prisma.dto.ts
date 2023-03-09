@@ -41,9 +41,6 @@ export class AuthDto {
  *
  */
 
-function addUserDto(dto: UserDto) {}
-function editUserDto(dto: UserDto) {}
-function deleteUserDto(dto: UserDto) {}
 export class UserDto {
   uuid: string;
   firstName?: string;
@@ -51,19 +48,29 @@ export class UserDto {
   email?: string;
   password?: string;
 }
+function addUserDto(dto: UserDto) {
+  return "addUserDto logic";
+}
+function editUserDto(dto: UserDto) {
+  return "editUserDto logic";
+}
+function deleteUserDto(dto: UserDto) {
+  return "deleteUserDto logic";
+}
 
-function addProfileDto(dto: ProfileDto) {}
-function editProfileDto(dto: ProfileDto) {}
 export class ProfileDto {
   uuid: string;
   avatar?: string;
   username?: string;
   status?: UserStatus;
 }
+function addProfileDto(dto: ProfileDto) {
+  return "addProfileDto logic";
+}
+function editProfileDto(dto: ProfileDto) {
+  return "editProfileDto logic";
+}
 
-function addChatMemberDto(dto: ChatMemberDto) {}
-function editChatMemberDto(dto: ChatMemberDto) {}
-function deleteChatMemberDto(dto: ChatMemberDto) {}
 export class ChatMemberDto {
   uuid: string;
   roomID: string;
@@ -71,19 +78,36 @@ export class ChatMemberDto {
   rank?: ChatMemberRank;
   status?: ChatMemberStatus;
 }
+function addChatMemberDto(dto: ChatMemberDto) {
+  return "addChatMemberDto logic";
+}
+function editChatMemberDto(dto: ChatMemberDto) {
+  return "editChatMemberDto logic";
+}
+function deleteChatMemberDto(dto: ChatMemberDto) {
+  return "deleteChatMemberDto logic";
+}
 
-function addChatRoomDto(dto: ChatRoomDto) {}
-function editChatRoomDto(dto: ChatRoomDto) {}
-function deleteChatRoomDto(dto: ChatRoomDto) {}
 export class ChatRoomDto {
   roomID: string;
   status?: ChatRoomStatus;
   password?: string;
   createdBy?: string;
 }
+function addChatRoomDto(dto: ChatRoomDto) {
+  return "addChatRoomDto logic";
+}
+function editChatRoomDto(dto: ChatRoomDto) {
+  return "editChatRoomDto logic";
+}
+function deleteChatRoomDto(dto: ChatRoomDto) {
+  return "deleteChatRoomDto logic";
+}
 
-function addPlayerDto(dto: PlayerDto) {}
 export class PlayerDto {
   uuid: string;
   score: number;
+}
+function addPlayerDto(dto: PlayerDto) {
+  return "addPlayerDto logic";
 }
