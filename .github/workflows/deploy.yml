@@ -28,8 +28,6 @@ jobs:
     needs: [test]
     steps:
       - name: Deploy docker container webhook
-        uses: joelwmale/webhook-action@master
+      - uses: joelwmale/webhook-action@master
         with:
-          url: ${{ secrets.DEPLOY_WEBHOOK_URL }}
-          headers: ''
-          body: ''
+          url: ${{ secrets.DEPLOY_WEBHOOK_URL }}'
