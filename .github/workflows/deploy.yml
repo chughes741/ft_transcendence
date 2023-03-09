@@ -24,11 +24,10 @@ jobs:
 
   deployment:
     name: Redeploy webhook call
-    environment: production
     runs-on: ubuntu-latest
     needs: [test]
     steps:
       - name: Deploy docker container webhook
         uses: joelwmale/webhook-action@master
         with:
-          url: '${{ secrets.DEPLOY_WEBHOOK_URL }}'
+          url: ${{ secrets.DEPLOY_WEBHOOK_URL }}
