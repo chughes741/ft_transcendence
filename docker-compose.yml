@@ -21,6 +21,7 @@ services:
       - frontend
       - backend
       - ./app/frontend/src/:/usr/app/frontend/src
+    restart: always
     depends_on:
       - postgres
       # - engine
@@ -40,6 +41,7 @@ services:
     container_name: postgres
     env_file:
       - app/backend/.env
+    retstart: always
 
   # test-db:
     # image: postgres:13
