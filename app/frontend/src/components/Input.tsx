@@ -29,7 +29,7 @@ class InputCtx {
 	value: string;
 	type: string;
 	placeholder: string;
-	onChange: (event:any)=>void;
+	onChange: (event)=>void;
 }
 
 export default function Input(InputCtx: InputCtx) : styled {
@@ -37,7 +37,6 @@ export default function Input(InputCtx: InputCtx) : styled {
 	return (
 		<StyledInput
 		required
-		autoFocus
 		type={InputCtx.type}
 		placeholder={InputCtx.placeholder}
 		value={InputCtx.value}

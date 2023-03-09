@@ -47,10 +47,32 @@
 
 @media only screen and (min-width:1024px) {
   div.main-container {
-    width: 30vw;
+    width: 70vw;
     height: 90vh;
   }
   form.styled-form {
+    width: 70vw;
+    height: 30vh;
+  }
+}
+
+@media only screen and (min-width:1270px){
+  div.main-container {
+    width: 50vw;
+    height: 90vh;
+  }
+    form.styled-form {
+    width: 30vw;
+    height: 30vh;
+  }
+}
+
+@media only screen and (min-width:1920px){
+  div.main-container {
+    width: 30vw;
+    height: 90vh;
+  }
+    form.styled-form {
     width: 30vw;
     height: 30vh;
   }
@@ -81,5 +103,50 @@
   width: 30vw;
   border-radius: 10px;
   letter-spacing: 0.4rem;
+}
+
+.input-container{
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  align-items: center;
+  height: 60%;
+  width: 100%;
+}
+
+.button-container{
+  margin: 1rem 0 2rem 0;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.horizontal-rule{
+  width: 90%;
+  height: 0.3rem;
+  border-radius: 0.8rem;
+  border: none;
+  margin: 1.5em 0 1.5rem 0;
+  background: linear-gradient(to right, #14163c 0%, #03217b 79%);
+  backdrop-filter: blur(25px);
+}
+
+.icon-container{
+  display: flex;
+  justify-content: space-evenly;
+  margin: 2rem 0 3rem 0;
+  width: 80%;
+}
+
+h4 {
+  cursor: pointer;
+}
+
+p {
+  margin: 3rem auto 2rem;
+  font-weight: 400;
+  font-size: 20px;
+  display: flex;
 }
 
