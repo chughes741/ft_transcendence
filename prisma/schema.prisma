@@ -38,7 +38,7 @@ model Bookmark {
 
   title       String
   description String?
-  link        String
+  link        String        
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -69,9 +69,9 @@ model Profile {
 }
 
 enum UserStatus {
-  online
-  offline
-  away
+  ONLINE
+  OFFLINE
+  AWAY
 }
 
 //////////////////
@@ -99,10 +99,10 @@ model ChatRoom {
 }
 
 enum ChatRoomStatus {
-  dialogue
-  public
-  private
-  password
+  DIALOGUE
+  PUBLIC
+  PRIVATE
+  PASSWORD
 }
 
 model Message {
@@ -139,16 +139,17 @@ model ChatMembers {
 }
 
 enum ChatMemberRank {
-  user
-  admin
-  owner
+  DISCONNECTED
+  USER
+  ADMIN
+  OWNER
 }
 
 enum ChatMemberStatus {
-  ok
-  blocked
-  muted
-  banned
+  OK
+  BLOCKED
+  MUTED
+  BANNED
 }
 
 //////////////////
@@ -168,8 +169,8 @@ model Match {
 }
 
 enum MatchStatus {
-  active
-  ended
+  ACTIVE
+  ENDED
 }
 
 model Player {
@@ -186,6 +187,6 @@ model Player {
 }
 
 enum PlayerSide {
-  side1
-  side2
+  SIDE1
+  SIDE2
 }

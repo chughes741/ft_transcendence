@@ -1,5 +1,7 @@
 import { ApiProperty } from "@nestjs/swagger";
 import { IsEmail, IsNotEmpty, IsString } from "class-validator";
+import { ChatMemberRank, ChatMemberStatus, ChatRoomStatus, UserStatus } from "@prisma/client";
+
 
 export class AuthDto {
   @IsEmail()
@@ -8,7 +10,7 @@ export class AuthDto {
     description: "Login email"
   })
   email: string;
-
+  
   @IsString()
   @IsNotEmpty()
   @ApiProperty({
