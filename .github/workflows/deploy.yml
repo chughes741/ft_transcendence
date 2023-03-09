@@ -1,7 +1,6 @@
 name: Release - Test, Build & Redeploy
 
 concurrency: production
-environment: production
 
 on:
   push:
