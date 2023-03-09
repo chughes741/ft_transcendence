@@ -16,6 +16,11 @@ export default {
   databasename: process.env.POSTGRES_DB,
 
   /**
+   * PostgreSQL database name
+   */
+  database_url: process.env.DATABASE_URL,
+
+  /**
    * PostgreSQL username
    */
   databaseuser: process.env.POSTGRES_USER,

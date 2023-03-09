@@ -1,7 +1,11 @@
 import { ApiProperty } from "@nestjs/swagger";
 import { IsEmail, IsNotEmpty, IsString } from "class-validator";
-import { ChatMemberRank, ChatMemberStatus, ChatRoomStatus, UserStatus } from "@prisma/client";
-
+import {
+  ChatMemberRank,
+  ChatMemberStatus,
+  ChatRoomStatus,
+  UserStatus
+} from "@prisma/client";
 
 export class AuthDto {
   @IsEmail()
@@ -10,7 +14,7 @@ export class AuthDto {
     description: "Login email"
   })
   email: string;
-  
+
   @IsString()
   @IsNotEmpty()
   @ApiProperty({
@@ -20,13 +24,13 @@ export class AuthDto {
 }
 
 /**
- * TODO: 
+ * TODO:
  *  - write addUserDto
  *  - write editUserDto
  *  - write deleteUserDto
  *  - write addProfileDto
  *  - write editProfileDto
- * 
+ *
  *  - write addChatMemberDto
  *  - write editChatMemberDto
  *  - write deleteChatMemberDto
@@ -34,7 +38,7 @@ export class AuthDto {
  *  - write deleteChatRoomDto
  *  - write addPlayerDto
  *  - write editChatRoomDto
- * 
+ *
  */
 
 function addUserDto(dto: UserDto) {}
@@ -51,35 +55,35 @@ export class UserDto {
 function addProfileDto(dto: ProfileDto) {}
 function editProfileDto(dto: ProfileDto) {}
 export class ProfileDto {
-  uuid : string;
-  avatar? : string;
-  username? : string;
-  status? : UserStatus;
+  uuid: string;
+  avatar?: string;
+  username?: string;
+  status?: UserStatus;
 }
 
 function addChatMemberDto(dto: ChatMemberDto) {}
 function editChatMemberDto(dto: ChatMemberDto) {}
 function deleteChatMemberDto(dto: ChatMemberDto) {}
 export class ChatMemberDto {
-  uuid : string;
-  roomID : string;
-  avatar? : string;
-  rank? : ChatMemberRank;
-  status? : ChatMemberStatus;
+  uuid: string;
+  roomID: string;
+  avatar?: string;
+  rank?: ChatMemberRank;
+  status?: ChatMemberStatus;
 }
 
 function addChatRoomDto(dto: ChatRoomDto) {}
 function editChatRoomDto(dto: ChatRoomDto) {}
 function deleteChatRoomDto(dto: ChatRoomDto) {}
 export class ChatRoomDto {
-  roomID : string;
-  status? : ChatRoomStatus;
-  password? : string;
-  createdBy? : string;
+  roomID: string;
+  status?: ChatRoomStatus;
+  password?: string;
+  createdBy?: string;
 }
 
 function addPlayerDto(dto: PlayerDto) {}
 export class PlayerDto {
-  uuid : string;
+  uuid: string;
   score: number;
 }

@@ -7,8 +7,10 @@ import { ChatModule } from "./chat/chat.module";
 import { GameModule } from "./game/game.module";
 import { ProfileModule } from "./profile/profile.module";
 import { LoginModule } from "./login/login.module";
-import { PrismaService } from './prisma/prisma.service';
-import { PrismaModule } from './prisma/prisma.module';
+import { PrismaService } from "./prisma/prisma.service";
+import { PrismaModule } from "./prisma/prisma.module";
+import { ConfigModule } from "@nestjs/config";
+import { configValidationSchema } from "./config/config.schema";
 
 @Module({
   imports: [
@@ -19,7 +21,12 @@ import { PrismaModule } from './prisma/prisma.module';
     GameModule,
     ProfileModule,
     LoginModule,
-    PrismaModule
+    PrismaModule,
+    ConfigModule.forRoot({
+      envFilePath: "../.env",
+      // validationSchema: configValidationSchema,
+      isGlobal: true // Expose the module globally
+    }) // Loads env vars. Uses dotenv library under the hood
   ],
   controllers: [],
   providers: [AppService, PrismaService]
