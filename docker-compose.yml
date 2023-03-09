@@ -1,24 +1,13 @@
 version: '3.9'
 
 services:
-  # load-balancer:
-    # container_name: nginx
-    # build: load-balancer/
-    # ports: 
-      # - "443:443"
-    # networks:
-      # - frontend
-    # restart: unless-stopped
-    # depends_on:
-      # - app
-
   app:
     container_name: app
     build:
       context: app/
       target: production
     ports:
-      - "80:80"
+      - "80:3000"
     networks:
       - frontend
       - backend
@@ -27,18 +16,6 @@ services:
       - ./app/frontend/src/:/usr/app/frontend/src
     depends_on:
       - postgres
-      # - engine
-
-  # engine:
-    # container_name: engine
-    # build:
-      # context: engine/
-      # target: dev
-    # expose:
-      # - "5000"
-    # networks:
-      # - backend
-    # restart: unless-stopped
 
   postgres:
     container_name: postgres
@@ -53,19 +30,8 @@ services:
     env_file:
       - app/backend/.env
 
-
-  test-db:
-    image: postgres:13
-    ports:
-      - 5435:5432
-    env_file:
-      - ./.env.test
-    networks:
-      - backend
-
 volumes:
   postgres_data:
-
 
 networks:
   frontend:
