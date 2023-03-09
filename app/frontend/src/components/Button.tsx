@@ -15,16 +15,12 @@ const StyledButton = styled.button`
 
 class ButtonCtx {
 	content: string;
-	onClick: ()=>void;
-	onSubmit: ()=>void;
 }
 
 
 export default function Button(ButtonCtx: ButtonCtx): styled {
 	return (
-		<StyledButton
-		onClick={ButtonCtx.onClick}
-		onSubmit={ButtonCtx.onSubmit}>
+		<StyledButton>
 			{ButtonCtx.content}
 		</StyledButton>
 	);
