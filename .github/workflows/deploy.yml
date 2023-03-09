@@ -25,6 +25,7 @@ jobs:
   deployment:
     name: Redeploy webhook call
     runs-on: ubuntu-latest
+    environment: production
     needs: [test]
     steps:
       - name: Deploy docker container webhook
