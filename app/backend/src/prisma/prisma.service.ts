@@ -1,6 +1,7 @@
 import { Injectable, Logger } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import { PrismaClient } from "@prisma/client";
+import { UserDto } from "../auth/dto/prisma.dto";
 import config from "../config";
 
 @Injectable()
@@ -36,7 +37,7 @@ export class PrismaService extends PrismaClient {
       this.player.deleteMany()
     ]);
   }
-  addUser() {}
+  addUser(dto: UserDto) {}
   editUser() {}
   deleteUser() {}
   addProfile() {}

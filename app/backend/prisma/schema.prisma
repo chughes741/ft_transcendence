@@ -1,0 +1,192 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+//////////////////
+//     User     //
+//////////////////
+
+model User {
+  id String @id @default(uuid())
+
+  email String @unique // To prevent duplicates in the DB
+  hash  String
+
+  firstName String?
+  lastName  String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  bookmarks  Bookmark[]
+  messages   Message[]
+  chatRooms  ChatRoom[]
+  ChatMember ChatMember[]
+  Profile    Profile[]
+  Player     Player[]
+
+  @@map("users")
+}
+
+model Bookmark {
+  id Int @id @default(autoincrement())
+
+  title       String
+  description String?
+  link        String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  // We add  `onDelete: Cascade`, which ensures the child 
+  // data gets deleted when the parent data is deleted
+
+  @@map("bookmarks")
+}
+
+model Profile {
+  id Int @id @default(autoincrement())
+
+  avatar   String @default("default_avatar.png")
+  username String @db.VarChar(12)
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  status UserStatus
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("profiles")
+}
+
+enum UserStatus {
+  ONLINE
+  OFFLINE
+  AWAY
+}
+
+//////////////////
+//     Chat     //
+//////////////////
+
+model ChatRoom {
+  id Int @id @default(autoincrement())
+
+  name String @default("")
+
+  status ChatRoomStatus
+
+  password String?
+
+  createdBy String?
+  owner     User?   @relation(fields: [createdBy], references: [id], onDelete: SetNull)
+
+  createdAt  DateTime     @default(now())
+  updatedAt  DateTime     @updatedAt
+  ChatMember ChatMember[]
+  Message    Message[]
+
+  @@map("chatRooms")
+}
+
+enum ChatRoomStatus {
+  DIALOGUE
+  PUBLIC
+  PRIVATE
+  PASSWORD
+}
+
+model Message {
+  id Int @id @default(autoincrement())
+
+  senderId String
+  sender   User   @relation(fields: [senderId], references: [id], onDelete: Cascade)
+
+  roomId Int
+  room   ChatRoom @relation(fields: [roomId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("messages")
+}
+
+model ChatMember {
+  id Int @id @default(autoincrement())
+
+  memberId String
+  member   User   @relation(fields: [memberId], references: [id], onDelete: Cascade)
+
+  roomId Int
+  room   ChatRoom @relation(fields: [roomId], references: [id], onDelete: Cascade)
+
+  status ChatMemberStatus
+  rank   ChatMemberRank
+
+  endOfBan  DateTime?
+  endOfMute DateTime?
+
+  @@map("chatMembers")
+}
+
+enum ChatMemberRank {
+  DISCONNECTED
+  USER
+  ADMIN
+  OWNER
+}
+
+enum ChatMemberStatus {
+  OK
+  BLOCKED
+  MUTED
+  BANNED
+}
+
+//////////////////
+//     Game     //
+//////////////////
+
+model Match {
+  id Int @id @default(autoincrement())
+
+  roomId String?
+
+  status MatchStatus
+
+  startedAt DateTime  @default(now())
+  endedAt   DateTime?
+  Player    Player[]
+}
+
+enum MatchStatus {
+  ACTIVE
+  ENDED
+}
+
+model Player {
+  id Int @id @default(autoincrement())
+
+  memberId String?
+  member   User?   @relation(fields: [memberId], references: [id], onDelete: SetNull)
+
+  matchId Int
+  match   Match @relation(fields: [matchId], references: [id], onDelete: Cascade)
+
+  score      Int
+  sidePlayed PlayerSide
+}
+
+enum PlayerSide {
+  SIDE1
+  SIDE2
+}
