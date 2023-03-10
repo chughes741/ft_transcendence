@@ -11,6 +11,7 @@ import { PrismaService } from "./prisma/prisma.service";
 import { PrismaModule } from "./prisma/prisma.module";
 import { ConfigModule } from "@nestjs/config";
 import { configValidationSchema } from "./config/config.schema";
+import { AuthModule } from "./auth/auth.module";
 
 @Module({
   imports: [
@@ -22,6 +23,7 @@ import { configValidationSchema } from "./config/config.schema";
     ProfileModule,
     LoginModule,
     PrismaModule,
+    AuthModule,
     ConfigModule.forRoot({
       envFilePath: "../.env",
       // validationSchema: configValidationSchema,

@@ -1,10 +1,13 @@
 import {
   WebSocketGateway,
   SubscribeMessage,
-  MessageBody
+  MessageBody,
+  BaseWsExceptionFilter
 } from "@nestjs/websockets";
 import { LoginService } from "./login.service";
 import { LoginDto } from "./dto/login.dto";
+import { UseFilters } from "@nestjs/common";
+import { PrismaClientExceptionFilterWs } from "../prisma-client-exception.filter";
 
 export enum LoginEnum {
   login = "login",
@@ -14,6 +17,7 @@ export enum LoginEnum {
 /**
  *  Preauthorization gateway
  */
+@UseFilters(new PrismaClientExceptionFilterWs())
 @WebSocketGateway()
 export class LoginGateway {
   constructor(private readonly loginService: LoginService) {}
