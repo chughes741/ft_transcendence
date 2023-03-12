@@ -4,6 +4,7 @@ import { FaFacebookF } from 'react-icons/fa';
 import Input from "../components/Input";
 import Button from "../components/Button";
 import Icon from "../components/Icon";
+import PopUpMenu from "../popups/PopUpMenu";
 import { useNavigate } from "react-router-dom";
 import React from 'react';
 import "./LoginPage.tsx.css"
@@ -40,6 +41,8 @@ export default function LoginPage() {
   }
 
   return (
+    <>
+    <PopUpMenu id="popup" />
     <div className="main-container">
       <p>welcome</p>
       <form className="styled-form" onSubmit={handleSubmit}>
@@ -66,6 +69,7 @@ export default function LoginPage() {
       <br />
       PASS = {pass}
     </div>
+    </>
   );
 }
 
