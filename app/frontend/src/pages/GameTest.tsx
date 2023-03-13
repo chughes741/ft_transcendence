@@ -49,8 +49,8 @@ export default function Game() {
 
 	return (
 		<>
-			<GameWindow>
 			<PopUpMenu id="popup" />
+			<GameWindow>
 				<Canvas>
 					<MyMesh />
 					<ambientLight args={[0xff0000]} intensity={0.1} />

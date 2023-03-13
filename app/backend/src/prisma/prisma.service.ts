@@ -1,6 +1,13 @@
 import { Injectable, Logger } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import { PrismaClient } from "@prisma/client";
+import {
+  ChatMemberDto,
+  ChatRoomDto,
+  PlayerDto,
+  ProfileDto,
+  UserDto
+} from "../auth/dto/prisma.dto";
 import config from "../config";
 
 @Injectable()
@@ -36,18 +43,40 @@ export class PrismaService extends PrismaClient {
       this.player.deleteMany()
     ]);
   }
-  addUser() {}
-  editUser() {}
-  deleteUser() {}
-  addProfile() {}
-  editProfile() {}
-  addChatMember() {}
-  editChatMember() {}
-  addChatRoom() {}
-  editChatRoom() {}
-  deleteChatRoom() {}
-  addMessage() {}
-  editMessage() {}
-  deleteMessage() {}
-  addMatch() {}
+  addUser(dto: UserDto) {
+    return dto;
+  }
+  editUser(dto: UserDto) {
+    return dto;
+  }
+  deleteUser(dto: UserDto) {
+    return dto;
+  }
+  addProfile(dto: ProfileDto) {
+    return dto;
+  }
+  editProfile(dto: ProfileDto) {
+    return dto;
+  }
+  addChatMember(dto: ChatMemberDto) {
+    return dto;
+  }
+  editChatMember(dto: ChatMemberDto) {
+    return dto;
+  }
+  deleteChatMember(dto: ChatMemberDto) {
+    return dto;
+  }
+  addChatRoom(dto: ChatRoomDto) {
+    return dto;
+  }
+  editChatRoom(dto: ChatRoomDto) {
+    return dto;
+  }
+  deleteChatRoom(dto: ChatRoomDto) {
+    return dto;
+  }
+  addMatch(dto1: PlayerDto, dto2: PlayerDto) {
+    return dto1;
+  }
 }

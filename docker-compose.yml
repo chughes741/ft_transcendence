@@ -20,7 +20,6 @@ services:
     networks:
       - frontend
       - backend
-      - ./app/frontend/src/:/usr/app/frontend/src
     restart: always
     depends_on:
       - postgres
@@ -39,8 +38,13 @@ services:
 
   postgres:
     container_name: postgres
+    image: postgres:latest
+    ports:
+      - "5432:5432"
     env_file:
       - app/backend/.env
+    networks:
+      - backend
     restart: always
 
   # test-db:

@@ -14,7 +14,7 @@ export default function PopUpMenu(IdCtx: IdCtx) {
   const [isActive, setIsActive] = useState(false);
 
   const navigate = useNavigate();
-  const bngColor = "linear-gradient(to right, #14163c 0%, #03217b 79%)";
+  const bngColor = "";
  
   function closePopUp() {
     setIsActive(false);
@@ -44,19 +44,19 @@ export default function PopUpMenu(IdCtx: IdCtx) {
     <>
      <div className="icon">
         <Icon color={bngColor} onClick={clickPopUp}>
-          <FiMenu />
+          <FiMenu className={`menu-icon ${isActive ? 'active' : ''}`}/>
         </Icon>
       </div>
       <div className={`popup-container ${isActive ? 'active' : ''}`} id={IdCtx.id}>
        <div className="blocker" onClick={closePopUp} />
-       <div className="button-container">
-         <button className={`button-popup ${isActive ? 'active' : ''}`} onClick={()=>nav('gametest')}>Game</button>
+       <div className="button-container-popup">
+         <div className={`button-popup ${isActive ? 'active' : ''}`} onClick={()=>nav('gametest')}>Game</div>
        </div>
-       <div className="button-container">
-         <button className={`button-popup ${isActive ? 'active' : ''}`} onClick={()=>nav('chattest')}>Chat</button>
+       <div className="button-container-popup">
+         <div className={`button-popup ${isActive ? 'active' : ''}`} onClick={()=>nav('chattest')}>Chat</div>
        </div>
-       <div className="button-container">
-         <button className={`button-popup ${isActive ? 'active' : ''}`} onClick={()=>nav('login')}>Login</button>
+       <div className="button-container-popup">
+         <div className={`button-popup ${isActive ? 'active' : ''}`} onClick={()=>nav('login')}>Login</div>
        </div>
      </div>
     </>

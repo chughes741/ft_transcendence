@@ -23,12 +23,12 @@ model User {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  bookmarks   Bookmark[]
-  messages    Message[]
-  chatRooms   ChatRoom[]
-  ChatMembers ChatMembers[]
-  Profile     Profile[]
-  Player      Player[]
+  bookmarks  Bookmark[]
+  messages   Message[]
+  chatRooms  ChatRoom[]
+  ChatMember ChatMember[]
+  Profile    Profile[]
+  Player     Player[]
 
   @@map("users")
 }
@@ -38,7 +38,7 @@ model Bookmark {
 
   title       String
   description String?
-  link        String        
+  link        String
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -90,10 +90,10 @@ model ChatRoom {
   createdBy String?
   owner     User?   @relation(fields: [createdBy], references: [id], onDelete: SetNull)
 
-  createdAt   DateTime      @default(now())
-  updatedAt   DateTime      @updatedAt
-  ChatMembers ChatMembers[]
-  Message     Message[]
+  createdAt  DateTime     @default(now())
+  updatedAt  DateTime     @updatedAt
+  ChatMember ChatMember[]
+  Message    Message[]
 
   @@map("chatRooms")
 }
@@ -120,7 +120,7 @@ model Message {
   @@map("messages")
 }
 
-model ChatMembers {
+model ChatMember {
   id Int @id @default(autoincrement())
 
   memberId String
@@ -180,7 +180,7 @@ model Player {
   member   User?   @relation(fields: [memberId], references: [id], onDelete: SetNull)
 
   matchId Int
-  match   Match  @relation(fields: [matchId], references: [id], onDelete: Cascade)
+  match   Match @relation(fields: [matchId], references: [id], onDelete: Cascade)
 
   score      Int
   sidePlayed PlayerSide

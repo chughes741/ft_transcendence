@@ -1,11 +1,14 @@
 
 .popup-container {
+  color: #fff;
+  letter-spacing: 0.4rem;
+  text-transform: uppercase;
   position: fixed;
   top: 0;
   left: 0;
-  background-color: gray;
+  background: linear-gradient(to right, #000 -10%, lightgray 160%);
   height: 95vh;
-  width: 20vw;
+  min-width: 15vw;
   z-index: 99;
   transition: opacity 0.5s;
   opacity: 0;
@@ -16,20 +19,23 @@
   transition: opacity 0.5s;
 }
 
-.button-container {
+.button-container-popup {
   margin: 1rem;
   display: flex;
+  width: 100%;
   justify-content: center;
 }
 
 .button-popup {
-  width: 5vw;
-  height: 8vh;
+  margin-bottom: 3rem;
+  margin-top: 3rem;
+  min-width: 6vw;
+  min-height: 3vh;
   opacity: 0;
+  cursor: pointer;
 }
 
 .button-popup.active {
-  width: 5vw;
   transition: opacity 0.5s;
   opacity: 1;
 }
@@ -37,7 +43,7 @@
 .blocker {
   position: fixed;
   top: 0;
-  left: 20vw;
+  left: 15vw;
   bottom: 5vh;
   right: 0;
   content: ' ';
@@ -53,4 +59,8 @@
   margin: 1rem 0 0 1rem;
   width: 5vw;
   height: 8vh;
+}
+
+.menu-icon {
+  color: #fff;
 }

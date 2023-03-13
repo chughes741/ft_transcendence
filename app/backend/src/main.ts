@@ -1,12 +1,17 @@
-import { ValidationPipe } from "@nestjs/common";
-import { NestFactory } from "@nestjs/core";
+import { Logger, ValidationPipe } from "@nestjs/common";
+import { HttpAdapterHost, NestFactory } from "@nestjs/core";
 import { DocumentBuilder, SwaggerModule } from "@nestjs/swagger";
+import { IoAdapter } from "@nestjs/platform-socket.io";
 import { AppModule } from "./app.module";
 
 import * as session from "express-session";
 import * as passport from "passport";
 
 import config from "./config";
+import {
+  PrismaClientExceptionFilterHttp,
+  PrismaClientExceptionFilterWs
+} from "./prisma-client-exception.filter";
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -32,6 +37,19 @@ async function bootstrap() {
   app.use(passport.initialize());
   app.use(passport.session());
 
+  // Use the socket.io WebSocket adapter
+  app.useWebSocketAdapter(new IoAdapter(app));
+
+  // Register the PrismaClientExceptionFilter as a WebSocket filter
+  app.useGlobalFilters(new PrismaClientExceptionFilterWs());
+
+  // Use the HTTP adapter
+  const { httpAdapter } = app.get(HttpAdapterHost);
+
+  // Register the PrismaClientExceptionFilter as a HTTP filter
+  app.useGlobalFilters(new PrismaClientExceptionFilterHttp(httpAdapter));
+
   await app.listen(config.port);
+  Logger.log("Application listening on port " + config.port);
 }
 bootstrap();

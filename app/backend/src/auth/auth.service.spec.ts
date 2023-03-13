@@ -1,4 +1,7 @@
+import { ConfigModule } from "@nestjs/config";
+import { JwtModule } from "@nestjs/jwt";
 import { Test, TestingModule } from "@nestjs/testing";
+import { PrismaModule } from "../prisma/prisma.module";
 import { AuthService } from "./auth.service";
 
 describe("AuthService", () => {
@@ -6,6 +9,7 @@ describe("AuthService", () => {
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
+      imports: [PrismaModule, ConfigModule.forRoot(), JwtModule],
       providers: [AuthService]
     }).compile();
 

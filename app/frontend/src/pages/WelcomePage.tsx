@@ -13,8 +13,8 @@ export default function WelcomePage() {
 
   return (
       <>
+        <PopUpMenu id="popup"/>
         <div className="full-container">
-          <PopUpMenu id="popup"/>
         </div>
       </>
   );
