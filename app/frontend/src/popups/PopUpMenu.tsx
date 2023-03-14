@@ -48,7 +48,7 @@ export default function PopUpMenu(IdCtx: IdCtx) {
         </Icon>
       </div>
       <div className={`popup-container ${isActive ? 'active' : ''}`} id={IdCtx.id}>
-       <div className="blocker" onClick={closePopUp} />
+       <div className={`blocker ${isActive ? 'active' : ''}`} onClick={closePopUp} />
        <div className="button-container-popup">
          <div className={`button-popup ${isActive ? 'active' : ''}`} onClick={()=>nav('gametest')}>Game</div>
        </div>

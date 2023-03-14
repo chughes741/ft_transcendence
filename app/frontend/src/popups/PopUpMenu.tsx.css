@@ -41,13 +41,17 @@
 }
 
 .blocker {
+  display: none;
   position: fixed;
   top: 0;
   left: 15vw;
   bottom: 5vh;
   right: 0;
-  content: ' ';
   background: rgba(0,0,0,.3);
+}
+
+.blocker.active {
+  display: flex;
 }
 
 .icon {
