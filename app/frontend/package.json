@@ -40,7 +40,12 @@
     "npm-watch": "^0.11.0"
   },
   "watch": {
-    "build": "{src}/*.tsx"
+    "build": {
+      "patterns": [
+        "src"
+      ],
+      "extensions": "tsx,css"
+    }
   },
   "browserslist": {
     "production": [
