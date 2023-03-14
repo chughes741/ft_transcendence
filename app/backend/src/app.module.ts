@@ -16,7 +16,7 @@ import { AuthModule } from "./auth/auth.module";
 @Module({
   imports: [
     ServeStaticModule.forRoot({
-      rootPath: join(__dirname, "..", "..", "frontend", "build")
+      rootPath: join(__dirname, "..", "..", "..", "frontend", "build")
     }),
     ChatModule,
     GameModule,
