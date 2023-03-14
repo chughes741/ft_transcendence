@@ -1,26 +1,68 @@
 import { Injectable } from "@nestjs/common";
-import { CreateGameDto } from "./dto/create-game.dto";
-import { UpdateGameDto } from "./dto/update-game.dto";
+// import {
+  // ClientReadyEvent,
+  // ClientUpdateEvent,
+  // CreateLobbyEvent,
+  // InvitePlayerEvent,
+  // JoinLobbyEvent
+// } from "../../../shared/events/game.events";
 
 @Injectable()
 export class GameService {
-  create(createGameDto: CreateGameDto) {
-    return "This action adds a new game";
-  }
+  /**
+   *
+   * @param createLobbyEvent
+   * @emits JoinLobbyReply
+   */
+  // async createLobby(createLobbyEvent: CreateLobbyEvent): Promise<string> {
+    // /** @todo implementation */
+    // return "Created a new lobby";
+  // }
 
-  findAll() {
-    return `This action returns all game`;
-  }
+  /**
+   *
+   * @param joinLobbyEvent
+   * @emits JoinLobbyReply
+   */
+  // async joinLobby(joinLobbyEvent: JoinLobbyEvent): Promise<string> {
+    // /** @todo implementation */
+    // return "Joined a lobby";
+  // }
 
-  findOne(id: number) {
-    return `This action returns a #${id} game`;
-  }
+  /**
+   *
+   * @param invitePlayerEvent
+   */
+  // async invitePlayer(invitePlayerEvent: InvitePlayerEvent): Promise<string> {
+    // /** @todo implementation */
+    // return "Invited a player";
+  // }
 
-  update(id: number, updateGameDto: UpdateGameDto) {
-    return `This action updates a #${id} game`;
-  }
+  /**
+   *
+   * @param clientReadyEvent
+   */
+  // async clientReady(clientReadyEvent: ClientReadyEvent): Promise<string> {
+    /** @todo implementation */
+    // return "Client is ready";
+  // }
 
-  remove(id: number) {
-    return `This action removes a #${id} game`;
-  }
+  /**
+   *
+   * @param clientUpdateEvent
+   */
+  // async clientUpdate(clientUpdateEvent: ClientUpdateEvent): Promise<string> {
+    /** @todo implementation */
+    // return "Client is updated";
+  // }
+
+  /**
+   * 
+   * @returns 
+   * @emits GameStartEvent
+   */
+  // async gameStart() {
+    /** @todo implementation */
+    // return "Game has started"
+  // }
 }

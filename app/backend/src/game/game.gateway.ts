@@ -4,35 +4,62 @@ import {
   MessageBody
 } from "@nestjs/websockets";
 import { GameService } from "./game.service";
-import { CreateGameDto } from "./dto/create-game.dto";
-import { UpdateGameDto } from "./dto/update-game.dto";
+// import {
+  // ClientReadyEvent,
+  // ClientUpdateEvent,
+  // CreateLobbyEvent,
+  // GameEvents,
+  // InvitePlayerEvent,
+  // JoinLobbyEvent,
+// } from "../../../shared/events/game.events";
 
 @WebSocketGateway()
 export class GameGateway {
   constructor(private readonly gameService: GameService) {}
 
-  @SubscribeMessage("createGame")
-  create(@MessageBody() createGameDto: CreateGameDto) {
-    return this.gameService.create(createGameDto);
-  }
+  /**
+   *
+   * @param CreateLobbyEvent
+   */
+  // @SubscribeMessage(GameEvents.createLobby)
+  // async createLobby(@MessageBody() createLobbyEvent: CreateLobbyEvent) {
+    // return this.gameService.createLobby(createLobbyEvent);
+  // }
 
-  @SubscribeMessage("findAllGame")
-  findAll() {
-    return this.gameService.findAll();
-  }
+  /**
+   *
+   * @param JoinLobbyEvent
+   */
+  // @SubscribeMessage(GameEvents.joinLobby)
+  // async joinLobby(@MessageBody() joinLobbyEvent: JoinLobbyEvent) {
+    // return this.gameService.joinLobby(joinLobbyEvent);
+  // }
 
-  @SubscribeMessage("findOneGame")
-  findOne(@MessageBody() id: number) {
-    return this.gameService.findOne(id);
-  }
+  /**
+   *
+   * @param InvitePlayerEvent
+   */
+  // @SubscribeMessage(GameEvents.invitePlayer)
+  // async invitePlayer(@MessageBody() invitePlayerEvent: InvitePlayerEvent) {
+    // return this.gameService.invitePlayer(invitePlayerEvent);
+  // }
 
-  @SubscribeMessage("updateGame")
-  update(@MessageBody() updateGameDto: UpdateGameDto) {
-    return this.gameService.update(updateGameDto.id, updateGameDto);
-  }
+  /**
+   *
+   * @param ClientReadyEvent
+   */
+  // @SubscribeMessage(GameEvents.clientReady)
+  // async clientReady(@MessageBody() clientReadyEvent: ClientReadyEvent) {
+    // return this.gameService.clientReady(clientReadyEvent);
+  // }
 
-  @SubscribeMessage("removeGame")
-  remove(@MessageBody() id: number) {
-    return this.gameService.remove(id);
-  }
+  /**
+   * 
+   * @param ClientUpdateEvent 
+   */
+  // @SubscribeMessage(GameEvents.clientUpdate)
+  // async clientUpdate(@MessageBody() clientUpdateEvent: ClientUpdateEvent) {
+    // return this.gameService.clientUpdate(clientUpdateEvent);
+  // }
 }
+ 
