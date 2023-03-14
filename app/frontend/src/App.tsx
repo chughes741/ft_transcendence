@@ -1,9 +1,7 @@
-import Views from './components/Views'
+import Views from "./components/Views";
 
 function App() {
-  return (
-    <Views/>
-  );
+  return <Views />;
 }
 
 export default App;

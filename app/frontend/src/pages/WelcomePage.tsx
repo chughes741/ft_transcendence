@@ -1,21 +1,19 @@
-import { useEffect } from 'react';
-import PopUpMenu from '../popups/PopUpMenu'
+import { useEffect } from "react";
+import PopUpMenu from "../popups/PopUpMenu";
 import "./WelcomePage.tsx.css";
 
 export default function WelcomePage() {
-
   useEffect(() => {
-    document.body.classList.add('Welcome');
+    document.body.classList.add("Welcome");
     return () => {
-      document.body.classList.remove('Welcome');
+      document.body.classList.remove("Welcome");
     };
   });
 
   return (
-      <>
-        <PopUpMenu id="popup"/>
-        <div className="full-container">
-        </div>
-      </>
+    <>
+      <PopUpMenu id="popup" />
+      <div className="full-container"></div>
+    </>
   );
 }
