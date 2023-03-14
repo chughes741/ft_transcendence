@@ -13,15 +13,15 @@ const StyledButton = styled.button`
 	cursor: pointer;
 `;
 
-class ButtonCtx {
+type ButtonProps =  {
 	content: string;
 }
 
 
-export default function Button(ButtonCtx: ButtonCtx): styled {
+export default function Button({content}: ButtonProps): styled {
 	return (
 		<StyledButton>
-			{ButtonCtx.content}
+			{content}
 		</StyledButton>
 	);
 }
