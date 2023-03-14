@@ -47,6 +47,6 @@ prune:
 
 # Runs frontend and backend locally
 run-local:
-	yarn --cwd app/frontend build >yarn-build.log
+	yarn --cwd app/frontend watch &
 	yarn --cwd app/backend build
 	yarn --cwd app/backend start:dev
