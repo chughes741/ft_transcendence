@@ -1,4 +1,13 @@
 import { Injectable } from "@nestjs/common";
+import { Interval } from '@nestjs/schedule';
+import {
+  WebSocketServer,
+  WebSocketGateway,
+  SubscribeMessage,
+  MessageBody
+} from "@nestjs/websockets";
+import { Server } from 'socket.io';
+
 // import {
   // ClientReadyEvent,
   // ClientUpdateEvent,
@@ -7,8 +16,33 @@ import { Injectable } from "@nestjs/common";
   // JoinLobbyEvent
 // } from "../../../shared/events/game.events";
 
+
+
 @Injectable()
 export class GameService {
+
+  static rot: number = 0;
+
+  @WebSocketServer()
+  public server: Server;
+
+
+  sendServerUpdate(): number {
+      //Set initial vector for ball direction
+
+      //Calculate collision and new direction
+
+
+
+      GameService.rot++;
+      if (GameService.rot === 360)
+        GameService.rot = 0;
+      return GameService.rot;
+  }
+
+
+
+
   /**
    *
    * @param createLobbyEvent

@@ -1,9 +1,14 @@
+import { ConfigModule } from "@nestjs/config";
 import {
+  WebSocketServer,
   WebSocketGateway,
   SubscribeMessage,
   MessageBody
 } from "@nestjs/websockets";
+import { Server } from 'socket.io';
 import { GameService } from "./game.service";
+
+import { Interval } from '@nestjs/schedule';
 // import {
   // ClientReadyEvent,
   // ClientUpdateEvent,
@@ -13,9 +18,26 @@ import { GameService } from "./game.service";
   // JoinLobbyEvent,
 // } from "../../../shared/events/game.events";
 
-@WebSocketGateway()
+@WebSocketGateway({
+  cors: {
+    origin: '*',
+  },
+})
+
 export class GameGateway {
   constructor(private readonly gameService: GameService) {}
+
+  //Load the server socket locally
+  @WebSocketServer()
+  public server: Server;
+
+  @Interval(50)
+  @SubscribeMessage('startMove')
+  async testing() {
+    this.server.emit('serverUpdate', {
+      rot: this.gameService.sendServerUpdate()
+    });
+  }
 
   /**
    *

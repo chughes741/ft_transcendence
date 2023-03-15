@@ -12,9 +12,11 @@ import { PrismaModule } from "./prisma/prisma.module";
 import { ConfigModule } from "@nestjs/config";
 import { configValidationSchema } from "./config/config.schema";
 import { AuthModule } from "./auth/auth.module";
+import { ScheduleModule } from '@nestjs/schedule';
 
 @Module({
   imports: [
+    ScheduleModule.forRoot(),
     ServeStaticModule.forRoot({
       rootPath: join(__dirname, "..", "..", "..", "frontend", "build")
     }),
