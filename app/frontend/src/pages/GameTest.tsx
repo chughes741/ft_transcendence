@@ -36,7 +36,7 @@ const GameWindow = styled.div`
   color: #fff;
 `;
 
-export default function Game() {
+export default function GameTest() {
   return (
     <>
       <PopUpMenu />
