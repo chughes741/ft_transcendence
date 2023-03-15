@@ -5,11 +5,7 @@ import React, { useState, useEffect } from "react";
 
 import { FiMenu } from "react-icons/fi";
 
-class IdCtx {
-  id: string;
-}
-
-export default function PopUpMenu(IdCtx: IdCtx) {
+export default function PopUpMenu() {
   const [isActive, setIsActive] = useState(false);
 
   const navigate = useNavigate();
@@ -51,7 +47,7 @@ export default function PopUpMenu(IdCtx: IdCtx) {
       </div>
       <div
         className={`popup-container ${isActive ? "active" : ""}`}
-        id={IdCtx.id}
+        id="popup"
       >
         <div
           className={`blocker ${isActive ? "active" : ""}`}

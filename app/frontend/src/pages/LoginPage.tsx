@@ -10,7 +10,6 @@ import React from "react";
 import "./LoginPage.tsx.css";
 
 export default function LoginPage() {
-  const GoogleBackground = "white";
   const FacebookBackground =
     "linear-gradient(to right, #14163c 0%, #03217b 79%)";
 
@@ -40,7 +39,7 @@ export default function LoginPage() {
 
   return (
     <>
-      <PopUpMenu id="popup" />
+      <PopUpMenu />
       <div className="main-container">
         <p>welcome</p>
         <form
@@ -70,7 +69,7 @@ export default function LoginPage() {
         <div className="icon-container">
           <Icon
             onClick={null}
-            color={GoogleBackground}
+            color="#FaFacebookF"
           >
             <FcGoogle />
           </Icon>

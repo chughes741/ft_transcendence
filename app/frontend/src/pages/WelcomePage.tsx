@@ -12,7 +12,7 @@ export default function WelcomePage() {
 
   return (
     <>
-      <PopUpMenu id="popup" />
+      <PopUpMenu />
       <div className="full-container"></div>
     </>
   );

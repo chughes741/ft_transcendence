@@ -16,19 +16,19 @@ const StyledIcon = styled.div`
   }
 `;
 
-class IconCtx {
+type IconProps = {
   color: string;
   children: JSX.Element;
   onClick: () => void;
-}
+};
 
-export default function Icon(IconCtx: IconCtx): styled {
+export default function Icon({ color, children, onClick }: IconProps): styled {
   return (
     <StyledIcon
-      onClick={IconCtx.onClick}
-      background={IconCtx.color}
+      onClick={onClick}
+      background={color}
     >
-      {IconCtx.children}
+      {children}
     </StyledIcon>
   );
 }

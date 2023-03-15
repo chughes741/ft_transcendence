@@ -20,7 +20,7 @@ const MyMesh = () => {
   // 	console.log(a)
   // })
   return (
-    <mesh>	
+    <mesh>
       <sphereGeometry />
       <meshPhongMaterial
         color="hotpink"
@@ -39,7 +39,7 @@ const GameWindow = styled.div`
 export default function Game() {
   return (
     <>
-      <PopUpMenu id="popup" />
+      <PopUpMenu />
       <GameWindow>
         <Canvas>
           <MyMesh />

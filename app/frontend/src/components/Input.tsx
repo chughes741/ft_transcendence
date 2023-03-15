@@ -25,21 +25,26 @@ const StyledInput = styled.input`
   }
 `;
 
-class InputCtx {
+type InputProps = {
   value: string;
   type: string;
   placeholder: string;
   onChange: (event) => void;
-}
+};
 
-export default function Input(InputCtx: InputCtx): styled {
+export default function Input({
+  value,
+  type,
+  placeholder,
+  onChange
+}: InputProps): styled {
   return (
     <StyledInput
       required
-      type={InputCtx.type}
-      placeholder={InputCtx.placeholder}
-      value={InputCtx.value}
-      onChange={InputCtx.onChange}
+      type={type}
+      placeholder={placeholder}
+      value={value}
+      onChange={onChange}
     />
   );
 }
