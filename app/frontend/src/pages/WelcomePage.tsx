@@ -1,11 +1,11 @@
 import { useEffect } from "react";
 import PopUpMenu from "../popups/PopUpMenu";
 import "./WelcomePage.tsx.css";
-import { useOutletContext } from 'react-router-dom';
+import { useOutletContext } from "react-router-dom";
 
 type OuletContext = {
   name: string;
-}
+};
 
 export default function WelcomePage() {
   useEffect(() => {
@@ -15,7 +15,7 @@ export default function WelcomePage() {
     };
   });
 
-const { name } = useOutletContext<OuletContext>()[0];
+  const { name } = useOutletContext<OuletContext>();
 
   return (
     <>
