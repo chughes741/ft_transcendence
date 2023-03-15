@@ -1,5 +1,4 @@
 import { createBrowserRouter } from "react-router-dom";
-import ChatTest from "./pages/ChatTest";
 import LoginPage from "./pages/LoginPage";
 import WelcomePage from "./pages/WelcomePage";
 import Root, { rootLoader } from "./routes/root";
@@ -13,7 +12,6 @@ const router = createBrowserRouter([
     children: [
       { path: "", element: <WelcomePage /> },
       { path: "login", element: <LoginPage /> },
-      { path: "chattest", element: <ChatTest /> },
       { path: "gametest", element: <GameTest /> }
     ]
   }

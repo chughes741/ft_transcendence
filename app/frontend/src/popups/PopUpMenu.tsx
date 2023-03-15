@@ -42,7 +42,7 @@ export default function PopUpMenu() {
           color={bngColor}
           onClick={clickPopUp}
         >
-          <FiMenu className={`menu-icon ${isActive ? "active" : ""}`} />
+          <FiMenu className="menu-icon" />
         </Icon>
       </div>
       <div

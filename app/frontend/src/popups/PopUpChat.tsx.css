@@ -1,0 +1,33 @@
+
+.chat-container {
+  color: #fff;
+  letter-spacing: 0.4rem;
+  position: fixed;
+  bottom: 0;
+  background: #fff;
+  z-index: 99;
+  transition: opacity 0.5s;
+  opacity: 0;
+}
+
+.chat-container.active {
+  opacity: 1;
+  width: 100vw;
+  height: 100vh;
+  transition: opacity 0.5s;
+}
+
+.icon {
+  z-index: 1001;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  top: 90vh;
+  margin: 1rem 0 0 1rem;
+  width: 5vw;
+  height: 8vh;
+}
+
+.message-window {
+  background-color: lawngreen;
+}

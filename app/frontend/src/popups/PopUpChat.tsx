@@ -1,17 +1,38 @@
-import PopUp from "../popups/PopUpMenu";
-import { useContext, useState, useEffect } from "react";
-import {
-  WebsocketContext,
-  WebsocketProvider
-} from "../contexts/WebsocketContext";
+import "./PopUpChat.tsx.css";
+import { useState, useEffect, useContext } from "react";
+import { WebsocketContext } from "src/contexts/WebsocketContext";
 import { Form } from "react-router-dom";
+import { BsChatDots } from "react-icons/bs";
+import Icon from "src/components/Icon";
 
 type MessagePayload = {
   clientId: string;
   body: string;
 };
 
-export default function ChatTest() {
+export default function PopUpChat() {
+  const [isActive, setIsActive] = useState(false);
+
+  function closePopUp() {
+    setIsActive(false);
+  }
+
+  function clickPopUp() {
+    setIsActive(!isActive);
+  }
+
+  useEffect(() => {
+    function handleEscapeKey(event) {
+      if (event.keyCode === 27 || event.key === "Escape") {
+        closePopUp();
+      }
+    }
+    document.addEventListener("keydown", handleEscapeKey);
+    return () => {
+      document.removeEventListener("keydown", handleEscapeKey);
+    };
+  });
+
   const [messages, setMessages] = useState<MessagePayload[]>([]);
   const [textValue, setTextValue] = useState("");
   const socket = useContext(WebsocketContext);
@@ -51,8 +72,15 @@ export default function ChatTest() {
 
   return (
     <>
-      <PopUp />
-      <div className="chat-container">
+      <div className="icon">
+        <Icon
+          color="#000"
+          onClick={clickPopUp}
+        >
+          <BsChatDots />
+        </Icon>
+      </div>
+      <div className={`chat-container ${isActive ? "active" : ""}`}>
         <div className="message-window">
           <div>
             {messages.map((message) => (
@@ -81,7 +109,7 @@ export default function ChatTest() {
                 type="submit"
                 // onClick={sendMessage}
               >
-                Submit
+                Send
               </button>
             </Form>
           </div>
