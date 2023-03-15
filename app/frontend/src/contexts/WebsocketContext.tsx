@@ -7,4 +7,4 @@ const WebsocketContext = createContext<Socket>(socket);
 
 const WebsocketProvider = WebsocketContext.Provider;
 
-export { WebsocketContext, WebsocketProvider };
+export { socket, WebsocketContext, WebsocketProvider };
