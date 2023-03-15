@@ -27,20 +27,16 @@ export class GameService {
   public server: Server;
 
 
-  sendServerUpdate(): number {
-      //Set initial vector for ball direction
 
-      //Calculate collision and new direction
-
-
-
-      GameService.rot++;
+  //Calculate game state and return gamestate object
+  calculateGameState(): number {
+    //Needs to return paddle locations and ball location
+    //Needs to update ball velocity (direction and speed)
+    GameService.rot++;
       if (GameService.rot === 360)
         GameService.rot = 0;
       return GameService.rot;
   }
-
-
 
 
   /**

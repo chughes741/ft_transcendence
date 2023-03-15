@@ -8,7 +8,9 @@ import {
 import { Server } from 'socket.io';
 import { GameService } from "./game.service";
 
-import { Interval } from '@nestjs/schedule';
+import { Interval, SchedulerRegistry } from '@nestjs/schedule';
+import { Logger } from "@nestjs/common";
+
 // import {
   // ClientReadyEvent,
   // ClientUpdateEvent,
@@ -18,6 +20,13 @@ import { Interval } from '@nestjs/schedule';
   // JoinLobbyEvent,
 // } from "../../../shared/events/game.events";
 
+
+
+//Create logger for module
+const logger = new Logger('gameLog');
+
+
+//Setup websocket gateway
 @WebSocketGateway({
   cors: {
     origin: '*',
@@ -25,19 +34,47 @@ import { Interval } from '@nestjs/schedule';
 })
 
 export class GameGateway {
-  constructor(private readonly gameService: GameService) {}
+  constructor(private readonly gameService: GameService, private schedulerRegistry: SchedulerRegistry) {}
 
   //Load the server socket locally
   @WebSocketServer()
-  public server: Server;
+  server: Server;
+  
 
-  @Interval(50)
-  @SubscribeMessage('startMove')
-  async testing() {
-    this.server.emit('serverUpdate', {
-      rot: this.gameService.sendServerUpdate()
-    });
+  //Setup interval on 'gameStart' event
+  @SubscribeMessage('gameStart')
+  async initGameInterval() {
+    //Call interval creation function
+    this.addGameUpdateInterval('gameUpdateInterval', 50);
   }
+
+  //Delete interval on 'gameEnd' event
+  @SubscribeMessage('gameEnd')
+  async endGame() {
+    this.deleteInterval('gameUpdateInterval');
+  }
+
+  //Add new gameUpdateInterval
+  async addGameUpdateInterval(name: string, milliseconds: number) {
+    //Set callback function to gamestate
+    const interval = setInterval(this.sendServerUpdate.bind(this), milliseconds);
+    this.schedulerRegistry.addInterval(name, interval);
+    logger.log(`Interval ${name} created!`);
+  }
+
+  //Delete an interval
+  deleteInterval(name: string) {
+    this.schedulerRegistry.deleteInterval(name);
+    logger.log(`Interval ${name} deleted!`);
+  }
+
+  //Calculate game state and send server update
+  async sendServerUpdate() {
+      this.server.emit('serverUpdate', {
+        rot: this.gameService.calculateGameState()
+      });
+  }
+
 
   /**
    *

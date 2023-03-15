@@ -68,11 +68,17 @@ function Circle() {
 	let ballRot = 0;
 	//Connect client socket to backend
 	const socket = io("http://localhost:3000");
-	socket.emit('startMove');
+	socket.emit('gameStart');
 	socket.on('serverUpdate', (data) => {
-		console.log("rot update " + data.rot);
-		ballRot = data.rot;
+		if ( ballRot === 90)
+			socket.emit('gameEnd');
+		else {
+			console.log("rot update " + data.rot);
+			ballRot = data.rot
+		}
 	})
+
+	
 	useFrame(() => {
 		mesh.current.rotation.z = convert(ballRot);
 	});
