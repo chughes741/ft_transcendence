@@ -4,6 +4,7 @@ import {
   WebsocketContext,
   WebsocketProvider
 } from "../contexts/WebsocketContext";
+import { Form } from "react-router-dom";
 
 type MessagePayload = {
   clientId: string;
@@ -68,19 +69,21 @@ export default function ChatTest() {
             ))}
           </div>
           <div className="input-container">
-            <input
-              value={textValue}
-              type="text"
-              placeholder="Write right here"
-              onChange={(event) => setTextValue(event.target.value)}
-            />
-            <button
-              type="submit"
-              onSubmit={sendMessage}
-              onClick={sendMessage}
-            >
-              Submit
-            </button>
+            <Form onSubmit={sendMessage}>
+              <input
+                value={textValue}
+                type="text"
+                required
+                placeholder="Write right here"
+                onChange={(event) => setTextValue(event.target.value)}
+              />
+              <button
+                type="submit"
+                // onClick={sendMessage}
+              >
+                Submit
+              </button>
+            </Form>
           </div>
         </div>
       </div>

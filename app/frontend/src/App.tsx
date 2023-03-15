@@ -5,7 +5,7 @@ import { WebsocketProvider } from "./contexts/WebsocketContext";
 function App() {
   return (
     <WebsocketProvider value={io("http://localhost:3000")}>
-      <Views />;
+      <Views />
     </WebsocketProvider>
   );
 }
