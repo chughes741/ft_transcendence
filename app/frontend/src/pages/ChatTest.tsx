@@ -1,21 +1,19 @@
 import PopUp from "../popups/PopUpMenu";
 import { useContext, useState, useEffect } from "react";
-import { WebsocketContext, WebsocketProvider } from "../contexts/WebsocketContext";
-
+import {
+  WebsocketContext,
+  WebsocketProvider
+} from "../contexts/WebsocketContext";
 
 type MessagePayload = {
   clientId: string;
   body: string;
-}
+};
 
 export default function ChatTest() {
   const [messages, setMessages] = useState<MessagePayload[]>([]);
   const [textValue, setTextValue] = useState("");
   const socket = useContext(WebsocketContext);
-
-  const handleMessageInput = (event) => {
-    setMessages(event.target.value);
-  };
 
   useEffect(() => {
     socket.on("connect", () => {
@@ -27,7 +25,7 @@ export default function ChatTest() {
 
     socket.on("onMessage", (newMessage: MessagePayload) => {
       console.log("Ding ding, you've got mail:", newMessage);
-      
+
       setMessages((messages) => [...messages, newMessage]);
     });
 
@@ -39,12 +37,13 @@ export default function ChatTest() {
       console.log("Unregistering events...");
       socket.off("connect");
       socket.off("onMessage");
-    }
+    };
   }, [socket]);
 
-  const onSubmit = (event) => {
+  const sendMessage = (event) => {
     event.preventDefault();
-    socket.emit("onMessage", textValue);
+    console.log("Submitting message:", textValue);
+    socket.emit("newMessage", textValue);
 
     setTextValue("");
   };
@@ -64,20 +63,26 @@ export default function ChatTest() {
                     {message.clientId}: {message.body}
                   </p>
                 )}
-              <br />
+                <br />
               </div>
             ))}
           </div>
-        <div className="input-container">
-          <input
-            value={textValue}
-            type="text"
-            placeholder="Write right here"
-            onChange={handleMessageInput}
-          />
-          <button type="submit" onSubmit={onSubmit}>Submit</button>
+          <div className="input-container">
+            <input
+              value={textValue}
+              type="text"
+              placeholder="Write right here"
+              onChange={(event) => setTextValue(event.target.value)}
+            />
+            <button
+              type="submit"
+              onSubmit={sendMessage}
+              onClick={sendMessage}
+            >
+              Submit
+            </button>
+          </div>
         </div>
-      </div>
       </div>
     </>
   );

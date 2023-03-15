@@ -43,8 +43,7 @@ export class ChatGateway {
   @SubscribeMessage("newMessage")
   newMessage(@MessageBody() dto) {
     logger.log("newMessage");
-    logger.log(dto.clientId)
-    logger.log(dto.body)
+    console.log(dto);
     // return this.chatService.newMessage(dto);
   }
 }
