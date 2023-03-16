@@ -1,15 +1,14 @@
 .chat-page {
-  color: #fff;
+  color: #6f3434;
   width: 100vw;
   height: 100vh;
+  position: fixed;
+  top: 0;
+  left: 80px;
 }
 
 .message-window {
   background-color: darkslategrey;
-  display: flex;
-  height: 100vh;
-  margin: 0 auto;
-  justify-content: center;
 }
 
 .own-message {

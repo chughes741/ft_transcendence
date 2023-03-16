@@ -4,6 +4,7 @@ import { Form } from "react-router-dom";
 import SideBar from "src/components/SideBar";
 import Room from "../components/Room";
 import { MessageType } from "../components/Message";
+import "./ChatPage.tsx.css";
 
 type MessagePayload = {
   user: string;
@@ -68,9 +69,9 @@ export default function ChatPage() {
 
   return (
     <>
+      <SideBar />
       <div className="chat-page">
         <div className="message-window">
-        <SideBar />
           <div className="input-container">
             {Object.keys(rooms).map((roomName) => (
               <Room
