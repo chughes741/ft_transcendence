@@ -4,6 +4,7 @@ import { WebsocketContext } from "src/contexts/WebsocketContext";
 import { Form } from "react-router-dom";
 
 type MessagePayload = {
+  user: string;
   room: string;
   message: string;
 };
@@ -11,6 +12,7 @@ type MessagePayload = {
 export default function PopUpChat() {
   const [messages, setMessages] = useState<MessagePayload[]>([]);
   const [textValue, setTextValue] = useState("");
+  const [roomValue, setRoomValue] = useState("");
   const socket = useContext(WebsocketContext);
 
   useEffect(() => {
@@ -43,7 +45,7 @@ export default function PopUpChat() {
   const sendMessage = (event) => {
     event.preventDefault();
     console.log("Submitting message:", textValue);
-    socket.emit("newMessage", { room: socket.id, message: textValue });
+    socket.emit("newMessage", { room: roomValue, message: textValue });
 
     setTextValue("");
   };
@@ -56,10 +58,12 @@ export default function PopUpChat() {
             {messages.map((message) => (
               <div>
                 {message.room === socket.id ? (
-                  <p className="own-message">{message.message}</p>
+                  <p className="own-message">
+                    {message.room}: {message.message}
+                  </p>
                 ) : (
                   <p>
-                    {message.room}: {message.message}
+                    {message.room}/{message.user}: {message.message}
                   </p>
                 )}
                 <br />
@@ -68,6 +72,13 @@ export default function PopUpChat() {
           </div>
           <div className="input-container">
             <Form onSubmit={sendMessage}>
+              <input
+                value={roomValue}
+                type="text"
+                required
+                placeholder="room to send message to"
+                onChange={(event) => setRoomValue(event.target.value)}
+              />
               <input
                 value={textValue}
                 type="text"

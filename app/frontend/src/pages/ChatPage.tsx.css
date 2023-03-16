@@ -11,3 +11,7 @@
   margin: 0 auto;
   justify-content: center;
 }
+
+.own-message {
+  text-align: right;
+}
