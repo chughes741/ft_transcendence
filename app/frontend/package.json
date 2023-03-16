@@ -28,6 +28,7 @@
     "react-bootstrap": "^2.7.2",
     "react-dom": "^18.2.0",
     "react-icons": "^4.7.1",
+    "react-pro-sidebar": "^1.0.0",
     "react-router-dom": "6",
     "react-scripts": "5.0.1",
     "socket.io-client": "^4.6.1",

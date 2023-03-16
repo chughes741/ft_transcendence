@@ -24,8 +24,8 @@ body {
   font-family: 'Raleway', sans-serif;
   background-size: cover;
   display: flex;
-  justify-content: center;
-  align-items: center;
+  justify-content: left;
+  align-items: left;
   height: 100vh;
   width: 100vw;
 }

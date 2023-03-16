@@ -2,6 +2,7 @@ import "./ChatPage.tsx.css";
 import { useState, useEffect, useContext } from "react";
 import { WebsocketContext } from "src/contexts/WebsocketContext";
 import { Form } from "react-router-dom";
+import SideBar from "src/components/SideBar";
 
 type MessagePayload = {
   user: string;
@@ -54,6 +55,7 @@ export default function PopUpChat() {
     <>
       <div className="chat-page">
         <div className="message-window">
+          <SideBar />
           <div>
             {messages.map((message) => (
               <div>
