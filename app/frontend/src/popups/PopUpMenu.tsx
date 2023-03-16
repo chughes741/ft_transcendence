@@ -37,7 +37,7 @@ export default function PopUpMenu() {
 
   return (
     <>
-      <div className="icon">
+      <div className="icon-menu">
         <Icon
           color={bngColor}
           onClick={clickPopUp}

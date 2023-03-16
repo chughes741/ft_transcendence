@@ -54,7 +54,7 @@
   display: flex;
 }
 
-.icon {
+.icon-menu {
   z-index: 1001;
   display: flex;
   position: fixed;
