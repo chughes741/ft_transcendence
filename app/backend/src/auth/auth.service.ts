@@ -64,7 +64,7 @@ export class AuthService {
       }
     });
 
-    Logger.log(dto);
+    Logger.log(dto.email);
 
     // If user does not exist, throw exception
     if (!user)

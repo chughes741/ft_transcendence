@@ -9,6 +9,11 @@ import { useNavigate } from "react-router-dom";
 import React from "react";
 import "./LoginPage.tsx.css";
 
+type LoginCredentials = {
+  email: string;
+  pass: string;
+};
+
 export default function LoginPage() {
   const FacebookBackground =
     "linear-gradient(to right, #14163c 0%, #03217b 79%)";
@@ -33,8 +38,18 @@ export default function LoginPage() {
   };
 
   function handleSubmit() {
-    if (nick === "BigBoss" && pass === "Test123!") navigate("/welcome");
-    else navigate("/login");
+    const loginCredentials: LoginCredentials = {
+      email: nick,
+      pass
+    };
+    setNick("");
+    setPass("");
+    // if (nick === "BigBoss" && pass === "Test123!") navigate("/welcome");
+
+    console.log(loginCredentials);
+    navigate("/welcome");
+
+    // else navigate("/login");
   }
 
   return (
