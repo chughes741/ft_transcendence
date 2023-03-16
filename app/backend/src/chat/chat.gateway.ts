@@ -1,49 +1,66 @@
+import { Logger, UseGuards } from "@nestjs/common";
 import {
-  WebSocketGateway,
+  MessageBody,
+  OnGatewayConnection,
+  OnGatewayDisconnect,
+  OnGatewayInit,
   SubscribeMessage,
-  MessageBody
+  WebSocketGateway,
+  WebSocketServer
 } from "@nestjs/websockets";
-import { ChatService } from "./chat.service";
-import { CreateChatDto } from "./dto/create-chat.dto";
-import { UpdateChatDto } from "./dto/update-chat.dto";
-import { AuthDto } from "../auth/dto/auth.dto";
-import { Logger } from "@nestjs/common";
+import { Socket, Server } from "socket.io";
+import { JwtWsAuthGuard } from "../auth/guard";
 
 const logger = new Logger("ChatGateway");
 
+// FIXME: uncomment the following line to enable authentication
+// @UseGuards(JwtWsAuthGuard)
 @WebSocketGateway()
-export class ChatGateway {
-  constructor(private readonly chatService: ChatService) {}
+export class ChatGateway
+  implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect
+{
+  @WebSocketServer()
+  server: Server;
 
-  @SubscribeMessage("createChat")
-  create(@MessageBody() createChatDto: CreateChatDto) {
-    return this.chatService.create(createChatDto);
+  afterInit(server: Server) {
+    logger.log("ChatGateway initialized");
   }
 
-  @SubscribeMessage("findAllChat")
-  findAll() {
-    return this.chatService.findAll();
+  handleConnection(client: Socket, ...args: any[]) {
+    logger.log(`Client connected: ${client.id}`);
+    this.joinRoom(client, client.id);
   }
 
-  @SubscribeMessage("findOneChat")
-  findOne(@MessageBody() id: number) {
-    return this.chatService.findOne(id);
+  handleDisconnect(client: Socket) {
+    logger.log(`Client disconnected: ${client.id}`);
   }
 
-  @SubscribeMessage("updateChat")
-  update(@MessageBody() updateChatDto: UpdateChatDto) {
-    return this.chatService.update(updateChatDto.id, updateChatDto);
+  @SubscribeMessage("joinRoom")
+  async joinRoom(client: Socket, room: string) {
+    client.join(room);
+    this.server
+      .to(room)
+      .emit("roomMessage", `User ${client.id} joined room ${room}`);
+    logger.log(`User ${client.id} joined room ${room}`);
   }
 
-  @SubscribeMessage("removeChat")
-  remove(@MessageBody() id: number) {
-    return this.chatService.remove(id);
+  @SubscribeMessage("leaveRoom")
+  async leaveRoom(client: Socket, room: string) {
+    client.leave(room);
+    this.server
+      .to(room)
+      .emit("roomMessage", `User ${client.id} left room ${room}`);
+    logger.log(`User ${client.id} left room ${room}`);
   }
 
   @SubscribeMessage("newMessage")
-  newMessage(@MessageBody() dto) {
-    logger.log("newMessage");
-    console.log(dto);
-    // return this.chatService.newMessage(dto);
+  @SubscribeMessage("sendMessage")
+  async sendMessage(
+    client: Socket,
+    { room, message }: { room: string; message: string }
+  ) {
+    this.server.to(room).emit("roomMessage", `User ${client.id}: ${message}`);
+    this.server.emit("onMessage", { room, message });
+    console.log(`User ${client.id} sent message in room ${room}: ${message}`);
   }
 }
