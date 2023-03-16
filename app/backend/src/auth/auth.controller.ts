@@ -5,10 +5,10 @@ import {
   HttpCode,
   HttpStatus,
   Post,
-  UseFilters,
-  UseGuards
+  UseFilters
 } from "@nestjs/common";
 import { ApiTags } from "@nestjs/swagger";
+import { SubscribeMessage } from "@nestjs/websockets";
 import { Profile } from "@prisma/client";
 import { PrismaClientExceptionFilterHttp } from "../prisma-client-exception.filter";
 import { AuthService } from "./auth.service";
@@ -62,5 +62,11 @@ export class AuthController {
   @Post("signin")
   signin(@Body() dto: AuthDto) {
     return this.authService.signin(dto);
+  }
+
+  @Post("refresh")
+  @SubscribeMessage("refresh")
+  async refreshToken(@Body("refresh_token") refresh_token: string) {
+    return this.authService.refreshToken(refresh_token);
   }
 }

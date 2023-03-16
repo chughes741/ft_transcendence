@@ -84,20 +84,77 @@ export class AuthService {
   async signToken(
     userId: string,
     email: string
-  ): Promise<{ access_token: string }> {
+  ): Promise<{ access_token: string; refresh_token: string }> {
     const payload = {
       id: userId, // identifies the principal that is the subject of the JWT
       email
     };
     const secret = this.config.get("JWT_SECRET");
 
-    const token = await this.jwt.signAsync(payload, {
+    const access_token = await this.jwt.signAsync(payload, {
       expiresIn: "15m",
       secret: secret
     });
 
+    const refresh_token = await this.jwt.signAsync(payload, {
+      expiresIn: "7d",
+      secret: secret
+    });
+
+    // FIXME: Uncomment this to enable refresh token storage
+    // // Store the refresh token in the database
+    // await this.prisma.refreshToken.create({
+    //   data: {
+    //     token: refresh_token,
+    //     user: {
+    //       connect: {
+    //         id: userId
+    //       }
+    //     },
+    //     expires_at: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000) // 7 days from now
+    //   }
+    // });
+
     return {
-      access_token: token // creates a string object
+      access_token, // creates a string object
+      refresh_token
     };
+  }
+
+  async refreshToken(refresh_token: string): Promise<{ access_token: string }> {
+    try {
+      const secret = this.config.get("JWT_SECRET");
+      const payload = this.jwt.verify(refresh_token, { secret });
+
+      // FIXME: Uncomment this to enable refresh token storage
+      // const storedRefreshToken = await this.prisma.refreshToken.findUnique({
+      //   where: { token: refresh_token }
+      // });
+
+      // if (!storedRefreshToken || storedRefreshToken.expires_at < new Date()) {
+      //   throw new ForbiddenException("Invalid refresh token");
+      // }
+
+      // // Revoke the refresh token by removing it from the database
+      // await this.prisma.refreshToken.delete({
+      //   where: { token: refresh_token }
+      // });
+
+      const newPayload = {
+        id: payload.id,
+        email: payload.email
+      };
+
+      const access_token = await this.jwt.signAsync(newPayload, {
+        expiresIn: "15m",
+        secret: secret
+      });
+
+      return {
+        access_token
+      };
+    } catch (err) {
+      throw new WsException("Invalid refresh token");
+    }
   }
 }
