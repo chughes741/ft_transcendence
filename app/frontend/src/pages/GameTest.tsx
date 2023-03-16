@@ -70,7 +70,7 @@ function Circle() {
 	const socket = io("http://localhost:3000");
 	socket.emit('gameStart');
 	socket.on('serverUpdate', (data) => {
-		if ( ballRot === 90)
+		if (ballRot === 90)
 			socket.emit('gameEnd');
 		else {
 			console.log("rot update " + data.rot);

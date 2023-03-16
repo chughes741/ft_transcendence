@@ -8,7 +8,7 @@ import {
 import { Server } from 'socket.io';
 import { GameService } from "./game.service";
 
-import { Interval, SchedulerRegistry } from '@nestjs/schedule';
+import { SchedulerRegistry } from '@nestjs/schedule';
 import { Logger } from "@nestjs/common";
 
 // import {
@@ -41,39 +41,21 @@ export class GameGateway {
   server: Server;
   
 
-  //Setup interval on 'gameStart' event
+  //Setup bew game on 'gameStart' event
   @SubscribeMessage('gameStart')
-  async initGameInterval() {
+  async initGame() {
+    //Create new gameData object
+    
     //Call interval creation function
-    this.addGameUpdateInterval('gameUpdateInterval', 50);
+    this.gameService.addGameUpdateInterval('gameUpdateInterval', 50);
   }
 
   //Delete interval on 'gameEnd' event
   @SubscribeMessage('gameEnd')
   async endGame() {
-    this.deleteInterval('gameUpdateInterval');
+    this.gameService.deleteInterval('gameUpdateInterval');
   }
 
-  //Add new gameUpdateInterval
-  async addGameUpdateInterval(name: string, milliseconds: number) {
-    //Set callback function to gamestate
-    const interval = setInterval(this.sendServerUpdate.bind(this), milliseconds);
-    this.schedulerRegistry.addInterval(name, interval);
-    logger.log(`Interval ${name} created!`);
-  }
-
-  //Delete an interval
-  deleteInterval(name: string) {
-    this.schedulerRegistry.deleteInterval(name);
-    logger.log(`Interval ${name} deleted!`);
-  }
-
-  //Calculate game state and send server update
-  async sendServerUpdate() {
-      this.server.emit('serverUpdate', {
-        rot: this.gameService.calculateGameState()
-      });
-  }
 
 
   /**

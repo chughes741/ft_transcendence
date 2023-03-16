@@ -1074,6 +1074,11 @@
     "@types/qs" "*"
     "@types/serve-static" "*"
 
+"@types/gl-vec2@^1.3.2":
+  version "1.3.2"
+  resolved "https://registry.yarnpkg.com/@types/gl-vec2/-/gl-vec2-1.3.2.tgz#a0b6a360f12970d460d43cee3410161594b7148b"
+  integrity sha512-GNiqmx1B9QuhuK0ACgwZ+YTWNjy2RjjorEMoCJEZWYcMbsJ82y7mEfmKkfC5Y+nqCafVlocRvbu83UNo/05JEg==
+
 "@types/graceful-fs@^4.1.3":
   version "4.1.6"
   resolved "https://registry.npmjs.org/@types/graceful-fs/-/graceful-fs-4.1.6.tgz"
@@ -3095,6 +3100,11 @@ get-symbol-description@^1.0.0:
   dependencies:
     call-bind "^1.0.2"
     get-intrinsic "^1.1.1"
+
+gl-vec2@^1.3.0:
+  version "1.3.0"
+  resolved "https://registry.yarnpkg.com/gl-vec2/-/gl-vec2-1.3.0.tgz#83d472ed46034de8e09cbc857123fb6c81c51199"
+  integrity sha512-YiqaAuNsheWmUV0Sa8k94kBB0D6RWjwZztyO+trEYS8KzJ6OQB/4686gdrf59wld4hHFIvaxynO3nRxpk1Ij/A==
 
 glob-parent@^5.1.2, glob-parent@~5.1.2:
   version "5.1.2"
