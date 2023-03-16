@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import PopUpMenu from "src/popups/PopUpMenu";
-import "HomePage.tsx.css";
+import "src/pages/HomePage.tsx.css";
 import { useOutletContext } from "react-router-dom";
 import PopUpChat from "src/popups/PopUpChat";
 
