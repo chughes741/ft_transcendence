@@ -1,6 +1,6 @@
 import ChatPage from "src/pages/ChatPage";
 
-export default function Chat() {
+export default function ChatRoute() {
   return (
     <>
       <ChatPage />

@@ -7,7 +7,7 @@ export async function rootLoader() {
   return data;
 }
 
-export default function Root() {
+export default function RootRoute() {
   const posts = useLoaderData();
   const context = {name: "Allo"};
 

@@ -1,6 +1,6 @@
 import LoginPage from "src/pages/LoginPage";
 
-export default function Login() {
+export default function LoginRoute() {
   return (
     <>
       <LoginPage />

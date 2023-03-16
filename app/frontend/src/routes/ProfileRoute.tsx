@@ -1,6 +1,6 @@
 import ProfilePage from "src/pages/ProfilePage";
 
-export default function Profile() {
+export default function ProfileRoute() {
   return (
     <>
       <ProfilePage />

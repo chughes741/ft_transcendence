@@ -1,6 +1,6 @@
 import GamePage from "src/pages/GamePage";
 
-export default function Game() {
+export default function GameRoute() {
   return (
     <>
       <GamePage />

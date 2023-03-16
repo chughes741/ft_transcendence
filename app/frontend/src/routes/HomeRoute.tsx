@@ -1,6 +1,6 @@
 import HomePage from "src/pages/HomePage";
 
-export default function Home() {
+export default function HomeRoute() {
   return (
     <>
       <HomePage />
