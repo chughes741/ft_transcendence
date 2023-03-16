@@ -1,10 +1,10 @@
 import { createBrowserRouter } from "react-router-dom";
-import Root, { rootLoader } from "./routes/root";
-import Chat from "./routes/chat";
-import Home from "./routes/home";
-import Login from "./routes/login";
-import Game from "./routes/game";
-import Profile from "./routes/profile";
+import Root, { rootLoader } from "./routes/RootRoute";
+import Chat from "./routes/ChatRoute";
+import Home from "./routes/HomeRoute";
+import Login from "./routes/LoginRoute";
+import Game from "./routes/GameRoute";
+import Profile from "./routes/ProfileRoute";
 
 const router = createBrowserRouter([
   {
