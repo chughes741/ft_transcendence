@@ -1,8 +1,9 @@
-import "./ChatPage.tsx.css";
 import { useState, useEffect, useContext } from "react";
 import { WebsocketContext } from "src/contexts/WebsocketContext";
 import { Form } from "react-router-dom";
 import SideBar from "src/components/SideBar";
+import Room from "../components/Room";
+import { MessageType } from "../components/Message";
 
 type MessagePayload = {
   user: string;
@@ -10,43 +11,57 @@ type MessagePayload = {
   message: string;
 };
 
-export default function PopUpChat() {
-  const [messages, setMessages] = useState<MessagePayload[]>([]);
+export default function ChatPage() {
   const [textValue, setTextValue] = useState("");
   const [roomValue, setRoomValue] = useState("");
+  const [rooms, setRooms] = useState<Record<string, MessageType[]>>({});
   const socket = useContext(WebsocketContext);
 
-  useEffect(() => {
-    socket.on("connect", () => {
-      console.log("Successfully connected to the server");
+  const addMessageToRoom = (roomName: string, message: MessageType) => {
+    setRooms((prevRooms) => {
+      const newRooms = { ...prevRooms };
+      if (!newRooms[roomName]) {
+        newRooms[roomName] = [];
+      }
+      newRooms[roomName].push(message);
+      return newRooms;
     });
-    socket.on("connect_error", (err) => {
-      console.log("Error connecting to the server", err);
-    });
+  };
 
+  useEffect(() => {
     socket.on("onMessage", (newMessage: MessagePayload) => {
       console.log("Ding ding, you've got mail:", newMessage);
 
-      console.log(newMessage.room, socket.id);
-      console.log(newMessage.message);
-      setMessages((messages) => [...messages, newMessage]);
-    });
+      const timestamp = new Date().toLocaleTimeString("en-US", {
+        hour: "numeric",
+        minute: "numeric",
+        hour12: true
+      });
 
-    socket.on("disconnect", () => {
-      console.log("Successfully disconnected from the server");
+      const messageData: MessageType = {
+        user: newMessage.user,
+        roomId: newMessage.room,
+        message: newMessage.message,
+        timestamp,
+        isOwn: newMessage.room === socket.id
+      };
+
+      addMessageToRoom(newMessage.room, messageData);
     });
 
     return () => {
-      console.log("Unregistering events...");
-      socket.off("connect");
       socket.off("onMessage");
     };
   }, [socket]);
 
+  const sendRoomMessage = (roomName: string, message: string) => {
+    socket.emit("sendMessage", { room: roomName, message });
+  };
+
   const sendMessage = (event) => {
     event.preventDefault();
     console.log("Submitting message:", textValue);
-    socket.emit("newMessage", { room: roomValue, message: textValue });
+    socket.emit("sendMessage", { room: roomValue, message: textValue });
 
     setTextValue("");
   };
@@ -55,24 +70,16 @@ export default function PopUpChat() {
     <>
       <div className="chat-page">
         <div className="message-window">
-          <SideBar />
-          <div>
-            {messages.map((message) => (
-              <div>
-                {message.room === socket.id ? (
-                  <p className="own-message">
-                    {message.room}: {message.message}
-                  </p>
-                ) : (
-                  <p>
-                    {message.room}/{message.user}: {message.message}
-                  </p>
-                )}
-                <br />
-              </div>
-            ))}
-          </div>
+        <SideBar />
           <div className="input-container">
+            {Object.keys(rooms).map((roomName) => (
+              <Room
+                key={roomName}
+                roomName={roomName}
+                messages={rooms[roomName]}
+                onSendMessage={sendRoomMessage}
+              />
+            ))}
             <Form onSubmit={sendMessage}>
               <input
                 value={roomValue}
@@ -88,12 +95,7 @@ export default function PopUpChat() {
                 placeholder="Write right here"
                 onChange={(event) => setTextValue(event.target.value)}
               />
-              <button
-                type="submit"
-                // onClick={sendMessage}
-              >
-                Send
-              </button>
+              <button type="submit">Send</button>
             </Form>
           </div>
         </div>

@@ -67,7 +67,7 @@ export default function PopUpChat() {
   const sendMessage = (event) => {
     event.preventDefault();
     console.log("Submitting message:", textValue);
-    socket.emit("newMessage", { room: socket.id, message: textValue });
+    socket.emit("sendMessage", { room: socket.id, message: textValue });
 
     setTextValue("");
   };
