@@ -43,11 +43,9 @@ export class GameGateway {
 
   //Setup bew game on 'gameStart' event
   @SubscribeMessage('gameStart')
-  async initGame() {
-    //Create new gameData object
-    
-    //Call interval creation function
-    this.gameService.addGameUpdateInterval('gameUpdateInterval', 50);
+  async newGame() {
+    logger.log('gameStart event received');
+    this.gameService.createGame();
   }
 
   //Delete interval on 'gameEnd' event

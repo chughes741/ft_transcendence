@@ -19,12 +19,12 @@ import * as vec2 from 'gl-vec2';
   // JoinLobbyEvent
 // } from "../../../shared/events/game.events";
 
+import { GameConfig, PaddleConfig, BallConfig } from "./config/game.config";
 
 const logger = new Logger('gameLog');
 
 
-
-class Vec2  {
+class Vec2 {
   x: number;
   y: number;
 }
@@ -54,6 +54,10 @@ class GameData {
   paddle_right: PaddleData = new PaddleData;
 }
 
+function degToRad(angle: number): number {
+  return (angle * (Math.PI / 180));
+}
+
 //Setup websocket gateway
 @WebSocketGateway({
   cors: {
@@ -68,11 +72,21 @@ export class GameService {
 
   static rot: number = 0;
 
-
   @WebSocketServer()
   public server: Server;
 
-  private gameState: GameData = this.initNewGame();
+  private gameState: GameData;
+
+
+  //Create a new game instance
+  async createGame() {
+    //Create new gameData object
+    this.gameState = this.initNewGame();
+    logger.log('New game object created')
+    //Add the gameUpdateInterval
+    // if (!this.schedulerRegistry.getInterval('gameUpdateInterval'))
+      this.addGameUpdateInterval('gameUpdateInterval', GameConfig.serverUpdateRate);
+  }
 
 
   //Add new gameUpdateInterval
@@ -80,7 +94,7 @@ export class GameService {
     //Set callback function to gamestate
     const interval = setInterval(this.sendServerUpdate.bind(this), milliseconds);
     this.schedulerRegistry.addInterval(name, interval);
-    logger.log(`Interval ${name} created!`);
+    logger.log(`Interval ${name} created`);
   }
 
   //Calculate game state and send server update
@@ -99,31 +113,38 @@ export class GameService {
 
 
   //Calculate game state and return gamestate object
-  calculateGameState(gamedata: GameData): GameData {
+  calculateGameState(gameData: GameData): GameData {
     //Needs to return paddle locations and ball location
     //Needs to update ball velocity (direction and speed)
 
     //Check if new round
-    if (gamedata.is_new_round) {
-      gamedata.last_update_time = Date.now();
-      gamedata.ball = this.getRandomBallDirection(gamedata);
-      gamedata.is_new_round = false;
+    if (gameData.is_new_round) {
+      gameData.last_update_time = Date.now();
+      gameData.ball = this.getRandomBallDirection(gameData);
+      gameData.is_new_round = false;
     }
-    //If not new round, calculate ball position
+    //If not new round, calculate ball position and update timestamp
     else {
-      this.updateBall(gamedata);
+      gameData.ball = this.updateBall(gameData);
+      gameData.last_update_time = Date.now();
     }
-    return gamedata;
+    return gameData;
   }
 
   //Calculate ball position
-  updateBall(gameData: GameData) {
+  updateBall(gameData: GameData): BallData {
     //Save previous ball data
-    let prev_ball: BallData = gameData.ball;
-    
+    let prev: BallData = gameData.ball;
+    let cur: BallData = new BallData;
+
     //Current ball position is previous ball position + (direction * speed)
-    
-    gameData.ball
+    let time_diff: number = (Date.now() - gameData.last_update_time) / 1000;
+
+    [cur.pos.x, cur.pos.y] = vec2.scaleAndAdd([cur.pos.x, cur.pos.y],[prev.pos.x, prev.pos.y], [prev.direction.x, prev.direction.y], prev.speed * time_diff);
+    cur.direction = prev.direction;
+    cur.speed = prev.speed;
+
+    return cur;
   }
 
   //Initialize new game
@@ -132,41 +153,51 @@ export class GameService {
 
     //Setup general game properties
     gameData.is_new_round = true;
-    gameData.bounds.width = 6; //FIXME: Change this to be set from config file
-    gameData.bounds.height = 4; //FIXME: Change this to be set from config file
-    gameData.last_serve_side = 'left'; //FIXME: Change this to be randomized for first serve
+    gameData.bounds.width =  GameConfig.playAreaWidth;
+    gameData.bounds.height = GameConfig.playAreaHeight;
     
-    //Setup initial ball state
-    gameData.ball = this.getRandomBallDirection(gameData);
+    //Randomize serve side for initial serve
+    if (Math.round(Math.random()) === 0)
+      gameData.last_serve_side = 'left';
+    else
+      gameData.last_serve_side = 'right';
 
     //Setup initial paddle state
     gameData.paddle_left.pos.y = 0;
-    gameData.paddle_left.pos.x = -2.5; //FIXME: Change this to be set from config fle
+    gameData.paddle_left.pos.x = -((GameConfig.playAreaWidth / 2) - PaddleConfig.borderOffset);
     gameData.paddle_right.pos.y = 0;
-    gameData.paddle_right.pos.x = -2.5; //FIXME: Change this to be set from config fle
-
+    gameData.paddle_right.pos.x = ((GameConfig.playAreaWidth / 2) - PaddleConfig.borderOffset);
+  
     return gameData;
   }
-
-
 
   //Get a new random ball direction and velocity
   getRandomBallDirection(gameData: GameData): BallData {
     let ballData: BallData = new BallData;
     ballData.pos.x = 0;
     ballData.pos.y = 0;
-    ballData.speed = 5; //FIXME: Change this to be set from config file, and have a random modifier applied
+    ballData.speed = BallConfig.initialSpeed;
 
-    //Choose which side to send serve to based on last serve
-    if (gameData.last_serve_side === 'left') {
-      ballData.direction.x = 1; //FIXME: Change so possible range of angles is set from config file, and have a random modifier applied
-      ballData.direction.y = 0; //FIXME: Change so possible range of angles is set from config file, and have a random modifier applied
-    }
-    else {
-      ballData.direction.x = 1; //FIXME: Change so possible range of angles is set from config file, and have a random modifier applied
-      ballData.direction.y = 0; //FIXME: Change so possible range of angles is set from config file, and have a random modifier applied
-    }
+    //Angle needs to be centered on x axis, so need to get offset from y-axis (half the remainder when angle is subracted from 180)
+    let angle_offset = (180 - BallConfig.maxServeAngle) / 2;
+
+    //Get a random value in angle range and add the offset
+    let angle = Math.round(Math.round(Math.random() * BallConfig.maxServeAngle)) + angle_offset;
+
+    //Convert the angle to a vector
+    [ballData.direction.x, ballData.direction.y] =  vec2.set([ballData.direction.x, ballData.direction.y], Math.sin(degToRad(angle)), Math.cos(degToRad(angle)));
     
+    //Normalize the vector
+    [ballData.direction.x, ballData.direction.y] = vec2.normalize([ballData.direction.x, ballData.direction.y], [ballData.direction.x, ballData.direction.y])
+
+    //If last serve was to the right, invert x value to send left
+    if (gameData.last_serve_side === 'right') {
+      ballData.direction.x = -ballData.direction.x;
+      gameData.last_serve_side = 'left';
+    }
+    else
+      gameData.last_serve_side = 'right';
+
     return ballData;
   }
 
