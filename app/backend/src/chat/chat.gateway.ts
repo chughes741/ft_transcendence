@@ -53,7 +53,6 @@ export class ChatGateway
     logger.log(`User ${client.id} left room ${room}`);
   }
 
-  @SubscribeMessage("newMessage")
   @SubscribeMessage("sendMessage")
   async sendMessage(
     client: Socket,
@@ -61,7 +60,7 @@ export class ChatGateway
   ) {
     const user = client.id;
     this.server.to(room).emit("roomMessage", { user, room, message });
-    this.server.emit("onMessage", { user, room, message });
+    this.server.emit("onMessage", { user, room, message }); // FIXME: temporarily broadcast to all clients, for testing purposes
     console.log(`User ${client.id} sent message in room ${room}: ${message}`);
   }
 }
