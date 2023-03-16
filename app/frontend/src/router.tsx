@@ -14,7 +14,7 @@ const router = createBrowserRouter([
     children: [
       { path: "", element: <HomeRoute /> },
       { path: "login", element: <LoginRoute /> },
-      { path: "gametest", element: <GameRoute /> },
+      { path: "game", element: <GameRoute /> },
       { path: "profile", element: <ProfileRoute /> },
       { path: "chat", element: <ChatRoute /> }
     ]

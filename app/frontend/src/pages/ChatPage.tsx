@@ -1,14 +1,14 @@
-import PopUp from "../popups/PopUpMenu";
-import { useContext, useState, useEffect } from "react";
-import { WebsocketContext } from "../contexts/WebsocketContext";
+import "./ChatPage.tsx.css";
+import { useState, useEffect, useContext } from "react";
+import { WebsocketContext } from "src/contexts/WebsocketContext";
 import { Form } from "react-router-dom";
 
 type MessagePayload = {
-  clientId: string;
-  body: string;
+  room: string;
+  message: string;
 };
 
-export default function ChatPage() {
+export default function PopUpChat() {
   const [messages, setMessages] = useState<MessagePayload[]>([]);
   const [textValue, setTextValue] = useState("");
   const socket = useContext(WebsocketContext);
@@ -24,6 +24,8 @@ export default function ChatPage() {
     socket.on("onMessage", (newMessage: MessagePayload) => {
       console.log("Ding ding, you've got mail:", newMessage);
 
+      console.log(newMessage.room, socket.id);
+      console.log(newMessage.message);
       setMessages((messages) => [...messages, newMessage]);
     });
 
@@ -41,24 +43,23 @@ export default function ChatPage() {
   const sendMessage = (event) => {
     event.preventDefault();
     console.log("Submitting message:", textValue);
-    socket.emit("newMessage", textValue);
+    socket.emit("newMessage", { room: socket.id, message: textValue });
 
     setTextValue("");
   };
 
   return (
     <>
-      <PopUp />
-      <div className="chat-container">
+      <div className="chat-page">
         <div className="message-window">
           <div>
             {messages.map((message) => (
               <div>
-                {message.clientId === socket.id ? (
-                  <p className="own-message">{message.body}</p>
+                {message.room === socket.id ? (
+                  <p className="own-message">{message.message}</p>
                 ) : (
                   <p>
-                    {message.clientId}: {message.body}
+                    {message.room}: {message.message}
                   </p>
                 )}
                 <br />
@@ -78,7 +79,7 @@ export default function ChatPage() {
                 type="submit"
                 // onClick={sendMessage}
               >
-                Submit
+                Send
               </button>
             </Form>
           </div>
