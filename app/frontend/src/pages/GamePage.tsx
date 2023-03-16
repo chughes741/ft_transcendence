@@ -1,24 +1,9 @@
-import React from "react";
 import { Canvas } from "@react-three/fiber";
-import PopUpMenu from "../popups/PopUpMenu";
+import PopUpMenu from "src/popups/PopUpMenu";
 
 import styled from "styled-components";
 
-// const FrameCounter = () => {
-
-// 	return (
-// 		<mesh>
-// 			<boxGeometry />
-
-// 		</mesh>
-// 	)
-// }
-
 const MyMesh = () => {
-  // useFrame(({ clock }) => {
-  // 	const a = clock.getElapsedTime()
-  // 	console.log(a)
-  // })
   return (
     <mesh>
       <sphereGeometry />
@@ -36,7 +21,7 @@ const GameWindow = styled.div`
   color: #fff;
 `;
 
-export default function GameTest() {
+export default function GamePage() {
   return (
     <>
       <PopUpMenu />

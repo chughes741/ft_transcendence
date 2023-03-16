@@ -1,6 +1,6 @@
 import { useEffect } from "react";
-import PopUpMenu from "../popups/PopUpMenu";
-import "./WelcomePage.tsx.css";
+import PopUpMenu from "src/popups/PopUpMenu";
+import "HomePage.tsx.css";
 import { useOutletContext } from "react-router-dom";
 import PopUpChat from "src/popups/PopUpChat";
 
@@ -8,7 +8,7 @@ type OuletContext = {
   name: string;
 };
 
-export default function WelcomePage() {
+export default function HomePage() {
   useEffect(() => {
     document.body.classList.add("Welcome");
     return () => {
