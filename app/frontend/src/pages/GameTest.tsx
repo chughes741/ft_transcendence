@@ -21,13 +21,13 @@ class Vec2 {
 }
 
 class BallData {
-	pos: Vec2 = new Vec2;
-	direction: Vec2 = new Vec2;
+	pos: Vec2;
+	direction: Vec2;
 	speed: number;
 }
 
 class PaddleData {
-	pos: Vec2 = new Vec2;
+	pos: Vec2;
 }
 
 class GameBounds {
@@ -39,10 +39,10 @@ class GameData {
 	last_update_time: number;
 	is_new_round: boolean;
 	last_serve_side: string;
-	bounds: GameBounds = new GameBounds;
-	ball: BallData = new BallData;
-	paddle_left: PaddleData = new PaddleData;
-	paddle_right: PaddleData = new PaddleData;
+	bounds: GameBounds;
+	ball: BallData;
+	paddle_left: PaddleData;
+	paddle_right: PaddleData;
 }
 
 // function renderBall(ballData: BallData, mesh: React.MutableRefObject<THREE.Mesh<BufferGeometry, THREE.Material | THREE.Material[]>>) {
@@ -54,26 +54,20 @@ class GameData {
 //Create ball object
 function Ball() {
 	const mesh = useRef<THREE.Mesh>(null!);
-	let ballData: BallData;
 	let x = 0;
 	let y = 0;
 
-	let fuckyou = 0;
-
-
 	//Connect client socket to backend
 	const socket = io("http://localhost:3000");
-	if (!fuckyou) {
-		socket.emit('gameStart');
-		fuckyou = 1;
-	}
-	socket.on('serverUpdate', (data: GameData) => {
+	socket.emit('gameStart');
+
+	socket.on('serverUpdate', (data) => {
 		console.log(data);
-		ballData = data.ball;
+		x = data.x;
+		y = data.y;
 	})
 
-	x = ballData.pos.x;
-	y = ballData.pos.y;
+
 
 	// const x: number = ballData.pos.x;
 	// const y: number = ballData.pos.y;
@@ -86,8 +80,8 @@ function Ball() {
 
 	return (
 		<mesh ref={mesh}>
-			<sphereGeometry args={[0.5]} />
-			<meshPhongMaterial color="red" />
+			<sphereGeometry args={[0.1]} />
+			<meshPhongMaterial color="white" />
 		</mesh>
 	)
 }
@@ -101,7 +95,7 @@ function Border(props: ThreeElements['mesh']) {
 			{...props}
 			ref={mesh}>
 			<planeGeometry args={[6, 4]} />
-			<meshStandardMaterial color='blue' />
+			<meshStandardMaterial color='charcoal' />
 		</mesh>
 	)
 }
@@ -159,8 +153,8 @@ export default function Game() {
 			<GameWindow>
 				<Canvas>
 					<Ball />
-					{/* <Border /> */}
-					<ambientLight args={[0xff0000]} intensity={0.1} />
+					<Border />
+					<ambientLight args={[0xffffff]} intensity={0.1} />
 					<directionalLight position={[0, 5, 3]} intensity={0.5} />
 				</Canvas>
 			</GameWindow>

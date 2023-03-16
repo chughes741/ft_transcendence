@@ -99,8 +99,10 @@ export class GameService {
 
   //Calculate game state and send server update
   async sendServerUpdate() {
+    this.gameState = this.calculateGameState(this.gameState);
     this.server.emit('serverUpdate', {
-      gameData: this.calculateGameState(this.gameState)
+      x: this.gameState.ball.pos.x,
+      y: this.gameState.ball.pos.y,
     });
   }
 
@@ -143,6 +145,21 @@ export class GameService {
     [cur.pos.x, cur.pos.y] = vec2.scaleAndAdd([cur.pos.x, cur.pos.y],[prev.pos.x, prev.pos.y], [prev.direction.x, prev.direction.y], prev.speed * time_diff);
     cur.direction = prev.direction;
     cur.speed = prev.speed;
+
+    //Check for collision with each wall
+    //hacky temporary solve
+    if (cur.pos.x >= (GameConfig.playAreaWidth / 2) -0.1) {
+      cur.direction.x = -cur.direction.x
+    }
+    else if (cur.pos.x <= -(GameConfig.playAreaWidth / 2) + 0.1) {
+      cur.direction.x = -cur.direction.x;
+    }
+    else if (cur.pos.y >= (GameConfig.playAreaHeight / 2) - 0.1) {
+      cur.direction.y = -cur.direction.y;
+    }
+    else if (cur.pos.y <= -(GameConfig.playAreaHeight / 2) + 0.1) {
+      cur.direction.y = -cur.direction.y;
+    }
 
     return cur;
   }

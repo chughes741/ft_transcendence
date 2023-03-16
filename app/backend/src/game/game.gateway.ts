@@ -45,7 +45,15 @@ export class GameGateway {
   @SubscribeMessage('gameStart')
   async newGame() {
     logger.log('gameStart event received');
-    this.gameService.createGame();
+
+    try {
+      logger.log(this.schedulerRegistry.getInterval('gameUpdateInterval'));
+  
+    }
+    catch{
+      logger.log('Event not found');
+      this.gameService.createGame();
+    }
   }
 
   //Delete interval on 'gameEnd' event
