@@ -5,6 +5,76 @@ import SideBar from "src/components/SideBar";
 import Room from "../components/Room";
 import { MessageType } from "../components/Message";
 import "./ChatPage.tsx.css";
+import styled from "styled-components";
+
+const StyledChatPage = styled.div`
+  display: flex;
+  width: 100%;
+  height: 100vh;
+  position: fixed;
+  top: 0;
+  left: 80px;
+
+  .room-list {
+    flex: 0 0 300px; // Adjust this percentage to control the width of the left part
+    min-width: 300px;
+    border-right: 1px solid #ccc;
+    padding: 1rem;
+    overflow-y: scroll;
+
+    .room {
+      display: flex;
+      align-items: center;
+      margin-bottom: 1rem;
+      cursor: pointer;
+      border-radius: 5px;
+      padding: 0.5rem;
+      transition: background-color 0.2s;
+
+      &:hover {
+        background-color: #f0f0f0;
+      }
+
+      img {
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        margin-right: 1rem;
+      }
+
+      .room-info {
+        flex: 1;
+
+        .room-name {
+          font-weight: bold;
+        }
+      }
+
+      .last-message {
+        font-size: 0.9rem;
+        margin-top: 0.25rem;
+        font-weight: bold;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        max-height: 3em;
+        white-space: pre-wrap; // Add this line
+
+        &::before {
+          content: "•";
+          color: red;
+          font-size: 2.5rem;
+        }
+      }
+    }
+  }
+
+  .chat-area {
+    flex: 1;
+  }
+`;
 
 type MessagePayload = {
   user: string;
@@ -12,10 +82,24 @@ type MessagePayload = {
   message: string;
 };
 
+// Add this at the top of ChatPage.tsx
+type RoomType = {
+  id: string;
+  imageUrl: string;
+  name: string;
+  lastMessage: string;
+};
+
 export default function ChatPage() {
   const [textValue, setTextValue] = useState("");
   const [roomValue, setRoomValue] = useState("");
-  const [rooms, setRooms] = useState<Record<string, MessageType[]>>({});
+  // Change the initial value of rooms to an object
+  const [rooms, setRooms] = useState<{ [key: string]: Array<MessageType> }>({});
+  const [currentRoomName, setCurrentRoomName] = useState<string>("");
+  const [currentRoomMessages, setCurrentRoomMessages] = useState<
+    Array<MessageType>
+  >([]);
+
   const socket = useContext(WebsocketContext);
 
   const addMessageToRoom = (roomName: string, message: MessageType) => {
@@ -61,6 +145,10 @@ export default function ChatPage() {
     socket.emit("sendMessage", { room: roomName, message });
   };
 
+  const handleSendMessage = (roomName: string, message: string) => {
+    sendRoomMessage(roomName, message);
+  };
+
   const sendMessage = (event) => {
     event.preventDefault();
     console.log("Submitting message:", textValue);
@@ -69,40 +157,56 @@ export default function ChatPage() {
     setTextValue("");
   };
 
+  const createNewRoom = () => {
+    const newRoomId = `Room${Math.floor(Math.random() * 10000)}`;
+    setRooms((prevRooms) => {
+      const newRooms = { ...prevRooms };
+      newRooms[newRoomId] = [];
+      return newRooms;
+    });
+    setCurrentRoomName(newRoomId);
+    setCurrentRoomMessages([]);
+  };
+
   return (
     <>
       <SideBar />
-      <div className="chat-page">
-        <div className="message-window">
-          <div className="input-container">
-            {Object.keys(rooms).map((roomName) => (
-              <Room
-                key={roomName}
-                roomName={roomName}
-                messages={rooms[roomName]}
-                onSendMessage={sendRoomMessage}
+      <StyledChatPage>
+        <div className="room-list">
+          {/* Update how rooms are rendered */}
+          {Object.entries(rooms).map(([roomId, messages]) => (
+            <div
+              key={roomId}
+              className="room"
+              onClick={() => {
+                setCurrentRoomName(roomId);
+                setCurrentRoomMessages(messages);
+              }}
+            >
+              <img
+                src={`https://i.pravatar.cc/150?u=${roomId}`} // Use a random profile picture for each room
+                alt="Profile"
               />
-            ))}
-            <Form onSubmit={sendMessage}>
-              <input
-                value={roomValue}
-                type="text"
-                required
-                placeholder="room to send message to"
-                onChange={(event) => setRoomValue(event.target.value)}
-              />
-              <input
-                value={textValue}
-                type="text"
-                required
-                placeholder="Write right here"
-                onChange={(event) => setTextValue(event.target.value)}
-              />
-              <button type="submit">Send</button>
-            </Form>
-          </div>
+              <div className="room-info">
+                <div className="room-name">{roomId}</div>
+                <div className="last-message">
+                  {messages.length > 0
+                    ? messages[messages.length - 1].message
+                    : ""}
+                </div>
+              </div>
+            </div>
+          ))}
+          <button onClick={createNewRoom}>Create New Room</button>
         </div>
-      </div>
+        <div className="chat-area">
+          <Room
+            roomName={currentRoomName}
+            messages={currentRoomMessages}
+            onSendMessage={handleSendMessage}
+          />
+        </div>
+      </StyledChatPage>
     </>
   );
 }

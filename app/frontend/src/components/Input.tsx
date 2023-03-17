@@ -1,4 +1,5 @@
 import styled from "styled-components";
+import ResizableTextarea from "./ResizableTextArea";
 
 const StyledInput = styled.textarea`
   background: rgba(255, 255, 255, 0.15);
@@ -30,8 +31,8 @@ type InputProps = {
   value: string;
   type: string;
   placeholder: string;
-  onChange: (event) => void;
-  onEnterPress?: (event) => void;
+  onChange: (event: React.ChangeEvent<HTMLTextAreaElement>) => void;
+  onEnterPress?: (event: React.KeyboardEvent) => void;
 };
 
 export default function Input({
@@ -48,13 +49,13 @@ export default function Input({
     }
   };
   return (
-    <StyledInput
-      required
-      as={type === "textarea" ? "textarea" : "input"}
+    <ResizableTextarea
+      // required
+      // as={type === "textarea" ? "textarea" : "input"}
       placeholder={placeholder}
       value={value}
       onChange={onChange}
-      onKeyPress={handleKeyPress}
+      onEnterPress={handleKeyPress}
     />
   );
 }
