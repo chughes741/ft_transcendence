@@ -1,8 +1,9 @@
-import React, { useContext } from "react";
+import React, { useContext, useEffect, useRef } from "react";
 import Message, { MessageType } from "./Message";
 import styled from "styled-components";
 import { WebsocketContext } from "../contexts/WebsocketContext";
 import { Form } from "react-router-dom";
+import Input from "../components/Input";
 
 const StyledRoom = styled.div`
   .title {
@@ -25,7 +26,8 @@ const StyledRoom = styled.div`
     background-color: white;
     .messages {
       flex: 1;
-      overflow-y: visible;
+      overflow-y: scroll;
+      max-height: 80vh;
       padding-bottom: 1rem;
       margin-bottom: 1rem;
       border-bottom: 1px solid #ccc;
@@ -82,8 +84,17 @@ const Room = (room: RoomProps) => {
     room.onSendMessage(room.roomName, textValue);
     setTextValue("");
   };
-  const currentUser = socket.id; // Add this line
+  const currentUser = socket.id;
   const groupedMessages = groupMessages(room.messages);
+
+  const lastMessageRef = useRef<HTMLDivElement>(null);
+
+  // When new messages are received, scroll to it
+  useEffect(() => {
+    if (lastMessageRef.current) {
+      lastMessageRef.current.scrollIntoView({ behavior: "smooth" });
+    }
+  }, [groupedMessages]);
 
   return (
     <StyledRoom>
@@ -94,22 +105,22 @@ const Room = (room: RoomProps) => {
         <div className="messages">
           {groupedMessages.map((message, index) => (
             <Message
+              ref={index === groupedMessages.length - 1 ? lastMessageRef : null}
               key={index}
               message={message}
-              currentUser={currentUser} // Add this line
+              currentUser={currentUser}
             />
           ))}
         </div>
-        <Form onSubmit={sendMessage}>
-          <input
+        <form onSubmit={sendMessage}>
+          <Input
             value={textValue}
-            type="text"
-            required
-            placeholder="Write right here"
+            type="textarea"
+            placeholder="Write your message..."
             onChange={(event) => setTextValue(event.target.value)}
+            onEnterPress={sendMessage}
           />
-          <button type="submit">Send</button>
-        </Form>
+        </form>
       </div>
     </StyledRoom>
   );

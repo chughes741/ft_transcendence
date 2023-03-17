@@ -47,6 +47,7 @@ export type MessageType = {
 type Props = {
   message: MessageType;
   currentUser: string;
+  ref: React.RefObject<HTMLDivElement> | null;
 };
 
 const Message: React.FC<Props> = ({ message, currentUser }) => {

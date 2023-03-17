@@ -58,6 +58,7 @@ export class ChatGateway
     client: Socket,
     { room, message }: { room: string; message: string }
   ) {
+    if (!message) return;
     const user = client.id;
     this.server.to(room).emit("roomMessage", { user, room, message });
     this.server.emit("onMessage", { user, room, message }); // FIXME: temporarily broadcast to all clients, for testing purposes

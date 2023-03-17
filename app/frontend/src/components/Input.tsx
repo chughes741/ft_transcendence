@@ -1,22 +1,23 @@
 import styled from "styled-components";
 
-const StyledInput = styled.input`
+const StyledInput = styled.textarea`
   background: rgba(255, 255, 255, 0.15);
   box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
-  border-radius: 2rem;
-  width: 80%;
-  height: 3.5rem;
+  border-radius: 1rem;
+  width: 98%;
+  min-height: 3.5rem;
+  max-height: 50%;
   padding: 1rem;
   border: none;
   outline: none;
   color: #3c354e;
-  font-size: 1.2rem;
-  font-weight: bold;
+  font-size: 0.9rem;
+  resize: none;
   &:focus {
     display: flex;
     box-shadow: 0 0 0 0.2rem #b9abe0;
     backdrop-filter: blur(12rem);
-    border-radius: 2rem;
+    border-radius: 1rem;
   }
   &::placeholder {
     color: #b9abe099;
@@ -30,21 +31,30 @@ type InputProps = {
   type: string;
   placeholder: string;
   onChange: (event) => void;
+  onEnterPress?: (event) => void;
 };
 
 export default function Input({
   value,
   type,
   placeholder,
-  onChange
+  onChange,
+  onEnterPress
 }: InputProps): styled {
+  const handleKeyPress = (event: React.KeyboardEvent) => {
+    if (event.key === "Enter" && onEnterPress) {
+      event.preventDefault();
+      onEnterPress(event);
+    }
+  };
   return (
     <StyledInput
       required
-      type={type}
+      as={type === "textarea" ? "textarea" : "input"}
       placeholder={placeholder}
       value={value}
       onChange={onChange}
+      onKeyPress={handleKeyPress}
     />
   );
 }
