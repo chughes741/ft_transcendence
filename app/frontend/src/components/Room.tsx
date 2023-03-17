@@ -121,13 +121,13 @@ const groupMessages = (messages: Array<MessageType>): Array<MessageType> => {
 const Room = (room: RoomProps) => {
   const [textValue, setTextValue] = React.useState("");
   const socket = useContext(WebsocketContext);
-  const messageInputRef = useRef<HTMLTextAreaElement>(null);
+  const messageInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     if (messageInputRef.current) {
       messageInputRef.current.focus();
     }
-  }, [room]);
+  }, [room.roomName]);
 
   const sendMessage = (event) => {
     event.preventDefault();
@@ -168,6 +168,7 @@ const Room = (room: RoomProps) => {
           <div className="input-chat-container">
             <form onSubmit={sendMessage}>
               <ResizableTextArea
+                ref={messageInputRef}
                 value={textValue}
                 placeholder="You take the text, and you put it in the box."
                 onChange={(event) => setTextValue(event.target.value)}

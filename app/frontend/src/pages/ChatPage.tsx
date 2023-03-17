@@ -7,6 +7,7 @@ import { MessageType } from "../components/Message";
 import "./ChatPage.tsx.css";
 import styled from "styled-components";
 import { CreateRoomModal } from "../components/CreateRoomModal";
+import Button from "../components/Button";
 
 const StyledChatPage = styled.div`
   display: flex;
@@ -19,7 +20,7 @@ const StyledChatPage = styled.div`
     border-right: 1px solid #ccc;
     padding: 1rem;
     overflow-y: scroll;
-    max-width
+    width: 20vw;
 
     .room {
       display: flex;
@@ -62,9 +63,9 @@ const StyledChatPage = styled.div`
         white-space: pre-wrap; // Add this line
 
         &::before {
-          content: "•";
+          content: "• ";
           color: red;
-          font-size: 2.5rem;
+          font-size: 0.9rem;
         }
       }
     }
@@ -99,6 +100,9 @@ export default function ChatPage() {
     Array<MessageType>
   >([]);
   const [showModal, setShowModal] = useState(false);
+  const [unreadMessages, setUnreadMessages] = useState<{
+    [key: string]: number;
+  }>({});
 
   const socket = useContext(WebsocketContext);
 
@@ -152,6 +156,14 @@ export default function ChatPage() {
     };
   }, [socket]);
 
+  useEffect(() => {
+    if (rooms[currentRoomName]) {
+      setCurrentRoomMessages(rooms[currentRoomName]);
+    } else {
+      setCurrentRoomMessages([]);
+    }
+  }, [rooms, currentRoomName]);
+
   const sendRoomMessage = (roomName: string, message: string) => {
     socket.emit("sendMessage", { room: roomName, message });
   };
@@ -179,52 +191,54 @@ export default function ChatPage() {
       return newRooms;
     });
     setCurrentRoomName(roomName);
-    setCurrentRoomMessages([]);
   };
 
   return (
-    <>
+    <StyledChatPage>
       <SideBar />
-      <StyledChatPage>
-        <div className="room-list">
-          <button onClick={() => setShowModal(true)}>Create New Room</button>
-          {Object.entries(rooms).map(([roomId, messages]) => (
-            <div
-              key={roomId}
-              className="room"
-              onClick={() => {
-                setCurrentRoomName(roomId);
-                setCurrentRoomMessages(messages);
-              }}
-            >
-              <img
-                src={`https://i.pravatar.cc/150?u=${roomId}`} // Use a random profile picture for each room
-                alt="Profile"
-              />
-              <div className="room-info">
-                <div className="room-name">{roomId}</div>
-                <div className="last-message">
-                  {messages.length > 0
-                    ? messages[messages.length - 1].message
-                    : ""}
-                </div>
+      <div className="room-list">
+        <Button
+          content="Create New Room"
+          onClick={() => setShowModal(true)}
+          width="100%"
+        />
+        {Object.entries(rooms).map(([roomId, messages]) => (
+          <div
+            key={roomId}
+            className="room"
+            onClick={() => {
+              setCurrentRoomName(roomId);
+              setCurrentRoomMessages(messages);
+            }}
+          >
+            <img
+              src={`https://i.pravatar.cc/150?u=${roomId}`} // Use a random profile picture for each room
+              alt="Profile"
+            />
+            <div className="room-info">
+              <div className="room-name">{roomId}</div>
+              <div className="last-message">
+                {messages.length > 0
+                  ? messages[messages.length - 1].message
+                  : ""}
               </div>
             </div>
-          ))}
-        </div>
-        <div className="chat-area">
-          <CreateRoomModal
-            showModal={showModal}
-            closeModal={() => setShowModal(false)}
-            onCreateRoom={createNewRoom}
-          />
-          <Room
-            roomName={currentRoomName}
-            messages={currentRoomMessages}
-            onSendMessage={handleSendMessage}
-          />
-        </div>
-      </StyledChatPage>
-    </>
+          </div>
+        ))}
+      </div>
+      <div className="chat-area">
+        <CreateRoomModal
+          showModal={showModal}
+          closeModal={() => setShowModal(false)}
+          onCreateRoom={createNewRoom}
+        />
+        <Room
+          key={currentRoomName}
+          roomName={currentRoomName}
+          messages={currentRoomMessages}
+          onSendMessage={handleSendMessage}
+        />
+      </div>
+    </StyledChatPage>
   );
 }

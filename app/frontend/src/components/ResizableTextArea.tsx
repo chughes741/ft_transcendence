@@ -1,12 +1,12 @@
 // ResizableTextarea.tsx
-import React from "react";
+import React, { forwardRef } from "react";
 import styled from "styled-components";
 
 const StyledTextarea = styled.textarea`
-  resize: none;
-  overflow: hidden;
+  resize: auto vertical;
+  overflow: scroll;
   min-height: 38px;
-  max-height: 200px;
+  max-height: 40 vh;
   width: 100%;
   outline: none;
   border: 1px solid #ccc;
@@ -21,27 +21,25 @@ type ResizableTextareaProps = {
   onEnterPress?: (event: React.KeyboardEvent) => void;
 };
 
-const ResizableTextarea: React.FC<ResizableTextareaProps> = ({
-  value,
-  placeholder,
-  onChange,
-  onEnterPress
-}) => {
-  const handleKeyPress = (event: React.KeyboardEvent) => {
-    if (event.key === "Enter" && onEnterPress) {
-      event.preventDefault();
-      onEnterPress(event);
-    }
-  };
+const ResizableTextArea = forwardRef<HTMLDivElement, ResizableTextareaProps>(
+  ({ value, placeholder, onChange, onEnterPress }, ref) => {
+    const handleKeyPress = (event: React.KeyboardEvent) => {
+      if (event.key === "Enter" && onEnterPress) {
+        event.preventDefault();
+        onEnterPress(event);
+      }
+    };
 
-  return (
-    <StyledTextarea
-      value={value}
-      placeholder={placeholder}
-      onChange={onChange}
-      onKeyPress={handleKeyPress}
-    />
-  );
-};
+    return (
+      <StyledTextarea
+        ref={ref}
+        value={value}
+        placeholder={placeholder}
+        onChange={onChange}
+        onKeyPress={handleKeyPress}
+      />
+    );
+  }
+);
 
-export default ResizableTextarea;
+export default ResizableTextArea;
