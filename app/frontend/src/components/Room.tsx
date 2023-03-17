@@ -121,6 +121,13 @@ const groupMessages = (messages: Array<MessageType>): Array<MessageType> => {
 const Room = (room: RoomProps) => {
   const [textValue, setTextValue] = React.useState("");
   const socket = useContext(WebsocketContext);
+  const messageInputRef = useRef<HTMLTextAreaElement>(null);
+
+  useEffect(() => {
+    if (messageInputRef.current) {
+      messageInputRef.current.focus();
+    }
+  }, [room]);
 
   const sendMessage = (event) => {
     event.preventDefault();

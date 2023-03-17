@@ -1,4 +1,4 @@
-import React from "react";
+import React, { forwardRef } from "react";
 import styled from "styled-components";
 
 interface StyledMessageProps {
@@ -52,26 +52,27 @@ export type MessageType = {
 type Props = {
   message: MessageType;
   currentUser: string;
-  ref: React.RefObject<HTMLDivElement> | null;
 };
 
-const Message: React.FC<Props> = ({ message, currentUser }) => {
-  const isCurrentUser = message.user === currentUser;
-  return (
-    <StyledMessage isCurrentUser={isCurrentUser}>
-      {message.displayUser && (
-        <span className="sender">{isCurrentUser ? "Me" : message.user}</span>
-      )}
-      <MessageContent
-        className={`message-content ${isCurrentUser ? "own-message" : ""}`}
-      >
-        {message.message}
-      </MessageContent>
-      {message.displayTimestamp && (
-        <span className="timestamp">{message.timestamp}</span>
-      )}
-    </StyledMessage>
-  );
-};
+const Message = forwardRef<HTMLDivElement, Props>(
+  ({ message, currentUser }, ref) => {
+    const isCurrentUser = message.user === currentUser;
+    return (
+      <StyledMessage isCurrentUser={isCurrentUser}>
+        {message.displayUser && (
+          <span className="sender">{isCurrentUser ? "Me" : message.user}</span>
+        )}
+        <MessageContent
+          className={`message-content ${isCurrentUser ? "own-message" : ""}`}
+        >
+          {message.message}
+        </MessageContent>
+        {message.displayTimestamp && (
+          <span className="timestamp">{message.timestamp}</span>
+        )}
+      </StyledMessage>
+    );
+  }
+);
 
 export default Message;

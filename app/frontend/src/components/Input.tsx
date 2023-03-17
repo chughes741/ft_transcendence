@@ -49,9 +49,9 @@ export default function Input({
     }
   };
   return (
-    <ResizableTextarea
-      // required
-      // as={type === "textarea" ? "textarea" : "input"}
+    <StyledInput
+      required
+      as={type === "textarea" ? "textarea" : "input"}
       placeholder={placeholder}
       value={value}
       onChange={onChange}

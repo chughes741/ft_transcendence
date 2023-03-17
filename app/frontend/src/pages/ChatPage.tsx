@@ -6,6 +6,7 @@ import Room from "../components/Room";
 import { MessageType } from "../components/Message";
 import "./ChatPage.tsx.css";
 import styled from "styled-components";
+import { CreateRoomModal } from "../components/CreateRoomModal";
 
 const StyledChatPage = styled.div`
   display: flex;
@@ -97,6 +98,7 @@ export default function ChatPage() {
   const [currentRoomMessages, setCurrentRoomMessages] = useState<
     Array<MessageType>
   >([]);
+  const [showModal, setShowModal] = useState(false);
 
   const socket = useContext(WebsocketContext);
 
@@ -112,6 +114,17 @@ export default function ChatPage() {
   };
 
   useEffect(() => {
+    socket.on("connect", () => {
+      console.log("Successfully connected to the server");
+    });
+    socket.on("connect_error", (err) => {
+      console.log("Error connecting to the server", err);
+    });
+
+    socket.on("disconnect", () => {
+      console.log("Successfully disconnected from the server");
+    });
+
     socket.on("onMessage", (newMessage: MessagePayload) => {
       console.log("Ding ding, you've got mail:", newMessage);
 
@@ -155,14 +168,17 @@ export default function ChatPage() {
     setTextValue("");
   };
 
-  const createNewRoom = () => {
-    const newRoomId = `Room${Math.floor(Math.random() * 10000)}`;
+  const createNewRoom = (
+    roomName: string,
+    roomStatus: "public" | "private"
+  ) => {
+    socket.emit("joinRoom", roomName);
     setRooms((prevRooms) => {
       const newRooms = { ...prevRooms };
-      newRooms[newRoomId] = [];
+      newRooms[roomName] = [];
       return newRooms;
     });
-    setCurrentRoomName(newRoomId);
+    setCurrentRoomName(roomName);
     setCurrentRoomMessages([]);
   };
 
@@ -171,7 +187,7 @@ export default function ChatPage() {
       <SideBar />
       <StyledChatPage>
         <div className="room-list">
-          {/* Update how rooms are rendered */}
+          <button onClick={() => setShowModal(true)}>Create New Room</button>
           {Object.entries(rooms).map(([roomId, messages]) => (
             <div
               key={roomId}
@@ -195,9 +211,13 @@ export default function ChatPage() {
               </div>
             </div>
           ))}
-          <button onClick={createNewRoom}>Create New Room</button>
         </div>
         <div className="chat-area">
+          <CreateRoomModal
+            showModal={showModal}
+            closeModal={() => setShowModal(false)}
+            onCreateRoom={createNewRoom}
+          />
           <Room
             roomName={currentRoomName}
             messages={currentRoomMessages}
