@@ -2,6 +2,7 @@ import { useEffect } from "react";
 import "src/pages/HomePage.tsx.css";
 import { useOutletContext } from "react-router-dom";
 import SideBar from "src/components/SideBar";
+import { Helmet } from "react-helmet";
 
 type OuletContext = {
   name: string;
@@ -19,7 +20,12 @@ export default function HomePage() {
 
   return (
     <>
+    <Helmet>
+      <title>Transcendence | Welcome page <i>allo</i></title>
+    </Helmet>
+    <div className="full-container">
       <SideBar />
+    </div>
     </>
   );
 }

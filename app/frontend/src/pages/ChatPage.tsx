@@ -13,14 +13,12 @@ const StyledChatPage = styled.div`
   height: 100vh;
   position: fixed;
   top: 0;
-  left: 80px;
 
   .room-list {
-    flex: 0 0 300px; // Adjust this percentage to control the width of the left part
-    min-width: 300px;
     border-right: 1px solid #ccc;
     padding: 1rem;
     overflow-y: scroll;
+    max-width
 
     .room {
       display: flex;

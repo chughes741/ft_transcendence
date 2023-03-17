@@ -7,6 +7,11 @@ import Input from "../components/Input";
 import ResizableTextArea from "./ResizableTextArea";
 
 const StyledRoom = styled.div`
+
+
+
+
+
   display: flex;
   flex-direction: column;
   height: 100%;
@@ -15,6 +20,19 @@ const StyledRoom = styled.div`
     display: flex;
     flex-direction: column;
     width: 100%;
+  }
+
+
+
+
+    .input-chat-container {
+      width: 100%
+      height: 100%;
+    }
+
+
+
+
 
     .title {
       h3 {
@@ -27,6 +45,9 @@ const StyledRoom = styled.div`
       }
     }
 
+
+
+
     .message-container {
       flex: 1;
       display: flex;
@@ -37,7 +58,6 @@ const StyledRoom = styled.div`
       background-color: white;
       height: 80vh;
       max-width: 100%;
-
       .messages {
         flex: 1;
         overflow-y: scroll;
@@ -47,19 +67,16 @@ const StyledRoom = styled.div`
         display: flex;
         flex-direction: column;
       }
-
       Form {
         display: flex;
         justify-content: space-between;
         align-items: center;
       }
-
       form {
         display: flex;
         justify-content: space-between;
         align-items: center;
       }
-
       input {
         flex: 1;
         margin-right: 1rem;
@@ -71,7 +88,7 @@ const StyledRoom = styled.div`
         max-width: 100%;
       }
     }
-  }
+
 `;
 
 type RoomProps = {
@@ -141,7 +158,7 @@ const Room = (room: RoomProps) => {
               />
             ))}
           </div>
-          <div className="input-container">
+          <div className="input-chat-container">
             <form onSubmit={sendMessage}>
               <ResizableTextArea
                 value={textValue}

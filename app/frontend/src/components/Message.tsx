@@ -8,12 +8,17 @@ interface StyledMessageProps {
 const StyledMessage = styled.div<StyledMessageProps>`
   display: flex;
   flex-direction: column;
-  margin-bottom: 5px;
   align-items: ${({ isCurrentUser }) =>
     isCurrentUser ? "flex-end" : "flex-start"};
+  width: 93.5%;
+  margin: 5px 0;
+
+
+
+
 
   .sender {
-    font-weight: bold;
+    font-weight: 700;
     color: #999;
   }
 
