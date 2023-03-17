@@ -44,7 +44,9 @@ export default function ChatPage() {
         roomId: newMessage.room,
         message: newMessage.message,
         timestamp,
-        isOwn: newMessage.room === socket.id
+        isOwn: newMessage.user === socket.id,
+        displayUser: true,
+        displayTimestamp: true
       };
 
       addMessageToRoom(newMessage.room, messageData);

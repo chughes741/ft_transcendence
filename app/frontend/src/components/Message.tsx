@@ -1,28 +1,36 @@
 import React from "react";
 import styled from "styled-components";
 
-const StyledMessage = styled.div`
+interface StyledMessageProps {
+  isCurrentUser: boolean;
+}
+
+const StyledMessage = styled.div<StyledMessageProps>`
   display: flex;
   flex-direction: column;
-  padding: 8px 12px;
-  margin-bottom: 8px;
-  border-radius: 4px;
-  background-color: #f1f1f1;
-  max-width: 80%;
-
-  &.own-message {
-    background-color: #89cff0;
-    align-self: flex-end;
-  }
+  margin-bottom: 5px;
+  align-items: ${({ isCurrentUser }) =>
+    isCurrentUser ? "flex-end" : "flex-start"};
 
   .sender {
-    font-size: 0.8rem;
-    color: #777;
+    font-weight: bold;
+    color: #999;
   }
 
   .timestamp {
-    font-size: 0.7rem;
-    color: gray;
+    font-size: 12px;
+    color: #999;
+  }
+`;
+
+const MessageContent = styled.div`
+  padding: 8px 12px;
+  border-radius: 4px;
+  background-color: #ccc;
+
+  &.own-message {
+    background-color: #00b4d8;
+    align-self: flex-end;
   }
 `;
 
@@ -32,14 +40,30 @@ export type MessageType = {
   message: string;
   timestamp: string;
   isOwn: boolean;
+  displayUser: boolean;
+  displayTimestamp: boolean;
 };
 
-const Message = (message: MessageType) => {
+type Props = {
+  message: MessageType;
+  currentUser: string;
+};
+
+const Message: React.FC<Props> = ({ message, currentUser }) => {
+  const isCurrentUser = message.user === currentUser;
   return (
-    <StyledMessage className={`message ${message.isOwn ? "own-message" : ""}`}>
-      <span className="sender">{message.user}</span>
-      <span className="timestamp">{message.timestamp}</span>
-      <div className="message-content">{message.message}</div>
+    <StyledMessage isCurrentUser={isCurrentUser}>
+      {message.displayUser && (
+        <span className="sender">{isCurrentUser ? "Me" : message.user}</span>
+      )}
+      <MessageContent
+        className={`message-content ${isCurrentUser ? "own-message" : ""}`}
+      >
+        {message.message}
+      </MessageContent>
+      {message.displayTimestamp && (
+        <span className="timestamp">{message.timestamp}</span>
+      )}
     </StyledMessage>
   );
 };
