@@ -7,19 +7,19 @@ type OuletContext = {
   name: string;
 };
 
-export default function HomePage() {
-  useEffect(() => {
-    document.body.classList.add("Welcome");
-    return () => {
-      document.body.classList.remove("Welcome");
-    };
-  });
-
+export default function ProfilePage() {
   const { name } = useOutletContext<OuletContext>();
 
   return (
     <>
-      <SideBar />
+      <div className="profile-page">
+        <div className="sidebar-wrapper">
+          <SideBar />
+        </div>
+        <div className="profile-wrapper">
+          <div>Right of sidebar page </div>
+        </div>
+      </div>
     </>
   );
 }
