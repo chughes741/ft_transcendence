@@ -1,5 +1,12 @@
+/*******************/
+/*     System      */
+/*******************/
 import React, { useState, useRef, useEffect } from "react";
-import "./ChatPage.tsx.css";
+
+/***************/
+/*     CSS     */
+/***************/
+import "./styles/ChatPage.css";
 
 interface CreateRoomModalProps {
   showModal: boolean;

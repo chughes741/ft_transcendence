@@ -20,7 +20,7 @@ import Button from "../../components/Button";
 /***************/
 /*     CSS     */
 /***************/
-import "./ChatPage.tsx.css";
+import "./styles/ChatPage.css";
 
 type MessagePayload = {
   user: string;

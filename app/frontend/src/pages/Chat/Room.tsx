@@ -1,93 +1,24 @@
+/*******************/
+/*     System      */
+/*******************/
 import React, { useContext, useEffect, useRef } from "react";
-import Message, { MessageType } from "./Message";
-import styled from "styled-components";
+
+/********************/
+/*     Contexts     */
+/********************/
 import { WebsocketContext } from "../../contexts/WebsocketContext";
-import { Form } from "react-router-dom";
+
+/***********************/
+/*     Components      */
+/***********************/
 import Input from "../../components/Input";
 import ResizableTextArea from "../../components/ResizableTextArea";
-import { BsTypeH2 } from "react-icons/bs";
+import Message, { MessageType } from "./Message";
 
-const StyledRoom = styled.div`
-
-  display: flex;
-  flex-direction: column;
-  min-height: 100%;
-  max-height: 100%;
-  .chat-area {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    width: 100%;
-  }
-
-
-
-
-    .input-chat-container {
-      width: 100%
-      height: 100%;
-    }
-
-
-
-
-
-    .title {
-      h2 {
-        background-color: #0077b6;
-        border-radius: 5px 5px 0px 0px;
-        text-align: center;
-        margin: 0;
-        padding: 0;
-        width: 100%;
-      }
-    }
-
-
-
-
-    .message-container {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      border: 1px solid #ccc;
-      border-radius: 0px 0px 5px 5px;
-      margin-bottom: 1rem;
-      background-color: white;
-      height: 80vh;
-      max-width: 100%;
-      .messages {
-        flex: 1;
-        overflow-y: scroll;
-        padding-bottom: 1rem;
-        margin-bottom: 1rem;
-        border-bottom: 1px solid #ccc;
-        display: flex;
-        flex-direction: column;
-      }
-      Form {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-      }
-      form {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-      }
-      input {
-        flex: 1;
-        margin-right: 1rem;
-        padding: 0.5rem 1rem;
-        border: 1px solid #ccc;
-        border-radius: 5px; // Add a border radius to make the input look like the textbox in the prompt
-        min-height: 10vh;
-        max-height: 40vh;
-        max-width: 100%;
-      }
-    }
-
-`;
+/***************/
+/*     CSS     */
+/***************/
+import "./styles/Room.css";
 
 type RoomProps = {
   roomName: string;
@@ -145,9 +76,9 @@ const Room = (room: RoomProps) => {
   }, [groupedMessages]);
 
   return (
-    <StyledRoom>
+    <div className="room">
       <div className="chat-area">
-        <div className="title">
+        <div className="room-title">
           <h2>{room.roomName}</h2>
         </div>
         <div className="message-container">
@@ -176,7 +107,7 @@ const Room = (room: RoomProps) => {
           </div>
         </div>
       </div>
-    </StyledRoom>
+    </div>
   );
 };
 

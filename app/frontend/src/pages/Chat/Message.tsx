@@ -1,6 +1,13 @@
+/*******************/
+/*     System      */
+/*******************/
 import React, { forwardRef } from "react";
 import styled from "styled-components";
-import "./Message.tsx.css";
+
+/***************/
+/*     CSS     */
+/***************/
+import "./styles/Message.css";
 
 interface StyledMessageProps {
   isCurrentUser: boolean;
