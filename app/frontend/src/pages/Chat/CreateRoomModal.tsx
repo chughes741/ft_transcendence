@@ -9,6 +9,7 @@ import Button from "../../components/Button";
 /*     CSS     */
 /***************/
 import "./styles/ChatPage.css";
+import { useRoomModal } from "./useRoomModal";
 
 interface CreateRoomModalProps {
   showModal: boolean;
@@ -25,49 +26,49 @@ export const CreateRoomModal: React.FC<CreateRoomModalProps> = ({
   closeModal,
   onCreateRoom
 }) => {
-  const [roomName, setRoomName] = useState<string>("");
   const [roomStatus, setRoomStatus] = useState<
     "public" | "private" | "password"
   >("public"); // defaults to public
-  const [password, setPassword] = useState<string>("");
-  const [showPassword, setShowPassword] = useState<boolean>(false);
-  const roomNameInput = useRef<HTMLInputElement>(null); // To focus on the input field
+  // Creates a bogus ref to be used in the `useEffect` below.
+  const handleSubmitRef = useRef<() => void>(() => {
+    return; // To prevent linter errors
+  });
 
+  // Improves code reusability btw Create and Join RoomModals
+  const {
+    roomName,
+    setRoomName,
+    password,
+    setPassword,
+    showPassword,
+    roomNameInput,
+    togglePasswordVisibility,
+    handleKeyPress
+  } = useRoomModal(showModal, closeModal, handleSubmitRef.current);
+
+  // Update handleSubmit ref with the actual implementation
   useEffect(() => {
-    if (showModal && roomNameInput.current) {
-      roomNameInput.current.focus();
-    }
-  }, [showModal]);
-
-  const togglePasswordVisibility = () => {
-    setShowPassword(!showPassword);
-  };
-
-  const handleSubmit = () => {
-    // Necessary check b/c we're not using a `form`, but a `button` w `onClick`
-    if (roomStatus === "password" && !password) {
-      alert("Please enter a room password.");
-      return;
-    }
-    if (roomName.trim().length <= 0) {
-      alert("Please enter a room name.");
-      return;
-    }
-    console.log("Creating room modal: ", roomName, roomStatus, password);
-    onCreateRoom(roomName, roomStatus, password);
-    setRoomName("");
-    setPassword("");
-    closeModal();
-  };
-
-  const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === "Enter") {
-      handleSubmit();
-    }
-    if (e.key === "Escape") {
+    handleSubmitRef.current = () => {
+      // Necessary check b/c we're not using a `form`, but a `button` w `onClick`
+      if (roomStatus === "password" && !password) {
+        alert("Please enter a room password.");
+        return;
+      }
+      if (roomName.trim().length <= 0) {
+        alert("Please enter a room name.");
+        return;
+      }
+      console.log("Creating room modal: ", roomName, roomStatus, password);
+      onCreateRoom(roomName, roomStatus, password);
+      setRoomName("");
+      setPassword("");
       closeModal();
-    }
-  };
+    };
+  }, [roomName, password, closeModal, onCreateRoom]);
+
+  if (!showModal) {
+    return null;
+  }
 
   if (!showModal) {
     return null;
@@ -144,7 +145,7 @@ export const CreateRoomModal: React.FC<CreateRoomModalProps> = ({
           </select>
           <Button
             content="Create"
-            onClick={handleSubmit}
+            onClick={handleSubmitRef.current}
             width="100%"
           ></Button>
         </div>
