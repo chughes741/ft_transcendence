@@ -10,6 +10,7 @@ const StyledButton = styled.button`
   color: white;
   border-radius: 2rem;
   cursor: pointer;
+  margin: 0.75rem 0;
 `;
 
 type ButtonProps = {
@@ -23,8 +24,6 @@ export default function Button({
   onClick,
   width
 }: ButtonProps): styled {
-  const style = 'style="width: ' + width + '"';
-
   return (
     <StyledButton
       onClick={onClick}

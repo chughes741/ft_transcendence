@@ -21,6 +21,24 @@ interface CreateRoomModalProps {
   ) => void;
 }
 
+/**
+ * Modal for creating a new room.
+ *
+ * Template modal(props: ChildrenProps) {
+ * - Fonctions useEffect, mais à overrider
+ * Return :
+ * - header (commun)
+ * - room name(commun)
+ *
+ * -  password (props)
+ * -  input  (props)
+ *
+ * - footer (communn)
+ *
+ * }
+ *
+ */
+
 export const CreateRoomModal: React.FC<CreateRoomModalProps> = ({
   showModal,
   closeModal,
@@ -70,10 +88,6 @@ export const CreateRoomModal: React.FC<CreateRoomModalProps> = ({
     return null;
   }
 
-  if (!showModal) {
-    return null;
-  }
-
   return (
     <>
       <div
@@ -82,24 +96,26 @@ export const CreateRoomModal: React.FC<CreateRoomModalProps> = ({
       ></div>
       <div className="modal">
         <div className="modal-content">
-          <h4>Create Room</h4>
+          <h3>Create Room</h3>
           <label htmlFor="room-name">Room Name</label>
-          <input
-            type="text"
-            id="room-name"
-            ref={roomNameInput}
-            value={roomName}
-            maxLength={25}
-            onChange={(e) => setRoomName(e.target.value)}
-            onKeyDown={handleKeyPress}
-            required
-          />
+          <div className="input-container-modal">
+            <input
+              type="text"
+              id="room-name"
+              ref={roomNameInput}
+              value={roomName}
+              maxLength={25}
+              onChange={(e) => setRoomName(e.target.value)}
+              onKeyDown={handleKeyPress}
+              required
+            />
+          </div>
           {roomStatus === "password" && (
             <label htmlFor="room-password">Password</label>
           )}
           {roomStatus === "password" && (
             <>
-              <div className="password-container">
+              <div className="input-container-modal">
                 <input
                   type={showPassword ? "text" : "password"}
                   id="room-password"
@@ -112,6 +128,7 @@ export const CreateRoomModal: React.FC<CreateRoomModalProps> = ({
                 {showPassword ? (
                   <FiEye
                     onClick={togglePasswordVisibility}
+                    size={24}
                     style={{
                       cursor: "pointer",
                       color: "blue",
@@ -121,6 +138,7 @@ export const CreateRoomModal: React.FC<CreateRoomModalProps> = ({
                 ) : (
                   <FiEyeOff
                     onClick={togglePasswordVisibility}
+                    size={24}
                     style={{
                       cursor: "pointer",
                       color: "gray",
@@ -132,19 +150,23 @@ export const CreateRoomModal: React.FC<CreateRoomModalProps> = ({
             </>
           )}
           <label htmlFor="room-status">Room Status</label>
-          <select
-            id="room-status"
-            value={roomStatus}
-            onChange={(e) =>
-              setRoomStatus(e.target.value as "public" | "private" | "password")
-            }
-          >
-            <option value="public">Public</option>
-            <option value="private">Private</option>
-            <option value="password">Password Protected</option>
-          </select>
+          <div className="input-container-modal">
+            <select
+              id="room-status"
+              value={roomStatus}
+              onChange={(e) =>
+                setRoomStatus(
+                  e.target.value as "public" | "private" | "password"
+                )
+              }
+            >
+              <option value="public">Public</option>
+              <option value="private">Private</option>
+              <option value="password">Password Protected</option>
+            </select>
+          </div>
           <Button
-            content="Create"
+            content="Create Room"
             onClick={handleSubmitRef.current}
             width="100%"
           ></Button>

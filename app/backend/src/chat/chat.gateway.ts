@@ -34,8 +34,8 @@ export class ChatGateway
     logger.log(`Client disconnected: ${client.id}`);
   }
 
-  @SubscribeMessage("joinRoom")
-  async joinRoom(
+  @SubscribeMessage("createRoom")
+  async createRoom(
     client: Socket,
     room: { roomName: string; roomStatus: string; password?: string }
   ) {
@@ -43,6 +43,23 @@ export class ChatGateway
       `Received joinRoom request from ${client.id} for room ${room.roomName}: ${
         room.roomStatus
       } ${room.password ? `with password ${room.password}` : ""}`
+    );
+    client.join(room.roomName);
+    this.server
+      .to(room.roomName)
+      .emit("roomMessage", `User ${client.id} joined room ${room.roomName}`);
+    logger.log(`User ${client.id} joined room ${room.roomName}`);
+  }
+
+  @SubscribeMessage("joinRoom")
+  async joinRoom(
+    client: Socket,
+    room: { roomName: string; password?: string }
+  ) {
+    logger.log(
+      `Received joinRoom request from ${client.id} for room ${room.roomName} ${
+        room.password ? `: with password ${room.password}` : ""
+      }`
     );
     client.join(room.roomName);
     this.server

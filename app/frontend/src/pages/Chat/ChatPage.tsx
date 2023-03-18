@@ -21,6 +21,7 @@ import Button from "../../components/Button";
 /*     CSS     */
 /***************/
 import "./styles/ChatPage.css";
+import { JoinRoomModal } from "./JoinRoomModal";
 
 type MessagePayload = {
   user: string;
@@ -44,7 +45,8 @@ export default function ChatPage() {
   const [currentRoomMessages, setCurrentRoomMessages] = useState<
     Array<MessageType>
   >([]);
-  const [showModal, setShowModal] = useState(false);
+  const [showCreateRoomModal, setShowCreateRoomModal] = useState(false);
+  const [showJoinRoomModal, setShowJoinRoomModal] = useState(false);
   const [unreadMessages, setUnreadMessages] = useState<{
     [key: string]: number;
   }>({});
@@ -123,7 +125,18 @@ export default function ChatPage() {
     password: string
   ) => {
     console.log("ChatPage: Creating new room", roomName, roomStatus, password);
-    socket.emit("joinRoom", { roomName, roomStatus, password });
+    socket.emit("createRoom", { roomName, roomStatus, password });
+    setRooms((prevRooms) => {
+      const newRooms = { ...prevRooms };
+      newRooms[roomName] = [];
+      return newRooms;
+    });
+    setCurrentRoomName(roomName);
+  };
+
+  const joinRoom = (roomName: string, password: string) => {
+    console.log("ChatPage: Creating new room", roomName, password);
+    socket.emit("joinRoom", { roomName, password });
     setRooms((prevRooms) => {
       const newRooms = { ...prevRooms };
       newRooms[roomName] = [];
@@ -138,9 +151,16 @@ export default function ChatPage() {
       <div className="room-list">
         <Button
           content="Create New Room"
-          onClick={() => setShowModal(true)}
+          onClick={() => setShowCreateRoomModal(true)}
           width="100%"
         />
+        <div> </div>
+        <Button
+          content="Join Room"
+          onClick={() => setShowJoinRoomModal(true)}
+          width="100%"
+        />
+        <div> </div>
         {Object.entries(rooms).map(([roomId, messages]) => (
           <div
             key={roomId}
@@ -167,9 +187,14 @@ export default function ChatPage() {
       </div>
       <div className="room-area">
         <CreateRoomModal
-          showModal={showModal}
-          closeModal={() => setShowModal(false)}
+          showModal={showCreateRoomModal}
+          closeModal={() => setShowCreateRoomModal(false)}
           onCreateRoom={createNewRoom}
+        />
+        <JoinRoomModal
+          showModal={showJoinRoomModal}
+          closeModal={() => setShowJoinRoomModal(false)}
+          onCreateRoom={joinRoom}
         />
         <Room
           key={currentRoomName}
