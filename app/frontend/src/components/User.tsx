@@ -19,7 +19,7 @@ type UserType = {
 const User = (user: UserType) => {
   return (
     <StyledUser>
-      <h4>{user.nick}</h4>
+      <span>{user.nick}</span>
       {/* Add more user-related info and functionalities here */}
     </StyledUser>
   );

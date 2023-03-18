@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
+import "./ChatPage.tsx.css";
 
 interface CreateRoomModalProps {
   showModal: boolean;

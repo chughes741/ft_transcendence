@@ -1,80 +1,26 @@
+/*******************/
+/*     System      */
+/*******************/
 import { useState, useEffect, useContext } from "react";
-import { WebsocketContext } from "src/contexts/WebsocketContext";
-import { Form } from "react-router-dom";
-import SideBar from "src/components/SideBar";
-import Room from "../components/Room";
-import { MessageType } from "../components/Message";
+
+/********************/
+/*     Contexts     */
+/********************/
+import { WebsocketContext } from "../../contexts/WebsocketContext";
+
+/***********************/
+/*     Components      */
+/***********************/
+import SideBar from "../../components/SideBar";
+import Room from "./Room";
+import { MessageType } from "./Message";
+import { CreateRoomModal } from "./CreateRoomModal";
+import Button from "../../components/Button";
+
+/***************/
+/*     CSS     */
+/***************/
 import "./ChatPage.tsx.css";
-import styled from "styled-components";
-import { CreateRoomModal } from "../components/CreateRoomModal";
-import Button from "../components/Button";
-
-const StyledChatPage = styled.div`
-  display: flex;
-  width: 100%;
-  height: 100vh;
-  position: fixed;
-  top: 0;
-
-  .room-list {
-    border-right: 1px solid #ccc;
-    padding: 1rem;
-    overflow-y: scroll;
-    width: 20vw;
-
-    .room {
-      display: flex;
-      align-items: center;
-      margin-bottom: 1rem;
-      cursor: pointer;
-      border-radius: 5px;
-      padding: 0.5rem;
-      transition: background-color 0.2s;
-
-      &:hover {
-        background-color: #f0f0f0;
-      }
-
-      img {
-        width: 50px;
-        height: 50px;
-        border-radius: 50%;
-        margin-right: 1rem;
-      }
-
-      .room-info {
-        flex: 1;
-
-        .room-name {
-          font-weight: bold;
-        }
-      }
-
-      .last-message {
-        font-size: 0.9rem;
-        margin-top: 0.25rem;
-        font-weight: bold;
-        display: -webkit-box;
-        -webkit-line-clamp: 2;
-        -webkit-box-orient: vertical;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        max-height: 3em;
-        white-space: pre-wrap; // Add this line
-
-        &::before {
-          content: "• ";
-          color: red;
-          font-size: 0.9rem;
-        }
-      }
-    }
-  }
-
-  .chat-area {
-    flex: 1;
-  }
-`;
 
 type MessagePayload = {
   user: string;
@@ -82,7 +28,6 @@ type MessagePayload = {
   message: string;
 };
 
-// Add this at the top of ChatPage.tsx
 type RoomType = {
   id: string;
   imageUrl: string;
@@ -91,8 +36,8 @@ type RoomType = {
 };
 
 export default function ChatPage() {
-  const [textValue, setTextValue] = useState("");
-  const [roomValue, setRoomValue] = useState("");
+  const [textValue, setTextValue] = useState<string>("");
+  const [roomValue, setRoomValue] = useState<string>("");
   // Change the initial value of rooms to an object
   const [rooms, setRooms] = useState<{ [key: string]: Array<MessageType> }>({});
   const [currentRoomName, setCurrentRoomName] = useState<string>("");
@@ -172,14 +117,6 @@ export default function ChatPage() {
     sendRoomMessage(roomName, message);
   };
 
-  const sendMessage = (event) => {
-    event.preventDefault();
-    console.log("Submitting message:", textValue);
-    socket.emit("sendMessage", { room: roomValue, message: textValue });
-
-    setTextValue("");
-  };
-
   const createNewRoom = (
     roomName: string,
     roomStatus: "public" | "private"
@@ -194,7 +131,7 @@ export default function ChatPage() {
   };
 
   return (
-    <StyledChatPage>
+    <div className="chat-page">
       <SideBar />
       <div className="room-list">
         <Button
@@ -226,7 +163,7 @@ export default function ChatPage() {
           </div>
         ))}
       </div>
-      <div className="chat-area">
+      <div className="room-area">
         <CreateRoomModal
           showModal={showModal}
           closeModal={() => setShowModal(false)}
@@ -239,6 +176,6 @@ export default function ChatPage() {
           onSendMessage={handleSendMessage}
         />
       </div>
-    </StyledChatPage>
+    </div>
   );
 }

@@ -1,5 +1,6 @@
 import React, { forwardRef } from "react";
 import styled from "styled-components";
+import "./Message.tsx.css";
 
 interface StyledMessageProps {
   isCurrentUser: boolean;
@@ -10,12 +11,8 @@ const StyledMessage = styled.div<StyledMessageProps>`
   flex-direction: column;
   align-items: ${({ isCurrentUser }) =>
     isCurrentUser ? "flex-end" : "flex-start"};
-  width: 93.5%;
-  margin: 5px 0;
-
-
-
-
+  width: 94%;
+  margin: 5px 3%;
 
   .sender {
     font-weight: 700;
@@ -28,16 +25,17 @@ const StyledMessage = styled.div<StyledMessageProps>`
   }
 `;
 
-const MessageContent = styled.div`
-  padding: 8px 12px;
-  border-radius: 4px;
-  background-color: #ccc;
+// const MessageContent = styled.div`
+//   padding: 8px 12px;
+//   border-radius: 4px;
+//   background-color: #ccc;
+//   max-width: 60%;
 
-  &.own-message {
-    background-color: #00b4d8;
-    align-self: flex-end;
-  }
-`;
+//   &.own-message {
+//     background-color: #00b4d8;
+//     align-self: flex-end;
+//   }
+// `;
 
 export type MessageType = {
   user: string;
@@ -62,11 +60,13 @@ const Message = forwardRef<HTMLDivElement, Props>(
         {message.displayUser && (
           <span className="sender">{isCurrentUser ? "Me" : message.user}</span>
         )}
-        <MessageContent
-          className={`message-content ${isCurrentUser ? "own-message" : ""}`}
+        <div
+          className={`${
+            isCurrentUser ? "message-content own-message" : "message-content"
+          }`}
         >
           {message.message}
-        </MessageContent>
+        </div>
         {message.displayTimestamp && (
           <span className="timestamp">{message.timestamp}</span>
         )}

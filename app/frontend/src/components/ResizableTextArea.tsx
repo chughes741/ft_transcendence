@@ -3,7 +3,7 @@ import React, { forwardRef } from "react";
 import styled from "styled-components";
 
 const StyledTextarea = styled.textarea`
-  resize: auto vertical;
+  resize: vertical;
   overflow: scroll;
   min-height: 38px;
   max-height: 40 vh;

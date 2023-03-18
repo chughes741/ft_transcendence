@@ -1,0 +1,21 @@
+.sender {
+  font-weight: 700;
+  color: #999;
+}
+
+.timestamp {
+  font-size: 12px;
+  color: #999;
+}
+
+.message-content {
+  padding: 8px 12px;
+  border-radius: 4px;
+  background-color: #ccc;
+  max-width: 60%;
+}
+
+.message-content.own-message {
+  background-color: #00b4d8;
+  align-self: flex-end;
+}

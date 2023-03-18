@@ -1,20 +1,18 @@
 import React, { useContext, useEffect, useRef } from "react";
 import Message, { MessageType } from "./Message";
 import styled from "styled-components";
-import { WebsocketContext } from "../contexts/WebsocketContext";
+import { WebsocketContext } from "../../contexts/WebsocketContext";
 import { Form } from "react-router-dom";
-import Input from "../components/Input";
-import ResizableTextArea from "./ResizableTextArea";
+import Input from "../../components/Input";
+import ResizableTextArea from "../../components/ResizableTextArea";
+import { BsTypeH2 } from "react-icons/bs";
 
 const StyledRoom = styled.div`
 
-
-
-
-
   display: flex;
   flex-direction: column;
-  height: 100%;
+  min-height: 100%;
+  max-height: 100%;
   .chat-area {
     flex: 1;
     display: flex;
@@ -35,7 +33,7 @@ const StyledRoom = styled.div`
 
 
     .title {
-      h3 {
+      h2 {
         background-color: #0077b6;
         border-radius: 5px 5px 0px 0px;
         text-align: center;
@@ -150,7 +148,7 @@ const Room = (room: RoomProps) => {
     <StyledRoom>
       <div className="chat-area">
         <div className="title">
-          <h3>{room.roomName}</h3>
+          <h2>{room.roomName}</h2>
         </div>
         <div className="message-container">
           <div className="messages">
