@@ -11,7 +11,11 @@ import "./styles/ChatPage.css";
 interface CreateRoomModalProps {
   showModal: boolean;
   closeModal: () => void;
-  onCreateRoom: (roomName: string, roomStatus: "public" | "private") => void;
+  onCreateRoom: (
+    roomName: string,
+    roomStatus: "public" | "private" | "password", // This is gonna need an enum :cry:
+    password: string
+  ) => void;
 }
 
 export const CreateRoomModal: React.FC<CreateRoomModalProps> = ({
@@ -19,9 +23,12 @@ export const CreateRoomModal: React.FC<CreateRoomModalProps> = ({
   closeModal,
   onCreateRoom
 }) => {
-  const [roomName, setRoomName] = useState("");
-  const [roomStatus, setRoomStatus] = useState<"public" | "private">("public");
-  const roomNameInput = useRef<HTMLInputElement>(null);
+  const [roomName, setRoomName] = useState<string>("");
+  const [roomStatus, setRoomStatus] = useState<
+    "public" | "private" | "password"
+  >("public"); // defaults to public
+  const [password, setPassword] = useState<string>("");
+  const roomNameInput = useRef<HTMLInputElement>(null); // To focus on the input field
 
   useEffect(() => {
     if (showModal && roomNameInput.current) {
@@ -31,8 +38,10 @@ export const CreateRoomModal: React.FC<CreateRoomModalProps> = ({
 
   const handleSubmit = () => {
     if (roomName.trim().length > 0) {
-      onCreateRoom(roomName, roomStatus);
+      console.log("Creating room modal: ", roomName, roomStatus, password);
+      onCreateRoom(roomName, roomStatus, password);
       setRoomName("");
+      setPassword("");
       closeModal();
     } else {
       alert("Please enter a room name.");
@@ -42,7 +51,8 @@ export const CreateRoomModal: React.FC<CreateRoomModalProps> = ({
   const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter") {
       handleSubmit();
-    } else if (e.key === "Escape") {
+    }
+    if (e.key === "Escape") {
       closeModal();
     }
   };
@@ -77,12 +87,27 @@ export const CreateRoomModal: React.FC<CreateRoomModalProps> = ({
             id="room-status"
             value={roomStatus}
             onChange={(e) =>
-              setRoomStatus(e.target.value as "public" | "private")
+              setRoomStatus(e.target.value as "public" | "private" | "password")
             }
           >
             <option value="public">Public</option>
             <option value="private">Private</option>
+            <option value="password">Password Protected</option>
           </select>
+          {roomStatus === "password" && (
+            <>
+              <label htmlFor="room-password">Password</label>
+              <input
+                type="password"
+                id="room-password"
+                value={password}
+                maxLength={25}
+                onChange={(e) => setPassword(e.target.value)}
+                onKeyDown={handleKeyPress}
+                required
+              />
+            </>
+          )}
           <button
             className="submit-button"
             onClick={handleSubmit}

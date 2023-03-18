@@ -28,7 +28,6 @@ export class ChatGateway
 
   handleConnection(client: Socket, ...args: any[]) {
     logger.log(`Client connected: ${client.id}`);
-    this.joinRoom(client, client.id);
   }
 
   handleDisconnect(client: Socket) {
@@ -36,10 +35,19 @@ export class ChatGateway
   }
 
   @SubscribeMessage("joinRoom")
-  async joinRoom(client: Socket, room: string) {
-    client.join(room);
+  async joinRoom(
+    client: Socket,
+    room: { roomName: string; roomStatus: string; password?: string }
+  ) {
+    logger.log(
+      `Received joinRoom request from ${client.id} for room ${room.roomName}: ${
+        room.roomStatus
+      } ${room.password ? `with password ${room.password}` : ""}`
+    );
+    logger.log(`Password: ${room.password}`);
+    client.join(room.roomName);
     this.server
-      .to(room)
+      .to(room.roomName)
       .emit("roomMessage", `User ${client.id} joined room ${room}`);
     logger.log(`User ${client.id} joined room ${room}`);
   }

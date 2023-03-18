@@ -119,9 +119,11 @@ export default function ChatPage() {
 
   const createNewRoom = (
     roomName: string,
-    roomStatus: "public" | "private"
+    roomStatus: "public" | "private",
+    password: string
   ) => {
-    socket.emit("joinRoom", roomName);
+    console.log("ChatPage: Creating new room", roomName, roomStatus, password);
+    socket.emit("joinRoom", { roomName, roomStatus, password });
     setRooms((prevRooms) => {
       const newRooms = { ...prevRooms };
       newRooms[roomName] = [];
