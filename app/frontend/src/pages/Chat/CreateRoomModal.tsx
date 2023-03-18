@@ -2,6 +2,8 @@
 /*     System      */
 /*******************/
 import React, { useState, useRef, useEffect } from "react";
+import { FiEye, FiEyeOff } from "react-icons/fi";
+import Button from "../../components/Button";
 
 /***************/
 /*     CSS     */
@@ -28,6 +30,7 @@ export const CreateRoomModal: React.FC<CreateRoomModalProps> = ({
     "public" | "private" | "password"
   >("public"); // defaults to public
   const [password, setPassword] = useState<string>("");
+  const [showPassword, setShowPassword] = useState<boolean>(false);
   const roomNameInput = useRef<HTMLInputElement>(null); // To focus on the input field
 
   useEffect(() => {
@@ -36,16 +39,25 @@ export const CreateRoomModal: React.FC<CreateRoomModalProps> = ({
     }
   }, [showModal]);
 
+  const togglePasswordVisibility = () => {
+    setShowPassword(!showPassword);
+  };
+
   const handleSubmit = () => {
-    if (roomName.trim().length > 0) {
-      console.log("Creating room modal: ", roomName, roomStatus, password);
-      onCreateRoom(roomName, roomStatus, password);
-      setRoomName("");
-      setPassword("");
-      closeModal();
-    } else {
-      alert("Please enter a room name.");
+    // Necessary check b/c we're not using a `form`, but a `button` w `onClick`
+    if (roomStatus === "password" && !password) {
+      alert("Please enter a room password.");
+      return;
     }
+    if (roomName.trim().length <= 0) {
+      alert("Please enter a room name.");
+      return;
+    }
+    console.log("Creating room modal: ", roomName, roomStatus, password);
+    onCreateRoom(roomName, roomStatus, password);
+    setRoomName("");
+    setPassword("");
+    closeModal();
   };
 
   const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
@@ -81,7 +93,43 @@ export const CreateRoomModal: React.FC<CreateRoomModalProps> = ({
             onKeyDown={handleKeyPress}
             required
           />
-
+          {roomStatus === "password" && (
+            <label htmlFor="room-password">Password</label>
+          )}
+          {roomStatus === "password" && (
+            <>
+              <div className="password-container">
+                <input
+                  type={showPassword ? "text" : "password"}
+                  id="room-password"
+                  value={password}
+                  maxLength={25}
+                  onChange={(e) => setPassword(e.target.value)}
+                  onKeyDown={handleKeyPress}
+                  required
+                />
+                {showPassword ? (
+                  <FiEye
+                    onClick={togglePasswordVisibility}
+                    style={{
+                      cursor: "pointer",
+                      color: "blue",
+                      marginLeft: "10px"
+                    }}
+                  />
+                ) : (
+                  <FiEyeOff
+                    onClick={togglePasswordVisibility}
+                    style={{
+                      cursor: "pointer",
+                      color: "gray",
+                      marginLeft: "10px"
+                    }}
+                  />
+                )}
+              </div>
+            </>
+          )}
           <label htmlFor="room-status">Room Status</label>
           <select
             id="room-status"
@@ -94,26 +142,11 @@ export const CreateRoomModal: React.FC<CreateRoomModalProps> = ({
             <option value="private">Private</option>
             <option value="password">Password Protected</option>
           </select>
-          {roomStatus === "password" && (
-            <>
-              <label htmlFor="room-password">Password</label>
-              <input
-                type="password"
-                id="room-password"
-                value={password}
-                maxLength={25}
-                onChange={(e) => setPassword(e.target.value)}
-                onKeyDown={handleKeyPress}
-                required
-              />
-            </>
-          )}
-          <button
-            className="submit-button"
+          <Button
+            content="Create"
             onClick={handleSubmit}
-          >
-            Create
-          </button>
+            width="100%"
+          ></Button>
         </div>
       </div>
     </>

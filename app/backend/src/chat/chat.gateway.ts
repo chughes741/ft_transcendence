@@ -44,12 +44,11 @@ export class ChatGateway
         room.roomStatus
       } ${room.password ? `with password ${room.password}` : ""}`
     );
-    logger.log(`Password: ${room.password}`);
     client.join(room.roomName);
     this.server
       .to(room.roomName)
-      .emit("roomMessage", `User ${client.id} joined room ${room}`);
-    logger.log(`User ${client.id} joined room ${room}`);
+      .emit("roomMessage", `User ${client.id} joined room ${room.roomName}`);
+    logger.log(`User ${client.id} joined room ${room.roomName}`);
   }
 
   @SubscribeMessage("leaveRoom")

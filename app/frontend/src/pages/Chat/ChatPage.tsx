@@ -119,7 +119,7 @@ export default function ChatPage() {
 
   const createNewRoom = (
     roomName: string,
-    roomStatus: "public" | "private",
+    roomStatus: "public" | "private" | "password",
     password: string
   ) => {
     console.log("ChatPage: Creating new room", roomName, roomStatus, password);
@@ -144,7 +144,7 @@ export default function ChatPage() {
         {Object.entries(rooms).map(([roomId, messages]) => (
           <div
             key={roomId}
-            className="room"
+            className="room-item"
             onClick={() => {
               setCurrentRoomName(roomId);
               setCurrentRoomMessages(messages);

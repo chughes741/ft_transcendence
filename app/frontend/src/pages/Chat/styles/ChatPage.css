@@ -61,7 +61,7 @@
   width: 20vw;
 }
 
-.room {
+.room-item {
   display: flex;
   align-items: center;
   margin-bottom: 1rem;
@@ -111,4 +111,10 @@
 
 .room-area {
   flex: 1;
+}
+
+.password-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
