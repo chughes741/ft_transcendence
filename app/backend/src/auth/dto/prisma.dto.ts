@@ -42,7 +42,6 @@ export class AuthDto {
  */
 
 export class UserDto {
-  uuid: string;
   firstName?: string;
   lastName?: string;
   email?: string;
@@ -88,11 +87,16 @@ function deleteChatMemberDto(dto: ChatMemberDto) {
   return "deleteChatMemberDto logic";
 }
 
+export class MessageDto {
+  senderId: string;
+  content: string;
+  roomId: number;
+}
 export class ChatRoomDto {
-  roomID: string;
+  name?: string;
   status?: ChatRoomStatus;
   password?: string;
-  createdBy?: string;
+  owner?: string;
 }
 function addChatRoomDto(dto: ChatRoomDto) {
   return "addChatRoomDto logic";
