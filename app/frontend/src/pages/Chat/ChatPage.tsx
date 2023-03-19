@@ -1,7 +1,7 @@
 /*******************/
 /*     System      */
 /*******************/
-import { useState, useEffect, useContext } from "react";
+import { useState, useEffect, useContext, useRef } from "react";
 
 /********************/
 /*     Contexts     */
@@ -12,16 +12,17 @@ import { WebsocketContext } from "../../contexts/WebsocketContext";
 /*     Components      */
 /***********************/
 import SideBar from "../../components/SideBar";
-import Room from "./Room";
-import { MessageType } from "./Message";
-import { CreateRoomModal } from "./CreateRoomModal";
+import Room from "./components/Room";
+import { MessageType } from "./components/Message";
+import { CreateRoomModal } from "./components/CreateRoomModal";
 import Button from "../../components/Button";
 
 /***************/
 /*     CSS     */
 /***************/
 import "./styles/ChatPage.css";
-import { JoinRoomModal } from "./JoinRoomModal";
+import { JoinRoomModal } from "./components/JoinRoomModal";
+import ContextMenu from "./components/ContextMenu";
 
 type MessagePayload = {
   user: string;
@@ -30,15 +31,17 @@ type MessagePayload = {
 };
 
 type RoomType = {
-  id: string;
-  imageUrl: string;
+  id?: string;
+  imageUrl?: string;
   name: string;
-  lastMessage: string;
+  lastMessage?: string;
 };
 
 export default function ChatPage() {
-  const [textValue, setTextValue] = useState<string>("");
-  const [roomValue, setRoomValue] = useState<string>("");
+  /***********************/
+  /*   State Variables   */
+  /***********************/
+
   // Change the initial value of rooms to an object
   const [rooms, setRooms] = useState<{ [key: string]: Array<MessageType> }>({});
   const [currentRoomName, setCurrentRoomName] = useState<string>("");
@@ -53,6 +56,49 @@ export default function ChatPage() {
 
   const socket = useContext(WebsocketContext);
 
+  /********************/
+  /*   Context Menu   */
+  /********************/
+  const contextMenuRef = useRef(null);
+  const [contextMenuData, setContextMenuData] = useState<RoomType | null>(null);
+  const handleContextMenu = (e: React.MouseEvent, roomData: RoomType) => {
+    e.preventDefault();
+
+    contextMenuRef.current.style.display = "block";
+    contextMenuRef.current.style.top = `${e.clientY}px`;
+    contextMenuRef.current.style.left = `${e.clientX}px`;
+
+    setContextMenuData(roomData);
+  };
+
+  useEffect(() => {
+    const handleClick = (e: MouseEvent) => {
+      if (
+        contextMenuRef.current &&
+        !contextMenuRef.current.contains(e.target as Node)
+      ) {
+        contextMenuRef.current.style.display = "none";
+      }
+    };
+
+    document.addEventListener("click", handleClick);
+
+    return () => {
+      document.removeEventListener("click", handleClick);
+    };
+  }, []);
+
+  /**********************/
+  /*   Room Functions   */
+  /**********************/
+  const sendRoomMessage = (roomName: string, message: string) => {
+    socket.emit("sendMessage", { room: roomName, message });
+  };
+
+  const handleSendMessage = (roomName: string, message: string) => {
+    sendRoomMessage(roomName, message);
+  };
+
   const addMessageToRoom = (roomName: string, message: MessageType) => {
     setRooms((prevRooms) => {
       const newRooms = { ...prevRooms };
@@ -64,9 +110,53 @@ export default function ChatPage() {
     });
   };
 
+  const createNewRoom = (
+    roomName: string,
+    roomStatus: "PUBLIC" | "PRIVATE" | "PASSWORD",
+    password: string
+  ) => {
+    console.log("ChatPage: Creating new room", roomName, roomStatus, password);
+    socket.emit("createRoom", { roomName, roomStatus, password });
+    setRooms((prevRooms) => {
+      const newRooms = { ...prevRooms };
+      newRooms[roomName] = [];
+      return newRooms;
+    });
+    setCurrentRoomName(roomName);
+  };
+
+  const joinRoom = (roomName: string, password: string) => {
+    console.log("ChatPage: Creating new room", roomName, password);
+    socket.emit("joinRoom", { roomName, password });
+    setRooms((prevRooms) => {
+      const newRooms = { ...prevRooms };
+      newRooms[roomName] = [];
+      return newRooms;
+    });
+    setCurrentRoomName(roomName);
+  };
+
+  const leaveRoom = (roomName: string) => {
+    socket.emit("leaveRoom", { roomName });
+    setRooms((prevRooms) => {
+      const newRooms = { ...prevRooms };
+      delete newRooms[roomName];
+      return newRooms;
+    });
+  };
+
+  /**************/
+  /*   Socket   */
+  /**************/
   useEffect(() => {
     socket.on("connect", () => {
       console.log("Successfully connected to the server");
+
+      // FIXME: For testing purposes only
+      // Join three separate rooms on connection
+      joinRoom("PublicRoom", ""); // Public room
+      joinRoom("PrivateRoom", ""); // Private room
+      joinRoom("PasswordProtectedRoom", "placeholder"); // Password protected room with a placeholder password
     });
     socket.on("connect_error", (err) => {
       console.log("Error connecting to the server", err);
@@ -103,6 +193,7 @@ export default function ChatPage() {
     };
   }, [socket]);
 
+  // Textbar Focus
   useEffect(() => {
     if (rooms[currentRoomName]) {
       setCurrentRoomMessages(rooms[currentRoomName]);
@@ -111,40 +202,9 @@ export default function ChatPage() {
     }
   }, [rooms, currentRoomName]);
 
-  const sendRoomMessage = (roomName: string, message: string) => {
-    socket.emit("sendMessage", { room: roomName, message });
-  };
-
-  const handleSendMessage = (roomName: string, message: string) => {
-    sendRoomMessage(roomName, message);
-  };
-
-  const createNewRoom = (
-    roomName: string,
-    roomStatus: "public" | "private" | "password",
-    password: string
-  ) => {
-    console.log("ChatPage: Creating new room", roomName, roomStatus, password);
-    socket.emit("createRoom", { roomName, roomStatus, password });
-    setRooms((prevRooms) => {
-      const newRooms = { ...prevRooms };
-      newRooms[roomName] = [];
-      return newRooms;
-    });
-    setCurrentRoomName(roomName);
-  };
-
-  const joinRoom = (roomName: string, password: string) => {
-    console.log("ChatPage: Creating new room", roomName, password);
-    socket.emit("joinRoom", { roomName, password });
-    setRooms((prevRooms) => {
-      const newRooms = { ...prevRooms };
-      newRooms[roomName] = [];
-      return newRooms;
-    });
-    setCurrentRoomName(roomName);
-  };
-
+  /********************/
+  /*   Returned div   */
+  /********************/
   return (
     <div className="chat-page">
       <SideBar />
@@ -169,6 +229,7 @@ export default function ChatPage() {
               setCurrentRoomName(roomId);
               setCurrentRoomMessages(messages);
             }}
+            onContextMenu={(e) => handleContextMenu(e, { name: roomId })}
           >
             <img
               src={`https://i.pravatar.cc/150?u=${roomId}`} // Use a random profile picture for each room
@@ -203,6 +264,20 @@ export default function ChatPage() {
           onSendMessage={handleSendMessage}
         />
       </div>
+      <ContextMenu
+        ref={contextMenuRef}
+        options={[
+          {
+            label: "Leave Room",
+            onClick: () => {
+              if (contextMenuData) {
+                leaveRoom(contextMenuData.name);
+                contextMenuRef.current.style.display = "none";
+              }
+            }
+          }
+        ]}
+      />
     </div>
   );
 }
