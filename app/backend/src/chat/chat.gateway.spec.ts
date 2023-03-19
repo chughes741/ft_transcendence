@@ -1,4 +1,5 @@
 import { Test, TestingModule } from "@nestjs/testing";
+import { PrismaModule } from "../prisma/prisma.module";
 import { ChatGateway } from "./chat.gateway";
 import { ChatService } from "./chat.service";
 
@@ -7,6 +8,7 @@ describe("ChatGateway", () => {
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
+      imports: [PrismaModule],
       providers: [ChatGateway, ChatService]
     }).compile();
 
