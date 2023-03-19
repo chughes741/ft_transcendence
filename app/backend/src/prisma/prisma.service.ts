@@ -100,8 +100,8 @@ export class PrismaService extends PrismaClient {
     // Connect the owner if provided
     if (dto.owner) {
       data.owner = { connect: { id: userID } };
-      // Add it as a ChatMember
-      data.ChatMember = {
+      // Add it as a chat member
+      data.members = {
         create: [
           {
             member: { connect: { id: userID } },

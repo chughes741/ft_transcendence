@@ -20,6 +20,7 @@ const ContextMenu = React.forwardRef<HTMLDivElement, ContextMenuProps>(
         <ul>
           {options.map((option, index) => (
             <li
+              className="glowing-text"
               key={index}
               onClick={option.onClick}
             >

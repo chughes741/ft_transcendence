@@ -23,6 +23,7 @@ import Button from "../../components/Button";
 import "./styles/ChatPage.css";
 import { JoinRoomModal } from "./components/JoinRoomModal";
 import ContextMenu from "./components/ContextMenu";
+import ButtonFunky from "../../components/ButtonFunky";
 
 type MessagePayload = {
   user: string;
@@ -209,7 +210,7 @@ export default function ChatPage() {
     <div className="chat-page">
       <SideBar />
       <div className="room-list">
-        <Button
+        <ButtonFunky
           content="Create New Room"
           onClick={() => setShowCreateRoomModal(true)}
           width="100%"
