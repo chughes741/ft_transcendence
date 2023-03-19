@@ -21,24 +21,6 @@ interface CreateRoomModalProps {
   ) => void;
 }
 
-/**
- * Modal for creating a new room.
- *
- * Template modal(props: ChildrenProps) {
- * - Fonctions useEffect, mais à overrider
- * Return :
- * - header (commun)
- * - room name(commun)
- *
- * -  password (props)
- * -  input  (props)
- *
- * - footer (communn)
- *
- * }
- *
- */
-
 export const CreateRoomModal: React.FC<CreateRoomModalProps> = ({
   showModal,
   closeModal,

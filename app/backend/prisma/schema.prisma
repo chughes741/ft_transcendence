@@ -23,11 +23,11 @@ model User {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  messages   Message[]
-  chatRooms  ChatRoom[]
-  ChatMember ChatMember[]
-  Profile    Profile?
-  Player     Player[]
+  messages        Message[]
+  chatOwnerships  ChatRoom[]
+  chatMemberships ChatMember[]
+  profile         Profile?
+  games           Player[]
 
   @@map("users")
 }
@@ -71,10 +71,10 @@ model ChatRoom {
   createdBy String?
   owner     User?   @relation(fields: [createdBy], references: [id], onDelete: SetNull)
 
-  createdAt  DateTime     @default(now())
-  updatedAt  DateTime     @updatedAt
-  ChatMember ChatMember[]
-  Message    Message[]
+  createdAt DateTime     @default(now())
+  updatedAt DateTime     @updatedAt
+  members   ChatMember[]
+  messages  Message[]
 
   @@map("chatRooms")
 }
@@ -148,7 +148,7 @@ model Match {
 
   startedAt DateTime  @default(now())
   endedAt   DateTime?
-  Player    Player[]
+  players   Player[]
 }
 
 enum MatchStatus {

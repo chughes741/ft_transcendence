@@ -1,6 +1,11 @@
 import { Injectable, Logger } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
-import { Prisma, PrismaClient } from "@prisma/client";
+import {
+  ChatMemberRank,
+  ChatMemberStatus,
+  Prisma,
+  PrismaClient
+} from "@prisma/client";
 import {
   ChatMemberDto,
   ChatRoomDto,
@@ -95,6 +100,16 @@ export class PrismaService extends PrismaClient {
     // Connect the owner if provided
     if (dto.owner) {
       data.owner = { connect: { id: userID } };
+      // Add it as a ChatMember
+      data.ChatMember = {
+        create: [
+          {
+            member: { connect: { id: userID } },
+            status: ChatMemberStatus.OK,
+            rank: ChatMemberRank.OWNER
+          }
+        ]
+      };
     }
     return this.chatRoom.create({ data });
   }
