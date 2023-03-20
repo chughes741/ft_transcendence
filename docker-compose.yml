@@ -23,18 +23,6 @@ services:
     restart: always
     depends_on:
       - postgres
-      # - engine
-
-  # engine:
-  # container_name: engine
-  # build:
-  # context: engine/
-  # target: dev
-  # expose:
-  # - "5000"
-  # networks:
-  # - backend
-  # restart: unless-stopped
 
   postgres:
     container_name: postgres
