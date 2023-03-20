@@ -6,6 +6,10 @@ import {
 import { ChatService } from "./chat.service";
 import { CreateChatDto } from "./dto/create-chat.dto";
 import { UpdateChatDto } from "./dto/update-chat.dto";
+import { AuthDto } from "../auth/dto/auth.dto";
+import { Logger } from "@nestjs/common";
+
+const logger = new Logger("ChatGateway");
 
 @WebSocketGateway()
 export class ChatGateway {
@@ -34,5 +38,12 @@ export class ChatGateway {
   @SubscribeMessage("removeChat")
   remove(@MessageBody() id: number) {
     return this.chatService.remove(id);
+  }
+
+  @SubscribeMessage("newMessage")
+  newMessage(@MessageBody() dto) {
+    logger.log("newMessage");
+    console.log(dto);
+    // return this.chatService.newMessage(dto);
   }
 }

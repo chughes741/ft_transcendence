@@ -44,7 +44,7 @@
       "patterns": [
         "src"
       ],
-      "extensions": "tsx,css"
+      "extensions": "tsx,css,json"
     }
   },
   "browserslist": {

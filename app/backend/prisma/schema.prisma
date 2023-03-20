@@ -23,32 +23,13 @@ model User {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  bookmarks  Bookmark[]
   messages   Message[]
   chatRooms  ChatRoom[]
   ChatMember ChatMember[]
-  Profile    Profile[]
+  Profile    Profile?
   Player     Player[]
 
   @@map("users")
-}
-
-model Bookmark {
-  id Int @id @default(autoincrement())
-
-  title       String
-  description String?
-  link        String
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  userId String
-  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
-  // We add  `onDelete: Cascade`, which ensures the child 
-  // data gets deleted when the parent data is deleted
-
-  @@map("bookmarks")
 }
 
 model Profile {
@@ -57,7 +38,7 @@ model Profile {
   avatar   String @default("default_avatar.png")
   username String @db.VarChar(12)
 
-  userId String
+  userId String @unique
   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   status UserStatus
@@ -107,6 +88,8 @@ enum ChatRoomStatus {
 
 model Message {
   id Int @id @default(autoincrement())
+
+  content String
 
   senderId String
   sender   User   @relation(fields: [senderId], references: [id], onDelete: Cascade)
@@ -176,7 +159,7 @@ enum MatchStatus {
 model Player {
   id Int @id @default(autoincrement())
 
-  memberId String?
+  memberId String? // So that account deletion doesn't break other users' scores
   member   User?   @relation(fields: [memberId], references: [id], onDelete: SetNull)
 
   matchId Int

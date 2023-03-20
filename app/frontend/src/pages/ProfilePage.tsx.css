@@ -1,0 +1,13 @@
+.full-container {
+	display: flex;
+	flex-direction: column;
+	height: 100vh;
+	width: 100vw;
+	background: rgba(255, 255, 255, 0.15);
+	box-shadow: 0 8px 32px 0 rgba(31,38,135,0.37);
+	backdrop-filter: blur(8.5px);
+	color: #fff;
+	text-transform: uppercase;
+	letter-spacing: 0.4rem;
+	user-select: none;
+}
