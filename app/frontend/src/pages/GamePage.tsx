@@ -2,7 +2,16 @@ import { Helmet } from "react-helmet";
 import SideBar from "src/components/SideBar";
 import Game from "src/pages/game/GameWindow";
 import "src/pages/GamePage.tsx.css";
+import {useState} from "react";
 
+
+// const [isActive, setIsActive] = useState(false);
+//
+// function clickPopUp() {
+//   setIsActive(!isActive);
+// }
+
+// lassName={`game-side-bar ${isActive ? "active" : ""}`} onClick={clickPopUp}
 export default function GamePage() {
   return (
     <>
