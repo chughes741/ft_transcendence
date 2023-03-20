@@ -76,7 +76,11 @@ export default function LoginPage() {
             />
           </div>
           <div className="button-container">
-            <Button content="Stay a while and listen" />
+            <Button
+              content="Stay a while and listen"
+              onClick={null}
+              width="35px"
+            />
           </div>
         </form>
         <hr className="horizontal-rule" />

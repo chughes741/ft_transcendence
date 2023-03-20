@@ -1,5 +1,5 @@
 import { Canvas } from "@react-three/fiber";
-import PopUpMenu from "src/popups/PopUpMenu";
+import SideBar from "src/components/SideBar";
 
 import styled from "styled-components";
 
@@ -24,8 +24,8 @@ const GameWindow = styled.div`
 export default function GamePage() {
   return (
     <>
-      <PopUpMenu />
       <GameWindow>
+        <SideBar />
         <Canvas>
           <MyMesh />
           <ambientLight

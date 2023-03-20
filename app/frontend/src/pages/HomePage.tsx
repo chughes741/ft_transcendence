@@ -1,8 +1,8 @@
 import { useEffect } from "react";
-import PopUpMenu from "src/popups/PopUpMenu";
 import "src/pages/HomePage.tsx.css";
 import { useOutletContext } from "react-router-dom";
-import PopUpChat from "src/popups/PopUpChat";
+import SideBar from "src/components/SideBar";
+import { Helmet } from "react-helmet";
 
 type OuletContext = {
   name: string;
@@ -20,9 +20,12 @@ export default function HomePage() {
 
   return (
     <>
-      <PopUpMenu />
-      <div className="full-container">name is:{name}</div>
-      <PopUpChat />
+    <Helmet>
+      <title>Transcendence | Welcome page <i>allo</i></title>
+    </Helmet>
+    <div className="full-container">
+      <SideBar />
+    </div>
     </>
   );
 }

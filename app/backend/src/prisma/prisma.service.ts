@@ -1,12 +1,18 @@
 import { Injectable, Logger } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
-import { PrismaClient } from "@prisma/client";
+import {
+  ChatMemberRank,
+  ChatMemberStatus,
+  Prisma,
+  PrismaClient
+} from "@prisma/client";
 import {
   ChatMemberDto,
   ChatRoomDto,
   PlayerDto,
   ProfileDto,
-  UserDto
+  UserDto,
+  MessageDto
 } from "../auth/dto/prisma.dto";
 import config from "../config";
 
@@ -43,8 +49,23 @@ export class PrismaService extends PrismaClient {
       this.player.deleteMany()
     ]);
   }
-  addUser(dto: UserDto) {
-    return dto;
+  async userExists(userId: string): Promise<boolean> {
+    const user = await this.user.findUnique({ where: { id: userId } });
+    return !!user;
+  }
+  async nickExists(nick: string): Promise<string> {
+    const user = await this.user.findUnique({ where: { email: nick } });
+    return user.id;
+  }
+
+  async addUser(dto: UserDto) {
+    const data: Prisma.UserCreateInput = {
+      email: dto.email,
+      firstName: dto.firstName,
+      lastName: dto.lastName,
+      hash: dto.password
+    };
+    return this.user.create({ data });
   }
   editUser(dto: UserDto) {
     return dto;
@@ -58,23 +79,76 @@ export class PrismaService extends PrismaClient {
   editProfile(dto: ProfileDto) {
     return dto;
   }
-  addChatMember(dto: ChatMemberDto) {
-    return dto;
+  // Create a new chat room
+  async createChatRoom(dto: ChatRoomDto): Promise<ChatRoomDto> {
+    // Check if the owner UUID is valid
+    // FIXME: this should use the userExists() method
+    // TODO: remove this code when authentication is enabled
+    const userID = await this.nickExists(dto.owner);
+    if (dto.owner && !userID) {
+      throw new Error("Invalid owner UUID");
+    }
+    console.log("userID: ", userID);
+
+    // Prepare the data for creating a chat room
+    const data: Prisma.ChatRoomCreateInput = {
+      status: dto.status,
+      name: dto.name,
+      password: dto.password
+    };
+
+    // Connect the owner if provided
+    if (dto.owner) {
+      data.owner = { connect: { id: userID } };
+      // Add it as a chat member
+      data.members = {
+        create: [
+          {
+            member: { connect: { id: userID } },
+            status: ChatMemberStatus.OK,
+            rank: ChatMemberRank.OWNER
+          }
+        ]
+      };
+    }
+    return this.chatRoom.create({ data });
   }
-  editChatMember(dto: ChatMemberDto) {
-    return dto;
+
+  // Get a chat room by ID
+  async getChatRoom(id: number): Promise<ChatRoomDto | null> {
+    return this.chatRoom.findUnique({ where: { id } });
   }
-  deleteChatMember(dto: ChatMemberDto) {
-    return dto;
+
+  // Update a chat room
+  async updateChatRoom(
+    id: number,
+    dto: Partial<ChatRoomDto>
+  ): Promise<ChatRoomDto> {
+    const data: Prisma.ChatRoomCreateInput = {
+      status: dto.status,
+      name: dto.name,
+      password: dto.password
+    };
+    return this.chatRoom.update({ where: { id }, data });
   }
-  addChatRoom(dto: ChatRoomDto) {
-    return dto;
+
+  // Delete a chat room
+  async deleteChatRoom(id: number): Promise<ChatRoomDto> {
+    return this.chatRoom.delete({ where: { id } });
   }
-  editChatRoom(dto: ChatRoomDto) {
-    return dto;
+
+  // Add a new message to a chat room
+  async addMessageToChatRoom(dto: MessageDto): Promise<MessageDto> {
+    return this.message.create({
+      data: {
+        ...dto
+      }
+    });
   }
-  deleteChatRoom(dto: ChatRoomDto) {
-    return dto;
+
+  // Get all messages in a chat room
+  async getMessagesInChatRoom(roomId: number): Promise<MessageDto[]> {
+    return this.message.findMany({ where: { roomId } });
   }
   addMatch(dto1: PlayerDto, dto2: PlayerDto) {
     return dto1;

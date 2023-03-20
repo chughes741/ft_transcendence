@@ -6,8 +6,8 @@ import { BsChatDots } from "react-icons/bs";
 import Icon from "src/components/Icon";
 
 type MessagePayload = {
-  clientId: string;
-  body: string;
+  room: string;
+  message: string;
 };
 
 export default function PopUpChat() {
@@ -48,6 +48,8 @@ export default function PopUpChat() {
     socket.on("onMessage", (newMessage: MessagePayload) => {
       console.log("Ding ding, you've got mail:", newMessage);
 
+      console.log(newMessage.room, socket.id);
+      console.log(newMessage.message);
       setMessages((messages) => [...messages, newMessage]);
     });
 
@@ -65,7 +67,7 @@ export default function PopUpChat() {
   const sendMessage = (event) => {
     event.preventDefault();
     console.log("Submitting message:", textValue);
-    socket.emit("newMessage", textValue);
+    socket.emit("sendMessage", { room: socket.id, message: textValue });
 
     setTextValue("");
   };
@@ -85,11 +87,11 @@ export default function PopUpChat() {
           <div>
             {messages.map((message) => (
               <div>
-                {message.clientId === socket.id ? (
-                  <p className="own-message">{message.body}</p>
+                {message.room === socket.id ? (
+                  <p className="own-message">{message.message}</p>
                 ) : (
                   <p>
-                    {message.clientId}: {message.body}
+                    {message.room}: {message.message}
                   </p>
                 )}
                 <br />

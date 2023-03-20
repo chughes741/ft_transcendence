@@ -1,28 +1,25 @@
 import { useEffect } from "react";
-import PopUpMenu from "src/popups/PopUpMenu";
 import "src/pages/ProfilePage.tsx.css";
 import { useOutletContext } from "react-router-dom";
-import PopUpChat from "src/popups/PopUpChat";
+import SideBar from "src/components/SideBar";
 
 type OuletContext = {
   name: string;
 };
 
-export default function HomePage() {
-  useEffect(() => {
-    document.body.classList.add("Welcome");
-    return () => {
-      document.body.classList.remove("Welcome");
-    };
-  });
-
+export default function ProfilePage() {
   const { name } = useOutletContext<OuletContext>();
 
   return (
     <>
-      <PopUpMenu />
-      <div className="full-container">name is:{name}</div>
-      <PopUpChat />
+      <div className="profile-page">
+        <div className="sidebar-wrapper">
+          <SideBar />
+        </div>
+        <div className="profile-wrapper">
+          <div>Right of sidebar page </div>
+        </div>
+      </div>
     </>
   );
 }
