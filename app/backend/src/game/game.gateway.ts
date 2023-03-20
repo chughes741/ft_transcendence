@@ -5,108 +5,66 @@ import {
   SubscribeMessage,
   MessageBody
 } from "@nestjs/websockets";
-import { Server } from 'socket.io';
+import { Server } from "socket.io";
 import { GameService } from "./game.service";
 
-import { SchedulerRegistry } from '@nestjs/schedule';
+import { SchedulerRegistry } from "@nestjs/schedule";
 import { Logger } from "@nestjs/common";
 
-// import {
-  // ClientReadyEvent,
-  // ClientUpdateEvent,
-  // CreateLobbyEvent,
-  // GameEvents,
-  // InvitePlayerEvent,
-  // JoinLobbyEvent,
-// } from "../../../shared/events/game.events";
-
-
-
 //Create logger for module
-const logger = new Logger('gameLog');
-
+const logger = new Logger("gameGateway");
 
 //Setup websocket gateway
 @WebSocketGateway({
   cors: {
-    origin: '*',
-  },
+    origin: "*"
+  }
 })
-
 export class GameGateway {
-  constructor(private readonly gameService: GameService, private schedulerRegistry: SchedulerRegistry) {}
+  constructor(
+    private readonly gameService: GameService,
+    private schedulerRegistry: SchedulerRegistry
+  ) {}
 
-  //Load the server socket locally
+  // Load the server socket locally
   @WebSocketServer()
   server: Server;
-  
 
-  //Setup bew game on 'gameStart' event
-  @SubscribeMessage('gameStart')
-  async newGame() {
-    logger.log('gameStart event received');
-
-    try {
-      logger.log(this.schedulerRegistry.getInterval('gameUpdateInterval'));
-  
-    }
-    catch{
-      logger.log('Event not found');
-      this.gameService.createGame();
-    }
+  /**
+   * Join queue for new game or accept an invite
+   * Possible replies
+   *  - Accept invite timeout
+   *  - Lobby ID
+   */
+  @SubscribeMessage("joinGame")
+  async joinGameInvite() {
+    this.gameService.joinGameInvite();
   }
 
-  //Delete interval on 'gameEnd' event
-  @SubscribeMessage('gameEnd')
-  async endGame() {
-    this.gameService.deleteInterval('gameUpdateInterval');
+  /**
+   * Join queue for new game or accept an invite
+   * Possible replies
+   *  - Match found / Lobby ID
+   */
+  @SubscribeMessage("joinGame")
+  async joinGameQueue() {
+    this.gameService.joinGameQueue();
   }
 
-
+  /**
+   * Message from client to accept a game invite
+   */
+  @SubscribeMessage("acceptGame")
+  async acceptGame() {
+    this.gameService.joinGameInvite();
+  }
 
   /**
-   *
-   * @param CreateLobbyEvent
+   * Handle playerReady event and start game when both players ready
    */
-  // @SubscribeMessage(GameEvents.createLobby)
-  // async createLobby(@MessageBody() createLobbyEvent: CreateLobbyEvent) {
-    // return this.gameService.createLobby(createLobbyEvent);
-  // }
-
-  /**
-   *
-   * @param JoinLobbyEvent
-   */
-  // @SubscribeMessage(GameEvents.joinLobby)
-  // async joinLobby(@MessageBody() joinLobbyEvent: JoinLobbyEvent) {
-    // return this.gameService.joinLobby(joinLobbyEvent);
-  // }
-
-  /**
-   *
-   * @param InvitePlayerEvent
-   */
-  // @SubscribeMessage(GameEvents.invitePlayer)
-  // async invitePlayer(@MessageBody() invitePlayerEvent: InvitePlayerEvent) {
-    // return this.gameService.invitePlayer(invitePlayerEvent);
-  // }
-
-  /**
-   *
-   * @param ClientReadyEvent
-   */
-  // @SubscribeMessage(GameEvents.clientReady)
-  // async clientReady(@MessageBody() clientReadyEvent: ClientReadyEvent) {
-    // return this.gameService.clientReady(clientReadyEvent);
-  // }
-
-  /**
-   * 
-   * @param ClientUpdateEvent 
-   */
-  // @SubscribeMessage(GameEvents.clientUpdate)
-  // async clientUpdate(@MessageBody() clientUpdateEvent: ClientUpdateEvent) {
-    // return this.gameService.clientUpdate(clientUpdateEvent);
-  // }
+  @SubscribeMessage("playerReady")
+  async playerReady() {
+    //This needs to identify which player the ready alert came from
+    this.gameService.gameStart();
+  }
 }
- 

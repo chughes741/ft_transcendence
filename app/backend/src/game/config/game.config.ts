@@ -16,5 +16,5 @@ export class BallConfig {
 export class GameConfig {
 	static readonly playAreaWidth: number = 6;
 	static readonly playAreaHeight: number = 4;
-	static readonly serverUpdateRate: number = 20;
+	static readonly serverUpdateRate: number = 17;
 }
