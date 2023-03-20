@@ -6,7 +6,7 @@ import { WebSocketServer, WebSocketGateway } from "@nestjs/websockets";
 import { Server } from "socket.io";
 import * as vec2 from "gl-vec2";
 import { GameData, BallData, PaddleData, Vec2 } from "./game.types";
-import { degToRad } from "./game.utilis";
+import { degToRad } from "./game.utils";
 const logger = new Logger("gameLogic");
 
 @WebSocketGateway({

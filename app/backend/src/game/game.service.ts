@@ -1,15 +1,8 @@
 import { Injectable } from "@nestjs/common";
-import { Interval } from "@nestjs/schedule";
-import {
-  WebSocketServer,
-  WebSocketGateway,
-  SubscribeMessage,
-  MessageBody
-} from "@nestjs/websockets";
+import { WebSocketServer, WebSocketGateway } from "@nestjs/websockets";
 import { Server } from "socket.io";
 import { Logger } from "@nestjs/common";
 import { SchedulerRegistry } from "@nestjs/schedule";
-import { degToRad } from "./game.utilis";
 import { GameData } from "./game.types";
 import { GameLogic } from "./game.logic";
 const logger = new Logger("gameService");
