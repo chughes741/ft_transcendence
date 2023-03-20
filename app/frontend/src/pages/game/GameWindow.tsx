@@ -1,44 +1,19 @@
-import React, { useRef, useState } from 'react';
+import React, { useRef, useContext } from 'react';
 import { Canvas, useFrame, ThreeElements } from '@react-three/fiber';
 import styled from 'styled-components';
 import { WebsocketContext } from 'src/contexts/WebsocketContext';
 //Local includes
 import { GameData } from './game.types';
+import { BallConfig, GameColours, GameConfig, PaddleConfig } from './game.config';
+import { Vector3 } from 'three';
 
-
-//Init game
-function initGameState(): GameData {
-	const gameState: GameData = new GameData;
-	gameState.last_update_time = Date.now();
-	gameState.is_new_round = true;
-	gameState.last_serve_side = 'left';
-	gameState.bounds.width = 6;
-	gameState.bounds.height = 4;
-	gameState.ball.direction.x = 0;
-	gameState.ball.direction.y = 0;
-	gameState.ball.pos.x = 0;
-	gameState.ball.pos.y = 0;
-	gameState.ball.speed = 0;
-	gameState.paddle_left.pos.x = 0;
-	gameState.paddle_left.pos.y = 0;
-	gameState.paddle_right.pos.x = 0;
-	gameState.paddle_right.pos.y = 0;
-
-	return gameState;
-}
-
+//Get local copy of socket
+const socket = useContext(WebsocketContext);
 
 //Create ball object
-function Ball() {
-	const mesh = useRef<THREE.Mesh>(null!);
-	let gameState: GameData = initGameState();
-	//Connect client socket to backend
-	socket.on('serverUpdate', async (GameState: GameData) => {
-		console.log(GameState);
-		gameState = await GameState;
-	});
-
-	//FIXME: hook runs before data has been received from server, need to handle this
+function Ball(gameState: GameData) {
+	const mesh = useRef<THREE.Mesh>();
+	
 	useFrame(() => {
 		mesh.current.position.x = gameState.ball.pos.x;
 		mesh.current.position.y = gameState.ball.pos.y;
@@ -46,23 +21,20 @@ function Ball() {
 	});
 
 	return (
-		<mesh ref={mesh}>
-			<sphereGeometry args={[0.1]} />
-			<meshPhongMaterial color="white" />
+		<mesh ref={mesh}>   
+			<sphereGeometry args={[BallConfig.radius]} />
+			<meshPhongMaterial color={GameColours.ball} />
 		</mesh>
 	)
 }
 
 //Create paddle objetcs
 function PaddleLeft() {
-	const mesh = useRef<THREE.Mesh>(null!);
-
-
-
+	const mesh = useRef<THREE.Mesh>();
 	return (
 		<mesh >
-			<boxGeometry args={[1, 1, 1]} />
-			<meshPhongMaterial color="red" />
+			<boxGeometry args={[PaddleConfig.width, PaddleConfig.height, PaddleConfig.depth]} />
+			<meshPhongMaterial color={GameColours.paddle} />
 		</mesh>
 	)
 
@@ -70,31 +42,25 @@ function PaddleLeft() {
 
 function PaddleRight() {
 	const mesh = useRef<THREE.Mesh>(null!);
-
-
-
-
 	return (
 		<mesh >
-			<boxGeometry args={[1, 1, 1]} />
-			<meshPhongMaterial color="red" />
+			<boxGeometry args={[PaddleConfig.width, PaddleConfig.height, PaddleConfig.depth]} />
+			<meshPhongMaterial color={GameColours.paddle} />
 		</mesh>
 	)
 }
 
 
 //Create window border object
-function Border(props: ThreeElements['mesh']) {
+function Border() {
 	const mesh = useRef<THREE.Mesh>(null!);
-
 	return (
 		<mesh
-			{...props}
 			ref={mesh}
-			// translateZ={-1}
+			position={new Vector3(0,0,GameConfig.backgroundZOffset)}
 			>
-			<planeGeometry args={[12, 8]} />
-			<meshStandardMaterial color='black' />
+			<planeGeometry args={[GameConfig.playAreaWidth, GameConfig.playAreaHeight]} />
+			<meshStandardMaterial color={GameColours.background} />
 		</mesh>
 	)
 }
@@ -111,15 +77,16 @@ const GameWindow = styled.div`
 
 //Main game frame
 export default function Game() {
-
-
-	
+	let gameState: GameData = new GameData;
+	socket.on('serverUpdate', (GameState: GameData) => {
+		console.log(GameState);
+		gameState = GameState; });
 	return (
 		<>
 			<GameWindow>
 				<Canvas>
-					<Ball />
-					<Border />
+					<Ball {...gameState}/>
+					<Border  />
 					<ambientLight args={[0xffffff]} intensity={0.1} />
 					<directionalLight position={[0, 5, 3]} intensity={0.5} />
 				</Canvas>

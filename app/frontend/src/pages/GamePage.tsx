@@ -1,4 +1,3 @@
-import { Canvas } from "@react-three/fiber";
 import { Helmet } from "react-helmet";
 import SideBar from "src/components/SideBar";
 import Game from "src/pages/game/GameWindow";
