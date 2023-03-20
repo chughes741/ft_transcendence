@@ -1,43 +1,31 @@
 import { Canvas } from "@react-three/fiber";
+import { Helmet } from "react-helmet";
 import SideBar from "src/components/SideBar";
-
-import styled from "styled-components";
-
-const MyMesh = () => {
-  return (
-    <mesh>
-      <sphereGeometry />
-      <meshPhongMaterial
-        color="hotpink"
-        transparent
-      />
-    </mesh>
-  );
-};
-
-const GameWindow = styled.div`
-  height: 100vh;
-  width: 100vw;
-  color: #fff;
-`;
+import Game from "src/pages/game/GameWindow";
+import "src/pages/GamePage.tsx.css";
 
 export default function GamePage() {
   return (
     <>
-      <GameWindow>
+      <Helmet>
+        <title>
+          Transcendence | Game <i>Hello</i>
+        </title>
+      </Helmet>
+      <div className="game-page">
         <SideBar />
-        <Canvas>
-          <MyMesh />
-          <ambientLight
-            args={[0xff0000]}
-            intensity={0.1}
-          />
-          <directionalLight
-            position={[0, 5, 3]}
-            intensity={0.5}
-          />
-        </Canvas>
-      </GameWindow>
+        <div className="game-window">
+          <div className="game-container">
+            <Game />
+          </div>
+          <div className="game-side-bar">
+            <div className="accept-side-bar">
+            </div>
+            <div className="chat-side-bar">
+            </div>
+          </div>
+        </div>
+      </div>
     </>
   );
 }

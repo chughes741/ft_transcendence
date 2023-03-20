@@ -1,14 +1,9 @@
 import React, { useRef, useState } from 'react';
 import { Canvas, useFrame, ThreeElements } from '@react-three/fiber';
-import PopUpMenu from "../popups/PopUpMenu";
 import styled from 'styled-components';
-import { io } from 'socket.io-client';
-import { BufferGeometry, Vector3 } from 'three';
-
+import { WebsocketContext } from 'src/contexts/WebsocketContext';
 //Local includes
-import { GameData } from './game/game.types';
-
-
+import { GameData } from './game.types';
 
 
 //Init game
@@ -38,9 +33,6 @@ function Ball() {
 	const mesh = useRef<THREE.Mesh>(null!);
 	let gameState: GameData = initGameState();
 	//Connect client socket to backend
-	const socket = io("http://localhost:3000");
-	socket.emit('gameStart');
-
 	socket.on('serverUpdate', async (GameState: GameData) => {
 		console.log(GameState);
 		gameState = await GameState;
@@ -64,7 +56,6 @@ function Ball() {
 //Create paddle objetcs
 function PaddleLeft() {
 	const mesh = useRef<THREE.Mesh>(null!);
-
 
 
 
@@ -120,6 +111,9 @@ const GameWindow = styled.div`
 
 //Main game frame
 export default function Game() {
+
+
+	
 	return (
 		<>
 			<GameWindow>
