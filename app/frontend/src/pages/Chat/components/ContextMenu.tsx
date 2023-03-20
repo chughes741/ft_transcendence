@@ -1,5 +1,5 @@
 import React, { useRef } from "react";
-import "../styles/ChatPage.css";
+import "../styles/Page.css";
 
 type ContextMenuOption = {
   label: string;

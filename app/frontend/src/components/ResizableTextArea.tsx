@@ -17,7 +17,6 @@ const StyledTextarea = styled.textarea`
   resize: none; 
 ::-webkit-scrollbar {
     width: 12px;
-    cursor: 
 }
 
 ::-webkit-scrollbar-track {
