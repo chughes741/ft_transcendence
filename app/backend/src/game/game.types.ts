@@ -29,3 +29,10 @@ export class GameData {
   player_left_ready: boolean;
   player_right_ready: boolean;
 }
+
+export class Lobby {
+  //LobbyID can also be the name for the websocket room
+  lobby_ID: string;
+  gameState: GameData;
+  chatroom_ID: string;
+}

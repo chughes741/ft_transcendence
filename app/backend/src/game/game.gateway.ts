@@ -4,7 +4,7 @@ import {
   SubscribeMessage,
   MessageBody
 } from "@nestjs/websockets";
-import { Server } from "socket.io";
+import { Server, Socket } from "socket.io";
 import { GameService } from "./game.service";
 
 import { Logger } from "@nestjs/common";
@@ -49,7 +49,7 @@ export class GameGateway {
    * Join queue for new game
    * @todo needs to return a JoinGameEntity
    * @param {JoinGameQueueDto} joinGameQueueDto
-   * @returns {Promise<JoinGameEntity}
+   * @returns {Promise<JoinGameEntity>}
    */
   @SubscribeMessage("joinGameQueue")
   async joinGameQueue(
