@@ -1,4 +1,6 @@
+import { ScheduleModule, SchedulerRegistry } from "@nestjs/schedule";
 import { Test, TestingModule } from "@nestjs/testing";
+import { GameLogic } from "./game.logic";
 import { GameService } from "./game.service";
 
 describe("GameService", () => {
@@ -6,7 +8,7 @@ describe("GameService", () => {
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      providers: [GameService]
+      providers: [GameService, GameLogic, SchedulerRegistry]
     }).compile();
 
     service = module.get<GameService>(GameService);

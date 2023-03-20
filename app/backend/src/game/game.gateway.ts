@@ -8,8 +8,8 @@ import {
 import { Server } from "socket.io";
 import { GameService } from "./game.service";
 
-import { SchedulerRegistry } from "@nestjs/schedule";
 import { Logger } from "@nestjs/common";
+import { SchedulerRegistry } from "@nestjs/schedule";
 
 //Create logger for module
 const logger = new Logger("gameGateway");
