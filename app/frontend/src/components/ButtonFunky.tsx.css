@@ -36,14 +36,12 @@ body {
 
 .button-funky:before {
   background: linear-gradient(
-    130deg,
-    transparent 0% 33%,
-    var(--g1) 66%,
-    var(--g2) 83.5%,
-    var(--g3) 100%
-  );
-  
-  background-position: 60% 60%;
+          130deg,
+          transparent 0% 33%,
+          var(--g1) 66%,
+          var(--g2) 83.5%,
+          var(--g3) 100%
+  ) 60% 60%;
   background-size: 300% 300%;
   border-radius: 2rem;
   content: "";
@@ -69,7 +67,7 @@ body {
 }
 
 .button-funky:hover .button-funky-bg {
-  background-position: -10% 0%;
+  background-position: -10% 0;
 }
 
 .button-funky:hover > .button-funky-content {
@@ -83,7 +81,7 @@ body {
     rgba(255, 255, 255, 0.2) 8%,
     transparent 8%
   );
-  background-position: 0% 0%;
+  background-position: 0;
   background-size: 2vmin 2vmin;
   border-radius: 2rem;
   position: absolute;
