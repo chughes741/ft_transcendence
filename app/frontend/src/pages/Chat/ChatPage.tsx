@@ -137,7 +137,10 @@ export default function ChatPage() {
     setCurrentRoomName(roomName);
   };
 
-  const leaveRoom = (roomName: string) => {
+  const leaveRoom = () => {
+    if (!contextMenuData)
+      return ;
+    const roomName = contextMenuData.name;
     socket.emit("leaveRoom", { roomName });
     setRooms((prevRooms) => {
       const newRooms = { ...prevRooms };
@@ -270,12 +273,7 @@ export default function ChatPage() {
         options={[
           {
             label: "Leave Room",
-            onClick: () => {
-              if (contextMenuData) {
-                leaveRoom(contextMenuData.name);
-                contextMenuRef.current.style.display = "none";
-              }
-            }
+            onClick: leaveRoom
           }
         ]}
       />
