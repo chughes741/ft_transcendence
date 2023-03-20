@@ -1,68 +1,81 @@
 import { Injectable } from "@nestjs/common";
-// import {
-  // ClientReadyEvent,
-  // ClientUpdateEvent,
-  // CreateLobbyEvent,
-  // InvitePlayerEvent,
-  // JoinLobbyEvent
-// } from "../../../shared/events/game.events";
+import { Interval } from "@nestjs/schedule";
+import {
+  WebSocketServer,
+  WebSocketGateway,
+  SubscribeMessage,
+  MessageBody
+} from "@nestjs/websockets";
+import { Server } from "socket.io";
+import { Logger } from "@nestjs/common";
+import { SchedulerRegistry } from "@nestjs/schedule";
+import { degToRad } from "./game.utilis";
+import { GameData } from "./game.types";
+import { GameLogic } from "./game.logic";
+const logger = new Logger("gameService");
 
+//Setup websocket gateway
+@WebSocketGateway({
+  cors: {
+    origin: "*"
+  }
+})
 @Injectable()
 export class GameService {
-  /**
-   *
-   * @param createLobbyEvent
-   * @emits JoinLobbyReply
-   */
-  // async createLobby(createLobbyEvent: CreateLobbyEvent): Promise<string> {
-    // /** @todo implementation */
-    // return "Created a new lobby";
-  // }
+  constructor(
+    private schedulerRegistry: SchedulerRegistry,
+    private gameLogic: GameLogic
+  ) {}
+
+  @WebSocketServer()
+  public server: Server;
+  private gameState: GameData;
 
   /**
    *
-   * @param joinLobbyEvent
-   * @emits JoinLobbyReply
    */
-  // async joinLobby(joinLobbyEvent: JoinLobbyEvent): Promise<string> {
-    // /** @todo implementation */
-    // return "Joined a lobby";
-  // }
+  async joinGameQueue() {
+    // Wait for queue
+    // Calls createLobby
+  }
 
   /**
    *
-   * @param invitePlayerEvent
    */
-  // async invitePlayer(invitePlayerEvent: InvitePlayerEvent): Promise<string> {
-    // /** @todo implementation */
-    // return "Invited a player";
-  // }
+  async joinGameInvite() {
+    // Wait for invite to be accepted
+    // Calls createLobby
+  }
+
+  /**
+   * Emit event to tell client that lobby has been successfully created
+   */
+  async createLobby() {
+    //Create a new game instance
+    //Create a new chat instance
+    //Return data to client with 'joinLobby' event
+  }
 
   /**
    *
-   * @param clientReadyEvent
    */
-  // async clientReady(clientReadyEvent: ClientReadyEvent): Promise<string> {
-    /** @todo implementation */
-    // return "Client is ready";
-  // }
+  async gameStart() {
+    //If both players are ready, then start game
+    if (this.gameState.player_left_ready && this.gameState.player_right_ready)
+      this.startNewGame();
+  }
 
   /**
    *
-   * @param clientUpdateEvent
    */
-  // async clientUpdate(clientUpdateEvent: ClientUpdateEvent): Promise<string> {
-    /** @todo implementation */
-    // return "Client is updated";
-  // }
+  async startNewGame() {
+    logger.log("Creating a new game instance");
 
-  /**
-   * 
-   * @returns 
-   * @emits GameStartEvent
-   */
-  // async gameStart() {
-    /** @todo implementation */
-    // return "Game has started"
-  // }
+    try {
+      this.schedulerRegistry.getInterval("gameUpdateInterval");
+    } catch {
+      logger.log("Error creating gameUpdateInterval");
+      this.gameLogic.createGame(this.gameState);
+    }
+  }
 }
