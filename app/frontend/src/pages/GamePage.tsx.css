@@ -1,4 +1,35 @@
 .game-page{
     width: 100vw;
     height: 100vh;
+    display: flex;
+}
+
+.game-window{
+    height:100%;
+    width: 100%;
+}
+
+.game-container{
+    display: flex;
+    justify-content: center;
+}
+
+.game-side-bar {
+    position: absolute;
+    top: 0;
+    right: 0;
+    background-color: yellow;
+    height: 100%;
+    width: 15vw;
+    max-width: 50vw;
+}
+.game-side-bar .active {
+    width: 50vw;
+}
+.accept-side-bar{
+
+}
+
+.chat-side-bar{
+
 }

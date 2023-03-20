@@ -31,12 +31,12 @@ function initGameState(): GameData {
 //Create ball object
 function Ball() {
 	const mesh = useRef<THREE.Mesh>(null!);
-	let gameState: GameData = initGameState();
+	const gameState: GameData = initGameState();
 	//Connect client socket to backend
-	socket.on('serverUpdate', async (GameState: GameData) => {
-		console.log(GameState);
-		gameState = await GameState;
-	});
+	// socket.on('serverUpdate', async (GameState: GameData) => {
+	// 	console.log(GameState);
+	// 	gameState = await GameState;
+	// });
 
 	//FIXME: hook runs before data has been received from server, need to handle this
 	useFrame(() => {
