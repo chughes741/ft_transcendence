@@ -1,4 +1,4 @@
-body {
+/*body {
   background-color: rgb(10, 10, 10);
   display: grid;
   height: 100vh;
@@ -6,6 +6,28 @@ body {
   padding: 0px;
   color: white;
   place-items: center;
+}*/
+
+::-webkit-scrollbar {
+  cursor: default;
+  width: 12px;
+}
+
+::-webkit-scrollbar-track {
+    -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3); 
+    -webkit-border-radius: 10px;
+    border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+    -webkit-border-radius: 10px;
+    border-radius: 10px;
+    background: rgba(255,255,255,0.8); 
+    -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.5); 
+}
+
+::-webkit-scrollbar-thumb:window-inactive {
+  background: rgba(255,255,255,0.4); 
 }
 
 .message-window {
@@ -17,7 +39,7 @@ body {
 }
 
 .modal-overlay {
-  position: fixed;
+  position: absolute;
   top: 0;
   left: 0;
   width: 100%;
@@ -58,6 +80,8 @@ body {
 }
 
 .chat-page {
+  background-color: rgb(10, 10, 10);
+  color: white;
   display: flex;
   width: 100%;
   height: 100vh;
@@ -113,7 +137,9 @@ img {
   overflow: hidden;
   text-overflow: ellipsis;
   max-height: 3em;
+  max-width: 8vw;
   white-space: pre-wrap;
+  word-break: break-word;
 }
 
 .last-message::before {
@@ -124,6 +150,8 @@ img {
 
 .room-area {
   flex: 1;
+  margin: 0;
+  max-width: 80vw;
 }
 
 .input-container-modal {
@@ -155,6 +183,7 @@ img {
 .context-menu li:hover {
   background-color: #666;
 }
+
 .glowing-text {
   font-size: 12px;
   color: #fff;

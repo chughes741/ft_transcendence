@@ -203,9 +203,9 @@ export default function ChatPage() {
     }
   }, [rooms, currentRoomName]);
 
-  /********************/
-  /*   Returned div   */
-  /********************/
+  /**************************/
+  /*   Returned fragment   */
+  /*************************/
   return (
     <div className="chat-page">
       <SideBar />

@@ -1,4 +1,4 @@
-:root {
+/*:root {
   --border: rgb(3, 169, 244);
   --g1: rgb(98, 0, 234);
   --g2: rgb(236, 64, 122);
@@ -14,8 +14,15 @@ body {
   color: white;
   place-items: center;
 }
+*/
 
 .button-funky {
+/********Variables********/
+  --border: rgb(3, 169, 244);
+  --g1: rgb(98, 0, 234);
+  --g2: rgb(236, 64, 122);
+  --g3: rgb(253, 216, 53);
+/*************************/
   border-radius: 2rem;
   cursor: pointer;
   color: white;
@@ -24,6 +31,7 @@ body {
   justify-content: center;
   align-items: center;
   border: 0.5vmin solid transparent;
+  outline: none;
 }
 
 .button-funky:before {
@@ -34,6 +42,7 @@ body {
     var(--g2) 83.5%,
     var(--g3) 100%
   );
+  
   background-position: 60% 60%;
   background-size: 300% 300%;
   border-radius: 2rem;
@@ -56,7 +65,7 @@ body {
 .button-funky:hover:before {
   background-position: 100% 100%;
   border: none;
-  transform: scale(1.15);
+  transform: scale(1.07);
 }
 
 .button-funky:hover .button-funky-bg {

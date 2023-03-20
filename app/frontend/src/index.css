@@ -9,7 +9,7 @@
 body {
   font-family: 'Raleway', sans-serif;
   background-size: cover;
-  display: flex;
+  display: grid;
   justify-content: left;
   align-items: left;
   height: 100vh;

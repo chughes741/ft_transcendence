@@ -94,8 +94,9 @@ const Room = (room: RoomProps) => {
               />
             ))}
           </div>
+        </div>
           <div className="input-chat-container">
-            <form onSubmit={sendMessage}>
+            <form className="form" onSubmit={sendMessage}>
               <ResizableTextArea
                 ref={messageInputRef}
                 value={textValue}
@@ -105,7 +106,6 @@ const Room = (room: RoomProps) => {
               />
             </form>
           </div>
-        </div>
       </div>
     </div>
   );
