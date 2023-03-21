@@ -26,7 +26,7 @@ services:
 
   postgres:
     container_name: postgres
-    image: postgres:latest
+    build: postgres/
     ports:
       - "5432:5432"
     env_file:
@@ -35,17 +35,10 @@ services:
       - backend
     restart: always
 
-  # test-db:
-  # image: postgres:13
-  # ports:
-  # - 5435:5432
-  # env_file:
-  # - ./.env.test
-  # networks:
-  # - backend
 
 volumes:
   postgres_data:
+
 
 networks:
   frontend:

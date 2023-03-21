@@ -44,4 +44,5 @@ WORKDIR /usr/app/backend
 # COPY --chown=node:node --from=build /usr/app/backend/dist ./dist
 COPY --chown=node:node --from=build /usr/app/backend/ ./
 
-CMD [ "dumb-init", "node", "dist/main.js"]
+
+CMD [ "dumb-init", "node", "dist/src/main.js"]

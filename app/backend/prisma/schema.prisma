@@ -62,7 +62,7 @@ enum UserStatus {
 model ChatRoom {
   id Int @id @default(autoincrement())
 
-  name String @default("")
+  name String @unique
 
   status ChatRoomStatus
 
