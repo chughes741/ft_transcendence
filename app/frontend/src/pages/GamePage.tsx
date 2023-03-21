@@ -1,43 +1,40 @@
-import { Canvas } from "@react-three/fiber";
+import React from 'react';
+import { Helmet } from "react-helmet";
 import SideBar from "src/components/SideBar";
+import GameSideBar from "src/components/GameSideBar";
+import Game from "src/pages/game/GameWindow";
+import "src/pages/GamePage.tsx.css";
+import {useState} from "react";
 
-import styled from "styled-components";
 
-const MyMesh = () => {
-  return (
-    <mesh>
-      <sphereGeometry />
-      <meshPhongMaterial
-        color="hotpink"
-        transparent
-      />
-    </mesh>
-  );
-};
 
-const GameWindow = styled.div`
-  height: 100vh;
-  width: 100vw;
-  color: #fff;
-`;
 
 export default function GamePage() {
+  const [isActive, setIsActive] = useState(false);
+
+  function clickPopUp() {
+    setIsActive(!isActive);
+  }
   return (
     <>
-      <GameWindow>
+      <Helmet>
+        <title>
+          Transcendence | Game <i>Hello</i>
+        </title>
+      </Helmet>
+      <div className="game-page">
         <SideBar />
-        <Canvas>
-          <MyMesh />
-          <ambientLight
-            args={[0xff0000]}
-            intensity={0.1}
-          />
-          <directionalLight
-            position={[0, 5, 3]}
-            intensity={0.5}
-          />
-        </Canvas>
-      </GameWindow>
+        <div className="game-window">
+          <div className="game-container">
+            <Game />
+          </div>
+          <div 
+            className="game-side-bar-area"
+          >
+            <GameSideBar />
+          </div>
+        </div>
+      </div>
     </>
   );
 }

@@ -1,27 +1,32 @@
+import { PaddleConfig, BallConfig, GameConfig } from "./game.config";
+
 export class Vec2 {
-	x: number;
-	y: number;
+	x: 0;
+	y: 0;
 }
 
 export class BallData {
 	pos: Vec2 = new Vec2;
 	direction: Vec2 = new Vec2;
-	speed: number;
+	speed: number = BallConfig.initialSpeed;
 }
 
 export class PaddleData {
 	pos: Vec2 = new Vec2;
+	height: number = PaddleConfig.height;
+	width: number = PaddleConfig.width;
+	depth: number = PaddleConfig.depth;
 }
 
 export class GameBounds {
-	width: number;
-	height: number;
+	width: number = GameConfig.playAreaWidth;
+	height: number = GameConfig.playAreaHeight;
 }
 
 export class GameData {
-	last_update_time: number;
-	is_new_round: boolean;
-	last_serve_side: string;
+	last_update_time: 0;
+	is_new_round: false;
+	last_serve_side: 'left';
 	bounds: GameBounds = new GameBounds;
 	ball: BallData = new BallData;
 	paddle_left: PaddleData = new PaddleData;

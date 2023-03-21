@@ -1,70 +1,74 @@
-import { ConfigModule } from "@nestjs/config";
 import {
   WebSocketServer,
   WebSocketGateway,
   SubscribeMessage,
   MessageBody
 } from "@nestjs/websockets";
-import { Server } from "socket.io";
+import { Server, Socket } from "socket.io";
 import { GameService } from "./game.service";
 
 import { Logger } from "@nestjs/common";
-import { SchedulerRegistry } from "@nestjs/schedule";
+import {
+  JoinGameInviteDto,
+  JoinGameQueueDto,
+  PlayerReadyDto
+} from "./dto/game.dto";
+import { GameStartEntity } from "./entities/game.entity";
 
-//Create logger for module
+/** Create logger for module */
 const logger = new Logger("gameGateway");
 
-//Setup websocket gateway
+/** 
+ * Websocket gateway for game module
+*/
 @WebSocketGateway({
   cors: {
     origin: "*"
   }
 })
 export class GameGateway {
-  constructor(
-    private readonly gameService: GameService,
-    private schedulerRegistry: SchedulerRegistry
-  ) {}
+  constructor(private readonly gameService: GameService) {}
 
   // Load the server socket locally
   @WebSocketServer()
   server: Server;
 
   /**
-   * Join queue for new game or accept an invite
-   * Possible replies
-   *  - Accept invite timeout
-   *  - Lobby ID
+   * Gateway for a client sent game invite
+   * @param {JoinGameInviteDto} joinGameInviteDto
+   * @returns {}
+   * @listens sendGameInvite
    */
-  @SubscribeMessage("joinGame")
-  async joinGameInvite() {
-    this.gameService.joinGameInvite();
+  @SubscribeMessage("sendGameInvite")
+  async sendGameInvite(@MessageBody() joinGameInviteDto: JoinGameInviteDto) {
+    this.gameService.sendGameInvite();
   }
 
   /**
-   * Join queue for new game or accept an invite
-   * Possible replies
-   *  - Match found / Lobby ID
+   * Join matchmaking queue for new game
+   * @param {JoinGameQueueDto} joinGameQueueDto
+   * @returns {}
+   * @listens joinGameQueue
    */
-  @SubscribeMessage("joinGame")
-  async joinGameQueue() {
-    this.gameService.joinGameQueue();
-  }
-
-  /**
-   * Message from client to accept a game invite
-   */
-  @SubscribeMessage("acceptGame")
-  async acceptGame() {
-    this.gameService.joinGameInvite();
+  @SubscribeMessage("joinGameQueue")
+  async joinGameQueue(client: Socket, @MessageBody() joinGameQueueDto: JoinGameQueueDto) {
+    this.gameService.joinGameQueue(client, joinGameQueueDto);
   }
 
   /**
    * Handle playerReady event and start game when both players ready
+   * @param {PlayerReadyDto} playerReadyDto
+   * @returns {Promise<GameStartEntity>}
+   * @listens playerReady
+   * 
+   * @todo This needs to identify which player the ready alert came from
+   * @todo return GameStartEntity
    */
   @SubscribeMessage("playerReady")
-  async playerReady() {
-    //This needs to identify which player the ready alert came from
+  async playerReady(
+    @MessageBody() playerReadyDto: PlayerReadyDto
+  ): Promise<GameStartEntity> {
     this.gameService.gameStart();
+    return null;
   }
 }
