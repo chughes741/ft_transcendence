@@ -50,7 +50,7 @@
   background-position: -10% 0;
 }
 
-.button-funky:hover > .button-funky-content {
+.button-funky:hover .button-funky-content {
   opacity: 1;
   transform: translateX(-2%);
 }
