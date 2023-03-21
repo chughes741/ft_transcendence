@@ -11,21 +11,17 @@
 
 .game-container{
     display: flex;
-    justify-content: center;
+    justify-content: center;    
 }
 
-.game-side-bar {
+.game-side-bar-area {
     position: absolute;
     top: 0;
     right: 0;
-    background-color: yellow;
     height: 100%;
-    width: 15vw;
-    max-width: 50vw;
+    background-color: yellow;
 }
-.game-side-bar .active {
-    width: 50vw;
-}
+
 .accept-side-bar{
 
 }

@@ -1,18 +1,20 @@
+import React from 'react';
 import { Helmet } from "react-helmet";
 import SideBar from "src/components/SideBar";
+import GameSideBar from "src/components/GameSideBar";
 import Game from "src/pages/game/GameWindow";
 import "src/pages/GamePage.tsx.css";
 import {useState} from "react";
 
 
-// const [isActive, setIsActive] = useState(false);
-//
-// function clickPopUp() {
-//   setIsActive(!isActive);
-// }
 
-// lassName={`game-side-bar ${isActive ? "active" : ""}`} onClick={clickPopUp}
+
 export default function GamePage() {
+  const [isActive, setIsActive] = useState(false);
+
+  function clickPopUp() {
+    setIsActive(!isActive);
+  }
   return (
     <>
       <Helmet>
@@ -26,11 +28,10 @@ export default function GamePage() {
           <div className="game-container">
             <Game />
           </div>
-          <div className="game-side-bar">
-            <div className="accept-side-bar">
-            </div>
-            <div className="chat-side-bar">
-            </div>
+          <div 
+            className="game-side-bar-area"
+          >
+            <GameSideBar />
           </div>
         </div>
       </div>

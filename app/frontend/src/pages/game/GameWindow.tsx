@@ -8,7 +8,6 @@ import { BallConfig, GameColours, GameConfig, PaddleConfig } from './game.config
 import { Vector3 } from 'three';
 
 //Get local copy of socket
-const socket = useContext(WebsocketContext);
 
 //Create ball object
 function Ball(gameState: GameData) {
@@ -77,6 +76,8 @@ const GameWindow = styled.div`
 
 //Main game frame
 export default function Game() {
+  const socket = useContext(WebsocketContext);
+
 	let gameState: GameData = new GameData;
 	socket.on('serverUpdate', (GameState: GameData) => {
 		console.log(GameState);
