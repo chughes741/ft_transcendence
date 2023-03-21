@@ -30,9 +30,6 @@ const RoomList: React.FC = () => {
   /**********************/
   /*   Room Functions   */
   /**********************/
-  const sendRoomMessage = (roomName: string, message: string) => {
-    socket.emit("sendMessage", { room: roomName, message });
-  };
 
   const addMessageToRoom = (roomName: string, message: MessageType) => {
     setRooms((prevRooms) => {

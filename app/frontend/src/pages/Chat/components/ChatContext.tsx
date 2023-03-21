@@ -26,43 +26,31 @@ type ChatContextType = {
   setShowJoinRoomModal: (visible: boolean) => void;
   unreadMessages: { [key: string]: number };
   setUnreadMessages: (unread: { [key: string]: number }) => void;
+  sendRoomMessage: (roomName: string, message: string) => void;
 };
 
+/* eslint-disable */
 export const ChatContext = createContext<ChatContextType>({
   contextMenuVisible: false,
-  setContextMenuVisible: (arg: false) => {
-    return;
-  },
+  setContextMenuVisible: (arg: false) => {},
   contextMenuPosition: { x: 0, y: 0 },
   rooms: {},
-  setRooms: (callback) => {
-    return;
-  },
+  setRooms: (callback) => {},
   currentRoomName: "",
-  setCurrentRoomName: () => {
-    return;
-  },
-  handleContextMenu: () => {
-    return;
-  },
+  setCurrentRoomName: () => {},
+  handleContextMenu: () => {},
   contextMenuData: { name: "" },
   currentRoomMessages: [],
-  setCurrentRoomMessages: () => {
-    return;
-  },
+  setCurrentRoomMessages: () => {},
   showCreateRoomModal: false,
-  setShowCreateRoomModal: () => {
-    return;
-  },
+  setShowCreateRoomModal: () => {},
   showJoinRoomModal: false,
-  setShowJoinRoomModal: () => {
-    return;
-  },
+  setShowJoinRoomModal: () => {},
   unreadMessages: {},
-  setUnreadMessages: () => {
-    return;
-  }
+  setUnreadMessages: () => {},
+  sendRoomMessage: () => {}
 });
+/* eslint-enable */
 
 export const ChatProvider = ({ children }) => {
   const [currentRoomName, setCurrentRoomName] = useState<string>("");
@@ -104,6 +92,12 @@ export const ChatProvider = ({ children }) => {
     }
   }, [rooms, currentRoomName]);
 
+  const socket = useContext(WebsocketContext);
+
+  const sendRoomMessage = (roomName: string, message: string) => {
+    socket.emit("sendMessage", { room: roomName, message });
+  };
+
   return (
     <ChatContext.Provider
       value={{
@@ -123,7 +117,8 @@ export const ChatProvider = ({ children }) => {
         showJoinRoomModal,
         setShowJoinRoomModal,
         unreadMessages,
-        setUnreadMessages
+        setUnreadMessages,
+        sendRoomMessage
       }}
     >
       {children}
