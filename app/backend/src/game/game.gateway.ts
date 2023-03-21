@@ -15,10 +15,12 @@ import {
 } from "./dto/game.dto";
 import { GameStartEntity } from "./entities/game.entity";
 
-//Create logger for module
+/** Create logger for module */
 const logger = new Logger("gameGateway");
 
-//Setup websocket gateway
+/** 
+ * Websocket gateway for game module
+*/
 @WebSocketGateway({
   cors: {
     origin: "*"
@@ -49,17 +51,18 @@ export class GameGateway {
    * @listens joinGameQueue
    */
   @SubscribeMessage("joinGameQueue")
-  async joinGameQueue(@MessageBody() joinGameQueueDto: JoinGameQueueDto) {
-    this.gameService.joinGameQueue();
+  async joinGameQueue(client: Socket, @MessageBody() joinGameQueueDto: JoinGameQueueDto) {
+    this.gameService.joinGameQueue(client, joinGameQueueDto);
   }
 
   /**
    * Handle playerReady event and start game when both players ready
-   * @todo This needs to identify which player the ready alert came from
-   * @todo return GameStartEntity
    * @param {PlayerReadyDto} playerReadyDto
    * @returns {Promise<GameStartEntity>}
    * @listens playerReady
+   * 
+   * @todo This needs to identify which player the ready alert came from
+   * @todo return GameStartEntity
    */
   @SubscribeMessage("playerReady")
   async playerReady(
@@ -69,4 +72,3 @@ export class GameGateway {
     return null;
   }
 }
-

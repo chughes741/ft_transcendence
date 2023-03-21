@@ -34,14 +34,15 @@ export class PlayerQueue {
   client_id: string;
   join_time: number;
   client_mmr: number;
+  socket_id: string; //Temporary
 }
 
 /**
  * Players and spectators are both arrays of clientIDs
  */
 export class gameLobby {
-  players[]: string;
-  spectators[]: string;
+  players: string[];
+  spectators: string[];
   lobby_id: string;
   match_id: string;
   gamestate: GameData;

@@ -7,7 +7,7 @@ import { GameLogic } from "./game.logic";
 import { GameModuleData } from "./game.data";
 import * as GameTypes from "./game.types";
 import * as GameDto from "./dto/game.dto";
-import { v4 as uuidv4, v6 as uuidv6 } from 'uuid';
+import { v4 as uuidv4, v6 as uuidv6 } from "uuid";
 const logger = new Logger("gameService");
 
 /**
@@ -36,43 +36,42 @@ export class GameService {
    * @method sendGameInvite
    * @returns {}
    * @async
-   * 
+   *
    * @todo add timeout for response
    * @todo pass both players data to createLobby
    */
   async sendGameInvite() {
     logger.log("joinGameInvite() called");
 
-    // this.createLobby();
+    //If the invited client responds then create lobby
   }
 
   /**
+   * Adds player to the game queue and tries to find a match
    * @method joinGameQueue
    * @param {Socket} client
-   * @param {JoinGameQueueDto} player
+   * @param {GameDto.JoinGameQueueDto} player
    * @returns {}
    * @async
-   * @todo function
    */
   async joinGameQueue(client: Socket, player: GameDto.JoinGameQueueDto) {
     logger.log("joinGameQueue() called");
 
     //Create a player queue object
-    const newPlayer: GameTypes.PlayerQueue = new GameTypes.PlayerQueue;
+    const newPlayer: GameTypes.PlayerQueue = new GameTypes.PlayerQueue();
 
     //Populate data for player
-    newPlayer.client_id = player.client_id;
+    // newPlayer.client_id = player.client_id; //TODO: Database integration
+    newPlayer.client_id = uuidv4(); //TODO: Temporary
     newPlayer.join_time = player.join_time;
     // queuedPlayer.client_mmr = getClientMMR();
-
+    newPlayer.socket_id = client.id;
     //Add player to queue
     this.gameModuleData.addQueue(newPlayer);
 
-    //Emit that player has joined the queue (so a timer can be displayed client side)
-    client.emit('joinedGameQueue');
-
     //Attempt to retrieve a pair of players
-    const playerPair: GameTypes.PlayerQueue[] = this.gameModuleData.getPairQueue();
+    const playerPair: GameTypes.PlayerQueue[] =
+      this.gameModuleData.getPairQueue();
     //If successful call createLobby()
     if (playerPair) {
       this.createLobby(playerPair);
@@ -85,27 +84,31 @@ export class GameService {
    * @param {GameTypes.PlayerQueue[]} playerPair
    * @returns {}
    * @async
-   * 
-   * @todo function
    */
   async createLobby(playerPair: GameTypes.PlayerQueue[]) {
     logger.log("createLobby() called");
 
     //Create a new lobby
-    const newLobby = new GameTypes.gameLobby;
+    const newLobby = new GameTypes.gameLobby();
 
     //Populate lobby data
-    newLobby.players.push(playerPair[0]);
-    newLobby.players.push(playerPair[1]);
+    newLobby.players.push(playerPair[0].client_id);
+    newLobby.players.push(playerPair[1].client_id);
     newLobby.created_at = Date.now();
-    // newLobby.lobby_id = 
+    newLobby.lobby_id = uuidv4();
 
-    //Create a new websocket room
-    this.server.socketsJoin();
+    //Create a new websocket room and subscribe players
+    this.server.in(playerPair[0].client_id).socketsJoin(newLobby.lobby_id);
+    this.server.in(playerPair[1].client_id).socketsJoin(newLobby.lobby_id);
 
-    //Subscribe players to the websocket room
+    //Add lobby to map of lobbies
+    //TODO: Swap this to a setter function in the data module
+    GameModuleData.lobbies.set(newLobby.lobby_id, newLobby);
 
     //Emit lobbyCreated event to room members
+    //The payload for this needs to contain chat info
+    this.server.to(newLobby.lobby_id).emit("lobbyCreated");
+    //TODO: Connect this event on frontend so we can test
   }
 
   /**
