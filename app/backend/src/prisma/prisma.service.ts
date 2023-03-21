@@ -16,6 +16,8 @@ import {
 } from "../auth/dto/prisma.dto";
 import config from "../config";
 
+const logger = new Logger("PrismaService");
+
 @Injectable()
 export class PrismaService extends PrismaClient {
   constructor(configService: ConfigService) {
@@ -55,7 +57,8 @@ export class PrismaService extends PrismaClient {
   }
   async nickExists(nick: string): Promise<string> {
     const user = await this.user.findUnique({ where: { email: nick } });
-    return user.id;
+
+    return user ? user.id : null;
   }
 
   async addUser(dto: UserDto) {
@@ -84,7 +87,10 @@ export class PrismaService extends PrismaClient {
     // Check if the owner UUID is valid
     // FIXME: this should use the userExists() method
     // TODO: remove this code when authentication is enabled
+    logger.log(`dto.owner: ${dto.owner}`);
     const userID = await this.nickExists(dto.owner);
+    logger.log(`userID: ${userID}`);
+    console.log(dto);
     if (dto.owner && !userID) {
       throw new Error("Invalid owner UUID");
     }

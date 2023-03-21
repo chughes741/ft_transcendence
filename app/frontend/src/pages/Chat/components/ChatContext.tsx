@@ -1,8 +1,7 @@
-import { createContext, useContext, useEffect, useRef, useState } from "react";
+import { createContext, useEffect, useState } from "react";
 import { MessageType } from "./Message";
-import { WebsocketContext } from "../../../contexts/WebsocketContext";
+import { socket } from "../../../contexts/WebsocketContext";
 import { RoomType } from "../ChatPage";
-import { Socket } from "socket.io-client";
 
 type ChatContextType = {
   contextMenuVisible: boolean;
@@ -27,8 +26,11 @@ type ChatContextType = {
   unreadMessages: { [key: string]: number };
   setUnreadMessages: (unread: { [key: string]: number }) => void;
   sendRoomMessage: (roomName: string, message: string) => void;
+  tempUsername: string;
+  setTempUsername: (string) => void;
 };
 
+// To prevent empty-function errors
 /* eslint-disable */
 export const ChatContext = createContext<ChatContextType>({
   contextMenuVisible: false,
@@ -48,7 +50,9 @@ export const ChatContext = createContext<ChatContextType>({
   setShowJoinRoomModal: () => {},
   unreadMessages: {},
   setUnreadMessages: () => {},
-  sendRoomMessage: () => {}
+  sendRoomMessage: () => {},
+  tempUsername: "",
+  setTempUsername: () => {}
 });
 /* eslint-enable */
 
@@ -63,6 +67,10 @@ export const ChatProvider = ({ children }) => {
   const [unreadMessages, setUnreadMessages] = useState<{
     [key: string]: number;
   }>({});
+
+  // FIXME: temporary addition for dev build to test user creation
+  // TODO: remove this when user creation is implemented
+  const [tempUsername, setTempUsername] = useState("");
 
   /********************/
   /*   Context Menu   */
@@ -92,8 +100,6 @@ export const ChatProvider = ({ children }) => {
     }
   }, [rooms, currentRoomName]);
 
-  const socket = useContext(WebsocketContext);
-
   const sendRoomMessage = (roomName: string, message: string) => {
     socket.emit("sendMessage", { room: roomName, message });
   };
@@ -118,7 +124,9 @@ export const ChatProvider = ({ children }) => {
         setShowJoinRoomModal,
         unreadMessages,
         setUnreadMessages,
-        sendRoomMessage
+        sendRoomMessage,
+        tempUsername,
+        setTempUsername
       }}
     >
       {children}

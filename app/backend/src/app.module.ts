@@ -12,7 +12,8 @@ import { PrismaModule } from "./prisma/prisma.module";
 import { ConfigModule } from "@nestjs/config";
 import { configValidationSchema } from "./config/config.schema";
 import { AuthModule } from "./auth/auth.module";
-import { ScheduleModule } from '@nestjs/schedule';
+import { ScheduleModule } from "@nestjs/schedule";
+import { UserConnectionsService } from "./user-connections.service";
 
 @Module({
   imports: [
@@ -33,6 +34,6 @@ import { ScheduleModule } from '@nestjs/schedule';
     }) // Loads env vars. Uses dotenv library under the hood
   ],
   controllers: [],
-  providers: [AppService, PrismaService]
+  providers: [AppService, PrismaService, UserConnectionsService]
 })
 export class AppModule {}

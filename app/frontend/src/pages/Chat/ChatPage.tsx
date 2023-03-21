@@ -1,7 +1,7 @@
 /*******************/
 /*     System      */
 /*******************/
-import { useContext } from "react";
+import { useContext, useEffect, useState } from "react";
 
 /********************/
 /*     Contexts     */
@@ -35,42 +35,45 @@ export default function ChatPage() {
   /***********************/
   /*   State Variables   */
   /***********************/
-  const socket = useContext(WebsocketContext);
 
-  const {
-    contextMenuVisible,
-    setContextMenuVisible,
-    contextMenuPosition,
-    handleContextMenu,
-    contextMenuData,
-    rooms,
-    setRooms,
-    currentRoomName,
-    setCurrentRoomName,
-    currentRoomMessages,
-    setCurrentRoomMessages,
-    showCreateRoomModal,
-    setShowCreateRoomModal,
-    showJoinRoomModal,
-    setShowJoinRoomModal,
-    unreadMessages,
-    setUnreadMessages
-  } = useContext(ChatContext);
+  const { currentRoomName, tempUsername, setTempUsername } =
+    useContext(ChatContext);
 
   /**************/
   /*   Socket   */
   /**************/
-  // useEffect(() => {
-  //   socket.on("connect_error", (err) => {
-  //     console.log("Error connecting to the server", err);
-  //   });
-  // }, [socket]);
+  const socket = useContext(WebsocketContext);
 
-  //FIXME: refactoring artifact, to remove
+  // FIXME: temporary addition for dev build to test user creation
+  // TODO: remove this when user creation is implemented
+  useEffect(() => {
+    if (socket && !tempUsername) {
+      let tempUser = "temp_user";
+      let count = 0;
+      // Try to create a temporary user
+      const createTempUser = (username) => {
+        socket.emit("createUser", username);
+      };
 
-  const handleSendMessage = (roomName: string, message: string) => {
-    socket.emit("sendMessage", { room: roomName, message });
-  };
+      // Server acknowledges successful creation, returns username
+      socket.on("userCreated", (username) => {
+        setTempUsername(username);
+      });
+
+      // Name is taken, increment count and try again
+      socket.on("userExists", () => {
+        count += 1;
+        tempUser = `temp_user${count}`;
+        createTempUser(tempUser);
+      });
+      createTempUser(tempUser);
+    }
+
+    return () => {
+      socket.off("userCreated");
+      socket.off("userExists");
+    };
+  }, [socket, tempUsername]);
 
   /**************************/
   /*   Returned fragment   */

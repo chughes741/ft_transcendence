@@ -22,7 +22,8 @@ const RoomList: React.FC = () => {
     setContextMenuVisible,
     showCreateRoomModal,
     showJoinRoomModal,
-    handleContextMenu
+    handleContextMenu,
+    tempUsername // FIXME: For testing purposes only
   } = useContext(ChatContext);
 
   const socket = useContext(WebsocketContext);
@@ -47,8 +48,20 @@ const RoomList: React.FC = () => {
     roomStatus: "PUBLIC" | "PRIVATE" | "PASSWORD",
     password: string
   ) => {
-    console.log("ChatPage: Creating new room", roomName, roomStatus, password);
-    socket.emit("createRoom", { roomName, roomStatus, password });
+    console.log(
+      "ChatPage: Creating new room",
+      roomName,
+      roomStatus,
+      password,
+      tempUsername
+    );
+    const owner = tempUsername;
+    socket.emit("createRoom", {
+      roomName,
+      roomStatus,
+      password,
+      owner
+    });
     setRooms((prevRooms) => {
       const newRooms = { ...prevRooms };
       newRooms[roomName] = [];
@@ -58,8 +71,13 @@ const RoomList: React.FC = () => {
   };
 
   const joinRoom = (roomName: string, password: string) => {
-    console.log("ChatPage: Creating new room", roomName, password);
-    socket.emit("joinRoom", { roomName, password });
+    console.log(
+      "ChatPage: Creating new room",
+      roomName,
+      password,
+      tempUsername
+    );
+    socket.emit("joinRoom", { roomName, password, user: tempUsername });
     setRooms((prevRooms) => {
       const newRooms = { ...prevRooms };
       newRooms[roomName] = [];
