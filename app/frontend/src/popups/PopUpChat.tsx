@@ -1,6 +1,6 @@
 import "./PopUpChat.tsx.css";
 import { useState, useEffect, useContext } from "react";
-import { WebsocketContext } from "src/contexts/WebsocketContext";
+import { WebSocketContext } from "src/contexts/WebSocketContext";
 import { Form } from "react-router-dom";
 import { BsChatDots } from "react-icons/bs";
 import Icon from "src/components/Icon";
@@ -35,7 +35,7 @@ export default function PopUpChat() {
 
   const [messages, setMessages] = useState<MessagePayload[]>([]);
   const [textValue, setTextValue] = useState("");
-  const socket = useContext(WebsocketContext);
+  const socket = useContext(WebSocketContext);
 
   useEffect(() => {
     socket.on("connect", () => {

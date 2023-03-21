@@ -1,7 +1,7 @@
 import { ProSidebarProvider } from "react-pro-sidebar";
 import { Outlet, useLoaderData } from "react-router-dom";
-import { WebsocketProvider } from "src/contexts/WebsocketContext";
-import { socket } from "src/contexts/WebsocketContext";
+import { WebSocketProvider } from "src/contexts/WebSocketContext";
+import { socket } from "src/contexts/WebSocketContext";
 
 export async function rootLoader() {
   const data = { message: "hello" };
@@ -14,11 +14,11 @@ export default function RootRoute() {
 
   return (
     <>
-      <WebsocketProvider value={socket}>
+      <WebSocketProvider value={socket}>
         <ProSidebarProvider>
           <Outlet context={context} />
         </ProSidebarProvider>
-      </WebsocketProvider>
+      </WebSocketProvider>
     </>
   );
 }

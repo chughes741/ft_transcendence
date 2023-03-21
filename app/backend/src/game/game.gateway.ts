@@ -2,7 +2,8 @@ import {
   WebSocketServer,
   WebSocketGateway,
   SubscribeMessage,
-  MessageBody
+  MessageBody,
+  ConnectedSocket
 } from "@nestjs/websockets";
 import { Server, Socket } from "socket.io";
 import { GameService } from "./game.service";
@@ -18,9 +19,9 @@ import { GameStartEntity } from "./entities/game.entity";
 /** Create logger for module */
 const logger = new Logger("gameGateway");
 
-/** 
+/**
  * Websocket gateway for game module
-*/
+ */
 @WebSocketGateway({
   cors: {
     origin: "*"
@@ -51,7 +52,11 @@ export class GameGateway {
    * @listens joinGameQueue
    */
   @SubscribeMessage("joinGameQueue")
-  async joinGameQueue(client: Socket, @MessageBody() joinGameQueueDto: JoinGameQueueDto) {
+  async joinGameQueue(
+    @ConnectedSocket() client: Socket,
+    @MessageBody() joinGameQueueDto: JoinGameQueueDto
+  ) {
+    logger.log("Socket id: " + client.id);
     this.gameService.joinGameQueue(client, joinGameQueueDto);
   }
 
@@ -60,7 +65,7 @@ export class GameGateway {
    * @param {PlayerReadyDto} playerReadyDto
    * @returns {Promise<GameStartEntity>}
    * @listens playerReady
-   * 
+   *
    * @todo This needs to identify which player the ready alert came from
    * @todo return GameStartEntity
    */

@@ -58,7 +58,7 @@ export default ChatArea;
 
 // const ChatArea = (room: ChatAreaProps) => {
 //   const [textValue, setTextValue] = React.useState("");
-//   const socket = useContext(WebsocketContext);
+//   const socket = useContext(WebSocketContext);
 //   const messageInputRef = useRef<HTMLInputElement>(null);
 
 //   useEffect(() => {

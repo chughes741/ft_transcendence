@@ -6,7 +6,7 @@ import { useContext, useEffect, useState } from "react";
 /********************/
 /*     Contexts     */
 /********************/
-import { WebsocketContext } from "../../contexts/WebsocketContext";
+import { WebSocketContext } from "../../contexts/WebSocketContext";
 
 /***********************/
 /*     Components      */
@@ -42,7 +42,7 @@ export default function ChatPage() {
   /**************/
   /*   Socket   */
   /**************/
-  const socket = useContext(WebsocketContext);
+  const socket = useContext(WebSocketContext);
 
   // FIXME: temporary addition for dev build to test user creation
   // TODO: remove this when user creation is implemented

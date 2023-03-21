@@ -1,6 +1,6 @@
 import { createContext, useEffect, useState } from "react";
 import { MessageType } from "./Message";
-import { socket } from "../../../contexts/WebsocketContext";
+import { socket } from "../../../contexts/WebSocketContext";
 import { RoomType } from "../ChatPage";
 
 type ChatContextType = {

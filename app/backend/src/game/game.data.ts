@@ -1,12 +1,17 @@
 import * as GameTypes from "./game.types";
+import { v4 as uuidv4 } from "uuid";
+import { Logger } from "@nestjs/common";
+
+const logger = new Logger("gameData");
 
 /**
  * Storage class for handling runtime volatile service data
  */
 export class GameModuleData {
-  public static queue = new Map<string, GameTypes.PlayerQueue>();
-  public static games = new Map<number, GameTypes.GameData>();
-  public static lobbies = new Map<string, GameTypes.gameLobby>();
+  public static queue: GameTypes.PlayerQueue[] = [];
+  public static games: GameTypes.GameData[] = [];
+  public static lobbies: GameTypes.gameLobby[] = [];
+
   /**
    * Adds player to game queue
    * @method addQueue
@@ -14,7 +19,7 @@ export class GameModuleData {
    * @returns {}
    */
   addQueue(player: GameTypes.PlayerQueue) {
-    GameModuleData.queue.set(player.client_id, player);
+    GameModuleData.queue.push(player);
   }
 
   /**
@@ -24,7 +29,10 @@ export class GameModuleData {
    * @returns {}
    */
   removeQueue(player: GameTypes.PlayerQueue) {
-    GameModuleData.queue.delete(player.client_id);
+    GameModuleData.queue = GameModuleData.queue.splice(
+      GameModuleData.queue.indexOf(player),
+      1
+    );
   }
 
   /**
@@ -35,13 +43,10 @@ export class GameModuleData {
    * @todo Fix current match systems and implement actual MMR checks
    */
   getPairQueue(): GameTypes.PlayerQueue[] {
-    if (GameModuleData.queue.size >= 2) {
-      const playerPair: GameTypes.PlayerQueue[] = [
-        GameModuleData.queue[0],
-        GameModuleData.queue[1]
-      ];
-      this.removeQueue(GameModuleData.queue[0]);
-      this.removeQueue(GameModuleData.queue[1]);
+    if (GameModuleData.queue.length >= 2) {
+      let playerPair: GameTypes.PlayerQueue[] = [];
+      playerPair.push(GameModuleData.queue.pop());
+      playerPair.push(GameModuleData.queue.pop());
       return playerPair;
     } else {
       return null;

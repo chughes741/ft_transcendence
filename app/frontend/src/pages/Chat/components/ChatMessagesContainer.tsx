@@ -1,7 +1,7 @@
 import { useContext, useEffect, useRef } from "react";
 import { MessageType } from "./Message";
 import Message from "./Message";
-import { WebsocketContext } from "../../../contexts/WebsocketContext";
+import { WebSocketContext } from "../../../contexts/WebSocketContext";
 
 type ChatMessagesContainerProps = {
   messages: Array<MessageType>;
@@ -29,7 +29,7 @@ const groupMessages = (messages: Array<MessageType>): Array<MessageType> => {
 };
 
 const ChatMessagesContainer = ({ messages }: ChatMessagesContainerProps) => {
-  const currentUser = useContext(WebsocketContext).id;
+  const currentUser = useContext(WebSocketContext).id;
   const groupedMessages = groupMessages(messages);
   const lastMessageRef = useRef<HTMLDivElement>(null);
 

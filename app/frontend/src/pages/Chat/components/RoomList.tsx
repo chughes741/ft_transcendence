@@ -2,7 +2,7 @@ import React, { useContext, useEffect } from "react";
 import { ChatContext } from "./ChatContext";
 import Button from "../../../components/Button";
 import ButtonFunky from "../../../components/ButtonFunky";
-import { WebsocketContext } from "../../../contexts/WebsocketContext";
+import { WebSocketContext } from "../../../contexts/WebSocketContext";
 import { MessageType } from "./Message";
 import { MessagePayload } from "../ChatPage";
 import ContextMenu from "./ContextMenu";
@@ -26,7 +26,7 @@ const RoomList: React.FC = () => {
     tempUsername // FIXME: For testing purposes only
   } = useContext(ChatContext);
 
-  const socket = useContext(WebsocketContext);
+  const socket = useContext(WebSocketContext);
 
   /**********************/
   /*   Room Functions   */

@@ -3,8 +3,8 @@ import { io, Socket } from "socket.io-client";
 
 const socket = io("http://localhost:3000"); // The socketClient port
 
-const WebsocketContext = createContext<Socket>(socket);
+const WebSocketContext = createContext<Socket>(socket);
 
-const WebsocketProvider = WebsocketContext.Provider;
+const WebSocketProvider = WebSocketContext.Provider;
 
-export { socket, WebsocketContext, WebsocketProvider };
+export { socket, WebSocketContext, WebSocketProvider };

@@ -7,8 +7,16 @@ import { GameLogic } from "./game.logic";
 import { GameModuleData } from "./game.data";
 import * as GameTypes from "./game.types";
 import * as GameDto from "./dto/game.dto";
-import { v4 as uuidv4, v6 as uuidv6 } from "uuid";
+import { v4 as uuidv4 } from "uuid";
+
 const logger = new Logger("gameService");
+
+export class PlayerQueue {
+  client_id: string;
+  join_time: number;
+  client_mmr: number;
+  socket_id: string; //Temporary
+}
 
 /**
  * GameService class
@@ -49,7 +57,6 @@ export class GameService {
   /**
    * Adds player to the game queue and tries to find a match
    * @method joinGameQueue
-   * @param {Socket} client
    * @param {GameDto.JoinGameQueueDto} player
    * @returns {}
    * @async
@@ -58,13 +65,14 @@ export class GameService {
     logger.log("joinGameQueue() called");
 
     //Create a player queue object
-    const newPlayer: GameTypes.PlayerQueue = new GameTypes.PlayerQueue();
+    let newPlayer: GameTypes.PlayerQueue;
+    newPlayer = new GameTypes.PlayerQueue();
 
     //Populate data for player
     // newPlayer.client_id = player.client_id; //TODO: Database integration
     newPlayer.client_id = uuidv4(); //TODO: Temporary
     newPlayer.join_time = player.join_time;
-    // queuedPlayer.client_mmr = getClientMMR();
+    newPlayer.client_mmr = 500;
     newPlayer.socket_id = client.id;
     //Add player to queue
     this.gameModuleData.addQueue(newPlayer);
@@ -90,7 +98,7 @@ export class GameService {
 
     //Create a new lobby
     const newLobby = new GameTypes.gameLobby();
-
+    newLobby.players = [];
     //Populate lobby data
     newLobby.players.push(playerPair[0].client_id);
     newLobby.players.push(playerPair[1].client_id);
@@ -98,17 +106,16 @@ export class GameService {
     newLobby.lobby_id = uuidv4();
 
     //Create a new websocket room and subscribe players
-    this.server.in(playerPair[0].client_id).socketsJoin(newLobby.lobby_id);
-    this.server.in(playerPair[1].client_id).socketsJoin(newLobby.lobby_id);
+    this.server.in(playerPair[0].socket_id).socketsJoin(newLobby.lobby_id);
+    this.server.in(playerPair[1].socket_id).socketsJoin(newLobby.lobby_id);
 
     //Add lobby to map of lobbies
     //TODO: Swap this to a setter function in the data module
-    GameModuleData.lobbies.set(newLobby.lobby_id, newLobby);
+    GameModuleData.lobbies.push(newLobby);
 
     //Emit lobbyCreated event to room members
-    //The payload for this needs to contain chat info
+
     this.server.to(newLobby.lobby_id).emit("lobbyCreated");
-    //TODO: Connect this event on frontend so we can test
   }
 
   /**
