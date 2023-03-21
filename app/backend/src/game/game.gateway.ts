@@ -13,7 +13,7 @@ import {
   JoinGameQueueDto,
   PlayerReadyDto
 } from "./dto/game.dto";
-import { GameStartEntity, JoinGameEntity } from "./entities/game.entity";
+import { GameStartEntity } from "./entities/game.entity";
 
 //Create logger for module
 const logger = new Logger("gameGateway");
@@ -32,38 +32,34 @@ export class GameGateway {
   server: Server;
 
   /**
-   * Message to join an invite game
-   * @todo need to return a JoinGameEntity
+   * Gateway for a client sent game invite
    * @param {JoinGameInviteDto} joinGameInviteDto
-   * @returns {Promise<JoinGameEntity>}
+   * @returns {}
+   * @listens sendGameInvite
    */
-  @SubscribeMessage("joinGameInvite")
-  async acceptGameInvite(
-    @MessageBody() joinGameInviteDto: JoinGameInviteDto
-  ): Promise<JoinGameEntity> {
-    this.gameService.joinGameInvite();
-    return null;
+  @SubscribeMessage("sendGameInvite")
+  async sendGameInvite(@MessageBody() joinGameInviteDto: JoinGameInviteDto) {
+    this.gameService.sendGameInvite();
   }
 
   /**
-   * Join queue for new game
-   * @todo needs to return a JoinGameEntity
+   * Join matchmaking queue for new game
    * @param {JoinGameQueueDto} joinGameQueueDto
-   * @returns {Promise<JoinGameEntity>}
+   * @returns {}
+   * @listens joinGameQueue
    */
   @SubscribeMessage("joinGameQueue")
-  async joinGameQueue(
-    @MessageBody() joinGameQueueDto: JoinGameQueueDto
-  ): Promise<JoinGameEntity> {
+  async joinGameQueue(@MessageBody() joinGameQueueDto: JoinGameQueueDto) {
     this.gameService.joinGameQueue();
-    return null;
   }
 
   /**
    * Handle playerReady event and start game when both players ready
    * @todo This needs to identify which player the ready alert came from
+   * @todo return GameStartEntity
    * @param {PlayerReadyDto} playerReadyDto
    * @returns {Promise<GameStartEntity>}
+   * @listens playerReady
    */
   @SubscribeMessage("playerReady")
   async playerReady(
@@ -73,3 +69,4 @@ export class GameGateway {
     return null;
   }
 }
+

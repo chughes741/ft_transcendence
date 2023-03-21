@@ -14,9 +14,13 @@ export class JoinGameInviteDto extends GameInviteDto {
 }
 
 /**
- *
+ *  @var client_id The UUID of the client (unwrapped from JWT in the authguard)
+ *  @var join_time Timestamp of when the client joined the queue
  */
-export class JoinGameQueueDto extends GameInviteDto {}
+export class JoinGameQueueDto {
+  client_id: string;
+  join_time: number;
+}
 
 /**
  *
@@ -24,3 +28,4 @@ export class JoinGameQueueDto extends GameInviteDto {}
 export class PlayerReadyDto {
   lobby_id: string;
 }
+
