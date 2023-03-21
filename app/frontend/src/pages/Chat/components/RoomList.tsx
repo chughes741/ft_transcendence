@@ -57,8 +57,8 @@ const RoomList: React.FC = () => {
     );
     const owner = tempUsername;
     socket.emit("createRoom", {
-      roomName,
-      roomStatus,
+      name: roomName,
+      status: roomStatus,
       password,
       owner
     });

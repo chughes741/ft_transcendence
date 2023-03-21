@@ -1,6 +1,8 @@
 // [app/backend/src/chat/user-connections.service.ts]
 
-import { Injectable } from "@nestjs/common";
+import { Injectable, Logger } from "@nestjs/common";
+
+const logger = new Logger("UserConnectionsService");
 
 @Injectable()
 export class UserConnectionsService {
@@ -11,7 +13,12 @@ export class UserConnectionsService {
       this.userConnections.set(username, []);
     }
     this.userConnections.get(username).push(socketId);
-    console.log(this.userConnections);
+    // TODO: remove this log
+    logger.log(
+      `Added ${socketId} to ${username}. Now has ${
+        this.userConnections.get(username).length
+      } connections`
+    );
   }
 
   removeUserConnection(username: string, socketId: string): void {
@@ -24,6 +31,10 @@ export class UserConnectionsService {
           this.userConnections.delete(username);
         }
       }
+      // TODO: remove this log
+      logger.log(
+        `Removed ${socketId} from ${username}. Now has ${connections.length} connections`
+      );
     }
   }
 }

@@ -93,8 +93,8 @@ export class MessageDto {
   roomId: number;
 }
 export class ChatRoomDto {
-  name?: string;
-  status?: ChatRoomStatus;
+  name: string;
+  status: ChatRoomStatus;
   password?: string;
   owner?: string;
 }

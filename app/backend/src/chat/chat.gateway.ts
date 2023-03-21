@@ -17,6 +17,13 @@ import { UserConnectionsService } from "../user-connections.service";
 
 const logger = new Logger("ChatGateway");
 
+export class CreateChatRoomDto {
+  name: string;
+  status: ChatRoomStatus;
+  password: string;
+  owner: string;
+}
+
 // FIXME: uncomment the following line to enable authentication
 // @UseGuards(JwtWsAuthGuard)
 @WebSocketGateway()
@@ -55,11 +62,14 @@ export class ChatGateway
     logger.log(
       `Received createUser request from ${client.id} for user ${username}`
     );
+    // Check if the user already exists
     const userExists = await this.prismaService.nickExists(username);
     if (userExists) {
+      // Warn the client that the user already exists
       client.emit("userExists");
       logger.log(`User ${username} already exists`);
     } else {
+      // If the user does not exist, create it
       const prismaReturn = await this.prismaService.addUser({
         email: username,
         firstName: username,
@@ -68,44 +78,45 @@ export class ChatGateway
       });
       logger.log(`User ${username} created: `);
       console.log(prismaReturn);
+      // Add the user connection to the UserConnections map
       this.userConnectionsService.addUserConnection(username, client.id);
       client.emit("userCreated", username);
     }
   }
+
+  /**
+   * Create a new chat room
+   * @param client socket client
+   * @param room CreateRoomDto
+   */
   @SubscribeMessage("createRoom")
-  async createRoom(
-    client: Socket,
-    room: {
-      roomName: string;
-      roomStatus: string;
-      password: string;
-      owner: string;
-    }
-  ) {
+  async createRoom(client: Socket, createDto: CreateChatRoomDto) {
     logger.log(
-      `Received createRoom request from ${room.owner} for room ${
-        room.roomName
-      }: ${room.roomStatus} ${
-        room.password ? `with password ${room.password}` : ""
+      `Received createRoom request from ${createDto.owner} for room ${
+        createDto.name
+      }: ${createDto.status} ${
+        createDto.password ? `with password ${createDto.password}` : ""
       }`
     );
-    client.join(room.roomName);
-    logger.log(`User ${room.owner} joined socket room ${room.roomName}`);
-    const dto: ChatRoomDto = {
-      name: room.roomName,
-      status: ChatRoomStatus[room.roomStatus],
-      password: room.password,
-      owner: room.owner
-    };
-    const ret = await this.prismaService.createChatRoom(dto);
-    logger.log(`Room ${room.roomName} created: `);
+    // Add the user to the socket room
+    client.join(createDto.name);
+    logger.log(`User ${createDto.owner} joined socket room ${createDto.name}`);
+    console.log(createDto);
+
+    // Add the room to the database
+    const ret = await this.prismaService.createChatRoom(createDto);
+    logger.log(`Room ${createDto.name} created: `);
     console.log(ret);
 
+    // Send a confirmation message to all clients in the room
     this.server
-      .to(room.roomName)
-      .emit("roomMessage", `User ${room.owner} CREATED room ${room.roomName}`);
+      .to(createDto.name)
+      .emit(
+        "roomMessage",
+        `User ${createDto.owner} CREATED room ${createDto.name}`
+      );
 
-    logger.log(`User ${room.owner} CREATED room ${room.roomName}`);
+    logger.log(`User ${createDto.owner} CREATED room ${createDto.name}`);
   }
 
   @SubscribeMessage("joinRoom")
@@ -137,12 +148,24 @@ export class ChatGateway
   @SubscribeMessage("sendMessage")
   async sendMessage(
     client: Socket,
-    { room, message }: { room: string; message: string }
+    { room, message, user }: { room: string; message: string; user: string }
   ) {
     if (!message) return;
-    const user = client.id;
     this.server.to(room).emit("roomMessage", { user, room, message });
     this.server.emit("onMessage", { user, room, message }); // FIXME: temporarily broadcast to all clients, for testing purposes
-    console.log(`User ${client.id} sent message in room ${room}: ${message}`);
+    logger.log(`User ${user} sent message in room ${room}: ${message}`);
+
+    const roomId = await this.prismaService.getChatRoomId(room);
+    logger.log(`Room name: ${room} has a room ID: ${roomId}`);
+    const userId = await this.prismaService.nickExists(user);
+    logger.log(`User name: ${user} has a user ID: ${userId}`);
+
+    // Add the message to the database
+    const ret = await this.prismaService.addMessageToChatRoom({
+      content: message,
+      senderId: userId,
+      roomId
+    });
+    console.log(ret);
   }
 }

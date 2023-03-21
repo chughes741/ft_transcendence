@@ -101,7 +101,11 @@ export const ChatProvider = ({ children }) => {
   }, [rooms, currentRoomName]);
 
   const sendRoomMessage = (roomName: string, message: string) => {
-    socket.emit("sendMessage", { room: roomName, message });
+    socket.emit("sendMessage", {
+      room: roomName,
+      message,
+      user: tempUsername
+    });
   };
 
   return (

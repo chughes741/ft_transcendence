@@ -6,6 +6,7 @@ import {
   Prisma,
   PrismaClient
 } from "@prisma/client";
+import { PrismaClientKnownRequestError } from "@prisma/client/runtime";
 import {
   ChatMemberDto,
   ChatRoomDto,
@@ -94,7 +95,6 @@ export class PrismaService extends PrismaClient {
     if (dto.owner && !userID) {
       throw new Error("Invalid owner UUID");
     }
-    console.log("userID: ", userID);
 
     // Prepare the data for creating a chat room
     const data: Prisma.ChatRoomCreateInput = {
@@ -125,6 +125,13 @@ export class PrismaService extends PrismaClient {
     return this.chatRoom.findUnique({ where: { id } });
   }
 
+  // Get a chat room by ID
+  async getChatRoomId(name: string): Promise<number | null> {
+    const room = await this.chatRoom.findUnique({ where: { name } });
+
+    return room ? room.id : null;
+  }
+
   // Update a chat room
   async updateChatRoom(
     id: number,
@@ -145,11 +152,22 @@ export class PrismaService extends PrismaClient {
 
   // Add a new message to a chat room
   async addMessageToChatRoom(dto: MessageDto): Promise<MessageDto> {
-    return this.message.create({
-      data: {
-        ...dto
-      }
-    });
+    logger.log(`dto.senderId: ${dto.senderId}`);
+    logger.log(`dto.roomId: ${dto.roomId}`);
+    // Check if the owner UUID is valid
+    const userExists = await this.userExists(dto.senderId);
+    if (dto.senderId && !userExists) {
+      logger.log(`userExists: ${userExists}`);
+      return;
+    }
+    const data: Prisma.MessageCreateInput = {
+      content: dto.content,
+      sender: { connect: { id: dto.senderId } },
+      room: { connect: { id: dto.roomId } }
+    };
+    // Add it as a chat member
+
+    return this.message.create({ data });
   }
 
   // Get all messages in a chat room
