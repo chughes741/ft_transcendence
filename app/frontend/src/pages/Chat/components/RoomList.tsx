@@ -13,6 +13,7 @@ const RoomList: React.FC = () => {
   const {
     rooms,
     setRooms,
+    currentRoomName,
     contextMenuData,
     contextMenuPosition,
     setCurrentRoomName,
@@ -144,7 +145,9 @@ const RoomList: React.FC = () => {
       {Object.entries(rooms).map(([roomId, messages]) => (
         <div
           key={roomId}
-          className="room-item"
+          className={
+            currentRoomName === roomId ? "room-item selected" : "room-item"
+          }
           onClick={() => {
             setCurrentRoomName(roomId);
             setCurrentRoomMessages(messages);
