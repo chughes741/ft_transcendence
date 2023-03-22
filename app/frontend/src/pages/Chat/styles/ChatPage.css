@@ -92,7 +92,7 @@
 .room-list {
   border-right: 1px solid #ccc;
   padding: 1rem;
-  overflow-y: scroll;
+  overflow-y: auto;
   width: 20vw;
 }
 
@@ -104,6 +104,7 @@
   border-radius: 5px;
   padding: 0.5rem;
   transition: background-color 0.2s;
+  text-overflow: ellipsis;
 }
 
 .room-item.selected {
@@ -126,15 +127,6 @@ img {
   margin-right: 1rem;
 }
 
-.room-info {
-  flex: 1;
-}
-
-.room-name {
-  font-weight: bold;
-  margin-bottom: 2px;
-}
-
 .last-message {
   font-size: 0.9rem;
   margin-top: 0.25rem;
@@ -143,9 +135,9 @@ img {
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
-  text-overflow: ellipsis;
   max-height: 3em;
   max-width: 8vw;
+  text-overflow: ellipsis;
   white-space: pre-wrap;
   word-break: break-word;
 }
@@ -160,6 +152,18 @@ img {
   flex: 1;
   margin: 0;
   max-width: 80vw;
+}
+
+.room-name {
+  font-weight: bold;
+  margin-bottom: 2px;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  overflow: hidden;
+  max-width: 10vw;
+  display: -webkit-box;
+  -webkit-line-clamp: 1;
+  -webkit-box-orient: vertical;
 }
 
 .input-container-modal {

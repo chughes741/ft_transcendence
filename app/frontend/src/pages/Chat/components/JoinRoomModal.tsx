@@ -11,11 +11,11 @@ import Button from "../../../components/Button";
 import "../styles/ChatPage.css";
 import { useRoomModal } from "./useRoomModal";
 
-interface CreateRoomModalProps {
+type CreateRoomModalProps = {
   showModal: boolean;
   closeModal: () => void;
   onCreateRoom: (roomName: string, password: string) => void;
-}
+};
 
 export const JoinRoomModal: React.FC<CreateRoomModalProps> = ({
   showModal,
