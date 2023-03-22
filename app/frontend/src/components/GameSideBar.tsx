@@ -10,9 +10,10 @@ class JoinGameQueueDto {
 export default function GameSideBar() {
   const socket = useContext(WebSocketContext);
   const [active, setActive] = useState(false);
+  const [waitingLobby, setWaitingLobby] = useState(true);
 
   function onClick() {
-    // setActive(!active);
+    //setActive(!active);
     const payload: JoinGameQueueDto = new JoinGameQueueDto();
     payload.client_id = "testguy";
     payload.join_time = Date.now();
@@ -29,7 +30,7 @@ export default function GameSideBar() {
       <div
         className={`game-side-bar-overlay ${active ? "active" : ""}`}
         onClick={onClick}
-      ></div>
+       />
       <div className={`game-side-bar ${active ? "active" : ""}`}>
         <div
           onClick={onClick}

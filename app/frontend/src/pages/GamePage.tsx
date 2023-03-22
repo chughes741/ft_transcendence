@@ -1,20 +1,12 @@
 import React from 'react';
-import { Helmet } from "react-helmet";
+import {Helmet} from "react-helmet";
 import SideBar from "src/components/SideBar";
 import GameSideBar from "src/components/GameSideBar";
 import Game from "src/pages/game/GameWindow";
 import "src/pages/GamePage.tsx.css";
 import {useState} from "react";
 
-
-
-
 export default function GamePage() {
-  const [isActive, setIsActive] = useState(false);
-
-  function clickPopUp() {
-    setIsActive(!isActive);
-  }
   return (
     <>
       <Helmet>
@@ -23,15 +15,21 @@ export default function GamePage() {
         </title>
       </Helmet>
       <div className="game-page">
-        <SideBar />
+        <SideBar/>
         <div className="game-window">
           <div className="game-container">
-            <Game />
+            <Game/>
           </div>
-          <div 
-            className="game-side-bar-area"
-          >
-            <GameSideBar />
+          <div className="buttons-container">
+            <div className="button-wrapper">
+              <button className="join-lobby">Joino auno loobyo</button>
+            </div>
+            <div className="button-wrapper">
+              <button className="cancel">Cancellllio</button>
+            </div>
+          </div>
+          <div className="game-side-bar-area">
+            <GameSideBar/>
           </div>
         </div>
       </div>
