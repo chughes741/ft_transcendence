@@ -21,6 +21,12 @@ export class UserConnectionsService {
     );
   }
 
+  getUserBySocket(socketId: string): string {
+    return Array.from(this.userConnections.entries()).find(([, connections]) =>
+      connections.includes(socketId)
+    )[0];
+  }
+
   removeUserConnection(username: string, socketId: string): void {
     if (this.userConnections.has(username)) {
       const connections = this.userConnections.get(username);

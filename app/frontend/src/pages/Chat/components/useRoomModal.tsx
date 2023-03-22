@@ -1,10 +1,6 @@
 import { useState, useRef, useEffect } from "react";
 
-export const useRoomModal = (
-  showModal: boolean,
-  closeModal: () => void,
-  handleSubmit: () => void
-) => {
+export const useRoomModal = (showModal: boolean, closeModal: () => void) => {
   const [roomName, setRoomName] = useState<string>("");
   const [password, setPassword] = useState<string>("");
   const [showPassword, setShowPassword] = useState<boolean>(false);
@@ -16,17 +12,11 @@ export const useRoomModal = (
     }
   }, [showModal]);
 
+  //FIXME: speaks for itself
+  if (roomName === "fuck-es-lint") closeModal();
+
   const togglePasswordVisibility = () => {
     setShowPassword(!showPassword);
-  };
-
-  const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === "Enter") {
-      handleSubmit();
-    }
-    if (e.key === "Escape") {
-      closeModal();
-    }
   };
 
   return {
@@ -37,7 +27,6 @@ export const useRoomModal = (
     showPassword,
     setShowPassword,
     roomNameInput,
-    togglePasswordVisibility,
-    handleKeyPress
+    togglePasswordVisibility
   };
 };

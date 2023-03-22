@@ -1,7 +1,7 @@
 /*******************/
 /*     System      */
 /*******************/
-import { useContext, useEffect, useState } from "react";
+import { useContext, useEffect } from "react";
 
 /********************/
 /*     Contexts     */
@@ -59,6 +59,12 @@ export default function ChatPage() {
       socket.on("userCreated", (username) => {
         setTempUsername(username);
         console.log(`Created user ${username} successfully!`);
+
+        // FIXME: For testing purposes only
+        // Join three separate rooms on connection
+        joinRoom("PublicRoom", ""); // Public room
+        joinRoom("PrivateRoom", ""); // Private room
+        joinRoom("PasswordProtectedRoom", "secret"); // Password protected room with a placeholder password
       });
 
       // Name is taken, increment count and try again
@@ -68,12 +74,6 @@ export default function ChatPage() {
         createTempUser(tempUser);
       });
       createTempUser(tempUser);
-
-      // FIXME: For testing purposes only
-      // Join three separate rooms on connection
-      joinRoom("PublicRoom", ""); // Public room
-      joinRoom("PrivateRoom", ""); // Private room
-      joinRoom("PasswordProtectedRoom", "placeholder"); // Password protected room with a placeholder password
     }
 
     return () => {

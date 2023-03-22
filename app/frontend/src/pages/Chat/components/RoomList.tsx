@@ -135,7 +135,7 @@ const RoomList: React.FC = () => {
         width="100%"
       />
       <div> </div>
-      <Button
+      <ButtonFunky
         content="Join Room"
         onClick={() => setShowJoinRoomModal(true)}
         width="100%"

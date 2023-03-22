@@ -151,23 +151,29 @@ export class PrismaService extends PrismaClient {
   }
 
   // Add a new message to a chat room
-  async addMessageToChatRoom(dto: MessageDto): Promise<MessageDto> {
-    logger.log(`dto.senderId: ${dto.senderId}`);
-    logger.log(`dto.roomId: ${dto.roomId}`);
+  async addMessageToChatRoom(dto: MessageDto): Promise<any> {
     // Check if the owner UUID is valid
     const userExists = await this.userExists(dto.senderId);
     if (dto.senderId && !userExists) {
       logger.log(`userExists: ${userExists}`);
       return;
     }
+
+    // Shape the data to be inserted into the database
     const data: Prisma.MessageCreateInput = {
       content: dto.content,
       sender: { connect: { id: dto.senderId } },
       room: { connect: { id: dto.roomId } }
     };
-    // Add it as a chat member
 
-    return this.message.create({ data });
+    // Add the message to the database and update the chat room's last activity
+    return this.$transaction([
+      this.message.create({ data }),
+      this.chatRoom.update({
+        where: { id: dto.roomId },
+        data: { updatedAt: new Date() }
+      })
+    ]);
   }
 
   // Get all messages in a chat room

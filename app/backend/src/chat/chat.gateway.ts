@@ -14,6 +14,15 @@ import { PrismaService } from "../prisma/prisma.service";
 import { ChatMemberStatus, ChatRoomStatus } from "@prisma/client";
 import { ChatRoomDto } from "../auth/dto/prisma.dto";
 import { UserConnectionsService } from "../user-connections.service";
+import { ChatService } from "./chat.service";
+
+// Trickaroo to add fields to the Prisma Message type
+import { Message as PrismaMessage, User, ChatRoom } from "@prisma/client";
+
+export interface Message extends PrismaMessage {
+  sender: { email: string };
+  room: { name: string };
+}
 
 const logger = new Logger("ChatGateway");
 
@@ -23,10 +32,17 @@ export class CreateChatRoomDto {
   password: string;
   owner: string;
 }
+
 export class SendMessageDto {
   roomName: string;
   content: string;
   sender: string;
+}
+
+export class JoinRoomDto {
+  roomName: string;
+  password: string;
+  user: string;
 }
 
 // FIXME: uncomment the following line to enable authentication
@@ -37,6 +53,7 @@ export class ChatGateway
 {
   constructor(
     private prismaService: PrismaService,
+    private chatService: ChatService,
     private userConnectionsService: UserConnectionsService
   ) {}
 
@@ -52,7 +69,7 @@ export class ChatGateway
     logger.log(`Client connected: ${client.id}`);
 
     // Add the user connection
-    this.userConnectionsService.addUserConnection(client.id, client.id);
+    // this.userConnectionsService.addUserConnection(client.id, client.id);
   }
 
   handleDisconnect(client: Socket) {
@@ -124,21 +141,48 @@ export class ChatGateway
     logger.log(`User ${createDto.owner} CREATED room ${createDto.name}`);
   }
 
+  /**
+   * Join a chat room.
+   * If the room does not exist, create it.
+   * Fetch a list of messages from the database and send them to the client.
+   * If there is a password, check if it matches the one in the database.
+   * If the user is not a member of the room, add them to the database.
+   *
+   * @param client client socket
+   * @param dto JoinRoomDto, containing the room name and password
+   */
   @SubscribeMessage("joinRoom")
-  async joinRoom(
-    client: Socket,
-    room: { roomName: string; password?: string; user: string }
-  ) {
+  async joinRoom(client: Socket, dto: JoinRoomDto) {
+    const userId: string = this.userConnectionsService.getUserBySocket(
+      client.id
+    );
     logger.log(
-      `Received joinRoom request from ${room.user} for room ${room.roomName} ${
-        room.password ? `: with password ${room.password}` : ""
+      `Received joinRoom request from ${userId} for room ${dto.roomName} ${
+        dto.password ? `: with password ${dto.password}` : ""
       }`
     );
-    client.join(room.roomName);
-    this.server
-      .to(room.roomName)
-      .emit("roomMessage", `User ${room.user} joined room ${room.roomName}`);
-    logger.log(`User ${room.user} joined room ${room.roomName}`);
+
+    // Assign the user id to the dto instead of the socket id
+    dto.user = userId;
+    const ret = await this.chatService.joinRoom(dto);
+    if (ret instanceof Error) {
+      logger.error(ret);
+      client.emit("joinRoomError", ret.message);
+    } else if (ret instanceof Array) {
+      const messages: Message[] = ret;
+      client.join(dto.roomName);
+      messages.forEach((message) => {
+        client.emit("onMessage", {
+          sender: message.sender.email,
+          roomName: message.room.name,
+          content: message.content
+        });
+      });
+      this.server
+        .to(dto.roomName)
+        .emit("roomMessage", `User ${dto.user} joined room ${dto.roomName}`);
+      logger.log(`User ${dto.user} joined room ${dto.roomName}`);
+    }
   }
 
   /**

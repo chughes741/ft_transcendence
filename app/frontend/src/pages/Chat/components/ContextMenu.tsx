@@ -1,20 +1,17 @@
-import React, { forwardRef, useContext, useEffect, useRef } from "react";
+import React, { useContext, useEffect } from "react";
 import "src/pages/Chat/styles/ChatPage.css";
 import ChatContext from "./ChatContext";
 
 type ContextMenuOption = {
   label: string;
-  onClick: (() => void);
+  onClick: () => void;
 };
 type ContextMenuProps = {
   position: { x: number; y: number };
   options: ContextMenuOption[];
 };
 
-const ContextMenu: React.FC<ContextMenuProps> = ({
-  position,
-  options
-}) => {
+const ContextMenu: React.FC<ContextMenuProps> = ({ position, options }) => {
   const { contextMenuVisible, setContextMenuVisible } = useContext(ChatContext);
   const { x, y } = position;
   const displayStyle = contextMenuVisible ? "block" : "none";

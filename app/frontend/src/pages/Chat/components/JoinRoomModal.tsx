@@ -1,7 +1,7 @@
 /*******************/
 /*     System      */
 /*******************/
-import React, { useState, useRef, useEffect } from "react";
+import React, { useRef, useCallback } from "react";
 import { FiEye, FiEyeOff } from "react-icons/fi";
 import Button from "../../../components/Button";
 
@@ -22,11 +22,6 @@ export const JoinRoomModal: React.FC<CreateRoomModalProps> = ({
   closeModal,
   onCreateRoom
 }) => {
-  // Creates a bogus ref to be used in the `useEffect` below.
-  const handleSubmitRef = useRef<() => void>(() => {
-    return; // To prevent linter errors
-  });
-
   // Improves code reusability btw Create and Join RoomModals
   const {
     roomName,
@@ -35,25 +30,31 @@ export const JoinRoomModal: React.FC<CreateRoomModalProps> = ({
     setPassword,
     showPassword,
     roomNameInput,
-    togglePasswordVisibility,
-    handleKeyPress
-  } = useRoomModal(showModal, closeModal, handleSubmitRef.current);
+    togglePasswordVisibility
+  } = useRoomModal(showModal, closeModal);
 
   // Update handleSubmit ref with the actual implementation
-  useEffect(() => {
-    handleSubmitRef.current = () => {
-      // Necessary check b/c we're not using a `form`, but a `button` w `onClick`
-      if (roomName.trim().length <= 0) {
-        alert("Please enter a room name.");
-        return;
-      }
-      console.log("Creating room modal: ", roomName, password);
-      onCreateRoom(roomName, password);
-      setRoomName("");
-      setPassword("");
-      closeModal();
-    };
+  const handleSubmit = useCallback(() => {
+    // Necessary check b/c we're not using a `form`, but a `button` w `onClick`
+    if (roomName.trim().length <= 0) {
+      alert("Please enter a room name.");
+      return;
+    }
+    console.log("Creating room modal: ", roomName, password);
+    onCreateRoom(roomName, password);
+    setRoomName("");
+    setPassword("");
+    closeModal();
   }, [roomName, password, closeModal, onCreateRoom]);
+
+  const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter") {
+      handleSubmit();
+    }
+    if (e.key === "Escape") {
+      closeModal();
+    }
+  };
 
   if (!showModal) {
     return null;
@@ -116,7 +117,7 @@ export const JoinRoomModal: React.FC<CreateRoomModalProps> = ({
           </div>
           <Button
             content="Join Room"
-            onClick={handleSubmitRef.current}
+            onClick={handleSubmit}
             width="100%"
           ></Button>
         </div>
