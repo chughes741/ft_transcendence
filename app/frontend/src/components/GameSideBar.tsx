@@ -13,16 +13,16 @@ export default function GameSideBar() {
 
   function onClick() {
     // setActive(!active);
-    const payload: JoinGameQueueDto = new JoinGameQueueDto;
-    payload.client_id = 'testguy';
+    const payload: JoinGameQueueDto = new JoinGameQueueDto();
+    payload.client_id = "testguy";
     payload.join_time = Date.now();
 
     socket.emit("joinGameQueue", payload);
   }
 
-  socket.on('lobbyCreated', () => {
-    console.log('Players have successfully joined the lobby');
-  })
+  socket.on("lobbyCreated", () => {
+    console.log("Players have successfully joined the lobby");
+  });
 
   return (
     <>

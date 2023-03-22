@@ -44,7 +44,7 @@ export class GameModuleData {
    */
   getPairQueue(): GameTypes.PlayerQueue[] {
     if (GameModuleData.queue.length >= 2) {
-      let playerPair: GameTypes.PlayerQueue[] = [];
+      const playerPair: GameTypes.PlayerQueue[] = [];
       playerPair.push(GameModuleData.queue.pop());
       playerPair.push(GameModuleData.queue.pop());
       return playerPair;

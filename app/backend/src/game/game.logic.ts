@@ -59,11 +59,11 @@ export class GameLogic {
   //Calculate ball position
   updateBall(gameData: GameData): BallData {
     //Save previous ball data
-    let prev: BallData = gameData.ball;
-    let cur: BallData = new BallData();
+    const prev: BallData = gameData.ball;
+    const cur: BallData = new BallData();
 
     //Current ball position is previous ball position + (direction * speed)
-    let time_diff: number = (Date.now() - gameData.last_update_time) / 1000;
+    const time_diff: number = (Date.now() - gameData.last_update_time) / 1000;
 
     [cur.pos.x, cur.pos.y] = vec2.scaleAndAdd(
       [cur.pos.x, cur.pos.y],
@@ -91,7 +91,7 @@ export class GameLogic {
 
   //Initialize new game
   initNewGame(): GameData {
-    let gameData: GameData = new GameData();
+    const gameData: GameData = new GameData();
 
     //Setup general game properties
     gameData.is_new_round = true;
@@ -119,16 +119,16 @@ export class GameLogic {
 
   //Get a new random ball direction and velocity
   getRandomBallDirection(gameData: GameData): BallData {
-    let ballData: BallData = new BallData();
+    const ballData: BallData = new BallData();
     ballData.pos.x = 0;
     ballData.pos.y = 0;
     ballData.speed = BallConfig.initialSpeed;
 
     //Angle needs to be centered on x axis, so need to get offset from y-axis (half the remainder when angle is subracted from 180)
-    let angle_offset = (180 - BallConfig.maxServeAngle) / 2;
+    const angle_offset = (180 - BallConfig.maxServeAngle) / 2;
 
     //Get a random value in angle range and add the offset
-    let angle =
+    const angle =
       Math.round(Math.round(Math.random() * BallConfig.maxServeAngle)) +
       angle_offset;
 

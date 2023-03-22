@@ -65,15 +65,15 @@ export class GameService {
     logger.log("joinGameQueue() called");
 
     //Create a player queue object
-    let newPlayer: GameTypes.PlayerQueue;
-    newPlayer = new GameTypes.PlayerQueue();
 
     //Populate data for player
-    // newPlayer.client_id = player.client_id; //TODO: Database integration
-    newPlayer.client_id = uuidv4(); //TODO: Temporary
-    newPlayer.join_time = player.join_time;
-    newPlayer.client_mmr = 500;
-    newPlayer.socket_id = client.id;
+    const newPlayer: GameTypes.PlayerQueue = {
+      // newPlayer.client_id = player.client_id; //TODO: Database integration
+      client_id: uuidv4(), //TODO: Temporary
+      join_time: player.join_time,
+      client_mmr: 500,
+      socket_id: client.id
+    };
     //Add player to queue
     this.gameModuleData.addQueue(newPlayer);
 
