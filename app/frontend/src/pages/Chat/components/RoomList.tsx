@@ -23,6 +23,7 @@ const RoomList: React.FC = () => {
     showCreateRoomModal,
     showJoinRoomModal,
     handleContextMenu,
+    joinRoom,
     tempUsername // FIXME: For testing purposes only
   } = useContext(ChatContext);
 
@@ -70,22 +71,6 @@ const RoomList: React.FC = () => {
     setCurrentRoomName(roomName);
   };
 
-  const joinRoom = (roomName: string, password: string) => {
-    console.log(
-      "ChatPage: Creating new room",
-      roomName,
-      password,
-      tempUsername
-    );
-    socket.emit("joinRoom", { roomName, password, user: tempUsername });
-    setRooms((prevRooms) => {
-      const newRooms = { ...prevRooms };
-      newRooms[roomName] = [];
-      return newRooms;
-    });
-    setCurrentRoomName(roomName);
-  };
-
   const leaveRoom = () => {
     if (!contextMenuData) return;
     const roomName = contextMenuData.name;
@@ -104,12 +89,6 @@ const RoomList: React.FC = () => {
   useEffect(() => {
     socket.on("connect", () => {
       console.log("Successfully connected to the server");
-
-      // FIXME: For testing purposes only
-      // Join three separate rooms on connection
-      joinRoom("PublicRoom", ""); // Public room
-      joinRoom("PrivateRoom", ""); // Private room
-      joinRoom("PasswordProtectedRoom", "placeholder"); // Password protected room with a placeholder password
     });
 
     socket.on("onMessage", (newMessage: MessagePayload) => {
@@ -121,23 +100,32 @@ const RoomList: React.FC = () => {
         hour12: true
       });
 
+      console.log(
+        `Sender is ${newMessage.sender} and tempUsername is ${tempUsername}`
+      );
+      console.log(
+        `newMessage.sender === tempUsername ? ${
+          newMessage.sender === tempUsername
+        }`
+      );
+
       const messageData: MessageType = {
-        user: newMessage.user,
-        roomId: newMessage.room,
-        message: newMessage.message,
+        user: newMessage.sender,
+        roomId: newMessage.roomName,
+        message: newMessage.content,
         timestamp,
-        isOwn: newMessage.user === socket.id,
+        isOwn: newMessage.sender === tempUsername,
         displayUser: true,
         displayTimestamp: true
       };
-
-      addMessageToRoom(newMessage.room, messageData);
+      console.log(`messageData: ${JSON.stringify(messageData)}`);
+      addMessageToRoom(newMessage.roomName, messageData);
     });
 
     return () => {
       socket.off("onMessage");
     };
-  }, [socket]);
+  }, [socket, tempUsername]);
 
   return (
     <div className="room-list">

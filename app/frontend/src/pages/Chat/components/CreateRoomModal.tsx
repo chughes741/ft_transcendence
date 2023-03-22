@@ -54,7 +54,7 @@ export const CreateRoomModal: React.FC<CreateRoomModalProps> = ({
         alert("Please enter a room password.");
         return;
       }
-      if (roomName.trim().length <= 0) {
+      if (roomName.length <= 0) {
         alert("Please enter a room name.");
         return;
       }
@@ -87,7 +87,10 @@ export const CreateRoomModal: React.FC<CreateRoomModalProps> = ({
               ref={roomNameInput}
               value={roomName}
               maxLength={25}
-              onChange={(e) => setRoomName(e.target.value)}
+              onChange={(e) => {
+                console.log("e.target.value: ", e.target.value);
+                setRoomName(e.target.value);
+              }}
               onKeyDown={handleKeyPress}
               required
             />

@@ -39,6 +39,11 @@ const ChatMessagesContainer = ({ messages }: ChatMessagesContainerProps) => {
     }
   }, [groupedMessages]);
 
+  // When a new message is received
+  if (lastMessageRef.current) {
+    lastMessageRef.current.scrollIntoView({ behavior: "smooth" });
+  }
+
   return (
     <div className="message-container">
       <div className="messages">

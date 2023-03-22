@@ -26,6 +26,7 @@ type ChatContextType = {
   unreadMessages: { [key: string]: number };
   setUnreadMessages: (unread: { [key: string]: number }) => void;
   sendRoomMessage: (roomName: string, message: string) => void;
+  joinRoom: (roomName: string, password: string) => void;
   tempUsername: string;
   setTempUsername: (string) => void;
 };
@@ -51,6 +52,7 @@ export const ChatContext = createContext<ChatContextType>({
   unreadMessages: {},
   setUnreadMessages: () => {},
   sendRoomMessage: () => {},
+  joinRoom: () => {},
   tempUsername: "",
   setTempUsername: () => {}
 });
@@ -62,15 +64,16 @@ export const ChatProvider = ({ children }) => {
   const [currentRoomMessages, setCurrentRoomMessages] = useState<
     Array<MessageType>
   >([]);
-  const [showCreateRoomModal, setShowCreateRoomModal] = useState(false);
-  const [showJoinRoomModal, setShowJoinRoomModal] = useState(false);
+  const [showCreateRoomModal, setShowCreateRoomModal] =
+    useState<boolean>(false);
+  const [showJoinRoomModal, setShowJoinRoomModal] = useState<boolean>(false);
   const [unreadMessages, setUnreadMessages] = useState<{
     [key: string]: number;
   }>({});
 
   // FIXME: temporary addition for dev build to test user creation
   // TODO: remove this when user creation is implemented
-  const [tempUsername, setTempUsername] = useState("");
+  const [tempUsername, setTempUsername] = useState<string>("");
 
   /********************/
   /*   Context Menu   */
@@ -90,7 +93,7 @@ export const ChatProvider = ({ children }) => {
   };
 
   /**
-   *  Update room messages to be displayed on change of room selection
+   *  Update displayed room messages on change of room selection
    */
   useEffect(() => {
     if (rooms[currentRoomName]) {
@@ -100,11 +103,27 @@ export const ChatProvider = ({ children }) => {
     }
   }, [rooms, currentRoomName]);
 
+  const joinRoom = (roomName: string, password: string) => {
+    console.log(
+      "ChatPage: Creating new room",
+      roomName,
+      password,
+      tempUsername
+    );
+    socket.emit("joinRoom", { roomName, password, user: tempUsername });
+    setRooms((prevRooms) => {
+      const newRooms = { ...prevRooms };
+      newRooms[roomName] = [];
+      return newRooms;
+    });
+    setCurrentRoomName(roomName);
+  };
+
   const sendRoomMessage = (roomName: string, message: string) => {
     socket.emit("sendMessage", {
-      room: roomName,
-      message,
-      user: tempUsername
+      sender: tempUsername,
+      roomName: roomName,
+      content: message
     });
   };
 
@@ -129,6 +148,7 @@ export const ChatProvider = ({ children }) => {
         unreadMessages,
         setUnreadMessages,
         sendRoomMessage,
+        joinRoom,
         tempUsername,
         setTempUsername
       }}

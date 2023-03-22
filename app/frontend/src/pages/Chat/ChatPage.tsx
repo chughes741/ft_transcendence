@@ -22,9 +22,9 @@ import ChatContext from "./components/ChatContext";
 import RoomList from "./components/RoomList";
 
 export type MessagePayload = {
-  user: string;
-  room: string;
-  message: string;
+  sender: string;
+  roomName: string;
+  content: string;
 };
 
 export type RoomType = {
@@ -36,7 +36,7 @@ export default function ChatPage() {
   /*   State Variables   */
   /***********************/
 
-  const { currentRoomName, tempUsername, setTempUsername } =
+  const { currentRoomName, tempUsername, setTempUsername, joinRoom } =
     useContext(ChatContext);
 
   /**************/
@@ -58,6 +58,7 @@ export default function ChatPage() {
       // Server acknowledges successful creation, returns username
       socket.on("userCreated", (username) => {
         setTempUsername(username);
+        console.log(`Created user ${username} successfully!`);
       });
 
       // Name is taken, increment count and try again
@@ -67,13 +68,19 @@ export default function ChatPage() {
         createTempUser(tempUser);
       });
       createTempUser(tempUser);
+
+      // FIXME: For testing purposes only
+      // Join three separate rooms on connection
+      joinRoom("PublicRoom", ""); // Public room
+      joinRoom("PrivateRoom", ""); // Private room
+      joinRoom("PasswordProtectedRoom", "placeholder"); // Password protected room with a placeholder password
     }
 
     return () => {
       socket.off("userCreated");
       socket.off("userExists");
     };
-  }, [socket, tempUsername]);
+  }, [socket, tempUsername, ""]);
 
   /**************************/
   /*   Returned fragment   */
