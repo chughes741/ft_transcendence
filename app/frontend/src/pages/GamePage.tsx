@@ -1,11 +1,11 @@
-import React, {Component} from 'react';
+import React from 'react';
 import {Helmet} from "react-helmet";
 import SideBar from "src/components/SideBar";
 import GameSideBar from "src/components/GameSideBar";
 import Game from "src/pages/game/GameWindow";
 import "src/pages/GamePage.tsx.css";
 import {useState} from "react";
-import
+import Button from "@mui/material/Button"
 
 export default function GamePage() {
 
@@ -44,14 +44,18 @@ export default function GamePage() {
           </div>
           <div className="buttons-container">
             <div className={`button-wrapper ${buttonIsActive ? "button-inactive" : ""}`}>
-              <button className="join-lobby" onClick={ClickJoinLobby}>Joino auno loobyo</button>
+              <Button variant="contained" className="join-lobby" onClick={ClickJoinLobby}>Joino auno loobyo</Button>
             </div>
             <div className={`button-wrapper ${buttonIsActive ? "" : "button-inactive"}`}>
-              <button className="cancel" onClick={ClickCancel}>Cancellllio</button>
+              <Button variant="contained" onClick={ClickCancel}>Cancellllio</Button>
             </div>
             <div className={`button-wrapper ${buttonIsActive ? "" : "button-inactive"}`}>
-              <button onClick={ClickChat} className={`chat-button ${chatButtonIsActive ? "" : "close-active"}`}>Open chat</button>
-              <button onClick={ClickChat} className={`chat-button ${chatButtonIsActive ? "close-active" : ""}`}>Close chat</button>
+              <Button variant="contained"
+                      onClick={ClickChat}
+                      className={`chat-button ${chatButtonIsActive ? "" : "close-active"}`}>
+                Open chat
+              </Button>
+              <Button variant="contained" onClick={ClickChat} className={`chat-button ${chatButtonIsActive ? "close-active" : ""}`}>Close chat</Button>
             </div>
 
           </div>
