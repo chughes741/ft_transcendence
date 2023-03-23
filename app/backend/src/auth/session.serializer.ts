@@ -1,6 +1,6 @@
-import { Injectable } from '@nestjs/common';
-import { PassportSerializer } from '@nestjs/passport';
-import { Profile } from 'passport-42';
+import { Injectable } from "@nestjs/common";
+import { PassportSerializer } from "@nestjs/passport";
+import { Profile } from "passport-42";
 
 @Injectable()
 export class SessionSerializer extends PassportSerializer {
@@ -8,7 +8,7 @@ export class SessionSerializer extends PassportSerializer {
     super();
   }
 
-  serializeUser(user: Profile, done: (err: Error, user: Profile) => void): any {
+  serializeUser(user: Profile, done: (err: Error, user: Profile) => void): null | Profile {
     done(null, user);
   }
 

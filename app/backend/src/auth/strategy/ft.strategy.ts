@@ -1,5 +1,5 @@
 import { PassportStrategy } from "@nestjs/passport";
-import { Injectable, Logger } from "@nestjs/common";
+import { Injectable } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import { Strategy, Profile, VerifyCallback } from "passport-42";
 
@@ -69,7 +69,7 @@ export class FortyTwoStrategy extends PassportStrategy(Strategy, "ft") {
     refreshToken: string,
     profile: Profile,
     done: VerifyCallback
-  ): Promise<any> {
+  ): Promise<null | VerifyCallback> {
     request.session.accessToken = accessToken;
     console.log("accessToken", accessToken, "refreshToken", refreshToken);
     // In this example, the user's 42 profile is supplied as the user
