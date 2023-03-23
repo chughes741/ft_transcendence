@@ -40,11 +40,11 @@
 }
 
 .close {
-    display: block;
+    display: block !important;
 }
 
 .close-active {
-    display: none;
+    display: none !important;
 }
 
 

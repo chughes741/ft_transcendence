@@ -11,7 +11,8 @@ export default function GamePage() {
 
   const [buttonIsActive, setButtonActive] = useState(false);
   const [chatIsActive, setChatActive] = useState(false);
-  const [chatButtonIsActive, setChatButtonActive] = useState(true);
+
+  let ChatStatus = "Open Chat";
 
   function ClickJoinLobby() {
     console.log("clicker join lobby");
@@ -25,8 +26,8 @@ export default function GamePage() {
   }
 
   function ClickChat() {
+    ChatStatus = "Close chat";
     setChatActive(!chatIsActive);
-    setChatButtonActive(!chatButtonIsActive);
   }
 
   return (
@@ -52,10 +53,10 @@ export default function GamePage() {
             <div className={`button-wrapper ${buttonIsActive ? "" : "button-inactive"}`}>
               <Button variant="contained"
                       onClick={ClickChat}
-                      className={`chat-button ${chatButtonIsActive ? "" : "close-active"}`}>
-                Open chat
+                      className={`chat-button`}
+              >
+                {ChatStatus}
               </Button>
-              <Button variant="contained" onClick={ClickChat} className={`chat-button ${chatButtonIsActive ? "close-active" : ""}`}>Close chat</Button>
             </div>
 
           </div>
