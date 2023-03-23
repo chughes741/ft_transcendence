@@ -12,6 +12,7 @@ export class ChatService {
   constructor(private readonly prismaService: PrismaService) {}
 
   create(createChatDto: CreateChatDto) {
+    logger.log("Created a new chat");
     return "This action adds a new chat";
   }
 

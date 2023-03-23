@@ -1,6 +1,5 @@
-import { Logger, UseGuards } from "@nestjs/common";
+import { Logger } from "@nestjs/common";
 import {
-  MessageBody,
   OnGatewayConnection,
   OnGatewayDisconnect,
   OnGatewayInit,
@@ -9,15 +8,13 @@ import {
   WebSocketServer
 } from "@nestjs/websockets";
 import { Socket, Server } from "socket.io";
-import { JwtWsAuthGuard } from "../auth/guard";
 import { PrismaService } from "../prisma/prisma.service";
-import { ChatMemberStatus, ChatRoomStatus } from "@prisma/client";
-import { ChatRoomDto } from "../auth/dto/prisma.dto";
+import { ChatRoomStatus } from "@prisma/client";
 import { UserConnectionsService } from "../user-connections.service";
 import { ChatService } from "./chat.service";
 
 // Trickaroo to add fields to the Prisma Message type
-import { Message as PrismaMessage, User, ChatRoom } from "@prisma/client";
+import { Message as PrismaMessage } from "@prisma/client";
 
 export interface Message extends PrismaMessage {
   sender: { email: string };
@@ -60,7 +57,7 @@ export class ChatGateway
   @WebSocketServer()
   server: Server;
 
-  afterInit(server: Server) {
+  afterInit() {
     logger.log("ChatGateway initialized");
   }
   // FIXME: temporary code to create a user for each client
