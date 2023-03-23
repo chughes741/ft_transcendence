@@ -10,7 +10,6 @@ import { LoginModule } from "./login/login.module";
 import { PrismaService } from "./prisma/prisma.service";
 import { PrismaModule } from "./prisma/prisma.module";
 import { ConfigModule } from "@nestjs/config";
-import { configValidationSchema } from "./config/config.schema";
 import { AuthModule } from "./auth/auth.module";
 import { ScheduleModule } from "@nestjs/schedule";
 import { UserConnectionsService } from "./user-connections.service";
