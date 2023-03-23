@@ -94,6 +94,7 @@
   padding: 1rem;
   overflow-y: auto;
   width: 20vw;
+  min-width: 10vw;
 }
 
 .room-item {

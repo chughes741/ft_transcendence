@@ -20,6 +20,11 @@
     right: 0;
     height: 100%;
     background-color: yellow;
+    opacity: 1;
+}
+
+.game-side-bar-area.inactive{
+    opacity: 0;
 }
 
 .accept-side-bar{
@@ -28,4 +33,32 @@
 
 .chat-side-bar{
 
+}
+
+.open {
+    display: block;
+}
+
+.close {
+    display: block;
+}
+
+.close-active {
+    display: none;
+}
+
+
+.buttons-container {
+    margin: 1rem 0;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.button-wrapper {
+    margin: 0.5rem auto;
+}
+
+.button-wrapper.button-inactive {
+    display: none
 }

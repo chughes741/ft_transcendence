@@ -56,10 +56,12 @@
 }
 
 .button-funky-bg {
-  background-image: radial-gradient(
+
+    background-image: radial-gradient(
     rgba(255, 255, 255, 0.2) 8%,
     transparent 8%
   );
+
   background-position: 0;
   background-size: 2vmin 2vmin;
   border-radius: 2rem;
@@ -87,5 +89,6 @@
 }
 
 .button-funky:active .button-funky-content {
-  transform: none;
+
+
 }
