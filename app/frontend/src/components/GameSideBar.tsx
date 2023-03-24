@@ -30,7 +30,7 @@ export default function GameSideBar() {
       <div
         className={`game-side-bar-overlay ${active ? "active" : ""}`}
         onClick={onClick}
-       />
+      />
       <div className={`game-side-bar ${active ? "active" : ""}`}>
         <div
           onClick={onClick}
