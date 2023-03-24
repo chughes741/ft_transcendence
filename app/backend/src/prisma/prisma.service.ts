@@ -120,6 +120,84 @@ export class PrismaService extends PrismaClient {
     return this.chatRoom.create({ data });
   }
 
+  /**
+   * This method returns a page of chat rooms from the database of the specified size,
+   * starting with the oldest chat room that is older than the date provided.
+   *
+   * @param uuid
+   * @param pageSize number of chat rooms to return
+   * @param dateOldest date of the oldest chat room retrieved thus far
+   * @async
+   * @memberof PrismaService
+   * @see https://www.prisma.io/docs/concepts/components/prisma-client/crud#pagination
+   * @see https://www.prisma.io/docs/concepts/components/prisma-client/crud#filtering
+   * @returns
+   */
+  async getUserChatRooms(
+    uuid: string,
+    pageSize: number = 15,
+    dateOldest: Date = new Date(Date.now())
+  ): Promise<ChatRoomDto[] | Error> {
+    // Check if the user exists
+    const user = await this.user.findUnique({ where: { id: uuid } });
+    if (!user) {
+      return Error("User does not exist");
+    }
+    // Get `pageSize` amount of chat rooms, starting with the oldest one that is older than `dateOldest`
+    // sorted in descending order of last activity
+    const chatRooms = await this.chatRoom.findMany({
+      where: {
+        members: {
+          some: {
+            member: {
+              id: uuid
+            },
+            // Check if status is NOT banned
+            status: {
+              not: ChatMemberStatus.BANNED
+            }
+          }
+        },
+        updatedAt: {
+          lt: dateOldest // lt stands for less than
+        }
+      },
+      take: pageSize, // take is the same as limit, and specifies the number of rows to return
+      orderBy: { createdAt: "desc" }
+    });
+    return chatRooms;
+  }
+
+  /**
+   * This method returns a page of messages from the database of the specified size,
+   * starting with the oldest message that is older than the date provided.
+   * @param id room id
+   * @param date of the oldest message retrieved thus far
+   * @param pageSize number of messages to return
+   * @returns {Promise<MessageDto[]>} a page of messages
+   * @async
+   * @memberof PrismaService
+   * @see https://www.prisma.io/docs/concepts/components/prisma-client/crud#pagination
+   * @see https://www.prisma.io/docs/concepts/components/prisma-client/crud#filtering
+   * @see https://www.prisma.io/docs/concepts/components/prisma-client/crud#sorting
+   * @see https://www.prisma.io/docs/concepts/components/prisma-client/crud#limiting
+   * @see https://www.prisma.io/docs/concepts/components/prisma-client/crud#working-with-dates
+   */
+  async getChatMessagesPage(
+    id: number,
+    date: Date,
+    pageSize: number
+  ): Promise<MessageDto[]> {
+    return this.message.findMany({
+      where: {
+        room: { id },
+        createdAt: { lt: date } // Here, lt stands for less than
+      },
+      take: pageSize, // take is the same as limit, and specifies the number of rows to return
+      orderBy: { createdAt: "desc" }
+    });
+  }
+
   // Get a chat room by ID
   async getChatRoom(id: number): Promise<ChatRoomDto | null> {
     return this.chatRoom.findUnique({ where: { id } });
