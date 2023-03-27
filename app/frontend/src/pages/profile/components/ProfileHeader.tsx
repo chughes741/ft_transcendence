@@ -17,7 +17,9 @@ const Item = styled(Paper)(({ theme }) => ({
 export function ProfileHeader() {
   return (
     <>
-      <Avatar sx={{ bgcolor: deepOrange[500] }}>N</Avatar>
+      <Item>
+        <Avatar sx={{ bgcolor: deepOrange[500] }}>N</Avatar>
+      </Item>
     </>
   );
 }
