@@ -20,12 +20,14 @@ export default function HomePage() {
 
   return (
     <>
-    <Helmet>
-      <title>Transcendence | Welcome page <i>allo</i></title>
-    </Helmet>
-    <div className="full-container">
-      <SideBar />
-    </div>
+      <Helmet>
+        <title>
+          Transcendence | Welcome page <i>allo</i>
+        </title>
+      </Helmet>
+      <div className="full-container">
+        <SideBar />
+      </div>
     </>
   );
 }
