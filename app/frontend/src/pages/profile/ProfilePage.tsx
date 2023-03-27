@@ -1,17 +1,23 @@
-import "src/pages/ProfilePage.tsx.css";
-import SideBar from "src/components/SideBar";
+/** Module Imports */
 import { Helmet } from "react-helmet";
 import { Box, Stack } from "@mui/material";
+
+/** Component Imports */
+import SideBar from "src/components/SideBar";
+import "src/pages/profile/styles/ProfilePage.css";
 import { ProfileHeader } from "./components/ProfileHeader";
 import { MatchHistory } from "./components/MatchHistory";
 
+/**
+ * Loads profile page
+ */
 export default function ProfilePage() {
   return (
     <>
       <Helmet>
         <title>King Pong | Profile</title>
       </Helmet>
-      <div className="profile-page">
+      <Box className="profile-page">
         <SideBar />
         <Box sx={{ width: "100%", display: "flex", justifyContent: "center" }}>
           <Stack
@@ -22,7 +28,7 @@ export default function ProfilePage() {
             <MatchHistory />
           </Stack>
         </Box>
-      </div>
+      </Box>
     </>
   );
 }
