@@ -1,4 +1,6 @@
-import { Paper } from "@mui/material";
+/** Module Imports */
+import { Avatar, Paper, Stack } from "@mui/material";
+import { deepOrange } from "@mui/material/colors";
 import { styled } from "@mui/material/styles";
 
 const Item = styled(Paper)(({ theme }) => ({
@@ -9,10 +11,13 @@ const Item = styled(Paper)(({ theme }) => ({
   color: theme.palette.text.secondary
 }));
 
+/**
+ * Creates profile page header
+ */
 export function ProfileHeader() {
   return (
     <>
-      <Item>Profile Section</Item>
+      <Avatar sx={{ bgcolor: deepOrange[500] }}>N</Avatar>
     </>
   );
 }
