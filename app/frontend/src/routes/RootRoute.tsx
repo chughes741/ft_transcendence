@@ -18,9 +18,11 @@ export default function RootRoute() {
   return (
     <>
       <WebSocketProvider value={socket}>
-        <ProSidebarProvider>
-          <Outlet context={context} />
-        </ProSidebarProvider>
+        <ThemeProvider theme={theme}>
+          <ProSidebarProvider>
+            <Outlet context={context} />
+          </ProSidebarProvider>
+        </ThemeProvider>
       </WebSocketProvider>
     </>
   );
