@@ -1,3 +1,4 @@
+/** Module Imports */
 import {
   Paper,
   Table,
@@ -8,6 +9,14 @@ import {
   TableRow
 } from "@mui/material";
 
+/**
+ * Creates test object with params
+ * @param match_type 
+ * @param players 
+ * @param results 
+ * @param date 
+ * @param winner 
+ */
 function createData(
   match_type: string,
   players: string,
@@ -26,6 +35,10 @@ const rows = [
   createData("Unranked", "Just you", "4-2", "25-12-0001", true)
 ];
 
+/**
+ * Creates a TableRow
+ * @param row - Data object to enter into row
+ */
 function MatchRow(row) {
   return (
     <>
@@ -52,6 +65,9 @@ function MatchRow(row) {
   );
 }
 
+/**
+ * Loads match history component
+ */
 export function MatchHistory() {
   return (
     <>
