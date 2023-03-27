@@ -4,3 +4,14 @@
 	width: 100vw;
 	user-select: none;
 }
+
+.profile-box {
+	width: 100%;
+	display: flex;
+	justify-content: center;
+}
+
+.profile-stack {
+	width: 80%;
+	border-spacing: 2px;
+}

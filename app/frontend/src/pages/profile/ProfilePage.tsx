@@ -19,9 +19,8 @@ export default function ProfilePage() {
       </Helmet>
       <Box className="profile-page">
         <SideBar />
-        <Box sx={{ width: "100%", display: "flex", justifyContent: "center" }}>
-          <Stack
-            sx={{ width: "80%" }}
+        <Box className="profile-box">
+          <Stack className="profile-stack"
             spacing={2}
           >
             <ProfileHeader />
