@@ -1,10 +1,5 @@
-import "src/pages/ProfilePage.tsx.css";
-import SideBar from "src/components/SideBar";
-import { Helmet } from "react-helmet";
 import {
-  Box,
   Paper,
-  Stack,
   Table,
   TableBody,
   TableCell,
@@ -12,23 +7,6 @@ import {
   TableHead,
   TableRow
 } from "@mui/material";
-import { styled } from "@mui/material/styles";
-
-const Item = styled(Paper)(({ theme }) => ({
-  backgroundColor: theme.palette.mode === "dark" ? "#1A2027" : "#fff",
-  ...theme.typography.body2,
-  padding: theme.spacing(1),
-  textAlign: "center",
-  color: theme.palette.text.secondary
-}));
-
-function ProfileHeader() {
-  return (
-    <>
-      <Item>Profile Section</Item>
-    </>
-  );
-}
 
 function createData(
   match_type: string,
@@ -74,7 +52,7 @@ function MatchRow(row) {
   );
 }
 
-function MatchHistory() {
+export function MatchHistory() {
   return (
     <>
       <TableContainer component={Paper}>
@@ -90,28 +68,6 @@ function MatchHistory() {
           <TableBody>{rows.map((row) => MatchRow(row))}</TableBody>
         </Table>
       </TableContainer>
-    </>
-  );
-}
-
-export default function ProfilePage() {
-  return (
-    <>
-      <Helmet>
-        <title>Transcendence | Profile</title>
-      </Helmet>
-      <div className="profile-page">
-        <SideBar />
-        <Box sx={{ width: "100%", display: "flex", justifyContent: "center" }}>
-          <Stack
-            sx={{ width: "80%" }}
-            spacing={2}
-          >
-            <ProfileHeader />
-            <MatchHistory />
-          </Stack>
-        </Box>
-      </div>
     </>
   );
 }
