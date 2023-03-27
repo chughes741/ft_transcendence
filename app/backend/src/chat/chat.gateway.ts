@@ -17,7 +17,7 @@ import { ChatService } from "./chat.service";
 import { Message as PrismaMessage } from "@prisma/client";
 
 export interface Message extends PrismaMessage {
-  sender: { email: string };
+  sender: { username: string };
   room: { name: string };
 }
 
@@ -76,7 +76,7 @@ export class ChatGateway
     logger.log(`Client disconnected: ${client.id}`);
   }
 
-  @SubscribeMessage("createUser")
+  @SubscribeMessage("userCreation")
   async createTempUser(client: Socket, username: string) {
     logger.log(
       `Received createUser request from ${client.id} for user ${username}`
@@ -90,10 +90,33 @@ export class ChatGateway
     } else {
       // If the user does not exist, create it
       const prismaReturn = await this.prismaService.addUser({
-        email: username,
-        firstName: username,
-        lastName: username,
-        password: username
+        username,
+        password: "secret"
+      });
+      logger.log(`User ${username} created: `);
+      console.log(prismaReturn);
+      // Add the user connection to the UserConnections map
+      this.userConnectionsService.addUserConnection(username, client.id);
+      client.emit("userCreated", username);
+    }
+  }
+
+  @SubscribeMessage("userLogin")
+  async devUserLogin(client: Socket, username: string) {
+    logger.log(
+      `Received createUser request from ${client.id} for user ${username}`
+    );
+    // Check if the user already exists
+    const userExists = await this.prismaService.nickExists(username);
+    if (userExists) {
+      // Warn the client that the user already exists
+      client.emit("userExists");
+      logger.log(`User ${username} already exists`);
+    } else {
+      // If the user does not exist, create it
+      const prismaReturn = await this.prismaService.addUser({
+        username,
+        password: "secret"
       });
       logger.log(`User ${username} created: `);
       console.log(prismaReturn);
@@ -170,7 +193,7 @@ export class ChatGateway
       client.join(dto.roomName);
       messages.forEach((message) => {
         client.emit("onMessage", {
-          sender: message.sender.email,
+          sender: message.sender.username,
           roomName: message.room.name,
           content: message.content
         });

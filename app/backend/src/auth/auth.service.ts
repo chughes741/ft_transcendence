@@ -27,13 +27,13 @@ export class AuthService {
       // Save the new user in the db
       const user = await this.prisma.user.create({
         data: {
-          email: dto.email,
+          username: dto.username,
           hash
         }
       });
 
       // Return the saved user
-      return this.signToken(user.id, user.email);
+      return this.signToken(user.id, user.username);
     } catch (error) {
       // Check if the error comes from Prisma
       if (error instanceof PrismaClientKnownRequestError) {
@@ -57,14 +57,14 @@ export class AuthService {
   }
 
   async signin(dto: AuthDto) {
-    // Find the user by email
+    // Find the user by username
     const user = await this.prisma.user.findUnique({
       where: {
-        email: dto.email
+        username: dto.username
       }
     });
 
-    Logger.log(dto.email);
+    Logger.log(dto.username);
 
     // If user does not exist, throw exception
     if (!user)
@@ -78,7 +78,7 @@ export class AuthService {
       throw new ForbiddenException("Credentials incorrect, bad pass");
 
     // Return the signed token for the user
-    return this.signToken(user.id, user.email);
+    return this.signToken(user.id, user.username);
   }
 
   async signToken(

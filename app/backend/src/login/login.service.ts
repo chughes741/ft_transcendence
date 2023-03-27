@@ -25,15 +25,15 @@ export class LoginService {
 
     try {
       const hash = await argon.hash(dto.password);
-      Logger.log("dto.email: " + dto.email);
+      Logger.log("dto.username: " + dto.username);
       Logger.log("dto.hash: " + dto.password);
       const user = await this.prismaService.user.create({
         data: {
-          email: dto.email,
+          username: dto.username,
           hash
         }
       });
-      Logger.log("Successfully created user " + user.email + ".");
+      Logger.log("Successfully created user " + user.username + ".");
       return user;
     } catch (error: WsException | any) {
       Logger.log("error code: " + error.code);

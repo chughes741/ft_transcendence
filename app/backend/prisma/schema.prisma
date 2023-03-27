@@ -14,11 +14,8 @@ datasource db {
 model User {
   id String @id @default(uuid())
 
-  email String @unique // To prevent duplicates in the DB
-  hash  String
-
-  firstName String?
-  lastName  String?
+  username String @unique // To prevent duplicates in the DB
+  hash     String
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -35,8 +32,11 @@ model User {
 model Profile {
   id Int @id @default(autoincrement())
 
-  avatar   String @default("default_avatar.png")
-  username String @db.VarChar(12)
+  avatar String @default("default_avatar.png")
+  email  String @unique // To prevent duplicates in the DB
+
+  firstName String?
+  lastName  String?
 
   userId String @unique
   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)

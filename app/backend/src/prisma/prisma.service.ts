@@ -57,16 +57,16 @@ export class PrismaService extends PrismaClient {
     return !!user;
   }
   async nickExists(nick: string): Promise<string> {
-    const user = await this.user.findUnique({ where: { email: nick } });
+    const user = await this.user.findUnique({ where: { username: nick } });
 
     return user ? user.id : null;
   }
 
   async addUser(dto: UserDto) {
     const data: Prisma.UserCreateInput = {
-      email: dto.email,
-      firstName: dto.firstName,
-      lastName: dto.lastName,
+      username: dto.username,
+      // firstName: dto.firstName,
+      // lastName: dto.lastName,
       hash: dto.password
     };
     return this.user.create({ data });

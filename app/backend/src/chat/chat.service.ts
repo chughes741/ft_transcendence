@@ -43,7 +43,7 @@ export class ChatService {
       take: 50,
       include: {
         sender: {
-          select: { email: true }
+          select: { username: true }
         },
         room: { select: { name: true } }
       },
