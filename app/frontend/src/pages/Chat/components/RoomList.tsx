@@ -1,6 +1,6 @@
 import React, { useContext, useEffect } from "react";
 import { ChatContext } from "./ChatContext";
-import Button from "../../../components/Button";
+import "../styles/RoomList.css";
 import ButtonFunky from "../../../components/ButtonFunky";
 import { WebSocketContext } from "../../../contexts/WebSocketContext";
 import { MessageType } from "./Message";
@@ -135,24 +135,22 @@ const RoomList: React.FC = () => {
         onClick={() => setShowCreateRoomModal(true)}
         width="100%"
       />
-      <div> </div>
+      <br />
       <ButtonFunky
         content="Join Room"
         onClick={() => setShowJoinRoomModal(true)}
         width="100%"
       />
-      <div> </div>
+      <br />
       {Object.entries(rooms).map(([roomId, messages]) => (
         <div
           key={roomId}
-          className={
-            currentRoomName === roomId ? "room-item selected" : "room-item"
-          }
+          className={`room-item ${currentRoomName === roomId ? "selected" : ""}`}
           onClick={() => {
             setCurrentRoomName(roomId);
             setCurrentRoomMessages(messages);
           }}
-          onContextMenu={(e) => handleContextMenu(e, { name: roomId })}
+          onContextMenu={(e ) => handleContextMenu(e, { name: roomId })}
         >
           <img
             src={`https://i.pravatar.cc/150?u=${roomId}`} // Use a random profile picture for each room
