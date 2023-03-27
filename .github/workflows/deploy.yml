@@ -23,13 +23,13 @@ jobs:
       - name: Run Jest
         run: yarn --cwd app/backend test
 
-  deployment:
-    name: Redeploy webhook call
-    runs-on: ubuntu-latest
-    environment: production
-    needs: [test]
-    steps:
-      - name: Deploy docker container webhook
-        uses: joelwmale/webhook-action@master
-        with:
-          url: ${{ secrets.DEPLOY_WEBHOOK_URL }}
+  # deployment:
+    # name: Redeploy webhook call
+    # runs-on: ubuntu-latest
+    # environment: production
+    # needs: [test]
+    # steps:
+      # - name: Deploy docker container webhook
+        # uses: joelwmale/webhook-action@master
+        # with:
+          # url: ${{ secrets.DEPLOY_WEBHOOK_URL }}
