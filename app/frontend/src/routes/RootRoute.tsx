@@ -1,8 +1,9 @@
-import { createTheme, ThemeProvider } from "@mui/material/styles";
+import { ThemeProvider } from "@mui/material/styles";
 import { ProSidebarProvider } from "react-pro-sidebar";
 import { Outlet, useLoaderData } from "react-router-dom";
 import { WebSocketProvider } from "src/contexts/WebSocketContext";
 import { socket } from "src/contexts/WebSocketContext";
+import customTheme from "src/theme";
 
 export async function rootLoader() {
   const data = { message: "hello" };
@@ -12,7 +13,7 @@ export async function rootLoader() {
 export default function RootRoute() {
   const posts = useLoaderData();
   const context = { name: "Allo" };
-  const theme = createTheme();
+  const theme = customTheme();
 
   return (
     <>
