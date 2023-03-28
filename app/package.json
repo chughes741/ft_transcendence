@@ -1,0 +1,11 @@
+{
+	"private": true,
+	"workspaces": [
+		"frontend",
+		"backend"
+	],
+	"scripts": {
+		"start": "yarn --cwd frontend watch & yarn --cwd backend start:dev"
+	},
+	"devDependencies": {}
+}
