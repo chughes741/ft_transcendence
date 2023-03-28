@@ -33,5 +33,5 @@ jobs:
       - name: Run ESLint backend
         run: |
           cd app
-          yarn add @typescript-eslint/eslint-plugin
+          yarn add @typescript-eslint/eslint-plugin -W
           yarn lint
