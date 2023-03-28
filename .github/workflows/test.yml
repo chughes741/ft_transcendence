@@ -18,7 +18,8 @@ jobs:
         uses: actions/checkout@v3
 
       - name: Install Jest
-        run: yarn --cwd app/backend add jest ts-jest
+        run: yarn --cwd app/backend add jest
+        run: yarn --cwd app/backend add ts-jest
 
       - name: Run Jest
-        run: yarn --cwd app/backend test
+        run: yarn --cwd app test

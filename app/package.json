@@ -8,7 +8,8 @@
 		"start": "yarn --cwd frontend watch & yarn --cwd backend start:dev",
 		"format": "prettier --config .prettierrc.json --write \"*/src/**/*.ts\" \"*/test/**/*.ts\" \"*/src/**/*.tsx\"",
 		"lint": "eslint -c .eslintrc.json \"{frontend,backend}/src/**/{*.ts,*.tsx}\" --fix",
-		"docs": "jsdoc backend/src frontend/src -r -c jsdoc.json -d docs"
+		"docs": "jsdoc backend/src frontend/src -r -c jsdoc.json -d docs",
+		"test": "yarn --cwd backend test"
 	},
 	"devDependencies": {
 		"@typescript-eslint/eslint-plugin": "^5.57.0",
