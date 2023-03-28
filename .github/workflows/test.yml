@@ -21,4 +21,4 @@ jobs:
         run: yarn --cwd app/backend add jest ts-jest
 
       - name: Run Jest
-        run: yarn --cwd app/backend test
+        run: yarn --cwd app test

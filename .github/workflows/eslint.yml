@@ -32,12 +32,6 @@ jobs:
 
       - name: Run ESLint backend
         run: |
-          cd app/backend
-          yarn add @typescript-eslint/eslint-plugin
-          yarn lint
-
-      - name: Run ESLint frontend
-        run: |
-          cd app/frontend
-          yarn add @typescript-eslint/eslint-plugin
+          cd app
+          yarn add @typescript-eslint/eslint-plugin -W
           yarn lint
