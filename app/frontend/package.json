@@ -9,7 +9,6 @@
     "watch": "npm-watch build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "format": "prettier --write \"src/**/*.tsx\" \"test/**/*.tsx\"",
     "lint": "eslint \"{src,apps,libs,test}/**/*.tsx\" --fix"
   },
   "dependencies": {

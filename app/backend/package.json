@@ -12,7 +12,6 @@
     "prisma:generate": "npx prisma generate",
     "prebuild": "yarn prisma:generate",
     "build": "nest build",
-    "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
     "start": "nest start",
     "start:dev": "nest start --watch",
     "start:debug": "nest start --debug --watch",

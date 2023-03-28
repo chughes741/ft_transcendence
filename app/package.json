@@ -5,7 +5,8 @@
 		"backend"
 	],
 	"scripts": {
-		"start": "yarn --cwd frontend watch & yarn --cwd backend start:dev"
+		"start": "yarn --cwd frontend watch & yarn --cwd backend start:dev",
+		"format": "prettier --write \"*/src/**/*.ts\" \"*/test/**/*.ts\" \"*/src/**/*.tsx\""
 	},
 	"devDependencies": {}
 }
