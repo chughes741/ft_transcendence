@@ -25,7 +25,7 @@
     "@types/three": "^0.149.0",
     "bootstrap": "^5.2.3",
     "cross-env": "5.0.5",
-    "kingpong-lib": "^1.0.0",
+    "kingpong-lib": "1.0.1",
     "node-sass": "^8.0.0",
     "react": "^18.2.0",
     "react-bootstrap": "^2.7.2",
