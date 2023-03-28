@@ -1,50 +1,71 @@
-import { BsChatText, BsGear, BsHouse, BsPerson, BsPlay } from "react-icons/bs";
-import { Sidebar, Menu, MenuItem } from "react-pro-sidebar";
-import { Link } from "react-router-dom";
+import Box from '@mui/material/Box';
+import Drawer from '@mui/material/Drawer';
+import AppBar from '@mui/material/AppBar';
+import CssBaseline from '@mui/material/CssBaseline';
+import Toolbar from '@mui/material/Toolbar';
+import List from '@mui/material/List';
+import Typography from '@mui/material/Typography';
+import Divider from '@mui/material/Divider';
+import ListItem from '@mui/material/ListItem';
+import ListItemButton from '@mui/material/ListItemButton';
+import ListItemIcon from '@mui/material/ListItemIcon';
+import ListItemText from '@mui/material/ListItemText';
+import InboxIcon from '@mui/icons-material/MoveToInbox';
+import MailIcon from '@mui/icons-material/Mail';
 
-import "./SideBar.tsx.css";
+const drawerWidth = 240;
 
 export default function SideBar() {
   return (
-    <div id="side-bar">
-      <Sidebar
-        defaultCollapsed
-        collapsedWidth="80px"
+    <Box sx={{ display: 'flex' }}>
+      <CssBaseline />
+      <AppBar position="fixed" sx={{ zIndex: (theme) => theme.zIndex.drawer + 1 }}>
+        <Toolbar>
+          <Typography variant="h6" noWrap component="div">
+            Clipped drawer
+          </Typography>
+        </Toolbar>
+      </AppBar>
+      <Drawer
+        variant="permanent"
+        sx={{
+          width: drawerWidth,
+          flexShrink: 0,
+          [`& .MuiDrawer-paper`]: { width: drawerWidth, boxSizing: 'border-box' },
+        }}
       >
-        <Menu>
-          <MenuItem
-            icon={<BsHouse />}
-            component={<Link to="/" />}
-          >
-            {" "}
-          </MenuItem>
-          <MenuItem
-            icon={<BsPerson />}
-            component={<Link to="/profile" />}
-          >
-            {" "}
-          </MenuItem>
-          <MenuItem
-            icon={<BsChatText />}
-            component={<Link to="/chat" />}
-          >
-            {" "}
-          </MenuItem>
-          <MenuItem
-            icon={<BsPlay />}
-            component={<Link to="/game" />}
-          >
-            {" "}
-          </MenuItem>
-          {/** @todo settings page? */}
-          <MenuItem
-            icon={<BsGear />}
-            component={<Link to="/" />}
-          >
-            {" "}
-          </MenuItem>
-        </Menu>
-      </Sidebar>
-    </div>
+        <Toolbar />
+        <Box sx={{ overflow: 'auto' }}>
+          <List>
+            {['Inbox', 'Starred', 'Send email', 'Drafts'].map((text, index) => (
+              <ListItem key={text} disablePadding>
+                <ListItemButton>
+                  <ListItemIcon>
+                    {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
+                  </ListItemIcon>
+                  <ListItemText primary={text} />
+                </ListItemButton>
+              </ListItem>
+            ))}
+          </List>
+          <Divider />
+          <List>
+            {['All mail', 'Trash', 'Spam'].map((text, index) => (
+              <ListItem key={text} disablePadding>
+                <ListItemButton>
+                  <ListItemIcon>
+                    {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
+                  </ListItemIcon>
+                  <ListItemText primary={text} />
+                </ListItemButton>
+              </ListItem>
+            ))}
+          </List>
+        </Box>
+      </Drawer>
+      <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
+        <Toolbar />
+      </Box>
+    </Box>
   );
 }
