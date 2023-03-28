@@ -6,7 +6,7 @@
 	],
 	"scripts": {
 		"start": "yarn --cwd frontend watch & yarn --cwd backend start:dev",
-		"format": "prettier --write \"*/src/**/*.ts\" \"*/test/**/*.ts\" \"*/src/**/*.tsx\""
+		"format": "prettier --config .prettierrc.json --write \"*/src/**/*.ts\" \"*/test/**/*.ts\" \"*/src/**/*.tsx\""
 	},
 	"devDependencies": {
 		"prettier": "^2.8.7"
