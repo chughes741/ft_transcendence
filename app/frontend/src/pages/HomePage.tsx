@@ -21,9 +21,7 @@ export default function HomePage() {
   return (
     <>
       <Helmet>
-        <title>
-          Transcendence | Welcome page <i>allo</i>
-        </title>
+        <title>King Pong | Welcome page</title>
       </Helmet>
       <div className="full-container">
         <SideBar />
