@@ -65,6 +65,7 @@ export class ChatGateway
   async handleConnection(client: Socket, ...args: any[]) {
     logger.log(`Client connected: ${client.id}`);
 
+    logger.log(`Connection args: ${args}`);
     // Add the user connection
     // this.userConnectionsService.addUserConnection(client.id, client.id);
   }
@@ -82,11 +83,11 @@ export class ChatGateway
       `Received createUser request from ${client.id} for user ${username}`
     );
     // Check if the user already exists
-    const userExists = await this.prismaService.nickExists(username);
+    const userExists = await this.prismaService.getUserIdByNick(username);
     if (userExists) {
       // Warn the client that the user already exists
       client.emit("userExists");
-      logger.log(`User ${username} already exists`);
+      logger.log(`UserCreation error: User ${username} already exists`);
     } else {
       // If the user does not exist, create it
       const prismaReturn = await this.prismaService.addUser({
@@ -107,23 +108,20 @@ export class ChatGateway
       `Received createUser request from ${client.id} for user ${username}`
     );
     // Check if the user already exists
-    const userExists = await this.prismaService.nickExists(username);
-    if (userExists) {
+    const userExists = await this.prismaService.getUserIdByNick(username);
+    if (!userExists) {
       // Warn the client that the user already exists
-      client.emit("userExists");
-      logger.log(`User ${username} already exists`);
-    } else {
-      // If the user does not exist, create it
-      const prismaReturn = await this.prismaService.addUser({
-        username,
-        password: "secret"
-      });
-      logger.log(`User ${username} created: `);
-      console.log(prismaReturn);
-      // Add the user connection to the UserConnections map
-      this.userConnectionsService.addUserConnection(username, client.id);
-      client.emit("userCreated", username);
+      client.emit("userDoesNotExist");
+      logger.log(`UserLogin error: User ${username} does not exist`);
+      return;
     }
+    // FIXME: add password protection
+    logger.log(`User ${username} logged in: `);
+    console.log(userExists);
+
+    // Add the user connection to the UserConnections map
+    this.userConnectionsService.addUserConnection(username, client.id);
+    client.emit("userLoggedIn", username);
   }
 
   /**
@@ -241,7 +239,7 @@ export class ChatGateway
     logger.log(`Room name: ${sendDto.roomName} has a room ID: ${roomId}`);
 
     // Try to get the user database ID
-    const userId = await this.prismaService.nickExists(sendDto.sender);
+    const userId = await this.prismaService.getUserIdByNick(sendDto.sender);
     logger.log(`User name: ${sendDto.sender} has a user ID: ${userId}`);
 
     // Add the message to the database

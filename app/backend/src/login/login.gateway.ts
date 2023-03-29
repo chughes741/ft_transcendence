@@ -1,8 +1,7 @@
 import {
   WebSocketGateway,
   SubscribeMessage,
-  MessageBody,
-  BaseWsExceptionFilter
+  MessageBody
 } from "@nestjs/websockets";
 import { LoginService } from "./login.service";
 import { LoginDto } from "./dto/login.dto";

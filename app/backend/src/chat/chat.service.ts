@@ -13,7 +13,7 @@ export class ChatService {
 
   create(createChatDto: CreateChatDto) {
     logger.log("Created a new chat");
-    return "This action adds a new chat";
+    return createChatDto;
   }
 
   async joinRoom(joinDto: JoinRoomDto): Promise<Message[] | Error> {

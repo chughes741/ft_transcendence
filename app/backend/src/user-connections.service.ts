@@ -8,7 +8,22 @@ const logger = new Logger("UserConnectionsService");
 export class UserConnectionsService {
   private userConnections: Map<string, string[]> = new Map();
 
+  getUserBySocket(socketId: string): string {
+    const userArray = Array.from(this.userConnections.entries()).find(
+      ([, connections]) => connections.includes(socketId)
+    );
+    return userArray ? userArray[0] : null;
+  }
+
   addUserConnection(username: string, socketId: string): void {
+    // Check if the socketId is already in use, and remove it from the old user
+    const userExists = this.getUserBySocket(socketId);
+    if (userExists) {
+      this.userConnections
+        .get(userExists)
+        .splice(this.userConnections.get(userExists).indexOf(socketId), 1); // This removes the old socketId from the userConnections map
+    }
+
     if (!this.userConnections.has(username)) {
       this.userConnections.set(username, []);
     }
@@ -19,12 +34,6 @@ export class UserConnectionsService {
         this.userConnections.get(username).length
       } connections`
     );
-  }
-
-  getUserBySocket(socketId: string): string {
-    return Array.from(this.userConnections.entries()).find(([, connections]) =>
-      connections.includes(socketId)
-    )[0];
   }
 
   removeUserConnection(username: string, socketId: string): void {

@@ -13,6 +13,7 @@ import { WebSocketContext } from "../../contexts/WebSocketContext";
 /***********************/
 import SideBar from "../../components/SideBar";
 import ChatArea from "./components/ChatArea";
+import DevLoginBanner from "../../components/DevLoginBanner";
 
 /***************/
 /*     CSS     */
@@ -20,6 +21,7 @@ import ChatArea from "./components/ChatArea";
 import "./styles/ChatPage.css";
 import ChatContext from "./components/ChatContext";
 import RoomList from "./components/RoomList";
+import { Box } from "@mui/system";
 
 export type MessagePayload = {
   sender: string;
@@ -36,7 +38,7 @@ export default function ChatPage() {
   /*   State Variables   */
   /***********************/
 
-  const { currentRoomName, tempUsername, setTempUsername, joinRoom } =
+  const { currentRoomName, tempUsername, setTempUsername, joinRoom, setRooms } =
     useContext(ChatContext);
 
   /**************/
@@ -48,50 +50,94 @@ export default function ChatPage() {
   // TODO: remove this when user creation is implemented
   useEffect(() => {
     if (socket && !tempUsername) {
-      let tempUser = "temp_user";
-      let count = 0;
-      // Try to create a temporary user
+      setTempUsername("temp_user");
+    }
+  }, [socket, ""]);
+
+  useEffect(() => {
+    // Try to create a temporary user
+    if (tempUsername) {
       const createTempUser = (username) => {
-        socket.emit("createUser", username);
+        socket.emit("userCreation", username);
       };
 
       // Server acknowledges successful creation, returns username
       socket.on("userCreated", (username) => {
         setTempUsername(username);
+        setRooms(null);
         console.log(`Created user ${username} successfully!`);
 
         // FIXME: For testing purposes only
+        // Join three separate rdooms on connection
+        joinRoom("PublicRoom", "");
+        joinRoom("PrivateRoom", "");
+        joinRoom("PasswordProtectedRoom", "secret");
+      });
+      socket.on("userLoggedIn", (username) => {
+        setTempUsername(username);
+        setRooms(null);
+        console.log(`${username} successfully logged in!`);
+
+        // FIXME: For testing purposes only
         // Join three separate rooms on connection
-        joinRoom("PublicRoom", ""); // Public room
-        joinRoom("PrivateRoom", ""); // Private room
-        joinRoom("PasswordProtectedRoom", "secret"); // Password protected room with a placeholder password
+        joinRoom("PublicRoom", "");
+        joinRoom("PrivateRoom", "");
+        joinRoom("PasswordProtectedRoom", "secret");
       });
 
-      // Name is taken, increment count and try again
+      // Name is taken, login instead
       socket.on("userExists", () => {
-        count += 1;
-        tempUser = `temp_user${count}`;
-        createTempUser(tempUser);
+        console.log(`User ${tempUsername} already exists!`);
+        socket.emit("userLogin", tempUsername);
       });
-      createTempUser(tempUser);
+      createTempUser(tempUsername);
     }
 
     return () => {
       socket.off("userCreated");
       socket.off("userExists");
     };
-  }, [socket, tempUsername, ""]);
+  }, [tempUsername, ""]);
 
   /**************************/
   /*   Returned fragment   */
   /*************************/
   return (
-    <div className="chat-page">
-      <SideBar />
-      <RoomList />
-      <div className="room-area">
-        <ChatArea key={currentRoomName} />
-      </div>
-    </div>
+    <Box
+      style={{
+        display: "flex",
+        flexDirection: "column",
+        minHeight: "100vh"
+      }}
+    >
+      <Box position={"relative"}>
+        <DevLoginBanner
+          username={tempUsername}
+          onLoginAsSomeoneElse={(username) => {
+            setTempUsername(username);
+            console.log(`Set temp ${username} successfully!`);
+          }}
+        />
+      </Box>
+      <Box
+        className="chat-page"
+        style={{
+          display: "flex",
+          flexDirection: "row",
+          flexGrow: 1,
+          paddingTop: "50px" //FIXME: This is a hack to make the chat page not overlap with the banner
+        }}
+      >
+        <SideBar />
+        <Box height={"100%"}>
+          <RoomList />
+        </Box>
+        <Box className="room-area">
+          <Box>
+            <ChatArea key={currentRoomName} />
+          </Box>
+        </Box>
+      </Box>
+    </Box>
   );
 }

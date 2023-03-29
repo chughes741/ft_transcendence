@@ -33,7 +33,7 @@
 }
 
 .messages {
-  overflow-y: scroll;
+  overflow-y: auto;
   overflow-x: hidden;
   padding-bottom: 1rem;
   border-bottom: 1px solid #ccc;
@@ -46,6 +46,7 @@
   height: 20%;
   max-height: 20%;
   min-height: 20%;
+  overflow-y: auto;
 }
 
 .form {

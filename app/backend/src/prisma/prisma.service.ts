@@ -6,9 +6,7 @@ import {
   Prisma,
   PrismaClient
 } from "@prisma/client";
-import { PrismaClientKnownRequestError } from "@prisma/client/runtime";
 import {
-  ChatMemberDto,
   ChatRoomDto,
   PlayerDto,
   ProfileDto,
@@ -56,7 +54,7 @@ export class PrismaService extends PrismaClient {
     const user = await this.user.findUnique({ where: { id: userId } });
     return !!user;
   }
-  async nickExists(nick: string): Promise<string> {
+  async getUserIdByNick(nick: string): Promise<string> {
     const user = await this.user.findUnique({ where: { username: nick } });
 
     return user ? user.id : null;
@@ -89,7 +87,7 @@ export class PrismaService extends PrismaClient {
     // FIXME: this should use the userExists() method
     // TODO: remove this code when authentication is enabled
     logger.log(`dto.owner: ${dto.owner}`);
-    const userID = await this.nickExists(dto.owner);
+    const userID = await this.getUserIdByNick(dto.owner);
     logger.log(`userID: ${userID}`);
     console.log(dto);
     if (dto.owner && !userID) {
@@ -135,7 +133,7 @@ export class PrismaService extends PrismaClient {
    */
   async getUserChatRooms(
     uuid: string,
-    pageSize: number = 15,
+    pageSize = 15,
     dateOldest: Date = new Date(Date.now())
   ): Promise<ChatRoomDto[] | Error> {
     // Check if the user exists
@@ -259,6 +257,6 @@ export class PrismaService extends PrismaClient {
     return this.message.findMany({ where: { roomId } });
   }
   addMatch(dto1: PlayerDto, dto2: PlayerDto) {
-    return dto1;
+    return { dto1, dto2 };
   }
 }

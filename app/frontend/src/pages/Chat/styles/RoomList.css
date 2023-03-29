@@ -1,28 +1,27 @@
 .room-list {
-    border-right: 1px solid #ccc;
-    padding: 1rem;
-    overflow-y: auto;
-    width: 20vw;
-    min-width: 10vw;
+  border-right: 1px solid #ccc;
+  overflow-y: auto;
+  overflow-x: hidden;
+  width: 20vw;
+  min-width: 10vw;
 }
 
 .room-item {
-    display: flex;
-    align-items: center;
-    margin-bottom: 0.5rem;
-    cursor: pointer;
-    border-radius: 5px;
-    padding: 0.5rem;
-    transition: background-color 0.2s;
-    text-overflow: ellipsis;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  border-radius: 5px;
+  padding: 0.5rem;
+  transition: background-color 0.2s;
+  text-overflow: ellipsis;
 }
 
 .room-item.selected {
-    background-color: #666;
+  background-color: #555;
+  border-radius: 0;
 }
 
 .room-item:hover {
-    background-color: #666;
+  background-color: #333;
+  border-radius: 0;
 }
-
-

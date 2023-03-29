@@ -101,15 +101,6 @@ const RoomList: React.FC = () => {
         hour12: true
       });
 
-      console.log(
-        `Sender is ${newMessage.sender} and tempUsername is ${tempUsername}`
-      );
-      console.log(
-        `newMessage.sender === tempUsername ? ${
-          newMessage.sender === tempUsername
-        }`
-      );
-
       const messageData: MessageType = {
         user: newMessage.sender,
         roomId: newMessage.roomName,
@@ -119,7 +110,6 @@ const RoomList: React.FC = () => {
         displayUser: true,
         displayTimestamp: true
       };
-      console.log(`messageData: ${JSON.stringify(messageData)}`);
       addMessageToRoom(newMessage.roomName, messageData);
     });
 
@@ -145,12 +135,14 @@ const RoomList: React.FC = () => {
       {Object.entries(rooms).map(([roomId, messages]) => (
         <div
           key={roomId}
-          className={`room-item ${currentRoomName === roomId ? "selected" : ""}`}
+          className={`room-item ${
+            currentRoomName === roomId ? "selected" : ""
+          }`}
           onClick={() => {
             setCurrentRoomName(roomId);
             setCurrentRoomMessages(messages);
           }}
-          onContextMenu={(e ) => handleContextMenu(e, { name: roomId })}
+          onContextMenu={(e) => handleContextMenu(e, { name: roomId })}
         >
           <img
             src={`https://i.pravatar.cc/150?u=${roomId}`} // Use a random profile picture for each room
