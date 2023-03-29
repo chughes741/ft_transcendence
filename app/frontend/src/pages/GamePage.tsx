@@ -1,6 +1,6 @@
 import React from "react";
 import { Helmet } from "react-helmet";
-import SideBar from "src/components/SideBar";
+import SideBar from "src/components/SideBar/SideBar";
 import GameSideBar from "src/components/GameSideBar";
 import Game from "src/pages/game/GameWindow";
 import "src/pages/GamePage.tsx.css";

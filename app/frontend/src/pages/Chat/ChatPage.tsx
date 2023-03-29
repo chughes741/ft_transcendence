@@ -11,7 +11,7 @@ import { WebSocketContext } from "../../contexts/WebSocketContext";
 /***********************/
 /*     Components      */
 /***********************/
-import SideBar from "../../components/SideBar";
+import SideBar from "../../components/SideBar/SideBar";
 import ChatArea from "./components/ChatArea";
 import DevLoginBanner from "../../components/DevLoginBanner";
 
