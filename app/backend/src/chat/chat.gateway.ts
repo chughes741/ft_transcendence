@@ -78,7 +78,10 @@ export class ChatGateway
   }
 
   @SubscribeMessage("userCreation")
-  async createTempUser(client: Socket, username: string) {
+  async createTempUser(
+    client: Socket,
+    username: string
+  ): Promise<{ error: string } | string> {
     logger.log(
       `Received createUser request from ${client.id} for user ${username}`
     );
@@ -86,8 +89,10 @@ export class ChatGateway
     const userExists = await this.prismaService.getUserIdByNick(username);
     if (userExists) {
       // Warn the client that the user already exists
-      client.emit("userExists");
+      // client.emit("userExists");
       logger.log(`UserCreation error: User ${username} already exists`);
+      // return new Error("User already exists");
+      return { error: "User already exists" };
     } else {
       // If the user does not exist, create it
       const prismaReturn = await this.prismaService.addUser({
@@ -98,12 +103,16 @@ export class ChatGateway
       console.log(prismaReturn);
       // Add the user connection to the UserConnections map
       this.userConnectionsService.addUserConnection(username, client.id);
-      client.emit("userCreated", username);
+      // client.emit("userCreated", username);
+      return username;
     }
   }
 
   @SubscribeMessage("userLogin")
-  async devUserLogin(client: Socket, username: string) {
+  async devUserLogin(
+    client: Socket,
+    username: string
+  ): Promise<{ error: string } | string> {
     logger.log(
       `Received createUser request from ${client.id} for user ${username}`
     );
@@ -111,9 +120,9 @@ export class ChatGateway
     const userExists = await this.prismaService.getUserIdByNick(username);
     if (!userExists) {
       // Warn the client that the user already exists
-      client.emit("userDoesNotExist");
+      // client.emit("userDoesNotExist");
       logger.log(`UserLogin error: User ${username} does not exist`);
-      return;
+      return { error: "User already exists" };
     }
     // FIXME: add password protection
     logger.log(`User ${username} logged in: `);
@@ -121,7 +130,8 @@ export class ChatGateway
 
     // Add the user connection to the UserConnections map
     this.userConnectionsService.addUserConnection(username, client.id);
-    client.emit("userLoggedIn", username);
+    // client.emit("userLoggedIn", username);
+    return username;
   }
 
   /**

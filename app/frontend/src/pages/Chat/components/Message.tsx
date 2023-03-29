@@ -45,7 +45,6 @@ export type MessageType = {
 
 type MessageProps = {
   message: MessageType;
-  currentUser: string;
 };
 
 const Message = forwardRef<HTMLDivElement, MessageProps>(({ message }, ref) => {
