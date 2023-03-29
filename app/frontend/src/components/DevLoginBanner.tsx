@@ -74,7 +74,9 @@ const DevLoginBanner: React.FC<BannerProps> = ({
             fullWidth
             value={newUsername}
             onChange={(e) => setNewUsername(e.target.value)}
-            onSubmit={handleSave}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") handleSave();
+            }}
           />
         </DialogContent>
         <DialogActions>

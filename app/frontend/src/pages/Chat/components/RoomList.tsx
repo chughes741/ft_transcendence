@@ -8,6 +8,14 @@ import { MessagePayload } from "../ChatPage";
 import ContextMenu from "./ContextMenu";
 import { JoinRoomModal } from "./JoinRoomModal";
 import { CreateRoomModal } from "./CreateRoomModal";
+import {
+  Box,
+  List,
+  ListItem,
+  ListItemButton,
+  ListItemIcon,
+  ListItemText
+} from "@mui/material";
 
 const RoomList: React.FC = () => {
   const {
@@ -132,7 +140,38 @@ const RoomList: React.FC = () => {
         width="100%"
       />
       <br />
-      {Object.entries(rooms).map(([roomId, messages]) => (
+      <Box sx={{ overflow: "auto" }}>
+        <List>
+          {Object.entries(rooms).map(([roomId, messages]) => (
+            <ListItem
+              key={roomId}
+              onClick={() => {
+                setCurrentRoomName(roomId);
+                setCurrentRoomMessages(messages);
+              }}
+              onContextMenu={(e) => handleContextMenu(e, { name: roomId })}
+            >
+              <ListItemButton selected={currentRoomName === roomId}>
+                <ListItemIcon>
+                  <img
+                    src={`https://i.pravatar.cc/150?u=${roomId}`} // Use a random profile picture for each room
+                    alt="Profile"
+                  />
+                </ListItemIcon>
+                <ListItemText
+                  primary={roomId}
+                  secondary={
+                    messages.length > 0
+                      ? messages[messages.length - 1].message
+                      : ""
+                  }
+                />
+              </ListItemButton>
+            </ListItem>
+          ))}
+        </List>
+      </Box>
+      {/* {Object.entries(rooms).map(([roomId, messages]) => (
         <div
           key={roomId}
           className={`room-item ${
@@ -155,7 +194,7 @@ const RoomList: React.FC = () => {
             </div>
           </div>
         </div>
-      ))}
+      ))} */}
       <CreateRoomModal
         showModal={showCreateRoomModal}
         closeModal={() => setShowCreateRoomModal(false)}
