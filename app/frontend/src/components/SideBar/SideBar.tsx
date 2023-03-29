@@ -18,7 +18,7 @@ const drawerWidth = 240;
 export default function SideBar() {
   return (
     <Container sx={{ display: "flex", flexDirection: "column" }}>
-      <TopBar/>
+      <TopBar />
       <Box sx={{ display: "flex" }}>
         <CssBaseline />
         <Drawer
@@ -35,7 +35,10 @@ export default function SideBar() {
           <Toolbar sx={{ height: 100 }} />
           <Box sx={{ overflow: "auto" }}>
             <List>
-              <ListItem key="Hello" disablePadding>
+              <ListItem
+                key="Hello"
+                disablePadding
+              >
                 <ListItemButton>
                   <ListItemIcon>
                     <InboxIcon />
@@ -48,8 +51,10 @@ export default function SideBar() {
             <ChatList />
           </Box>
         </Drawer>
-        <Box component="main" sx={{ flexGrow: 1, p: 3, mt: 5 }}>
-        </Box>
+        <Box
+          component="main"
+          sx={{ flexGrow: 1, p: 3, mt: 5 }}
+        ></Box>
       </Box>
     </Container>
   );

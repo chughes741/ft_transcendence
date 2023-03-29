@@ -48,7 +48,10 @@ function TopBar() {
   return (
     <AppBar sx={{ zIndex: (theme) => theme.zIndex.drawer + 1 }}>
       <Container maxWidth={false}>
-        <Toolbar disableGutters style={toolbarStyle}>
+        <Toolbar
+          disableGutters
+          style={toolbarStyle}
+        >
           {/* Logo wrapped in button to return to home */}
 
           <Box sx={{ marginTop: 2 }}>
@@ -63,8 +66,11 @@ function TopBar() {
           {/* Profile picture with context menu */}
           <Box>
             <Tooltip title="Open settings">
-              <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-                <Avatar alt="Remy"/>
+              <IconButton
+                onClick={handleOpenUserMenu}
+                sx={{ p: 0 }}
+              >
+                <Avatar alt="Remy" />
               </IconButton>
             </Tooltip>
             <Menu
@@ -84,7 +90,10 @@ function TopBar() {
               onClose={handleCloseUserMenu}
             >
               {settings.map((setting) => (
-                <MenuItem key={setting} onClick={handleCloseUserMenu}>
+                <MenuItem
+                  key={setting}
+                  onClick={handleCloseUserMenu}
+                >
                   <Typography textAlign="center">{setting}</Typography>
                 </MenuItem>
               ))}

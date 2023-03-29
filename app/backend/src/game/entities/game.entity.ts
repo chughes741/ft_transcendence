@@ -1,6 +1,5 @@
-
 /**
- * 
+ *
  */
 export class JoinGameEntity {
   timeout: boolean;
@@ -8,9 +7,9 @@ export class JoinGameEntity {
 }
 
 /**
- * 
+ *
  */
 export class GameStartEntity {
-	lobby_id: string;
-	opponent_name: string;
+  lobby_id: string;
+  opponent_name: string;
 }
