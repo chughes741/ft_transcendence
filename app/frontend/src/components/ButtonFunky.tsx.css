@@ -4,6 +4,11 @@
   --g1: rgb(98, 0, 234);
   --g2: rgb(236, 64, 122);
   --g3: rgb(253, 216, 53);
+
+  /* Color scheme to fit the theme: */
+  /* --g1: rgb(34, 186, 187);
+  --g2: rgb(250, 127, 8);
+  --g3: rgb(242, 68, 4); */
 /*************************/
   border-radius: 2rem;
   cursor: pointer;

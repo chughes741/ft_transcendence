@@ -1,6 +1,7 @@
 /*******************/
 /*     System      */
 /*******************/
+import { Tooltip } from "@mui/material";
 import { forwardRef } from "react";
 import styled from "styled-components";
 
@@ -56,9 +57,16 @@ const Message = forwardRef<HTMLDivElement, MessageProps>(({ message }, ref) => {
       {message.displayUser && (
         <span className="sender">{message.isOwn ? "Me" : message.user}</span>
       )}
-      <div className={`message-content ${message.isOwn ? "own-message" : ""}`}>
-        {message.message}
-      </div>
+      <Tooltip
+        title={message.timestamp}
+        placement={message.isOwn ? "left-end" : "right-end"}
+      >
+        <div
+          className={`message-content ${message.isOwn ? "own-message" : ""}`}
+        >
+          {message.message}
+        </div>
+      </Tooltip>
       {message.displayTimestamp && (
         <span className="timestamp">{message.timestamp}</span>
       )}
