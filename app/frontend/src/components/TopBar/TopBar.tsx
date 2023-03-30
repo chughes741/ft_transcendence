@@ -10,8 +10,8 @@ import Avatar from "@mui/material/Avatar";
 import MenuItem from "@mui/material/MenuItem";
 import { LogoSvg } from "./logoComponent";
 import { ButtonUnstyled } from "@mui/base";
-import { Tooltip } from "@mui/material";
-
+import { Button, Tooltip } from "@mui/material";
+import VideogameAssetIcon from '@mui/icons-material/VideogameAsset';
 const TopBarHeight = 85;
 
 const settings = ["Profile", "Settings", "Logout"];
@@ -54,12 +54,20 @@ function TopBar() {
         >
           {/* Logo wrapped in button to return to home */}
 
-          <Box sx={{ marginTop: 2 }}>
+          <Box sx={{ marginTop: 2, flexGrow: 1 }}>
             <ButtonUnstyled href="/">
               <LogoSvg />
             </ButtonUnstyled>
           </Box>
 
+          <Box>
+            <Button color="primary" sx={{ mr: 5 }}
+              variant="outlined"
+              startIcon={<VideogameAssetIcon />}
+            >
+              Play A Game
+            </Button>
+          </Box>
           {/* Button to be displayed instead of profile when use not logged in*/}
           {/* <Button color="inherit">Login</Button> */}
 
