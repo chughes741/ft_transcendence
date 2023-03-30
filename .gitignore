@@ -6,9 +6,13 @@
 # Node Modules
 node_modules
 dist
+build
 
 # Log files
 *.log
 
 #WebStorm Inspect File
 .idea
+
+#VScode settings
+.vscode

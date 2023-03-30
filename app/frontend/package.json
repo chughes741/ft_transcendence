@@ -33,6 +33,7 @@
     "react-dom": "^18.2.0",
     "react-helmet": "^6.1.0",
     "react-icons": "^4.7.1",
+    "react-model-view-viewmodel": "^2.0.1",
     "react-pro-sidebar": "^1.0.0",
     "react-router-dom": "6",
     "react-scripts": "5.0.1",

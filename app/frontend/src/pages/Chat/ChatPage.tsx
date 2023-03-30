@@ -11,7 +11,7 @@ import { WebSocketContext } from "../../contexts/WebSocketContext";
 /***********************/
 /*     Components      */
 /***********************/
-import SideBar from "../../components/SideBar";
+import SideBar from "../../components/SideBar/SideBar";
 import ChatArea from "./components/ChatArea";
 import DevLoginBanner from "../../components/DevLoginBanner";
 
@@ -148,7 +148,6 @@ export default function ChatPage() {
           paddingTop: "55px" //FIXME: This is a hack to make the chat page not overlap with the banner
         }}
       >
-        <SideBar />
         <Box height={"100%"}>
           <RoomList />
         </Box>

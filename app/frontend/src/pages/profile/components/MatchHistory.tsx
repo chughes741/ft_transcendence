@@ -11,11 +11,11 @@ import {
 
 /**
  * Creates test object with params
- * @param match_type 
- * @param players 
- * @param results 
- * @param date 
- * @param winner 
+ * @param match_type
+ * @param players
+ * @param results
+ * @param date
+ * @param winner
  */
 function createData(
   match_type: string,
