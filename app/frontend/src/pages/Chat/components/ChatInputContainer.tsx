@@ -1,11 +1,11 @@
-import React, { useContext, useEffect, useRef, useState } from "react";
-import { ChatContext } from "./ChatContext";
-import ResizableTextArea from "../../../components/ResizableTextArea";
+import { Box, TextareaAutosize } from "@mui/material";
+import { useContext, useEffect, useRef, useState } from "react";
+import ChatContext from "./ChatContext";
 
 const ChatInputContainer = () => {
   const [textValue, setTextValue] = useState("");
   const { currentRoomName, sendRoomMessage } = useContext(ChatContext);
-  const messageInputRef = useRef<HTMLInputElement>(null);
+  const messageInputRef = useRef<HTMLTextAreaElement>(null);
 
   useEffect(() => {
     if (messageInputRef.current) {
@@ -20,20 +20,25 @@ const ChatInputContainer = () => {
   };
 
   return (
-    <div className="input-chat-container">
-      <form
-        className="form"
-        onSubmit={sendMessage}
-      >
-        <ResizableTextArea
+    <Box>
+      <form onSubmit={sendMessage}>
+        <TextareaAutosize
+          minRows={1}
+          maxRows={12}
           ref={messageInputRef}
           value={textValue}
           placeholder="You take the text, and you put it in the box."
           onChange={(event) => setTextValue(event.target.value)}
-          onEnterPress={sendMessage}
+          onKeyPress={(event) => {
+            if (event.key === "Enter" && !event.shiftKey) {
+              event.preventDefault();
+              sendMessage(event);
+            }
+          }}
+          style={{ width: "100%", resize: "none", display: "block" }}
         />
       </form>
-    </div>
+    </Box>
   );
 };
 

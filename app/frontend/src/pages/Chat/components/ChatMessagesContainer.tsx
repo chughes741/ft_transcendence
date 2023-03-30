@@ -2,6 +2,7 @@ import { useContext, useEffect, useRef } from "react";
 import { MessageType } from "./Message";
 import Message from "./Message";
 import { WebSocketContext } from "../../../contexts/WebSocketContext";
+import { Box } from "@mui/material";
 
 type ChatMessagesContainerProps = {
   messages: Array<MessageType>;
@@ -45,17 +46,21 @@ const ChatMessagesContainer = ({ messages }: ChatMessagesContainerProps) => {
   }
 
   return (
-    <div className="message-container">
-      <div className="messages">
-        {groupedMessages.map((message, index) => (
-          <Message
-            ref={index === groupedMessages.length - 1 ? lastMessageRef : null}
-            key={index}
-            message={message}
-          />
-        ))}
-      </div>
-    </div>
+    <Box
+      flex={1}
+      display="flex"
+      flexDirection="column"
+      overflow-y="auto"
+      style={{ padding: "16px", maxWidth: "100%" }}
+    >
+      {groupedMessages.map((message, index) => (
+        <Message
+          ref={index === groupedMessages.length - 1 ? lastMessageRef : null}
+          key={index}
+          message={message}
+        />
+      ))}
+    </Box>
   );
 };
 

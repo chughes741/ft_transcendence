@@ -59,6 +59,7 @@ const Message = forwardRef<HTMLDivElement, MessageProps>(({ message }, ref) => {
       <Tooltip
         title={message.timestamp}
         placement={message.isOwn ? "left-end" : "right-end"}
+        enterDelay={800}
       >
         <div
           className={`message-content ${message.isOwn ? "own-message" : ""}`}

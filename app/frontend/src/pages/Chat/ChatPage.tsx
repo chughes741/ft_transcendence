@@ -22,6 +22,7 @@ import "./styles/ChatPage.css";
 import ChatContext from "./components/ChatContext";
 import RoomList from "./components/RoomList";
 import { Box } from "@mui/system";
+import { Grid } from "@mui/material";
 
 export type MessagePayload = {
   sender: string;
@@ -125,36 +126,44 @@ export default function ChatPage() {
   /*************************/
   return (
     <Box
+      id="chat-page-container"
       style={{
         display: "flex",
         flexDirection: "column",
-        minHeight: "100vh"
+        height: "100vh",
+        width: "100vw",
+        maxWidth: "100%"
       }}
     >
-      <Box position={"relative"}>
+      <Grid item>
         <DevLoginBanner
           username={tempUsername}
           onLoginAsSomeoneElse={(username) => {
             setTempUsername(username);
           }}
         />
-      </Box>
+      </Grid>
       <Box
-        className="chat-page"
+        id="chat-page"
         style={{
           display: "flex",
           flexDirection: "row",
           flexGrow: 1,
-          paddingTop: "55px" //FIXME: This is a hack to make the chat page not overlap with the banner
+          width: "100%"
         }}
       >
-        <Box height={"100%"}>
+        <SideBar />
+        <Box>
           <RoomList />
         </Box>
-        <Box className="room-area">
-          <Box>
-            <ChatArea key={currentRoomName} />
-          </Box>
+        <Box
+          id="chat-area"
+          style={{
+            height: "100%",
+            width: "100%"
+          }}
+        >
+          <ChatArea key={currentRoomName} />
         </Box>
       </Box>
     </Box>

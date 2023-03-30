@@ -159,6 +159,7 @@ const RoomList: React.FC = () => {
                   />
                 </ListItemIcon>
                 <ListItemText
+                  style={{ overflowX: "hidden" }}
                   primary={roomId}
                   secondary={
                     messages.length > 0
@@ -171,30 +172,6 @@ const RoomList: React.FC = () => {
           ))}
         </List>
       </Box>
-      {/* {Object.entries(rooms).map(([roomId, messages]) => (
-        <div
-          key={roomId}
-          className={`room-item ${
-            currentRoomName === roomId ? "selected" : ""
-          }`}
-          onClick={() => {
-            setCurrentRoomName(roomId);
-            setCurrentRoomMessages(messages);
-          }}
-          onContextMenu={(e) => handleContextMenu(e, { name: roomId })}
-        >
-          <img
-            src={`https://i.pravatar.cc/150?u=${roomId}`} // Use a random profile picture for each room
-            alt="Profile"
-          />
-          <div className="room-info">
-            <div className="room-name">{roomId}</div>
-            <div className="last-message">
-              {messages.length > 0 ? messages[messages.length - 1].message : ""}
-            </div>
-          </div>
-        </div>
-      ))} */}
       <CreateRoomModal
         showModal={showCreateRoomModal}
         closeModal={() => setShowCreateRoomModal(false)}
