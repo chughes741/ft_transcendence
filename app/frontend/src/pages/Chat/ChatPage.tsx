@@ -62,6 +62,9 @@ export default function ChatPage() {
         console.log("Success response from user login: ");
         console.log(response);
         setTempUsername(username);
+        joinRoom("PublicRoom", "");
+        joinRoom("PrivateRoom", "");
+        joinRoom("PasswordProtectedRoom", "secret");
         success = true;
       }
     });
@@ -134,10 +137,9 @@ export default function ChatPage() {
       <Box
         id="chat"
         style={{ width: "100%" }}
-        sx={{ flexDirection:"column"}}
+        sx={{ flexDirection: "column" }}
       >
-        <Box style={{ height: "64px" }}>
-        </Box>
+        <Box style={{ height: "64px" }}></Box>
         <Box
           id="login-banner"
           style={{ width: "100%" }}
@@ -157,7 +159,7 @@ export default function ChatPage() {
           <RoomList />
           <Box
             id="chat-area"
-            style={{ width: "100%" }}
+            style={{ width: "80%" }}
           >
             <ChatArea key={currentRoomName} />
           </Box>
