@@ -9,11 +9,12 @@ import ListItemButton from "@mui/material/ListItemButton";
 import ListItemIcon from "@mui/material/ListItemIcon";
 import ListItemText from "@mui/material/ListItemText";
 import InboxIcon from "@mui/icons-material/MoveToInbox";
-import { Container } from "@mui/material";
+import { Container, ListSubheader } from "@mui/material";
 import ChatList from "./ChatList";
 import TopBar from "../TopBar/TopBar";
+import SidebarChatOptions from "./sidebar.chatoptions";
 
-const drawerWidth = 240;
+const drawerWidth = 300;
 
 export default function SideBar() {
   return (
@@ -34,19 +35,7 @@ export default function SideBar() {
         >
           <Toolbar sx={{ height: 100 }} />
           <Box sx={{ overflow: "auto" }}>
-            <List>
-              <ListItem
-                key="Hello"
-                disablePadding
-              >
-                <ListItemButton>
-                  <ListItemIcon>
-                    <InboxIcon />
-                  </ListItemIcon>
-                  <ListItemText primary="Hello" />
-                </ListItemButton>
-              </ListItem>
-            </List>
+            <SidebarChatOptions />
             <Divider />
             <ChatList />
           </Box>

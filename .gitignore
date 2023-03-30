@@ -12,3 +12,6 @@ dist
 
 #WebStorm Inspect File
 .idea
+
+#VScode settings
+.vscode
