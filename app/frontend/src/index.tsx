@@ -7,12 +7,8 @@ const root = ReactDOM.createRoot(document.getElementById("root"));
 
 root.render(
   <>
-    <style>
-      @import
-      url('https://fonts.googleapis.com/css2?family=Raleway&display=swap');
-    </style>
     <React.StrictMode>
-      <RootView/>
+      <RootView />
     </React.StrictMode>
   </>
 );
