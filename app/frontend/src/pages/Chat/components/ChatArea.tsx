@@ -23,7 +23,7 @@ const ChatArea = () => {
         container
         direction="column"
         wrap="nowrap"
-        style={{ height: "100%", width: "100%", maxWidth: "100%" }}
+        style={{ height: "100%", width: "100%", maxWidth: "100%", overflowX:"hidden" }}
       >
         <Grid
           item

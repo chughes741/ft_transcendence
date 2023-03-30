@@ -42,10 +42,7 @@ const DevLoginBanner: React.FC<BannerProps> = ({
         padding: "10px",
         display: "flex",
         justifyContent: "space-between",
-        position: "relative",
         height: "50px",
-        top: 0,
-        left: 0,
         width: "100%",
         zIndex: 3000
       }}

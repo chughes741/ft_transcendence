@@ -51,7 +51,7 @@ const ChatMessagesContainer = ({ messages }: ChatMessagesContainerProps) => {
       display="flex"
       flexDirection="column"
       overflow-y="auto"
-      style={{ padding: "16px", maxWidth: "100%" }}
+      style={{ padding: "16px", width: "100%", overflowY: "auto", overflowX: "hidden" }}
     >
       {groupedMessages.map((message, index) => (
         <Message

@@ -14,6 +14,7 @@ import { WebSocketContext } from "../../contexts/WebSocketContext";
 import SideBar from "../../components/SideBar/SideBar";
 import ChatArea from "./components/ChatArea";
 import DevLoginBanner from "../../components/DevLoginBanner";
+import { ProfileHeader } from "../profile/components/ProfileHeader";
 
 /***************/
 /*     CSS     */
@@ -127,43 +128,39 @@ export default function ChatPage() {
   return (
     <Box
       id="chat-page-container"
-      style={{
-        display: "flex",
-        flexDirection: "column",
-        height: "100vh",
-        width: "100vw",
-        maxWidth: "100%"
-      }}
+      style={{ width: "100vw", height: "100vh", display: "flex" }}
     >
-      <Grid item>
-        <DevLoginBanner
-          username={tempUsername}
-          onLoginAsSomeoneElse={(username) => {
-            setTempUsername(username);
-          }}
-        />
-      </Grid>
+      <SideBar />
       <Box
-        id="chat-page"
-        style={{
-          display: "flex",
-          flexDirection: "row",
-          flexGrow: 1,
-          width: "100%"
-        }}
+        id="chat"
+        style={{ width: "100%" }}
+        sx={{ flexDirection:"column"}}
       >
-        <SideBar />
-        <Box>
-          <RoomList />
+        <Box style={{ height: "64px" }}>
         </Box>
         <Box
-          id="chat-area"
-          style={{
-            height: "100%",
-            width: "100%"
-          }}
+          id="login-banner"
+          style={{ width: "100%" }}
         >
-          <ChatArea key={currentRoomName} />
+          <DevLoginBanner
+            username={tempUsername}
+            onLoginAsSomeoneElse={(username) => {
+              setTempUsername(username);
+            }}
+          />
+        </Box>
+        <Box
+          id="chat-reste"
+          style={{ display: "flex", height: "88%" }}
+          sx={{ flexDirection: "row" }}
+        >
+          <RoomList />
+          <Box
+            id="chat-area"
+            style={{ width: "100%" }}
+          >
+            <ChatArea key={currentRoomName} />
+          </Box>
         </Box>
       </Box>
     </Box>
