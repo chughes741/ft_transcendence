@@ -4,7 +4,7 @@ import { watchViewModel } from "react-model-view-viewmodel";
 import { socket, WebSocketProvider } from "src/contexts/WebSocketContext";
 import { ThemeProvider } from "@mui/material";
 import customTheme from "src/theme";
-import SideBar from "src/components/SideBar";
+import SideBar from "src/components/SideBar/SideBar";
 import { Helmet } from "react-helmet";
 import { ChatProvider } from "../pages/Chat/components/ChatContext";
 

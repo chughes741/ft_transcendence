@@ -16,7 +16,7 @@ import SidebarChatOptions from "./sidebar.chatoptions";
 
 const drawerWidth = 300;
 
-export default function SideBar() {
+export default function SideBar({changeState}) {
   return (
     <Container sx={{ display: "flex", flexDirection: "column" }}>
       <TopBar />
@@ -35,7 +35,7 @@ export default function SideBar() {
         >
           <Toolbar sx={{ height: 100 }} />
           <Box sx={{ overflow: "auto" }}>
-            <SidebarChatOptions />
+            <SidebarChatOptions changeState={changeState} />
             <Divider />
             <ChatList />
           </Box>
