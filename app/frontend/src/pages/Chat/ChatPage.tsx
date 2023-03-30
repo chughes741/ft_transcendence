@@ -148,7 +148,6 @@ export default function ChatPage() {
           paddingTop: "55px" //FIXME: This is a hack to make the chat page not overlap with the banner
         }}
       >
-        <SideBar />
         <Box height={"100%"}>
           <RoomList />
         </Box>
