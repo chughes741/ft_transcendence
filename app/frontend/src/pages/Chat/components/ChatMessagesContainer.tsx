@@ -52,7 +52,6 @@ const ChatMessagesContainer = ({ messages }: ChatMessagesContainerProps) => {
             ref={index === groupedMessages.length - 1 ? lastMessageRef : null}
             key={index}
             message={message}
-            currentUser={currentUser}
           />
         ))}
       </div>

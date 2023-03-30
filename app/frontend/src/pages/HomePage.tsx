@@ -20,12 +20,7 @@ export default function HomePage() {
 
   return (
     <>
-      <Helmet>
-        <title>King Pong | Welcome page</title>
-      </Helmet>
-      <div className="full-container">
-        <SideBar />
-      </div>
+      <div className="full-container"></div>
     </>
   );
 }

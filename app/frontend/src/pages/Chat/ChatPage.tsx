@@ -33,6 +33,10 @@ export type RoomType = {
   name: string;
 };
 
+export type DevError = {
+  error: string;
+};
+
 export default function ChatPage() {
   /***********************/
   /*   State Variables   */
@@ -46,6 +50,46 @@ export default function ChatPage() {
   /**************/
   const socket = useContext(WebSocketContext);
 
+  const userLogin = async (username: string): Promise<boolean> => {
+    let success = false;
+    socket.emit("userLogin", username, (response: DevError | string) => {
+      if (typeof response === "object") {
+        console.log("Error response from user login: ", response.error);
+      } else {
+        console.log(`Logged in user ${username} successfully!`);
+        console.log("Success response from user login: ");
+        console.log(response);
+        setTempUsername(username);
+        success = true;
+      }
+    });
+    return success;
+  };
+
+  const createUser = async (username: string): Promise<boolean> => {
+    return new Promise<boolean>((resolve, reject) => {
+      socket.emit("userCreation", username, (response: DevError | string) => {
+        if (typeof response === "object") {
+          console.log("Error response from user creation: ", response.error);
+          resolve(false);
+          // Try to log in instead
+        } else {
+          setTempUsername(username);
+          setRooms(null);
+          console.log(`Created user ${username} successfully!`);
+
+          // FIXME: For testing purposes only
+          // Join three separate rooms on connection
+          joinRoom("PublicRoom", "");
+          joinRoom("PrivateRoom", "");
+          joinRoom("PasswordProtectedRoom", "secret");
+          joinRoom("PasswordProtectedRoomFromCreateUser", "secret");
+          resolve(true);
+        }
+      });
+    });
+  };
+
   // FIXME: temporary addition for dev build to test user creation
   // TODO: remove this when user creation is implemented
   useEffect(() => {
@@ -57,46 +101,23 @@ export default function ChatPage() {
   useEffect(() => {
     // Try to create a temporary user
     if (tempUsername) {
-      const createTempUser = (username) => {
-        socket.emit("userCreation", username);
+      const createTempUser = async (username: string) => {
+        const userCreated = await createUser(username);
+        if (!userCreated) {
+          // Try to login instead
+          const userLogged = await userLogin(username);
+          if (!userLogged) {
+            console.log("Failed to create or login to user", username);
+            // Try to create a new user with a different name
+            // const newUsername = username + "_1";
+            // setTempUsername(newUsername);
+            // createTempUser(newUsername);
+          }
+        }
       };
 
-      // Server acknowledges successful creation, returns username
-      socket.on("userCreated", (username) => {
-        setTempUsername(username);
-        setRooms(null);
-        console.log(`Created user ${username} successfully!`);
-
-        // FIXME: For testing purposes only
-        // Join three separate rdooms on connection
-        joinRoom("PublicRoom", "");
-        joinRoom("PrivateRoom", "");
-        joinRoom("PasswordProtectedRoom", "secret");
-      });
-      socket.on("userLoggedIn", (username) => {
-        setTempUsername(username);
-        setRooms(null);
-        console.log(`${username} successfully logged in!`);
-
-        // FIXME: For testing purposes only
-        // Join three separate rooms on connection
-        joinRoom("PublicRoom", "");
-        joinRoom("PrivateRoom", "");
-        joinRoom("PasswordProtectedRoom", "secret");
-      });
-
-      // Name is taken, login instead
-      socket.on("userExists", () => {
-        console.log(`User ${tempUsername} already exists!`);
-        socket.emit("userLogin", tempUsername);
-      });
       createTempUser(tempUsername);
     }
-
-    return () => {
-      socket.off("userCreated");
-      socket.off("userExists");
-    };
   }, [tempUsername, ""]);
 
   /**************************/
@@ -115,7 +136,6 @@ export default function ChatPage() {
           username={tempUsername}
           onLoginAsSomeoneElse={(username) => {
             setTempUsername(username);
-            console.log(`Set temp ${username} successfully!`);
           }}
         />
       </Box>
@@ -125,10 +145,9 @@ export default function ChatPage() {
           display: "flex",
           flexDirection: "row",
           flexGrow: 1,
-          paddingTop: "50px" //FIXME: This is a hack to make the chat page not overlap with the banner
+          paddingTop: "55px" //FIXME: This is a hack to make the chat page not overlap with the banner
         }}
       >
-        <SideBar />
         <Box height={"100%"}>
           <RoomList />
         </Box>
