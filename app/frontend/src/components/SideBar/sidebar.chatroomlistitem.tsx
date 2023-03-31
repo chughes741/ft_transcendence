@@ -1,4 +1,3 @@
-import StarBorder from "@mui/icons-material/StarBorder";
 import ListItemButton from "@mui/material/ListItemButton";
 import ListItemIcon from "@mui/material/ListItemIcon";
 import ListItemText from "@mui/material/ListItemText";
@@ -23,8 +22,9 @@ export function ChatRoomListItem({ room }) {
   return (
     //Needs to return a map of available channels
     <ListItem
-	key={room}
-	disablePadding>
+      key={room}
+      disablePadding
+    >
       <ListItemButton sx={{ pl: 4 }}>
         <ListItemIcon>
           {room.is_private === true ? <LockIcon /> : <ChatIcon />}

@@ -2,13 +2,7 @@ import * as React from "react";
 import List from "@mui/material/List";
 import Divider from "@mui/material/Divider";
 import ListItemText from "@mui/material/ListItemText";
-import ListItemAvatar from "@mui/material/ListItemAvatar";
-import Avatar from "@mui/material/Avatar";
-import Typography from "@mui/material/Typography";
-import { AvatarGroup, Badge, ListItemButton, ListSubheader } from "@mui/material";
-import { CurrentRoomListItem } from "./sidebar.currentroomlistitem";
-import MailIcon from "@mui/icons-material/Mail";
-import BadgeVisibility from "./sidebar.notificationbadge";
+import { ListItemButton, ListSubheader } from "@mui/material";
 import NotificationBadge from "./sidebar.notificationbadge";
 export default function ChatList() {
   const [selectedIndex, setSelectedIndex] = React.useState(1);
