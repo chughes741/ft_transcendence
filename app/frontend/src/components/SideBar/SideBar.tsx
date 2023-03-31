@@ -19,7 +19,7 @@ const drawerWidth = 300;
 export default function SideBar({changeState}) {
   return (
     <Container sx={{ display: "flex", flexDirection: "column" }}>
-      <TopBar />
+      {/* <TopBar /> */}
       <Box sx={{ display: "flex" }}>
         <CssBaseline />
         <Drawer

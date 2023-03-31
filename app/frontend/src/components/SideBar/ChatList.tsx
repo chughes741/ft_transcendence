@@ -81,6 +81,22 @@ export default function ChatList() {
         />
         <NotificationBadge />
       </ListItemButton>
+      <Divider
+        variant="inset"
+        component="li"
+      />
+      {/* Fourth element */}
+      <ListItemButton
+        alignItems="flex-start"
+        selected={selectedIndex === 3}
+        onClick={(event) => handleListItemClick(event, 3)}
+      >
+        <ListItemText
+          primary="Ismael's Institute of Insanity"
+          secondary="welcome to my study of the mind"
+        />
+        <NotificationBadge />
+      </ListItemButton>
     </List>
   );
 }

@@ -46,7 +46,7 @@ function TopBar() {
   };
 
   return (
-    <AppBar sx={{ zIndex: (theme) => theme.zIndex.drawer + 1 }}>
+    <AppBar sx={{ zIndex: (theme) => theme.zIndex.drawer + 1, flexGrow: 0 }}>
       <Container maxWidth={false}>
         <Toolbar
           disableGutters

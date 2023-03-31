@@ -2,11 +2,12 @@ import { useCallback, useRef } from "react";
 import { RootViewModel } from "./root.viewModel";
 import { watchViewModel } from "react-model-view-viewmodel";
 import { socket, WebSocketProvider } from "src/contexts/WebSocketContext";
-import { ThemeProvider } from "@mui/material";
+import { Box, Container, ThemeProvider } from "@mui/material";
 import customTheme from "src/theme";
 import SideBar from "src/components/SideBar/SideBar";
 import { Helmet } from "react-helmet";
 import { ChatProvider } from "../pages/Chat/components/ChatContext";
+import TopBar from "src/components/TopBar/TopBar";
 
 /**
  * Rendering entrypoint
@@ -29,8 +30,18 @@ export function RootView() {
             <Helmet>
               <title>King Pong | need to set this dynamically</title>
             </Helmet>
-            <SideBar changeState={changeState} />
-            <viewModel.SelectDynamicContent />
+            {/* Outer wrapper for content*/}
+            <Container>
+              {/* Outer box for handling vertical flex with topbar */}
+              <Box sx={{ display: "flex", flexDirection: "column" }}>
+                <TopBar />
+              {/* Inner box for horizontal flex with sidebar */}
+                <Box sx={{ display: "flex", flexDirection: "row", flexGrow: 1}}>
+                <SideBar changeState={changeState} />
+                <viewModel.SelectDynamicContent />
+                </Box>
+              </Box>
+            </Container>
           </ChatProvider>
         </ThemeProvider>
       </WebSocketProvider>
