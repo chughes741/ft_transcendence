@@ -11,7 +11,8 @@ import MenuItem from "@mui/material/MenuItem";
 import { LogoSvg } from "./logoComponent";
 import { ButtonUnstyled } from "@mui/base";
 import { Button, Tooltip } from "@mui/material";
-import VideogameAssetIcon from '@mui/icons-material/VideogameAsset';
+import VideogameAssetIcon from "@mui/icons-material/VideogameAsset";
+
 const TopBarHeight = 85;
 
 const settings = ["Profile", "Settings", "Logout"];
@@ -61,7 +62,9 @@ function TopBar() {
           </Box>
 
           <Box>
-            <Button color="primary" sx={{ mr: 5 }}
+            <Button
+              color="primary"
+              sx={{ mr: 5 }}
               variant="outlined"
               startIcon={<VideogameAssetIcon />}
             >
