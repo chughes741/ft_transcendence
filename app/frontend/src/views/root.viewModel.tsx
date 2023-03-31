@@ -15,18 +15,21 @@ export class RootViewModel extends ViewModel {
   }
 
   /**
-   * 
+   *
    * @returns - Dynamic page content
    */
   public SelectDynamicContent = () => {
     switch (this._state) {
       case 0: {
-        return <GamePage />;
+        return <div></div>;
       }
       case 1: {
-        return <ChatPage />;
+        return <GamePage />;
       }
       case 2: {
+        return <ChatPage />;
+      }
+      case 3: {
         return <ProfilePage />;
       }
       default: {
@@ -40,7 +43,7 @@ export class RootViewModel extends ViewModel {
    */
   public load(): void {
     this._state += 1;
-    if (this._state === 3) this._state = 0;
+    if (this._state === 4) this._state = 0;
     this.notifyPropertiesChanged("state");
   }
 }

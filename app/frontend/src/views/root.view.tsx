@@ -22,23 +22,27 @@ export function RootView() {
   /** Theme setup */
   const theme = customTheme();
 
+  const page_name = ["Home", "Game", "Chat", "Profile"];
+
   return (
     <>
       <WebSocketProvider value={socket}>
         <ThemeProvider theme={theme}>
+          <Helmet>
+            <title>King Pong | {page_name[viewModel.state]}</title>
+          </Helmet>
           <ChatProvider>
-            <Helmet>
-              <title>King Pong | need to set this dynamically</title>
-            </Helmet>
             {/* Outer wrapper for content*/}
             <Container>
               {/* Outer box for handling vertical flex with topbar */}
               <Box sx={{ display: "flex", flexDirection: "column" }}>
                 <TopBar />
-              {/* Inner box for horizontal flex with sidebar */}
-                <Box sx={{ display: "flex", flexDirection: "row", flexGrow: 1}}>
-                <SideBar changeState={changeState} />
-                <viewModel.SelectDynamicContent />
+                {/* Inner box for horizontal flex with sidebar */}
+                <Box
+                  sx={{ display: "flex", flexDirection: "row", flexGrow: 1 }}
+                >
+                  <SideBar changeState={changeState} />
+                  <viewModel.SelectDynamicContent />
                 </Box>
               </Box>
             </Container>
