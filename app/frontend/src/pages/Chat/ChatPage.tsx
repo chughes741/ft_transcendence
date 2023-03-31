@@ -19,7 +19,7 @@ import DevLoginBanner from "../../components/DevLoginBanner";
 /*     CSS     */
 /***************/
 import "./styles/ChatPage.css";
-import ChatContext from "./components/ChatContext";
+import ChatContext from "./contexts/ChatContext";
 import RoomList from "./components/RoomList";
 import { Box } from "@mui/system";
 import { Helmet } from "react-helmet";

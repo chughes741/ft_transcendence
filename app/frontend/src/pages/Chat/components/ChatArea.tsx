@@ -7,7 +7,7 @@ import { useContext } from "react";
 /*     CSS     */
 /***************/
 import "../styles/ChatArea.css";
-import { ChatContext } from "./ChatContext";
+import { ChatContext } from "../contexts/ChatContext";
 import ChatMessagesContainer from "./ChatMessagesContainer";
 
 import "../styles/ChatArea.css";

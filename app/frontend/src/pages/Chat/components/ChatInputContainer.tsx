@@ -1,6 +1,6 @@
 import { Box, TextareaAutosize } from "@mui/material";
 import { useContext, useEffect, useRef, useState } from "react";
-import ChatContext from "./ChatContext";
+import ChatContext from "../contexts/ChatContext";
 
 const ChatInputContainer = () => {
   const [textValue, setTextValue] = useState("");

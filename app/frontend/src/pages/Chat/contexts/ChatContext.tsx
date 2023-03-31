@@ -1,9 +1,11 @@
 import { createContext, useEffect, useState } from "react";
-import { MessageType } from "./Message";
+import { MessageType } from "../components/Message";
 import { socket } from "../../../contexts/WebSocketContext";
 import { DevError, RoomType } from "../ChatPage";
 
 type ChatContextType = {
+  tempUsername: string;
+  setTempUsername: (string) => void;
   contextMenuVisible: boolean;
   setContextMenuVisible: (arg: boolean) => void;
   contextMenuPosition: { x: number; y: number };
@@ -15,8 +17,8 @@ type ChatContextType = {
   ) => void;
   currentRoomName: string;
   setCurrentRoomName: (roomName: string) => void;
-  handleContextMenu: (e: React.MouseEvent, roomData: { name: string }) => void;
   contextMenuData: RoomType;
+  handleContextMenu: (e: React.MouseEvent, roomData: { name: string }) => void;
   currentRoomMessages: Array<MessageType>;
   setCurrentRoomMessages: (messages: Array<MessageType>) => void;
   showCreateRoomModal: boolean;
@@ -27,13 +29,13 @@ type ChatContextType = {
   setUnreadMessages: (unread: { [key: string]: number }) => void;
   sendRoomMessage: (roomName: string, message: string) => void;
   joinRoom: (roomName: string, password: string) => void;
-  tempUsername: string;
-  setTempUsername: (string) => void;
 };
 
 // To prevent empty-function errors
 /* eslint-disable */
 export const ChatContext = createContext<ChatContextType>({
+  tempUsername: "",
+  setTempUsername: () => {},
   contextMenuVisible: false,
   setContextMenuVisible: (arg: false) => {},
   contextMenuPosition: { x: 0, y: 0 },
@@ -41,8 +43,8 @@ export const ChatContext = createContext<ChatContextType>({
   setRooms: (callback) => {},
   currentRoomName: "",
   setCurrentRoomName: () => {},
-  handleContextMenu: () => {},
   contextMenuData: { name: "" },
+  handleContextMenu: () => {},
   currentRoomMessages: [],
   setCurrentRoomMessages: () => {},
   showCreateRoomModal: false,
@@ -52,9 +54,7 @@ export const ChatContext = createContext<ChatContextType>({
   unreadMessages: {},
   setUnreadMessages: () => {},
   sendRoomMessage: () => {},
-  joinRoom: () => {},
-  tempUsername: "",
-  setTempUsername: () => {}
+  joinRoom: () => {}
 });
 /* eslint-enable */
 
@@ -145,6 +145,8 @@ export const ChatProvider = ({ children }) => {
   return (
     <ChatContext.Provider
       value={{
+        tempUsername,
+        setTempUsername,
         contextMenuVisible,
         setContextMenuVisible,
         contextMenuPosition,
@@ -163,9 +165,7 @@ export const ChatProvider = ({ children }) => {
         unreadMessages,
         setUnreadMessages,
         sendRoomMessage,
-        joinRoom,
-        tempUsername,
-        setTempUsername
+        joinRoom
       }}
     >
       {children}

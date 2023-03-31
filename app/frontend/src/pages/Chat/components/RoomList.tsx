@@ -1,5 +1,5 @@
 import React, { useContext, useEffect } from "react";
-import { ChatContext } from "./ChatContext";
+import { ChatContext } from "../contexts/ChatContext";
 import "../styles/RoomList.css";
 import ButtonFunky from "../../../components/ButtonFunky";
 import { WebSocketContext } from "../../../contexts/WebSocketContext";

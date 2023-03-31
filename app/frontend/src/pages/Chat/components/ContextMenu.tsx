@@ -1,5 +1,5 @@
 import React, { useContext, useState, useEffect } from "react";
-import { ChatContext } from "./ChatContext";
+import { ChatContext } from "../contexts/ChatContext";
 import { Menu, MenuItem } from "@mui/material";
 
 type ContextMenuOption = {
