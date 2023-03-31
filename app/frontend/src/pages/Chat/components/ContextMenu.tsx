@@ -16,9 +16,6 @@ type ContextMenuProps = {
 const ContextMenu: React.FC<ContextMenuProps> = ({ position, options }) => {
   const { contextMenuVisible, setContextMenuVisible } = useContext(ChatContext);
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
-  const [submenuAnchorEl, setSubmenuAnchorEl] = useState<HTMLElement | null>(
-    null
-  );
   const { x, y } = position;
   let hoverTimeout: ReturnType<typeof setTimeout>;
 
@@ -50,6 +47,7 @@ const ContextMenu: React.FC<ContextMenuProps> = ({ position, options }) => {
           key={index}
           onClick={option.onClick}
           onMouseEnter={(e) => {
+            clearTimeout(hoverTimeout);
             if (option.submenu) {
               setAnchorEl(e.currentTarget);
             }
@@ -68,15 +66,15 @@ const ContextMenu: React.FC<ContextMenuProps> = ({ position, options }) => {
               onClose={() => setAnchorEl(null)}
               anchorOrigin={{ vertical: "top", horizontal: "right" }}
               transformOrigin={{ vertical: "top", horizontal: "left" }}
+              onMouseEnter={() => clearTimeout(hoverTimeout)}
+              onMouseLeave={() => {
+                hoverTimeout = setTimeout(() => {
+                  setAnchorEl(null);
+                }, 1000);
+              }}
             >
               {option.submenu.map((submenuOption, submenuIndex) => (
                 <MenuItem
-                  onMouseEnter={() => clearTimeout(hoverTimeout)}
-                  onMouseLeave={() => {
-                    hoverTimeout = setTimeout(() => {
-                      setSubmenuAnchorEl(null);
-                    }, 1000);
-                  }}
                   key={submenuIndex}
                   onClick={(e) => {
                     e.stopPropagation();

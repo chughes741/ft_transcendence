@@ -14,6 +14,7 @@ interface StyledMessageProps {
   isCurrentUser: boolean;
 }
 
+// FIXME: implement regular css with conditionals
 const StyledMessage = styled.div<StyledMessageProps>`
   display: flex;
   flex-direction: column;

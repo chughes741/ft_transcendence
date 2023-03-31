@@ -14,7 +14,6 @@ import { WebSocketContext } from "../../contexts/WebSocketContext";
 import SideBar from "../../components/SideBar/SideBar";
 import ChatArea from "./components/ChatArea";
 import DevLoginBanner from "../../components/DevLoginBanner";
-import { ProfileHeader } from "../profile/components/ProfileHeader";
 
 /***************/
 /*     CSS     */
@@ -23,7 +22,6 @@ import "./styles/ChatPage.css";
 import ChatContext from "./components/ChatContext";
 import RoomList from "./components/RoomList";
 import { Box } from "@mui/system";
-import { Grid } from "@mui/material";
 import { Helmet } from "react-helmet";
 
 export type MessagePayload = {
@@ -126,7 +124,7 @@ export default function ChatPage() {
     }
   }, [tempUsername, ""]);
 
-  /**************************/
+  /*************************/
   /*   Returned fragment   */
   /*************************/
   return (

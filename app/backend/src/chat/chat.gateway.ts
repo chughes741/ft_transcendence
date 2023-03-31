@@ -16,6 +16,11 @@ import { ChatService } from "./chat.service";
 // Trickaroo to add fields to the Prisma Message type
 import { Message as PrismaMessage } from "@prisma/client";
 
+// FIXME: temporary error type until we can share btw back and frontend
+export type DevError = {
+  error: string;
+};
+
 export interface Message extends PrismaMessage {
   sender: { username: string };
   room: { name: string };
@@ -180,7 +185,7 @@ export class ChatGateway
    * @param dto JoinRoomDto, containing the room name and password
    */
   @SubscribeMessage("joinRoom")
-  async joinRoom(client: Socket, dto: JoinRoomDto) {
+  async joinRoom(client: Socket, dto: JoinRoomDto): Promise<DevError | string> {
     const userId: string = this.userConnectionsService.getUserBySocket(
       client.id
     );
@@ -196,6 +201,7 @@ export class ChatGateway
     if (ret instanceof Error) {
       logger.error(ret);
       client.emit("joinRoomError", ret.message);
+      return { error: ret.message };
     } else if (ret instanceof Array) {
       const messages: Message[] = ret;
       client.join(dto.roomName);
@@ -210,6 +216,7 @@ export class ChatGateway
         .to(dto.roomName)
         .emit("roomMessage", `User ${dto.user} joined room ${dto.roomName}`);
       logger.log(`User ${dto.user} joined room ${dto.roomName}`);
+      return dto.roomName;
     }
   }
 

@@ -29,7 +29,7 @@ export class ChatService {
         status: ChatRoomStatus.PUBLIC,
         owner: user
       });
-      return [];
+      return new Error("Room already exists");
     } else if (
       room.status === ChatRoomStatus.PASSWORD &&
       room.password !== password

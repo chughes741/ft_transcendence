@@ -1,7 +1,7 @@
 import { createContext, useEffect, useState } from "react";
 import { MessageType } from "./Message";
 import { socket } from "../../../contexts/WebSocketContext";
-import { RoomType } from "../ChatPage";
+import { DevError, RoomType } from "../ChatPage";
 
 type ChatContextType = {
   contextMenuVisible: boolean;
@@ -103,20 +103,35 @@ export const ChatProvider = ({ children }) => {
     }
   }, [rooms, currentRoomName]);
 
-  const joinRoom = (roomName: string, password: string) => {
-    console.log(
-      "ChatPage: Creating new room",
-      roomName,
-      password,
-      tempUsername
-    );
-    socket.emit("joinRoom", { roomName, password, user: tempUsername });
-    setRooms((prevRooms) => {
-      const newRooms = { ...prevRooms };
-      newRooms[roomName] = [];
-      return newRooms;
+  const joinRoom = async (
+    roomName: string,
+    password: string
+  ): Promise<boolean> => {
+    return new Promise<boolean>((resolve) => {
+      console.log(
+        "ChatPage: Creating new room",
+        roomName,
+        password,
+        tempUsername
+      );
+      socket.emit(
+        "joinRoom",
+        { roomName, password, user: tempUsername },
+        // Socket callback
+        (res: DevError | string) => {
+          if (typeof res === "object" && res.error) {
+            resolve(false);
+          }
+        }
+      );
+      setRooms((prevRooms) => {
+        const newRooms = { ...prevRooms };
+        newRooms[roomName] = [];
+        return newRooms;
+      });
+      setCurrentRoomName(roomName);
+      resolve(true);
     });
-    setCurrentRoomName(roomName);
   };
 
   const sendRoomMessage = (roomName: string, message: string) => {

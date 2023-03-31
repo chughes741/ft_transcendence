@@ -175,11 +175,6 @@ export class PrismaService extends PrismaClient {
    * @returns {Promise<MessageDto[]>} a page of messages
    * @async
    * @memberof PrismaService
-   * @see https://www.prisma.io/docs/concepts/components/prisma-client/crud#pagination
-   * @see https://www.prisma.io/docs/concepts/components/prisma-client/crud#filtering
-   * @see https://www.prisma.io/docs/concepts/components/prisma-client/crud#sorting
-   * @see https://www.prisma.io/docs/concepts/components/prisma-client/crud#limiting
-   * @see https://www.prisma.io/docs/concepts/components/prisma-client/crud#working-with-dates
    */
   async getChatMessagesPage(
     id: number,
