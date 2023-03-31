@@ -16,145 +16,28 @@ import {
   ListItemIcon,
   ListItemText
 } from "@mui/material";
+import { useChatViewModel } from "../ChatViewModel";
+import { useChatModel } from "../ChatModel";
 
 const RoomList: React.FC = () => {
   const {
     rooms,
-    setRooms,
     currentRoomName,
-    contextMenuData,
-    contextMenuPosition,
     setCurrentRoomName,
     setCurrentRoomMessages,
     setShowCreateRoomModal,
     setShowJoinRoomModal,
-    setContextMenuVisible,
+    contextMenuData,
+    contextMenuPosition,
+    handleContextMenu,
+    truncateText,
+    createNewRoom,
+    leaveRoom,
+    changeRoomStatus,
     showCreateRoomModal,
     showJoinRoomModal,
-    handleContextMenu,
-    joinRoom,
-    tempUsername // FIXME: For testing purposes only
-  } = useContext(ChatContext);
-
-  const socket = useContext(WebSocketContext);
-
-  /**********************/
-  /*   Room Functions   */
-  /**********************/
-
-  const addMessageToRoom = (roomName: string, message: MessageType) => {
-    setRooms((prevRooms) => {
-      const newRooms = { ...prevRooms };
-      if (!newRooms[roomName]) {
-        newRooms[roomName] = [];
-      }
-      newRooms[roomName].push(message);
-      return newRooms;
-    });
-  };
-
-  const createNewRoom = (
-    roomName: string,
-    roomStatus: "PUBLIC" | "PRIVATE" | "PASSWORD",
-    password: string
-  ) => {
-    console.log(
-      "ChatPage: Creating new room",
-      roomName,
-      roomStatus,
-      password,
-      tempUsername
-    );
-    const owner = tempUsername;
-    socket.emit("createRoom", {
-      name: roomName,
-      status: roomStatus,
-      password,
-      owner
-    });
-    setRooms((prevRooms) => {
-      const newRooms = { ...prevRooms };
-      newRooms[roomName] = [];
-      return newRooms;
-    });
-    setCurrentRoomName(roomName);
-  };
-
-  const leaveRoom = () => {
-    if (!contextMenuData) return;
-    const roomName = contextMenuData.name;
-    socket.emit("leaveRoom", { roomName });
-    setRooms((prevRooms) => {
-      const newRooms = { ...prevRooms };
-      delete newRooms[roomName];
-      return newRooms;
-    });
-    setContextMenuVisible(false);
-  };
-
-  const truncateText = (text: string, maxLength: number) => {
-    if (text.length <= maxLength) {
-      return text;
-    }
-    return text.substring(0, maxLength - 1) + "…";
-  };
-
-  const changeRoomStatus = (
-    roomName: string,
-    newStatus: "PRIVATE" | "PUBLIC" | "PASSWORD"
-  ) => {
-    console.log(`Changing room status of ${roomName} to ${newStatus}`);
-    // Emit a socket event to change the room status, and listen for the callback.
-    // If the callback is successful, update the room status in the state.
-    // TODO: implement the backend handler for this socket event
-    socket.emit(
-      "changeRoomStatus",
-      { roomName, newStatus },
-      (success: boolean) => {
-        if (success) {
-          setRooms((prevRooms) => {
-            const newRooms = { ...prevRooms };
-            newRooms[roomName] = prevRooms[roomName];
-            return newRooms;
-          });
-        }
-      }
-    );
-  };
-
-  /***********************/
-  /*   Socket Listener   */
-  /***********************/
-  useEffect(() => {
-    socket.on("connect", () => {
-      console.log("Successfully connected to the server");
-    });
-
-    socket.on("onMessage", (newMessage: MessagePayload) => {
-      console.log("Ding ding, you've got mail:", newMessage);
-
-      const timestamp = new Date().toLocaleTimeString("en-US", {
-        hour: "numeric",
-        minute: "numeric",
-        hour12: true
-      });
-
-      const messageData: MessageType = {
-        user: newMessage.sender,
-        roomId: newMessage.roomName,
-        message: newMessage.content,
-        timestamp,
-        isOwn: newMessage.sender === tempUsername,
-        displayUser: true,
-        displayTimestamp: true
-      };
-      addMessageToRoom(newMessage.roomName, messageData);
-    });
-
-    return () => {
-      socket.off("onMessage");
-    };
-  }, [socket, tempUsername]);
+    joinRoom
+  } = useChatViewModel();
 
   return (
     <div className="room-list">
