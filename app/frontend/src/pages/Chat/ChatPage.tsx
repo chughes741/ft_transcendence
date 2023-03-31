@@ -24,6 +24,7 @@ import ChatContext from "./components/ChatContext";
 import RoomList from "./components/RoomList";
 import { Box } from "@mui/system";
 import { Grid } from "@mui/material";
+import { Helmet } from "react-helmet";
 
 export type MessagePayload = {
   sender: string;
@@ -133,6 +134,9 @@ export default function ChatPage() {
       id="chat-page-container"
       style={{ width: "100vw", height: "100vh", display: "flex" }}
     >
+      <Helmet>
+        <title>King Pong | Chat</title>
+      </Helmet>
       <SideBar />
       <Box
         id="chat"

@@ -1,10 +1,11 @@
-import React, { useContext, useEffect } from "react";
+import React, { useContext, useState, useEffect } from "react";
+import { ChatContext } from "./ChatContext";
 import { Menu, MenuItem } from "@mui/material";
-import ChatContext from "./ChatContext";
 
 type ContextMenuOption = {
   label: string;
-  onClick: () => void;
+  onClick?: () => void;
+  submenu?: ContextMenuOption[];
 };
 
 type ContextMenuProps = {
@@ -14,7 +15,12 @@ type ContextMenuProps = {
 
 const ContextMenu: React.FC<ContextMenuProps> = ({ position, options }) => {
   const { contextMenuVisible, setContextMenuVisible } = useContext(ChatContext);
+  const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
+  const [submenuAnchorEl, setSubmenuAnchorEl] = useState<HTMLElement | null>(
+    null
+  );
   const { x, y } = position;
+  let hoverTimeout: ReturnType<typeof setTimeout>;
 
   useEffect(() => {
     const handleClick = (e: MouseEvent) => {
@@ -25,6 +31,7 @@ const ContextMenu: React.FC<ContextMenuProps> = ({ position, options }) => {
         }
       }
     };
+
     document.addEventListener("click", handleClick);
     return () => {
       document.removeEventListener("click", handleClick);
@@ -42,8 +49,45 @@ const ContextMenu: React.FC<ContextMenuProps> = ({ position, options }) => {
         <MenuItem
           key={index}
           onClick={option.onClick}
+          onMouseEnter={(e) => {
+            if (option.submenu) {
+              setAnchorEl(e.currentTarget);
+            }
+          }}
+          onMouseLeave={() => {
+            hoverTimeout = setTimeout(() => {
+              setAnchorEl(null);
+            }, 1000);
+          }}
         >
           {option.label}
+          {option.submenu && (
+            <Menu
+              open={Boolean(anchorEl)}
+              anchorEl={anchorEl}
+              onClose={() => setAnchorEl(null)}
+              anchorOrigin={{ vertical: "top", horizontal: "right" }}
+              transformOrigin={{ vertical: "top", horizontal: "left" }}
+            >
+              {option.submenu.map((submenuOption, submenuIndex) => (
+                <MenuItem
+                  onMouseEnter={() => clearTimeout(hoverTimeout)}
+                  onMouseLeave={() => {
+                    hoverTimeout = setTimeout(() => {
+                      setSubmenuAnchorEl(null);
+                    }, 1000);
+                  }}
+                  key={submenuIndex}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    submenuOption.onClick && submenuOption.onClick();
+                  }}
+                >
+                  {submenuOption.label}
+                </MenuItem>
+              ))}
+            </Menu>
+          )}
         </MenuItem>
       ))}
     </Menu>

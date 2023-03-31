@@ -92,6 +92,36 @@ const RoomList: React.FC = () => {
     setContextMenuVisible(false);
   };
 
+  const truncateText = (text: string, maxLength: number) => {
+    if (text.length <= maxLength) {
+      return text;
+    }
+    return text.substring(0, maxLength - 1) + "…";
+  };
+
+  const changeRoomStatus = (
+    roomName: string,
+    newStatus: "PRIVATE" | "PUBLIC" | "PASSWORD"
+  ) => {
+    console.log(`Changing room status of ${roomName} to ${newStatus}`);
+    // Emit a socket event to change the room status, and listen for the callback.
+    // If the callback is successful, update the room status in the state.
+    // TODO: implement the backend handler for this socket event
+    socket.emit(
+      "changeRoomStatus",
+      { roomName, newStatus },
+      (success: boolean) => {
+        if (success) {
+          setRooms((prevRooms) => {
+            const newRooms = { ...prevRooms };
+            newRooms[roomName] = prevRooms[roomName];
+            return newRooms;
+          });
+        }
+      }
+    );
+  };
+
   /***********************/
   /*   Socket Listener   */
   /***********************/
@@ -125,13 +155,6 @@ const RoomList: React.FC = () => {
       socket.off("onMessage");
     };
   }, [socket, tempUsername]);
-
-  const truncateText = (text: string, maxLength: number) => {
-    if (text.length <= maxLength) {
-      return text;
-    }
-    return text.substring(0, maxLength - 1) + "…";
-  };
 
   return (
     <div className="room-list">
@@ -195,6 +218,35 @@ const RoomList: React.FC = () => {
           {
             label: "Leave Room",
             onClick: leaveRoom
+          },
+          {
+            label: "Change Room Status",
+            submenu: [
+              {
+                label: "Private",
+                onClick: () => {
+                  if (contextMenuData) {
+                    changeRoomStatus(contextMenuData.name, "PRIVATE");
+                  }
+                }
+              },
+              {
+                label: "Public",
+                onClick: () => {
+                  if (contextMenuData) {
+                    changeRoomStatus(contextMenuData.name, "PUBLIC");
+                  }
+                }
+              },
+              {
+                label: "Password Protected",
+                onClick: () => {
+                  if (contextMenuData) {
+                    changeRoomStatus(contextMenuData.name, "PASSWORD");
+                  }
+                }
+              }
+            ]
           }
         ]}
       />
