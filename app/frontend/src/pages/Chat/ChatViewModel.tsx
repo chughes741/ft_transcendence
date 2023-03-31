@@ -1,7 +1,7 @@
 // ChatViewModel.tsx
 import { useEffect } from "react";
 import { socket } from "../../contexts/WebSocketContext";
-import { useChatModel } from "./ChatModel";
+import { ChatModelType, useChatModel } from "./ChatModel";
 import { MessageType } from "./components/Message";
 
 export type MessagePayload = {
@@ -18,7 +18,22 @@ export type DevError = {
   error: string;
 };
 
-export const useChatViewModel = () => {
+export interface ChatViewModelType extends ChatModelType {
+  joinRoom: (roomName: string, password: string) => Promise<boolean>;
+  sendRoomMessage: (roomName: string, message: string) => void;
+  createNewRoom: (
+    roomName: string,
+    roomStatus: "PUBLIC" | "PRIVATE" | "PASSWORD",
+    password: string
+  ) => void;
+  leaveRoom: () => void;
+  changeRoomStatus: (
+    roomName: string,
+    newStatus: "PRIVATE" | "PUBLIC" | "PASSWORD"
+  ) => void;
+}
+
+export const useChatViewModel = (): ChatViewModelType => {
   /***********************/
   /*   State Variables   */
   /***********************/
@@ -41,7 +56,8 @@ export const useChatViewModel = () => {
     contextMenuVisible,
     setContextMenuVisible,
     contextMenuPosition,
-    handleContextMenu
+    handleContextMenu,
+    truncateText
   } = useChatModel();
 
   /**********************/
@@ -98,8 +114,11 @@ export const useChatViewModel = () => {
     setContextMenuVisible(false);
   };
 
-  const joinRoom = async (roomName, password) => {
-    return new Promise((resolve) => {
+  const joinRoom = async (
+    roomName: string,
+    password: string
+  ): Promise<boolean> => {
+    return new Promise<boolean>((resolve) => {
       socket.emit(
         "joinRoom",
         { roomName, password, user: tempUsername },
@@ -279,6 +298,7 @@ export const useChatViewModel = () => {
     setContextMenuVisible,
     contextMenuPosition,
     handleContextMenu,
+    truncateText,
     joinRoom,
     sendRoomMessage,
     createNewRoom,

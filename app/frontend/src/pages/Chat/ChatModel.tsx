@@ -1,7 +1,36 @@
 // ChatModel.tsx
 import { useState } from "react";
+import { RoomType } from "./ChatViewModel";
+import { MessageType } from "./components/Message";
 
-export const useChatModel = () => {
+export interface ChatModelType {
+  tempUsername: string;
+  setTempUsername: (string) => void;
+  contextMenuVisible: boolean;
+  setContextMenuVisible: (arg: boolean) => void;
+  contextMenuPosition: { x: number; y: number };
+  rooms: { [key: string]: Array<MessageType> };
+  setRooms: (
+    callback: (prevRooms: { [key: string]: Array<MessageType> }) => {
+      [key: string]: Array<MessageType>;
+    }
+  ) => void;
+  currentRoomName: string;
+  setCurrentRoomName: (roomName: string) => void;
+  contextMenuData: RoomType | null;
+  handleContextMenu: (e: React.MouseEvent, roomData: { name: string }) => void;
+  currentRoomMessages: Array<MessageType>;
+  setCurrentRoomMessages: (messages: Array<MessageType>) => void;
+  showCreateRoomModal: boolean;
+  setShowCreateRoomModal: (visible: boolean) => void;
+  showJoinRoomModal: boolean;
+  setShowJoinRoomModal: (visible: boolean) => void;
+  unreadMessages: { [key: string]: number };
+  setUnreadMessages: (unread: { [key: string]: number }) => void;
+  truncateText: (text: string, maxLength: number) => string;
+}
+
+export const useChatModel = (): ChatModelType => {
   const [currentRoomName, setCurrentRoomName] = useState("");
   const [rooms, setRooms] = useState({});
   const [currentRoomMessages, setCurrentRoomMessages] = useState([]);
