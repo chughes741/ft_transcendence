@@ -10,7 +10,8 @@ import Avatar from "@mui/material/Avatar";
 import MenuItem from "@mui/material/MenuItem";
 import { LogoSvg } from "./logoComponent";
 import { ButtonUnstyled } from "@mui/base";
-import { Tooltip } from "@mui/material";
+import { Button, Tooltip } from "@mui/material";
+import VideogameAssetIcon from "@mui/icons-material/VideogameAsset";
 
 const TopBarHeight = 85;
 
@@ -22,7 +23,7 @@ const toolbarStyle = {
   justifyContent: "space-between"
 };
 
-function TopBar() {
+function TopBar({setPageState}) {
   const [anchorElNav, setAnchorElNav] = React.useState<null | HTMLElement>(
     null
   );
@@ -46,7 +47,7 @@ function TopBar() {
   };
 
   return (
-    <AppBar sx={{ zIndex: (theme) => theme.zIndex.drawer + 1 }}>
+    <AppBar sx={{ zIndex: (theme) => theme.zIndex.drawer + 1, flexGrow: 0 }}>
       <Container maxWidth={false}>
         <Toolbar
           disableGutters
@@ -54,12 +55,23 @@ function TopBar() {
         >
           {/* Logo wrapped in button to return to home */}
 
-          <Box sx={{ marginTop: 2 }}>
-            <ButtonUnstyled href="/">
+          <Box sx={{ marginTop: 2, flexGrow: 1 }}>
+            <ButtonUnstyled onClick={() => setPageState(0)}>
               <LogoSvg />
             </ButtonUnstyled>
           </Box>
 
+          <Box>
+            <Button
+              onClick={() => setPageState(1)}
+              color="primary"
+              sx={{ mr: 5 }}
+              variant="outlined"
+              startIcon={<VideogameAssetIcon />}
+            >
+              Play A Game
+            </Button>
+          </Box>
           {/* Button to be displayed instead of profile when use not logged in*/}
           {/* <Button color="inherit">Login</Button> */}
 
@@ -92,7 +104,7 @@ function TopBar() {
               {settings.map((setting) => (
                 <MenuItem
                   key={setting}
-                  onClick={handleCloseUserMenu}
+                  onClick={() => setPageState(3) }
                 >
                   <Typography textAlign="center">{setting}</Typography>
                 </MenuItem>

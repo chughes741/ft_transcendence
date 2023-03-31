@@ -2,11 +2,8 @@ import * as React from "react";
 import List from "@mui/material/List";
 import Divider from "@mui/material/Divider";
 import ListItemText from "@mui/material/ListItemText";
-import ListItemAvatar from "@mui/material/ListItemAvatar";
-import Avatar from "@mui/material/Avatar";
-import Typography from "@mui/material/Typography";
-import { ListItemButton } from "@mui/material";
-
+import { ListItemButton, ListSubheader } from "@mui/material";
+import NotificationBadge from "./sidebar.notificationbadge";
 export default function ChatList() {
   const [selectedIndex, setSelectedIndex] = React.useState(1);
 
@@ -18,99 +15,101 @@ export default function ChatList() {
   };
 
   return (
-    <List sx={{ width: "100%", maxWidth: 360, bgcolor: "background.paper" }}>
+    <List
+      sx={{ width: "100%", maxWidth: 360, bgcolor: "background.paper" }}
+      component="nav"
+      aria-labelledby="nested-list-subheader"
+      subheader={
+        <ListSubheader
+          component="div"
+          id="nested-list-subheader"
+        >
+          Your Current Rooms
+        </ListSubheader>
+      }
+    >
+      {/* First element */}
       <ListItemButton
         alignItems="flex-start"
         selected={selectedIndex === 0}
         onClick={(event) => handleListItemClick(event, 0)}
       >
-        <ListItemAvatar>
-          <Avatar
-            alt="Remy Sharp"
-            src="/static/images/avatar/1.jpg"
-          />
-        </ListItemAvatar>
+        {/* Display room name and last line of text */}
         <ListItemText
-          primary="Brunch this weekend?"
-          secondary={
-            <React.Fragment>
-              <Typography
-                sx={{ display: "inline" }}
-                component="span"
-                variant="body2"
-                color="text.primary"
-              >
-                Ali Connors
-              </Typography>
-              {" — I'll be in your neighborhood doing errands this…"}
-            </React.Fragment>
-          }
+          primary="Fun Party Time Spot"
+          secondary="the best room"
         />
+        {/* Get notification badge for end of item */}
+        <NotificationBadge />
       </ListItemButton>
       <Divider
         variant="inset"
         component="li"
       />
+
+      {/* Second element */}
       <ListItemButton
         alignItems="flex-start"
         selected={selectedIndex === 1}
         onClick={(event) => handleListItemClick(event, 1)}
       >
-        <ListItemAvatar>
-          <Avatar
-            alt="Travis Howard"
-            src="/static/images/avatar/2.jpg"
-          />
-        </ListItemAvatar>
         <ListItemText
-          primary="Summer BBQ"
-          secondary={
-            <React.Fragment>
-              <Typography
-                sx={{ display: "inline" }}
-                component="span"
-                variant="body2"
-                color="text.primary"
-              >
-                to Scott, Alex, Jennifer
-              </Typography>
-              {" — Wish I could come, but I'm out of town this…"}
-            </React.Fragment>
-          }
+          primary="JR's Backalley Bodega"
+          secondary="only english people allowed"
         />
+        <NotificationBadge />
       </ListItemButton>
       <Divider
         variant="inset"
         component="li"
       />
+      {/* Third element */}
       <ListItemButton
         alignItems="flex-start"
         selected={selectedIndex === 2}
         onClick={(event) => handleListItemClick(event, 2)}
       >
-        <ListItemAvatar>
-          <Avatar
-            alt="Cindy Baker"
-            src="/static/images/avatar/3.jpg"
-          />
-        </ListItemAvatar>
         <ListItemText
-          primary="Oui Oui"
-          secondary={
-            <React.Fragment>
-              <Typography
-                sx={{ display: "inline" }}
-                component="span"
-                variant="body2"
-                color="text.primary"
-              >
-                Sandra Adams
-              </Typography>
-              {" — Do you have Paris recommendations? Have you ever…"}
-            </React.Fragment>
-          }
+          primary="Cole's crusty condo"
+          secondary="not actually that close to school"
         />
+        <NotificationBadge />
+      </ListItemButton>
+      <Divider
+        variant="inset"
+        component="li"
+      />
+      {/* Fourth element */}
+      <ListItemButton
+        alignItems="flex-start"
+        selected={selectedIndex === 3}
+        onClick={(event) => handleListItemClick(event, 3)}
+      >
+        <ListItemText
+          primary="Ismael's Institute of Insanity"
+          secondary="welcome to my study of the mind"
+        />
+        <NotificationBadge />
       </ListItemButton>
     </List>
   );
+}
+
+{
+  /* <ListItemText
+primary="Oui Oui"
+secondary={
+  <React.Fragment>
+    <Typography
+      sx={{ display: "inline" }}
+      component="span"
+      variant="body2"
+      color="text.primary"
+    >
+      Sandra Adams
+    </Typography>
+    {" — Do you have Paris recommendations? Have you ever…"}
+  </React.Fragment>
+}
+/> */
 }

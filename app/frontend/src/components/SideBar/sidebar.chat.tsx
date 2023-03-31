@@ -10,10 +10,7 @@ Title of chat or First line of conversation (can use react.fragment)
 Indicator for unread messages
 */
 
-
-class chatSideBarListItemDto {
-
-}
+class chatSideBarListItemDto {}
 
 function chatSideBarListItem() {
   return (

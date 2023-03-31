@@ -1,36 +1,47 @@
-import { useCallback, useRef } from "react";
-import { RootViewModel } from "./root.viewModel";
-import { watchViewModel } from "react-model-view-viewmodel";
-import { socket, WebSocketProvider } from "src/contexts/WebSocketContext";
-import { ThemeProvider } from "@mui/material";
-import customTheme from "src/theme";
-import SideBar from "src/components/SideBar/SideBar";
+import { useState } from "react";
 import { Helmet } from "react-helmet";
+import { socket, WebSocketProvider } from "src/contexts/WebSocketContext";
+import customTheme from "src/theme";
+import { Box, Container, ThemeProvider } from "@mui/material";
+import SideBar from "src/components/SideBar/SideBar";
 import { ChatProvider } from "../pages/Chat/components/ChatContext";
+import TopBar from "src/components/TopBar/TopBar";
+import { RootViewModel } from "./root.viewModel";
 
 /**
  * Rendering entrypoint
  * @returns - View model with dynamic content
  */
 export function RootView() {
-  /** View Model state setup */
-  const { current: viewModel } = useRef(new RootViewModel());
-  const changeState = useCallback(() => viewModel.load(), [viewModel]);
-  watchViewModel(viewModel);
+  const [pageState, setPageState] = useState(0);
 
   /** Theme setup */
   const theme = customTheme();
+
+  const page_name = ["Home", "Game", "Chat", "Profile"];
 
   return (
     <>
       <WebSocketProvider value={socket}>
         <ThemeProvider theme={theme}>
+          <Helmet>
+            <title>King Pong | {page_name[pageState]}</title>
+          </Helmet>
           <ChatProvider>
-            <Helmet>
-              <title>King Pong | need to set this dynamically</title>
-            </Helmet>
-            <SideBar changeState={changeState} />
-            <viewModel.SelectDynamicContent />
+            {/* Outer wrapper for content*/}
+            <Container>
+              {/* Outer box for handling vertical flex with topbar */}
+              <Box sx={{ display: "flex", flexDirection: "column" }}>
+                <TopBar setPageState={setPageState} />
+                {/* Inner box for horizontal flex with sidebar */}
+                <Box
+                  sx={{ display: "flex", flexDirection: "row", flexGrow: 1 }}
+                >
+                  <SideBar setPageState={setPageState} />
+                  <RootViewModel state={pageState} />
+                </Box>
+              </Box>
+            </Container>
           </ChatProvider>
         </ThemeProvider>
       </WebSocketProvider>
