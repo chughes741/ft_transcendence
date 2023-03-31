@@ -23,7 +23,7 @@ const toolbarStyle = {
   justifyContent: "space-between"
 };
 
-function TopBar() {
+function TopBar({setPageState}) {
   const [anchorElNav, setAnchorElNav] = React.useState<null | HTMLElement>(
     null
   );
@@ -56,13 +56,14 @@ function TopBar() {
           {/* Logo wrapped in button to return to home */}
 
           <Box sx={{ marginTop: 2, flexGrow: 1 }}>
-            <ButtonUnstyled href="/">
+            <ButtonUnstyled onClick={() => setPageState(0)}>
               <LogoSvg />
             </ButtonUnstyled>
           </Box>
 
           <Box>
             <Button
+              onClick={() => setPageState(1)}
               color="primary"
               sx={{ mr: 5 }}
               variant="outlined"
@@ -103,7 +104,7 @@ function TopBar() {
               {settings.map((setting) => (
                 <MenuItem
                   key={setting}
-                  onClick={handleCloseUserMenu}
+                  onClick={() => setPageState(3) }
                 >
                   <Typography textAlign="center">{setting}</Typography>
                 </MenuItem>

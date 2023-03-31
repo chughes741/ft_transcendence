@@ -17,7 +17,7 @@ class ChatRoomListItemDto {
   member_count: number;
 }
 
-export default function SidebarChatOptions({ changeState }) {
+export default function SidebarChatOptions({ setPageState }) {
   const [open, setOpen] = React.useState(true);
 
   const handleClick = () => {
@@ -35,12 +35,13 @@ export default function SidebarChatOptions({ changeState }) {
       component="nav"
     >
       {/* Temp button to change pages */}
-      <ListItemButton onClick={changeState}>
+      <ListItemButton onClick={() => setPageState(2)}>
         <ListItemIcon>
           <GroupAddIcon />
         </ListItemIcon>
-        <ListItemText primary="Change Page" />
+        <ListItemText primary="Chat Page" />
       </ListItemButton>
+
       {/* Join an existing chat */}
       <ListItemButton>
         <ListItemIcon>
