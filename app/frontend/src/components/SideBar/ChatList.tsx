@@ -5,7 +5,7 @@ import ListItemText from "@mui/material/ListItemText";
 import ListItemAvatar from "@mui/material/ListItemAvatar";
 import Avatar from "@mui/material/Avatar";
 import Typography from "@mui/material/Typography";
-import { AvatarGroup, Badge, ListItemButton } from "@mui/material";
+import { AvatarGroup, Badge, ListItemButton, ListSubheader } from "@mui/material";
 import { CurrentRoomListItem } from "./sidebar.currentroomlistitem";
 import MailIcon from "@mui/icons-material/Mail";
 import BadgeVisibility from "./sidebar.notificationbadge";
@@ -21,7 +21,19 @@ export default function ChatList() {
   };
 
   return (
-    <List sx={{ width: "100%", maxWidth: 360, bgcolor: "background.paper" }}>
+    <List
+      sx={{ width: "100%", maxWidth: 360, bgcolor: "background.paper" }}
+      component="nav"
+      aria-labelledby="nested-list-subheader"
+      subheader={
+        <ListSubheader
+          component="div"
+          id="nested-list-subheader"
+        >
+          Your Current Rooms
+        </ListSubheader>
+      }
+    >
       {/* First element */}
       <ListItemButton
         alignItems="flex-start"
