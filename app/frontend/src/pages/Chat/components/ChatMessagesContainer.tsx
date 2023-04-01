@@ -1,7 +1,6 @@
-import { useContext, useEffect, useRef } from "react";
+import { useEffect, useRef } from "react";
 import { MessageType } from "./Message";
 import Message from "./Message";
-import { WebSocketContext } from "../../../contexts/WebSocketContext";
 import { Box } from "@mui/material";
 
 type ChatMessagesContainerProps = {
