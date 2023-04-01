@@ -2,9 +2,9 @@
 import './ListTab.tsx.css'
 import { Box, Typography, AppBar } from "@mui/material";
 import { List, ListItem, ListItemIcon, ListItemText, ListItemButton } from '@mui/material';
-import { MouseEvent, useState } from 'react';
+import { MouseEvent, useState, useEffect } from 'react';
 import { UserType } from '../User';
-import { AccountCircle } from '@material-ui/icons';
+import GroupIcon from "@mui/icons-material/Group";
 
 
 interface Props {
@@ -25,20 +25,26 @@ function ListTabulation({ users, heading, onSelectItem }: Props) {
     return (
         <>
             <Box style={{
-                height : '100%',
+                height: '100%',
                 position: 'fixed',
                 right: '0',
+                marginTop: '64px'
             }}>
-                <Box sx={{ height: '18px' }}></Box>
                 <Box sx={{ display: "flex", flexDirection: "column" }}>
 
-                    <Box className="list-title">{heading}</Box>
+                    <Box className="list-title">
+                        <ListItemIcon>
+                            <GroupIcon color='secondary' />
+                        </ListItemIcon>
+                        {heading}
+
+                    </Box>
 
                     {users.length === 0 && <Box>No one in chat </Box>}
 
                     <List>
                         {users.map((users, index) => (
-                            <ListItemButton 
+                            <ListItemButton
                                 selected={SelectedIndex === index ? true : false}
                                 key={users.uuid} //don't forget to add user.id unique key
                                 onClick={() => {
@@ -47,9 +53,9 @@ function ListTabulation({ users, heading, onSelectItem }: Props) {
                                 }}
                             >
                                 <ListItemIcon>
-                                    <img src="/home/agrenon/projets/ft_transcendence/app/src/42Logo.jpg" />
+                                    <img src= {`https://i.pravatar.cc/150?u=${users.uuid}`} />
                                 </ListItemIcon>
-                                <ListItemText primary={users.nick} secondary = {users.email} />
+                                <ListItemText primary={users.nick} secondary={users.email} />
                             </ListItemButton>
                         ))}
                     </List>
