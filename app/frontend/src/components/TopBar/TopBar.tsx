@@ -46,6 +46,11 @@ function TopBar({setPageState}) {
     setAnchorElUser(null);
   };
 
+  const onClickProfile = ()  => {
+    setPageState(3);
+    handleCloseUserMenu();
+  }
+
   return (
     <AppBar sx={{ zIndex: (theme) => theme.zIndex.drawer + 1, flexGrow: 0 }}>
       <Container maxWidth={false}>
@@ -56,7 +61,14 @@ function TopBar({setPageState}) {
           {/* Logo wrapped in button to return to home */}
 
           <Box sx={{ marginTop: 2, flexGrow: 1 }}>
-            <ButtonUnstyled onClick={() => setPageState(0)}>
+            <ButtonUnstyled
+                onClick={() => setPageState(0)}
+                style={{
+                  border: "none",
+                  backgroundColor: "transparent",
+                  cursor: "pointer"
+                }}
+            >
               <LogoSvg />
             </ButtonUnstyled>
           </Box>
@@ -104,7 +116,7 @@ function TopBar({setPageState}) {
               {settings.map((setting) => (
                 <MenuItem
                   key={setting}
-                  onClick={() => setPageState(3) }
+                  onClick={onClickProfile}
                 >
                   <Typography textAlign="center">{setting}</Typography>
                 </MenuItem>
