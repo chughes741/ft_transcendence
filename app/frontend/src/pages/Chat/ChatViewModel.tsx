@@ -115,6 +115,7 @@ export const ChatViewModelProvider = ({ children }) => {
         return newRooms;
       });
       setCurrentRoomName(roomName);
+      // setCurrentRoomMessages(rooms[roomName]);
       resolve(true);
     });
   };
@@ -162,6 +163,7 @@ export const ChatViewModelProvider = ({ children }) => {
       });
 
       setCurrentRoomName(roomName);
+      // setCurrentRoomMessages(rooms[roomName]);
       resolve(true);
     });
   };

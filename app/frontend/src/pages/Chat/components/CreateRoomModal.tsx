@@ -1,9 +1,25 @@
 /*******************/
 /*     System      */
 /*******************/
-import React, { useState, useCallback } from "react";
+import {
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogContentText,
+  TextField,
+  IconButton,
+  InputLabel,
+  Select,
+  FormControl,
+  MenuItem,
+  Button,
+  DialogActions,
+  makeStyles
+} from "@mui/material";
+import React, { useState, useCallback, useEffect } from "react";
 import { FiEye, FiEyeOff } from "react-icons/fi";
-import Button from "../../../components/Button";
+import ButtonFunky from "../../../components/ButtonFunky";
+// import Button from "../../../components/Button";
 
 /***************/
 /*     CSS     */
@@ -26,6 +42,7 @@ export const CreateRoomModal: React.FC<CreateRoomModalProps> = ({
   closeModal,
   onCreateRoom
 }) => {
+  // const classes = useStyles();
   const [roomStatus, setRoomStatus] = useState<
     "PUBLIC" | "PRIVATE" | "PASSWORD"
   >("PUBLIC"); // defaults to public
@@ -42,13 +59,13 @@ export const CreateRoomModal: React.FC<CreateRoomModalProps> = ({
   } = useRoomModal(showModal, closeModal);
 
   const handleSubmit = useCallback(async () => {
+    if (roomName.trim().length <= 0) {
+      alert("Please enter a room name.");
+      return;
+    }
     // Necessary check b/c we're not using a `form`, but a `button` w `onClick`
     if (roomStatus === "PASSWORD" && !password) {
       alert("Please enter a room password.");
-      return;
-    }
-    if (roomName.trim().length <= 0) {
-      alert("Please enter a room name.");
       return;
     }
     console.log("Creating room modal: ", roomName, roomStatus, password);
@@ -60,7 +77,7 @@ export const CreateRoomModal: React.FC<CreateRoomModalProps> = ({
     } else {
       alert(`Room creation failed on ${roomName}. Please try again.`);
     }
-  }, [roomName, password, closeModal, onCreateRoom]);
+  }, [roomName, password, closeModal, onCreateRoom, roomStatus]);
 
   const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter") {
@@ -74,94 +91,90 @@ export const CreateRoomModal: React.FC<CreateRoomModalProps> = ({
   if (!showModal) {
     return null;
   }
-
   return (
-    <>
-      <div
-        className="modal-overlay"
-        onClick={closeModal}
-      ></div>
-      <div className="modal">
-        <div className="modal-content">
-          <h3>Create Room</h3>
-          <label htmlFor="room-name">Room Name</label>
-          <div className="input-container-modal">
-            <input
-              type="text"
-              id="room-name"
-              ref={roomNameInput}
-              value={roomName}
-              maxLength={25}
-              onChange={(e) => {
-                console.log("e.target.value: ", e.target.value);
-                setRoomName(e.target.value);
-              }}
-              onKeyDown={handleKeyPress}
-              required
-            />
-          </div>
-          {roomStatus === "PASSWORD" && (
-            <label htmlFor="room-password">Password</label>
-          )}
-          {roomStatus === "PASSWORD" && (
-            <>
-              <div className="input-container-modal">
-                <input
-                  type={showPassword ? "text" : "PASSWORD"}
-                  id="room-password"
-                  value={password}
-                  maxLength={25}
-                  onChange={(e) => setPassword(e.target.value)}
-                  onKeyDown={handleKeyPress}
-                  required
-                />
-                {showPassword ? (
-                  <FiEye
-                    onClick={togglePasswordVisibility}
-                    size={24}
-                    style={{
-                      cursor: "pointer",
-                      color: "blue",
-                      marginLeft: "10px"
-                    }}
-                  />
-                ) : (
-                  <FiEyeOff
-                    onClick={togglePasswordVisibility}
-                    size={24}
-                    style={{
-                      cursor: "pointer",
-                      color: "gray",
-                      marginLeft: "10px"
-                    }}
-                  />
-                )}
-              </div>
-            </>
-          )}
-          <label htmlFor="room-status">Room Status</label>
-          <div className="input-container-modal">
-            <select
-              id="room-status"
-              value={roomStatus}
-              onChange={(e) =>
-                setRoomStatus(
-                  e.target.value as "PUBLIC" | "PRIVATE" | "PASSWORD"
-                )
-              }
-            >
-              <option value="PUBLIC">Public</option>
-              <option value="PRIVATE">Private</option>
-              <option value="PASSWORD">Password Protected</option>
-            </select>
-          </div>
-          <Button
-            content="Create Room"
-            onClick={handleSubmit}
-            width="100%"
-          ></Button>
-        </div>
-      </div>
-    </>
+    <Dialog
+      open={showModal}
+      onClose={closeModal}
+      maxWidth="md"
+      fullWidth
+      PaperProps={{
+        sx: {
+          width: "30%",
+          overflowX: "hidden"
+        }
+      }}
+    >
+      <DialogTitle alignContent={"center"}>Create New Chat Room</DialogTitle>
+      <DialogContent
+        // FIXME: add to global theme as dialogContent
+        sx={{
+          "& > *:not(:last-child)": {
+            marginBottom: 2
+          }
+        }}
+      >
+        <DialogContentText>Enter room details:</DialogContentText>
+        <TextField
+          autoFocus
+          margin="dense"
+          label="Room Name"
+          type="text"
+          fullWidth
+          value={roomName}
+          onChange={(e) => setRoomName(e.target.value)}
+          onKeyDown={handleKeyPress}
+        />
+        {roomStatus === "PASSWORD" && (
+          <TextField
+            margin="dense"
+            label="Password"
+            type={showPassword ? "text" : "password"}
+            fullWidth
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            onKeyDown={handleKeyPress}
+            InputProps={{
+              endAdornment: (
+                <IconButton
+                  edge="end"
+                  onClick={togglePasswordVisibility}
+                >
+                  {showPassword ? <FiEye /> : <FiEyeOff />}
+                </IconButton>
+              )
+            }}
+          />
+        )}
+        <FormControl fullWidth>
+          <InputLabel id="room-status-label">Room Status</InputLabel>
+          <Select
+            labelId="room-status-label"
+            id="room-status"
+            value={roomStatus}
+            label="Room Status"
+            onChange={(e) =>
+              setRoomStatus(e.target.value as "PUBLIC" | "PRIVATE" | "PASSWORD")
+            }
+          >
+            <MenuItem value="PUBLIC">Public</MenuItem>
+            <MenuItem value="PRIVATE">Private</MenuItem>
+            <MenuItem value="PASSWORD">Password Protected</MenuItem>
+          </Select>
+        </FormControl>
+      </DialogContent>
+      <DialogActions>
+        <Button
+          onClick={closeModal}
+          color="primary"
+        >
+          Cancel
+        </Button>
+        <ButtonFunky
+          onClick={handleSubmit}
+          content="Create"
+          width="50%"
+        ></ButtonFunky>
+      </DialogActions>
+    </Dialog>
   );
 };

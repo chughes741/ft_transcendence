@@ -9,6 +9,10 @@ type ChatMessagesContainerProps = {
 
 const groupMessages = (messages: Array<MessageType>): Array<MessageType> => {
   const groupedMessages: Array<MessageType> = [];
+  if (!messages) {
+    console.log("No messages to display");
+    return;
+  }
 
   messages.forEach((msg, index) => {
     const prevMessage = messages[index - 1];
@@ -37,7 +41,9 @@ const ChatMessagesContainer = ({ messages }: ChatMessagesContainerProps) => {
       lastMessageRef.current.scrollIntoView({ behavior: "smooth" });
     }
   }, [groupedMessages]);
-
+  if (lastMessageRef.current) {
+    lastMessageRef.current.scrollIntoView({ behavior: "smooth" });
+  }
   return (
     <Box
       flex={1}

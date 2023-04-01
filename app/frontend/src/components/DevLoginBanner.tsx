@@ -72,7 +72,10 @@ const DevLoginBanner: React.FC<BannerProps> = ({
             value={newUsername}
             onChange={(e) => setNewUsername(e.target.value)}
             onKeyDown={(e) => {
-              if (e.key === "Enter") handleSave();
+              if (e.key === "Enter") {
+                e.preventDefault();
+                handleSave();
+              }
             }}
           />
         </DialogContent>
