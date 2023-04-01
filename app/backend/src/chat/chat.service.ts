@@ -2,7 +2,12 @@ import { Injectable, Logger } from "@nestjs/common";
 import { ChatRoomStatus } from "@prisma/client";
 import { PrismaService } from "../prisma/prisma.service";
 import { UserConnectionsService } from "../user-connections.service";
-import { CreateChatRoomDto, JoinRoomDto, Message } from "./chat.gateway";
+import {
+  CreateChatRoomDto,
+  JoinRoomDto,
+  Message,
+  SendMessageDto
+} from "./chat.gateway";
 import { CreateChatDto } from "./dto/create-chat.dto";
 import { UpdateChatDto } from "./dto/update-chat.dto";
 
@@ -110,6 +115,7 @@ export class ChatService {
    *
    * If the user already exists, return an error
    * If the user does not exist, add it to the database and send a confirmation
+   * TODO: Remove this function and replace it with a proper user creation
    * @param client socket client
    * @param username
    * @returns Error or username
@@ -144,19 +150,54 @@ export class ChatService {
     }
   }
 
-  findAll() {
-    return `This action returns all chat`;
+  /**
+   * Temporary function to login a user
+   * If the user does not exist, return an error
+   * TODO: remove this function when authentication is enabled
+   * @param client socket client
+   * @param username
+   * @returns DevError or username
+   */
+  async devUserLogin(username: string): Promise<Error | string> {
+    // Check if the user already exists
+    const userExists = await this.prismaService.getUserIdByNick(username);
+    if (!userExists) {
+      // Warn the client that the user already exists
+      logger.log(`UserLogin error: User ${username} does not exist`);
+      return Error("User login error: user does not exist");
+    }
+    // FIXME: add password protection
+    logger.log(`User ${username} logged in: `);
+    console.log(userExists);
+
+    return username;
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} chat`;
-  }
+  async sendMessage(sendDto: SendMessageDto): Promise<Error | string> {
+    if (!sendDto.content) return;
 
-  update(id: number, updateChatDto: UpdateChatDto) {
-    return `This action updates a #${id} chat`;
-  }
+    // Try to get the room database ID
+    const roomId = await this.prismaService.getChatRoomId(sendDto.roomName);
+    if (!roomId) return Error("Room not found");
 
-  remove(id: number) {
-    return `This action removes a #${id} chat`;
+    // Try to get the user database ID
+    const userId = await this.prismaService.getUserIdByNick(sendDto.sender);
+    if (!userId) return Error("User not found");
+
+    // Add the message to the database
+    try {
+      const ret = await this.prismaService.addMessageToChatRoom({
+        content: sendDto.content,
+        senderId: userId,
+        roomId
+      });
+      logger.log(`Message added to the database: `);
+      console.log(ret);
+    } catch (e) {
+      logger.error(e);
+      return Error("Error adding message to database");
+    }
+
+    return sendDto.roomName;
   }
 }

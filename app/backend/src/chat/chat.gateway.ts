@@ -86,6 +86,8 @@ export class ChatGateway
    * Temporary function to create a user
    *
    * If there is an error in the service, return it
+   *
+   * TODO: remove this function when authentication is enabled
    * @param client socket client
    * @param username
    * @returns DevError or username
@@ -111,6 +113,7 @@ export class ChatGateway
   /**
    * Temporary function to login a user
    * If the user does not exist, return an error
+   * TODO: remove this function when authentication is enabled
    * @param client socket client
    * @param username
    * @returns DevError or username
@@ -123,16 +126,12 @@ export class ChatGateway
     logger.log(
       `Received createUser request from ${client.id} for user ${username}`
     );
-    // Check if the user already exists
-    const userExists = await this.prismaService.getUserIdByNick(username);
-    if (!userExists) {
-      // Warn the client that the user already exists
-      logger.log(`UserLogin error: User ${username} does not exist`);
-      return { error: "User login error: user does not exist" };
+
+    const userWasLoggedIn = await this.chatService.devUserLogin(username);
+    if (userWasLoggedIn instanceof Error) {
+      console.log(userWasLoggedIn);
+      return { error: userWasLoggedIn.message };
     }
-    // FIXME: add password protection
-    logger.log(`User ${username} logged in: `);
-    console.log(userExists);
 
     // Add the user connection to the UserConnections map
     this.userConnectionsService.addUserConnection(username, client.id);
@@ -260,25 +259,14 @@ export class ChatGateway
   ): Promise<DevError | string> {
     if (!sendDto.content) return;
 
-    // Try to get the room database ID
-    const roomId = await this.prismaService.getChatRoomId(sendDto.roomName);
-    if (!roomId) return { error: "Room not found" };
-    logger.log(`Room name: ${sendDto.roomName} has a room ID: ${roomId}`);
+    // Log the request
+    logger.log(
+      `Received sendMessage request from ${sendDto.sender} to room ${sendDto.roomName}.`
+    );
 
-    // Try to get the user database ID
-    const userId = await this.prismaService.getUserIdByNick(sendDto.sender);
-    if (!userId) return { error: "User not found" };
-    logger.log(`User name: ${sendDto.sender} has a user ID: ${userId}`);
-
-    // Add the message to the database
-    const ret = await this.prismaService.addMessageToChatRoom({
-      content: sendDto.content,
-      senderId: userId,
-      roomId
-    });
+    // Delegate business logic to the chat service
+    const ret = await this.chatService.sendMessage(sendDto);
     if (ret instanceof Error) return { error: ret.message };
-    logger.log(`Message added to the database: `);
-    console.log(ret);
 
     // If nothing went wrong, send the message to the room
     this.server.to(sendDto.roomName).emit("roomMessage", {
