@@ -1,0 +1,30 @@
+
+.list-title{
+    color: transparent;
+    font-size: 36px;
+    background-image: linear-gradient(to bottom right, #f24404, #fb9d9d);
+    background-clip: text;
+    -webkit-background-clip: text;
+    
+}
+
+.list-tab{
+    list-style-type: circle;
+    color: transparent;
+    font-size: 24px;
+    background-image: linear-gradient(to bottom right, #f24404, #fb9d9d);
+    background-clip: text;
+    -webkit-background-clip: text;
+    cursor: pointer;
+}
+
+.list-group-active{
+    background-color: yellow;
+    color: #f24404;
+    z-index: 1;
+    border-radius: 5px;
+}
+
+.list-group-inactive{
+
+}
