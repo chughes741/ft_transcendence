@@ -1,11 +1,6 @@
 
 .list-title{
-    color: transparent;
     font-size: 36px;
-    background-image: linear-gradient(to bottom right, #f24404, #fb9d9d);
-    background-clip: text;
-    -webkit-background-clip: text;
-    
 }
 
 .list-tab{
