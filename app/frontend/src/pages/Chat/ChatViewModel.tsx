@@ -19,6 +19,13 @@ export type DevError = {
   error: string;
 };
 
+export type CreateRoomType = {
+  name: string;
+  status: "PUBLIC" | "PRIVATE" | "PASSWORD";
+  password: string;
+  owner: string;
+};
+
 export interface ChatViewModelType extends ChatModelType {
   joinRoom: (roomName: string, password: string) => Promise<boolean>;
   sendRoomMessage: (roomName: string, message: string) => void;
@@ -76,43 +83,56 @@ export const ChatViewModelProvider = ({ children }) => {
     });
   };
 
-  const createNewRoom = (
+  const createNewRoom = async (
     roomName: string,
     roomStatus: "PUBLIC" | "PRIVATE" | "PASSWORD",
-    password: string
-  ) => {
-    console.log(
-      "ChatPage: Creating new room",
-      roomName,
-      roomStatus,
-      password,
-      tempUsername
-    );
-    const owner = tempUsername;
-    socket.emit("createRoom", {
-      name: roomName,
-      status: roomStatus,
-      password,
-      owner
+    roomPassword: string
+  ): Promise<boolean> => {
+    return new Promise<boolean>((resolve) => {
+      const roomRequest: CreateRoomType = {
+        name: roomName,
+        status: roomStatus,
+        password: roomPassword,
+        owner: tempUsername
+      };
+
+      console.log("ChatPage: Creating new room", { ...roomRequest });
+
+      socket.emit("createRoom", roomRequest, (response: DevError | string) => {
+        if (typeof response === "object" && response.error) {
+          console.log("Error response from create room: ", response.error);
+          resolve(false);
+        }
+      });
+      // Will only reach this line if the socket callback is successful
+      setRooms((prevRooms) => {
+        const newRooms = { ...prevRooms };
+        newRooms[roomName] = [];
+        return newRooms;
+      });
+      setCurrentRoomName(roomName);
+      resolve(true);
     });
-    setRooms((prevRooms) => {
-      const newRooms = { ...prevRooms };
-      newRooms[roomName] = [];
-      return newRooms;
-    });
-    setCurrentRoomName(roomName);
   };
 
-  const leaveRoom = () => {
-    if (!contextMenuData) return;
-    const roomName = contextMenuData.name;
-    socket.emit("leaveRoom", { roomName });
-    setRooms((prevRooms) => {
-      const newRooms = { ...prevRooms };
-      delete newRooms[roomName];
-      return newRooms;
+  const leaveRoom = async (): Promise<boolean> => {
+    return new Promise<boolean>((resolve) => {
+      if (!contextMenuData) return;
+      const roomName = contextMenuData.name;
+      socket.emit("leaveRoom", { roomName }, (response: DevError | string) => {
+        if (typeof response === "object" && response.error) {
+          console.log("Error response from leave room: ", response.error);
+          resolve(false);
+        }
+      });
+      setRooms((prevRooms) => {
+        const newRooms = { ...prevRooms };
+        delete newRooms[roomName];
+        return newRooms;
+      });
+      setContextMenuVisible(false);
+      resolve(true);
     });
-    setContextMenuVisible(false);
   };
 
   const joinRoom = async (
@@ -123,9 +143,10 @@ export const ChatViewModelProvider = ({ children }) => {
       socket.emit(
         "joinRoom",
         { roomName, password, user: tempUsername },
-        (res) => {
+        // Socket callback
+        (res: DevError | string) => {
           if (typeof res === "object" && res.error) {
-            resolve(false);
+            resolve(false); // This will exit the function
           }
         }
       );

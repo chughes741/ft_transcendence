@@ -145,7 +145,10 @@ export class ChatGateway
    * @param room CreateRoomDto
    */
   @SubscribeMessage("createRoom")
-  async createRoom(client: Socket, createDto: CreateChatRoomDto) {
+  async createRoom(
+    client: Socket,
+    createDto: CreateChatRoomDto
+  ): Promise<DevError | string> {
     logger.log(
       `Received createRoom request from ${createDto.owner} for room ${
         createDto.name
@@ -160,6 +163,10 @@ export class ChatGateway
 
     // Add the room to the database
     const ret = await this.prismaService.createChatRoom(createDto);
+    // If the room already exists, return an error
+    if (ret instanceof Error) {
+      return { error: ret.message };
+    }
     logger.log(`Room ${createDto.name} created: `);
     console.log(ret);
 
@@ -172,6 +179,7 @@ export class ChatGateway
       );
 
     logger.log(`User ${createDto.owner} CREATED room ${createDto.name}`);
+    return createDto.name;
   }
 
   /**
@@ -226,12 +234,14 @@ export class ChatGateway
    * @param room name of the room to leave
    */
   @SubscribeMessage("leaveRoom")
-  async leaveRoom(client: Socket, room: string) {
+  async leaveRoom(client: Socket, room: string): Promise<DevError | string> {
     client.leave(room);
+    // TODO: add business logic to remove the user from the room in the database
     this.server
       .to(room)
       .emit("roomMessage", `User ${client.id} left room ${room}`);
     logger.log(`User ${client.id} left room ${room}`);
+    return room;
   }
 
   @SubscribeMessage("sendMessage")
