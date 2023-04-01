@@ -18,7 +18,7 @@ interface CreateRoomModalProps {
     roomName: string,
     roomStatus: "PUBLIC" | "PRIVATE" | "PASSWORD", // This is gonna need an enum :cry:
     password: string
-  ) => void;
+  ) => Promise<boolean>;
 }
 
 export const CreateRoomModal: React.FC<CreateRoomModalProps> = ({
@@ -41,7 +41,7 @@ export const CreateRoomModal: React.FC<CreateRoomModalProps> = ({
     togglePasswordVisibility
   } = useRoomModal(showModal, closeModal);
 
-  const handleSubmit = useCallback(() => {
+  const handleSubmit = useCallback(async () => {
     // Necessary check b/c we're not using a `form`, but a `button` w `onClick`
     if (roomStatus === "PASSWORD" && !password) {
       alert("Please enter a room password.");
@@ -52,10 +52,14 @@ export const CreateRoomModal: React.FC<CreateRoomModalProps> = ({
       return;
     }
     console.log("Creating room modal: ", roomName, roomStatus, password);
-    onCreateRoom(roomName, roomStatus, password);
-    setRoomName("");
-    setPassword("");
-    closeModal();
+    const roomCreated = await onCreateRoom(roomName, roomStatus, password);
+    if (roomCreated) {
+      setRoomName("");
+      setPassword("");
+      closeModal();
+    } else {
+      alert(`Room creation failed on ${roomName}. Please try again.`);
+    }
   }, [roomName, password, closeModal, onCreateRoom]);
 
   const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {

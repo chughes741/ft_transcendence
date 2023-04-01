@@ -28,17 +28,17 @@ export type CreateRoomType = {
 
 export interface ChatViewModelType extends ChatModelType {
   joinRoom: (roomName: string, password: string) => Promise<boolean>;
-  sendRoomMessage: (roomName: string, message: string) => void;
+  sendRoomMessage: (roomName: string, message: string) => Promise<boolean>;
   createNewRoom: (
     roomName: string,
     roomStatus: "PUBLIC" | "PRIVATE" | "PASSWORD",
     password: string
-  ) => void;
-  leaveRoom: () => void;
+  ) => Promise<boolean>;
+  leaveRoom: () => Promise<boolean>;
   changeRoomStatus: (
     roomName: string,
     newStatus: "PRIVATE" | "PUBLIC" | "PASSWORD"
-  ) => void;
+  ) => Promise<boolean>;
 }
 
 export const ChatViewModelProvider = ({ children }) => {
@@ -72,6 +72,7 @@ export const ChatViewModelProvider = ({ children }) => {
   /*   Room Functions   */
   /**********************/
 
+  // FIXME: move to model?
   const addMessageToRoom = (roomName: string, message: MessageType) => {
     setRooms((prevRooms) => {
       const newRooms = { ...prevRooms };
@@ -83,6 +84,7 @@ export const ChatViewModelProvider = ({ children }) => {
     });
   };
 
+  // Create a new room
   const createNewRoom = async (
     roomName: string,
     roomStatus: "PUBLIC" | "PRIVATE" | "PASSWORD",
@@ -97,13 +99,13 @@ export const ChatViewModelProvider = ({ children }) => {
       };
 
       console.log("ChatPage: Creating new room", { ...roomRequest });
-
       socket.emit("createRoom", roomRequest, (response: DevError | string) => {
         if (typeof response === "object" && response.error) {
           console.log("Error response from create room: ", response.error);
           resolve(false);
         }
       });
+
       // Will only reach this line if the socket callback is successful
       setRooms((prevRooms) => {
         const newRooms = { ...prevRooms };
@@ -162,35 +164,56 @@ export const ChatViewModelProvider = ({ children }) => {
     });
   };
 
-  const sendRoomMessage = (roomName, message) => {
-    socket.emit("sendMessage", {
-      sender: tempUsername,
-      roomName: roomName,
-      content: message
+  const sendRoomMessage = async (
+    roomName: string,
+    message: string
+  ): Promise<boolean> => {
+    return new Promise<boolean>((resolve) => {
+      socket.emit(
+        "sendMessage",
+        {
+          sender: tempUsername,
+          roomName: roomName,
+          content: message
+        },
+        (res: DevError | string) => {
+          if (typeof res === "object" && res.error) {
+            console.log("Error response from send message: ", res.error);
+            resolve(false);
+          }
+        }
+      );
+      resolve(true);
     });
   };
 
-  const changeRoomStatus = (
+  const changeRoomStatus = async (
     roomName: string,
     newStatus: "PRIVATE" | "PUBLIC" | "PASSWORD"
-  ) => {
-    console.log(`Changing room status of ${roomName} to ${newStatus}`);
-    // Emit a socket event to change the room status, and listen for the callback.
-    // If the callback is successful, update the room status in the state.
-    // TODO: implement the backend handler for this socket event
-    socket.emit(
-      "changeRoomStatus",
-      { roomName, newStatus },
-      (success: boolean) => {
-        if (success) {
-          setRooms((prevRooms) => {
-            const newRooms = { ...prevRooms };
-            newRooms[roomName] = prevRooms[roomName];
-            return newRooms;
-          });
+  ): Promise<boolean> => {
+    return new Promise<boolean>((resolve) => {
+      console.log(`Changing room status of ${roomName} to ${newStatus}`);
+      // Emit a socket event to change the room status, and listen for the callback.
+      // If the callback is successful, update the room status in the state.
+      // TODO: implement the backend handler for this socket event
+      socket.emit(
+        "changeRoomStatus",
+        { roomName, newStatus },
+        (success: boolean) => {
+          if (success) {
+            setRooms((prevRooms) => {
+              const newRooms = { ...prevRooms };
+              newRooms[roomName] = prevRooms[roomName];
+              return newRooms;
+            });
+          } else {
+            console.log("Error changing room status");
+            resolve(false);
+          }
         }
-      }
-    );
+      );
+      resolve(true);
+    });
   };
 
   /**********************/

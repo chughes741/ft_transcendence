@@ -15,7 +15,8 @@ const ChatInputContainer = () => {
 
   const sendMessage = (event) => {
     event.preventDefault();
-    sendRoomMessage(currentRoomName, textValue);
+    const ret = sendRoomMessage(currentRoomName, textValue);
+    if (!ret) alert(`Failed to send message to room ${currentRoomName}`);
     setTextValue("");
   };
 
