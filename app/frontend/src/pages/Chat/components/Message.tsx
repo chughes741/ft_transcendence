@@ -38,7 +38,8 @@ export type MessageType = {
   user: string;
   roomId: string;
   message: string;
-  timestamp: string;
+  timestamp_readable: string;
+  timestamp: Date;
   isOwn: boolean;
   displayUser: boolean;
   displayTimestamp: boolean;
@@ -49,6 +50,18 @@ type MessageProps = {
 };
 
 const Message = forwardRef<HTMLDivElement, MessageProps>(({ message }, ref) => {
+  const tooltip_timestamp = new Date(message.timestamp).toLocaleTimeString(
+    "en-US",
+    {
+      weekday: "short",
+      day: "numeric",
+      month: "short",
+      hour: "numeric",
+      minute: "numeric",
+      hour12: true
+    }
+  );
+  console.log(`tooltip_timestamp: ${tooltip_timestamp}`);
   return (
     <StyledMessage
       isCurrentUser={message.isOwn}
@@ -58,7 +71,7 @@ const Message = forwardRef<HTMLDivElement, MessageProps>(({ message }, ref) => {
         <span className="sender">{message.isOwn ? "Me" : message.user}</span>
       )}
       <Tooltip
-        title={message.timestamp}
+        title={tooltip_timestamp}
         placement={message.isOwn ? "left-end" : "right-end"}
         enterDelay={800}
       >
@@ -69,7 +82,7 @@ const Message = forwardRef<HTMLDivElement, MessageProps>(({ message }, ref) => {
         </div>
       </Tooltip>
       {message.displayTimestamp && (
-        <span className="timestamp">{message.timestamp}</span>
+        <span className="timestamp">{message.timestamp_readable}</span>
       )}
     </StyledMessage>
   );

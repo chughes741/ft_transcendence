@@ -9,6 +9,7 @@ export type MessagePayload = {
   sender: string;
   roomName: string;
   content: string;
+  timestamp: Date;
 };
 
 export type RoomType = {
@@ -74,6 +75,7 @@ export const ChatViewModelProvider = ({ children }) => {
 
   // FIXME: move to model?
   const addMessageToRoom = (roomName: string, message: MessageType) => {
+    console.log("ChatPage: Adding message to room", { roomName, message });
     setRooms((prevRooms) => {
       const newRooms = { ...prevRooms };
       if (!newRooms[roomName]) {
@@ -274,16 +276,22 @@ export const ChatViewModelProvider = ({ children }) => {
     socket.on("onMessage", (newMessage: MessagePayload) => {
       console.log("Ding ding, you've got mail:", newMessage);
 
-      const timestamp = new Date().toLocaleTimeString("en-US", {
-        hour: "numeric",
-        minute: "numeric",
-        hour12: true
-      });
+      const timestamp = newMessage.timestamp;
+      const timestamp_readable = new Date(timestamp).toLocaleTimeString(
+        "en-US",
+        {
+          hour: "numeric",
+          minute: "numeric",
+          hour12: true
+        }
+      );
+      console.log("timestamp_readable: ", timestamp_readable);
 
       const messageData: MessageType = {
         user: newMessage.sender,
         roomId: newMessage.roomName,
         message: newMessage.content,
+        timestamp_readable,
         timestamp,
         isOwn: newMessage.sender === tempUsername,
         displayUser: true,

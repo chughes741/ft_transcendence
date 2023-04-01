@@ -15,7 +15,7 @@ const groupMessages = (messages: Array<MessageType>): Array<MessageType> => {
     const nextMessage = messages[index + 1];
 
     const displayTimestamp =
-      !nextMessage || nextMessage.timestamp !== msg.timestamp;
+      !nextMessage || nextMessage.timestamp_readable !== msg.timestamp_readable;
     const displayUser = !prevMessage || prevMessage.user !== msg.user;
 
     groupedMessages.push({
@@ -37,11 +37,6 @@ const ChatMessagesContainer = ({ messages }: ChatMessagesContainerProps) => {
       lastMessageRef.current.scrollIntoView({ behavior: "smooth" });
     }
   }, [groupedMessages]);
-
-  // When a new message is received
-  if (lastMessageRef.current) {
-    lastMessageRef.current.scrollIntoView({ behavior: "smooth" });
-  }
 
   return (
     <Box
