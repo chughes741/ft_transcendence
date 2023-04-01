@@ -85,8 +85,7 @@ export class ChatGateway
   /**
    * Temporary function to create a user
    *
-   * If the user already exists, return an error
-   * If the user does not exist, add it to the database and send a confirmation
+   * If there is an error in the service, return it
    * @param client socket client
    * @param username
    * @returns DevError or username
@@ -95,31 +94,18 @@ export class ChatGateway
   async createTempUser(
     client: Socket,
     username: string
-  ): Promise<{ error: string } | string> {
+  ): Promise<DevError | string> {
     logger.log(
       `Received createUser request from ${client.id} for user ${username}`
     );
-    // Check if the user already exists
-    const userExists = await this.prismaService.getUserIdByNick(username);
-    if (userExists) {
-      // Warn the client that the user already exists
-      // client.emit("userExists");
-      logger.log(`UserCreation error: User ${username} already exists`);
-      // return new Error("User already exists");
-      return { error: "User already exists" };
-    } else {
-      // If the user does not exist, create it
-      const prismaReturn = await this.prismaService.addUser({
-        username,
-        password: "secret"
-      });
-      logger.log(`User ${username} created: `);
-      console.log(prismaReturn);
-      // Add the user connection to the UserConnections map
-      this.userConnectionsService.addUserConnection(username, client.id);
-      // client.emit("userCreated", username);
-      return username;
+    const userWasCreated = await this.chatService.createTempUser(
+      client.id,
+      username
+    );
+    if (userWasCreated instanceof Error) {
+      return { error: userWasCreated.message };
     }
+    return username;
   }
 
   /**
@@ -156,8 +142,9 @@ export class ChatGateway
   /**
    * Create a new chat room.
    *
-   * If the room already exists, return an error.
-   * If the room does not exist, add it to the database and send a confirmation
+   * If the chat room is successfully created, add the user to the socket room.
+   * If the chat service returns an error, return it
+   *
    * @param client socket client
    * @param room CreateRoomDto
    * @returns DevError or room name
@@ -167,31 +154,27 @@ export class ChatGateway
     client: Socket,
     createDto: CreateChatRoomDto
   ): Promise<DevError | string> {
+    // Log the request
     logger.log(
       `Received createRoom request from ${createDto.owner} for room ${
         createDto.name
       }: ${createDto.status} ${
-        createDto.password ? `with password ${createDto.password}` : ""
+        createDto.password ? `, with password ${createDto.password}.` : "."
       }`
     );
-    // Add the user to the socket room
-    client.join(createDto.name);
-    logger.log(`User ${createDto.owner} joined socket room ${createDto.name}`);
-    console.log(createDto);
 
     // Add the room to the database
-    const ret = await this.prismaService.createChatRoom(createDto);
+    const ret = await this.chatService.createRoom(createDto);
 
     // If the room already exists, return an error
     if (ret instanceof Error) {
       return { error: ret.message };
     }
 
-    // Log the room creation
-    logger.log(`Room ${createDto.name} created: `);
-    console.log(ret);
-
-    logger.log(`User ${createDto.owner} CREATED room ${createDto.name}`);
+    // Add the user to the socket room
+    client.join(createDto.name);
+    logger.log(`User ${createDto.owner} joined socket room ${createDto.name}`);
+    console.log(createDto);
     return createDto.name;
   }
 
@@ -217,12 +200,12 @@ export class ChatGateway
       }`
     );
 
+    // TODO: move this to a "getChatRoomMessages" handler
     // Assign the user id to the dto instead of the socket id
     dto.user = userId;
     const ret = await this.chatService.joinRoom(dto);
     if (ret instanceof Error) {
       logger.error(ret);
-      client.emit("joinRoomError", ret.message);
       return { error: ret.message };
     } else if (ret instanceof Array) {
       const messages: Message[] = ret;
@@ -231,7 +214,8 @@ export class ChatGateway
         client.emit("onMessage", {
           sender: message.sender.username,
           roomName: message.room.name,
-          content: message.content
+          content: message.content,
+          timestamp: message.updatedAt
         });
       });
       this.server
