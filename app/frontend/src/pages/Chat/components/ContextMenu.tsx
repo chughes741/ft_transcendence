@@ -1,6 +1,6 @@
-import React, { useContext, useState, useEffect } from "react";
-import { ChatContext } from "../contexts/ChatContext";
+import React, { useState, useEffect } from "react";
 import { Menu, MenuItem } from "@mui/material";
+import { useChatViewModelContext } from "../contexts/ChatViewModelContext";
 
 type ContextMenuOption = {
   label: string;
@@ -14,7 +14,8 @@ type ContextMenuProps = {
 };
 
 const ContextMenu: React.FC<ContextMenuProps> = ({ position, options }) => {
-  const { contextMenuVisible, setContextMenuVisible } = useContext(ChatContext);
+  const { contextMenuVisible, setContextMenuVisible } =
+    useChatViewModelContext();
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
   const { x, y } = position;
   let hoverTimeout: ReturnType<typeof setTimeout>;

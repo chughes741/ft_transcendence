@@ -5,10 +5,11 @@ import DevLoginBanner from "../../components/DevLoginBanner";
 import SideBar from "../../components/SideBar";
 import RoomList from "./components/RoomList";
 import ChatArea from "./components/ChatArea";
-import { useChatViewModel } from "./ChatViewModel";
+import { useChatViewModelContext } from "./contexts/ChatViewModelContext";
 
 export const ChatView: React.FC = () => {
-  const { currentRoomName, tempUsername, setTempUsername } = useChatViewModel();
+  const { currentRoomName, tempUsername, setTempUsername } =
+    useChatViewModelContext();
 
   return (
     <Box

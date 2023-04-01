@@ -59,8 +59,6 @@ export const useChatModel = (): ChatModelType => {
     return text.substring(0, maxLength - 1) + "…";
   };
 
-  // Other methods, like sendRoomMessage and joinRoom, will be moved to the ViewModel
-
   return {
     currentRoomName,
     setCurrentRoomName,

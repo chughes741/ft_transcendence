@@ -13,9 +13,10 @@ import ChatMessagesContainer from "./ChatMessagesContainer";
 import "../styles/ChatArea.css";
 import ChatInputContainer from "./ChatInputContainer";
 import { Grid } from "@mui/material";
+import { useChatViewModelContext } from "../contexts/ChatViewModelContext";
 
 const ChatArea = () => {
-  const { currentRoomName, currentRoomMessages } = useContext(ChatContext);
+  const { currentRoomName, currentRoomMessages } = useChatViewModelContext();
 
   return (
     <>

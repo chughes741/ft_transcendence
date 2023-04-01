@@ -3,6 +3,7 @@ import { useEffect } from "react";
 import { socket } from "../../contexts/WebSocketContext";
 import { ChatModelType, useChatModel } from "./ChatModel";
 import { MessageType } from "./components/Message";
+import { ChatViewModelContext } from "./contexts/ChatViewModelContext";
 
 export type MessagePayload = {
   sender: string;
@@ -33,7 +34,7 @@ export interface ChatViewModelType extends ChatModelType {
   ) => void;
 }
 
-export const useChatViewModel = (): ChatViewModelType => {
+export const ChatViewModelProvider = ({ children }) => {
   /***********************/
   /*   State Variables   */
   /***********************/
@@ -263,7 +264,7 @@ export const useChatViewModel = (): ChatViewModelType => {
   useEffect(() => {
     // Try to create a temporary user
     if (tempUsername) {
-      const createTempUser = async (username: string) => {
+      const createTempUser = async (username: string): Promise<void> => {
         const userCreated = await createUser(username);
         if (!userCreated) {
           // Try to login instead
@@ -278,31 +279,37 @@ export const useChatViewModel = (): ChatViewModelType => {
     }
   }, [tempUsername, ""]);
 
-  return {
-    currentRoomName,
-    setCurrentRoomName,
-    rooms,
-    setRooms,
-    currentRoomMessages,
-    setCurrentRoomMessages,
-    showCreateRoomModal,
-    setShowCreateRoomModal,
-    showJoinRoomModal,
-    setShowJoinRoomModal,
-    unreadMessages,
-    setUnreadMessages,
-    tempUsername,
-    setTempUsername,
-    contextMenuData,
-    contextMenuVisible,
-    setContextMenuVisible,
-    contextMenuPosition,
-    handleContextMenu,
-    truncateText,
-    joinRoom,
-    sendRoomMessage,
-    createNewRoom,
-    leaveRoom,
-    changeRoomStatus
-  };
+  return (
+    <ChatViewModelContext.Provider
+      value={{
+        currentRoomName,
+        setCurrentRoomName,
+        rooms,
+        setRooms,
+        currentRoomMessages,
+        setCurrentRoomMessages,
+        showCreateRoomModal,
+        setShowCreateRoomModal,
+        showJoinRoomModal,
+        setShowJoinRoomModal,
+        unreadMessages,
+        setUnreadMessages,
+        tempUsername,
+        setTempUsername,
+        contextMenuData,
+        contextMenuVisible,
+        setContextMenuVisible,
+        contextMenuPosition,
+        handleContextMenu,
+        truncateText,
+        joinRoom,
+        sendRoomMessage,
+        createNewRoom,
+        leaveRoom,
+        changeRoomStatus
+      }}
+    >
+      {children}
+    </ChatViewModelContext.Provider>
+  );
 };

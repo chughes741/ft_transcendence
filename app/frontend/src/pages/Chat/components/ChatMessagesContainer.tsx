@@ -30,7 +30,6 @@ const groupMessages = (messages: Array<MessageType>): Array<MessageType> => {
 };
 
 const ChatMessagesContainer = ({ messages }: ChatMessagesContainerProps) => {
-  const currentUser = useContext(WebSocketContext).id;
   const groupedMessages = groupMessages(messages);
   const lastMessageRef = useRef<HTMLDivElement>(null);
 
@@ -51,7 +50,12 @@ const ChatMessagesContainer = ({ messages }: ChatMessagesContainerProps) => {
       display="flex"
       flexDirection="column"
       overflow-y="auto"
-      style={{ padding: "16px", width: "100%", overflowY: "auto", overflowX: "hidden" }}
+      style={{
+        padding: "16px",
+        width: "100%",
+        overflowY: "auto",
+        overflowX: "hidden"
+      }}
     >
       {groupedMessages.map((message, index) => (
         <Message

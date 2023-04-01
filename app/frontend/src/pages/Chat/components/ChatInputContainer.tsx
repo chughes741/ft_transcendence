@@ -1,10 +1,10 @@
 import { Box, TextareaAutosize } from "@mui/material";
-import { useContext, useEffect, useRef, useState } from "react";
-import ChatContext from "../contexts/ChatContext";
+import { useEffect, useRef, useState } from "react";
+import { useChatViewModelContext } from "../contexts/ChatViewModelContext";
 
 const ChatInputContainer = () => {
   const [textValue, setTextValue] = useState("");
-  const { currentRoomName, sendRoomMessage } = useContext(ChatContext);
+  const { currentRoomName, sendRoomMessage } = useChatViewModelContext();
   const messageInputRef = useRef<HTMLTextAreaElement>(null);
 
   useEffect(() => {

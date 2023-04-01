@@ -1,10 +1,6 @@
-import React, { useContext, useEffect } from "react";
-import { ChatContext } from "../contexts/ChatContext";
+import React from "react";
 import "../styles/RoomList.css";
 import ButtonFunky from "../../../components/ButtonFunky";
-import { WebSocketContext } from "../../../contexts/WebSocketContext";
-import { MessageType } from "./Message";
-import { MessagePayload } from "../ChatPage";
 import ContextMenu from "./ContextMenu";
 import { JoinRoomModal } from "./JoinRoomModal";
 import { CreateRoomModal } from "./CreateRoomModal";
@@ -16,8 +12,7 @@ import {
   ListItemIcon,
   ListItemText
 } from "@mui/material";
-import { useChatViewModel } from "../ChatViewModel";
-import { useChatModel } from "../ChatModel";
+import { useChatViewModelContext } from "../contexts/ChatViewModelContext";
 
 const RoomList: React.FC = () => {
   const {
@@ -37,7 +32,7 @@ const RoomList: React.FC = () => {
     showCreateRoomModal,
     showJoinRoomModal,
     joinRoom
-  } = useChatViewModel();
+  } = useChatViewModelContext();
 
   return (
     <div className="room-list">
