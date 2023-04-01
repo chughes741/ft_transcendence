@@ -88,7 +88,7 @@ const RoomList: React.FC = () => {
       <JoinRoomModal
         showModal={showJoinRoomModal}
         closeModal={() => setShowJoinRoomModal(false)}
-        onCreateRoom={joinRoom}
+        onJoinRoom={joinRoom}
       />
       <ContextMenu
         position={contextMenuPosition}

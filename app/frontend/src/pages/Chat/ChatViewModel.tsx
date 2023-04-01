@@ -333,6 +333,13 @@ export const ChatViewModelProvider = ({ children }) => {
     }
   }, [tempUsername, ""]);
 
+  // Attempt at focusing the room messages when a new room is selected
+  useEffect(() => {
+    if (currentRoomMessages && rooms[currentRoomName]) {
+      setCurrentRoomMessages(rooms[currentRoomName]);
+    }
+  }, [currentRoomMessages, ""]);
+
   return (
     <ChatViewModelContext.Provider
       value={{

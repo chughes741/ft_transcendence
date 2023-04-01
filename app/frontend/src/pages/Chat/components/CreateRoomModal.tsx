@@ -171,7 +171,7 @@ export const CreateRoomModal: React.FC<CreateRoomModalProps> = ({
         </Button>
         <ButtonFunky
           onClick={handleSubmit}
-          content="Create"
+          content="Create Room"
           width="50%"
         ></ButtonFunky>
       </DialogActions>

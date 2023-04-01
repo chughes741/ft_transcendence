@@ -37,7 +37,7 @@ export class ChatService {
    */
   async joinRoom(joinDto: JoinRoomDto): Promise<Message[] | Error> {
     const { roomName, password, user } = joinDto;
-    const room = await this.prismaService.chatRoom.findUnique({
+    let room = await this.prismaService.chatRoom.findUnique({
       where: { name: roomName }
     });
 
@@ -48,11 +48,20 @@ export class ChatService {
 
     if (!room) {
       // Room doesn't exist, create it as a public room
-      await this.prismaService.createChatRoom({
-        name: roomName,
-        status: ChatRoomStatus.PUBLIC,
-        owner: user
-      });
+      try {
+        room = await this.prismaService.createChatRoom({
+          name: roomName,
+          status: ChatRoomStatus.PUBLIC,
+          owner: user
+        });
+        logger.log(
+          `Tried to join room ${roomName}, but it did not exist. Created it as a public room: `
+        );
+        console.log(room);
+      } catch (e) {
+        logger.error(`Error creating room ${roomName}: ${e}`);
+        return e;
+      }
     } else if (
       room.status === ChatRoomStatus.PASSWORD &&
       room.password !== password
