@@ -4,7 +4,7 @@ import { Helmet } from "react-helmet";
 import DevLoginBanner from "../../components/DevLoginBanner";
 import SideBar from "../../components/SideBar";
 import RoomList from "./components/RoomList";
-import ChatArea from "./components/ChatArea";
+import ChatAreaView from "./components/ChatArea.view";
 import { useChatViewModelContext } from "./contexts/ChatViewModelContext";
 
 export const ChatView: React.FC = () => {
@@ -47,7 +47,7 @@ export const ChatView: React.FC = () => {
             id="chat-area"
             style={{ width: "80%" }}
           >
-            <ChatArea key={currentRoomName} />
+            <ChatAreaView key={currentRoomName} />
           </Box>
         </Box>
       </Box>

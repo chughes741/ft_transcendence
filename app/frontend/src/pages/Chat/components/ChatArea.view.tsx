@@ -9,7 +9,7 @@ import ChatInputContainer from "./ChatInputContainer";
 import { Grid } from "@mui/material";
 import { useChatViewModelContext } from "../contexts/ChatViewModelContext";
 
-const ChatArea = () => {
+const ChatAreaView = () => {
   const { currentRoomName, currentRoomMessages } = useChatViewModelContext();
 
   return (
@@ -22,7 +22,7 @@ const ChatArea = () => {
           height: "100%",
           width: "100%",
           maxWidth: "100%",
-          overflowX: "hidden"
+          overflow: "hidden"
         }}
       >
         <Grid
@@ -33,7 +33,8 @@ const ChatArea = () => {
         </Grid>
         <Grid
           item
-          style={{ flexGrow: 1 }}
+          style={{ flexGrow: 1, overflowY:"auto", overflowX:"hidden" }}
+
         >
           <ChatMessagesContainer messages={currentRoomMessages} />
         </Grid>
@@ -52,4 +53,4 @@ const ChatArea = () => {
   );
 };
 
-export default ChatArea;
+export default ChatAreaView;

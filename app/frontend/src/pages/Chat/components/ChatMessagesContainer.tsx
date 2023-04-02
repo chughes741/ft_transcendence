@@ -46,11 +46,10 @@ const ChatMessagesContainer = ({ messages }: ChatMessagesContainerProps) => {
   }
   return (
     <Box
-      flex={1}
-      display="flex"
-      flexDirection="column"
-      overflow-y="auto"
       style={{
+        display: "flex",
+        flex: "1",
+        flexDirection: "column",
         padding: "16px",
         width: "100%",
         overflowY: "auto",

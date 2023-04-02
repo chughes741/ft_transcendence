@@ -20,6 +20,13 @@ const ChatInputContainer = () => {
     setTextValue("");
   };
 
+  function onEnterPress(event) {
+      if (event.key === "Enter" && !event.shiftKey) {
+        event.preventDefault();
+        sendMessage(event);
+      }
+    }
+
   return (
     <Box>
       <form onSubmit={sendMessage}>
@@ -30,12 +37,7 @@ const ChatInputContainer = () => {
           value={textValue}
           placeholder="You take the text, and you put it in the box."
           onChange={(event) => setTextValue(event.target.value)}
-          onKeyPress={(event) => {
-            if (event.key === "Enter" && !event.shiftKey) {
-              event.preventDefault();
-              sendMessage(event);
-            }
-          }}
+          onKeyPress={onEnterPress}
           style={{ width: "100%", resize: "none", display: "block" }}
         />
       </form>
