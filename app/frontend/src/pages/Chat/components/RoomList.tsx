@@ -1,7 +1,7 @@
 import React from "react";
 import "../styles/RoomList.css";
 import ButtonFunky from "../../../components/ButtonFunky";
-import ContextMenu from "./ContextMenu";
+import ContextMenu from "../../../components/ContextMenu";
 import { JoinRoomModal } from "./JoinRoomModal";
 import { CreateRoomModal } from "./CreateRoomModal";
 import {

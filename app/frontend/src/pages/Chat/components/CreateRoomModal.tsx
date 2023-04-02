@@ -47,7 +47,7 @@ export const CreateRoomModal: React.FC<CreateRoomModalProps> = ({
     "PUBLIC" | "PRIVATE" | "PASSWORD"
   >("PUBLIC"); // defaults to public
 
-  // Improves code reusability btw Create and Join RoomModals
+  // Improves code re-usability btw Create and Join RoomModals
   const {
     roomName,
     setRoomName,
@@ -81,7 +81,7 @@ export const CreateRoomModal: React.FC<CreateRoomModalProps> = ({
 
   const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter") {
-      handleSubmit();
+      handleSubmit().then();
     }
     if (e.key === "Escape") {
       closeModal();

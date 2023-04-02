@@ -32,7 +32,7 @@ const groupMessages = (messages: Array<MessageType>): Array<MessageType> => {
   return groupedMessages;
 };
 
-const ChatMessagesContainer = ({ messages }: ChatMessagesContainerProps) => {
+const ChatMessagesContainerView = ({ messages }: ChatMessagesContainerProps) => {
   const groupedMessages = groupMessages(messages);
   const lastMessageRef = useRef<HTMLDivElement>(null);
 
@@ -44,17 +44,20 @@ const ChatMessagesContainer = ({ messages }: ChatMessagesContainerProps) => {
   if (lastMessageRef.current) {
     lastMessageRef.current.scrollIntoView({ behavior: "smooth" });
   }
+
+    const BoxStyle = {
+        "display": "flex",
+        "flex": "1",
+        "flex-direction": "column",
+        "padding": "16px",
+        "width": "100%",
+        "overflow-y": "auto",
+        "overflow-x": "hidden"
+    }
   return (
+
     <Box
-      style={{
-        display: "flex",
-        flex: "1",
-        flexDirection: "column",
-        padding: "16px",
-        width: "100%",
-        overflowY: "auto",
-        overflowX: "hidden"
-      }}
+      style={BoxStyle}
     >
       {groupedMessages.map((message, index) => (
         <Message
@@ -67,4 +70,4 @@ const ChatMessagesContainer = ({ messages }: ChatMessagesContainerProps) => {
   );
 };
 
-export default ChatMessagesContainer;
+export default ChatMessagesContainerView;

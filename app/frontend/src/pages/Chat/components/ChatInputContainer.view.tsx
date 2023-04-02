@@ -2,7 +2,7 @@ import { Box, TextareaAutosize } from "@mui/material";
 import { useEffect, useRef, useState } from "react";
 import { useChatViewModelContext } from "../contexts/ChatViewModelContext";
 
-const ChatInputContainer = () => {
+const ChatInputContainerView = () => {
   const [textValue, setTextValue] = useState("");
   const { currentRoomName, sendRoomMessage } = useChatViewModelContext();
   const messageInputRef = useRef<HTMLTextAreaElement>(null);
@@ -21,11 +21,11 @@ const ChatInputContainer = () => {
   };
 
   function onEnterPress(event) {
-      if (event.key === "Enter" && !event.shiftKey) {
-        event.preventDefault();
-        sendMessage(event);
-      }
+    if (event.key === "Enter" && !event.shiftKey) {
+      event.preventDefault();
+      sendMessage(event);
     }
+  }
 
   return (
     <Box>
@@ -37,7 +37,7 @@ const ChatInputContainer = () => {
           value={textValue}
           placeholder="You take the text, and you put it in the box."
           onChange={(event) => setTextValue(event.target.value)}
-          onKeyPress={onEnterPress}
+          onKeyDown={onEnterPress}
           style={{ width: "100%", resize: "none", display: "block" }}
         />
       </form>
@@ -45,4 +45,4 @@ const ChatInputContainer = () => {
   );
 };
 
-export default ChatInputContainer;
+export default ChatInputContainerView;

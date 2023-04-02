@@ -2,15 +2,22 @@
 /*     CSS     */
 /***************/
 import "../styles/ChatArea.css";
-import ChatMessagesContainer from "./ChatMessagesContainer";
+import ChatMessagesContainerView from "./ChatMessagesContainer.view";
 
 import "../styles/ChatArea.css";
-import ChatInputContainer from "./ChatInputContainer";
+import ChatInputContainerView from "./ChatInputContainer.view";
 import { Grid } from "@mui/material";
 import { useChatViewModelContext } from "../contexts/ChatViewModelContext";
 
 const ChatAreaView = () => {
   const { currentRoomName, currentRoomMessages } = useChatViewModelContext();
+
+  const GridStyle = {
+      height: "100%",
+      width: "100%",
+      maxWidth: "100%",
+      overflow: "hidden"
+  }
 
   return (
     <>
@@ -18,12 +25,7 @@ const ChatAreaView = () => {
         container
         direction="column"
         wrap="nowrap"
-        style={{
-          height: "100%",
-          width: "100%",
-          maxWidth: "100%",
-          overflow: "hidden"
-        }}
+        style={GridStyle}
       >
         <Grid
           item
@@ -33,20 +35,15 @@ const ChatAreaView = () => {
         </Grid>
         <Grid
           item
-          style={{ flexGrow: 1, overflowY:"auto", overflowX:"hidden" }}
-
+          style={{ flexGrow: 1, overflowY: "auto", overflowX: "hidden" }}
         >
-          <ChatMessagesContainer messages={currentRoomMessages} />
+          <ChatMessagesContainerView messages={currentRoomMessages} />
         </Grid>
         <Grid
           item
-          style={{
-            flexGrow: 0,
-            flexShrink: 0,
-            maxHeight: "30%"
-          }}
+          style={{ flexGrow: 0, flexShrink: 0, maxHeight: "30%" }}
         >
-          <ChatInputContainer />
+          <ChatInputContainerView />
         </Grid>
       </Grid>
     </>
