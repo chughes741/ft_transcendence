@@ -2,7 +2,6 @@ import React from "react";
 import { Box } from "@mui/material";
 import { Helmet } from "react-helmet";
 import DevLoginBanner from "../../components/DevLoginBanner";
-import SideBar from "../../components/SideBar";
 import RoomList from "./components/RoomList";
 import ChatAreaView from "./components/ChatArea.view";
 import { useChatViewModelContext } from "./contexts/ChatViewModelContext";
@@ -19,7 +18,6 @@ export const ChatView: React.FC = () => {
       <Helmet>
         <title>King Pong | Chat</title>
       </Helmet>
-      <SideBar />
       <Box
         id="chat"
         style={{ width: "100%" }}
