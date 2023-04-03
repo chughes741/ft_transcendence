@@ -8,7 +8,7 @@ export default function GamePage() {
   const [buttonIsActive, setButtonActive] = useState(false);
   const [chatIsActive, setChatActive] = useState(false);
 
-  let ChatStatus = "Open Chat";
+  let ChatStatus = "Open chat";
 
   function ClickJoinLobby() {
     console.log("clicker join lobby");

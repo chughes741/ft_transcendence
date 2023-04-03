@@ -42,30 +42,30 @@ export default function SidebarChatOptions({ setPageState }) {
         <ListItemText primary="Chat Page" />
       </ListItemButton>
 
-      {/* Join an existing chat */}
-      <ListItemButton>
-        <ListItemIcon>
-          <GroupAddIcon />
-        </ListItemIcon>
-        <ListItemText primary="Join Room" />
-      </ListItemButton>
+      {/*/!* Join an existing chat *!/*/}
+      {/*<ListItemButton>*/}
+      {/*  <ListItemIcon>*/}
+      {/*    <GroupAddIcon />*/}
+      {/*  </ListItemIcon>*/}
+      {/*  <ListItemText primary="Join Room" />*/}
+      {/*</ListItemButton>*/}
 
-      {/* Create a new chat */}
-      <ListItemButton>
-        <ListItemIcon>
-          <AddCircleIcon />
-        </ListItemIcon>
-        <ListItemText primary="Create Room" />
-      </ListItemButton>
+      {/*/!* Create a new chat *!/*/}
+      {/*<ListItemButton>*/}
+      {/*  <ListItemIcon>*/}
+      {/*    <AddCircleIcon />*/}
+      {/*  </ListItemIcon>*/}
+      {/*  <ListItemText primary="Create Room" />*/}
+      {/*</ListItemButton>*/}
 
-      {/* Browse public chats via dropdown */}
-      <ListItemButton onClick={handleClick}>
-        <ListItemIcon>
-          <ListIcon />
-        </ListItemIcon>
-        <ListItemText primary="Browse Rooms" />
-        {open ? <ExpandLess /> : <ExpandMore />}
-      </ListItemButton>
+      {/*/!* Browse public chats via dropdown *!/*/}
+      {/*<ListItemButton onClick={handleClick}>*/}
+      {/*  <ListItemIcon>*/}
+      {/*    <ListIcon />*/}
+      {/*  </ListItemIcon>*/}
+      {/*  <ListItemText primary="Browse Rooms" />*/}
+      {/*  {open ? <ExpandLess /> : <ExpandMore />}*/}
+      {/*</ListItemButton>*/}
       <Collapse
         in={open}
         timeout="auto"

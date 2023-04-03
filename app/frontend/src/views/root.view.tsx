@@ -4,9 +4,9 @@ import { socket, WebSocketProvider } from "src/contexts/WebSocketContext";
 import customTheme from "src/theme";
 import { Box, Container, ThemeProvider } from "@mui/material";
 import SideBar from "src/components/SideBar/SideBar";
-import { ChatProvider } from "../pages/Chat/components/ChatContext";
 import TopBar from "src/components/TopBar/TopBar";
 import { RootViewModel } from "./root.viewModel";
+import { ChatViewModelProvider } from "../pages/chat/ChatViewModel";
 
 /**
  * Rendering entrypoint
@@ -27,11 +27,17 @@ export function RootView() {
           <Helmet>
             <title>King Pong | {page_name[pageState]}</title>
           </Helmet>
-          <ChatProvider>
-            {/* Outer wrapper for content*/}
-            <Container>
-              {/* Outer box for handling vertical flex with topbar */}
-              <Box sx={{ display: "flex", flexDirection: "column" }}>
+          {/* Outer wrapper for content*/}
+          <Container
+            id="containertest"
+            style={{ margin: "0", padding: "0", maxWidth: "100vw" }}
+          >
+            {/* Outer box for handling vertical flex with topbar */}
+            <Box
+              id="test1"
+              sx={{ display: "flex", flexDirection: "column" }}
+            >
+              <ChatViewModelProvider>
                 <TopBar setPageState={setPageState} />
                 {/* Inner box for horizontal flex with sidebar */}
                 <Box
@@ -40,9 +46,9 @@ export function RootView() {
                   <SideBar setPageState={setPageState} />
                   <RootViewModel state={pageState} />
                 </Box>
-              </Box>
-            </Container>
-          </ChatProvider>
+              </ChatViewModelProvider>
+            </Box>
+          </Container>
         </ThemeProvider>
       </WebSocketProvider>
     </>

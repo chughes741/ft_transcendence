@@ -1,7 +1,7 @@
-import { useContext, useEffect, useRef } from "react";
+import { useEffect, useRef } from "react";
 import { MessageType } from "./Message";
 import Message from "./Message";
-import { WebSocketContext } from "../../../contexts/WebSocketContext";
+import { Box } from "@mui/material";
 
 type ChatMessagesContainerProps = {
   messages: Array<MessageType>;
@@ -9,13 +9,17 @@ type ChatMessagesContainerProps = {
 
 const groupMessages = (messages: Array<MessageType>): Array<MessageType> => {
   const groupedMessages: Array<MessageType> = [];
+  if (!messages) {
+    console.log("No messages to display");
+    return;
+  }
 
   messages.forEach((msg, index) => {
     const prevMessage = messages[index - 1];
     const nextMessage = messages[index + 1];
 
     const displayTimestamp =
-      !nextMessage || nextMessage.timestamp !== msg.timestamp;
+      !nextMessage || nextMessage.timestamp_readable !== msg.timestamp_readable;
     const displayUser = !prevMessage || prevMessage.user !== msg.user;
 
     groupedMessages.push({
@@ -28,8 +32,7 @@ const groupMessages = (messages: Array<MessageType>): Array<MessageType> => {
   return groupedMessages;
 };
 
-const ChatMessagesContainer = ({ messages }: ChatMessagesContainerProps) => {
-  const currentUser = useContext(WebSocketContext).id;
+const ChatMessagesContainerView = ({ messages }: ChatMessagesContainerProps) => {
   const groupedMessages = groupMessages(messages);
   const lastMessageRef = useRef<HTMLDivElement>(null);
 
@@ -38,25 +41,33 @@ const ChatMessagesContainer = ({ messages }: ChatMessagesContainerProps) => {
       lastMessageRef.current.scrollIntoView({ behavior: "smooth" });
     }
   }, [groupedMessages]);
-
-  // When a new message is received
   if (lastMessageRef.current) {
     lastMessageRef.current.scrollIntoView({ behavior: "smooth" });
   }
 
+    const BoxStyle = {
+        "display": "flex",
+        "flex": "1",
+        "flex-direction": "column",
+        "padding": "16px",
+        "width": "100%",
+        "overflow-y": "auto",
+        "overflow-x": "hidden"
+    }
   return (
-    <div className="message-container">
-      <div className="messages">
-        {groupedMessages.map((message, index) => (
-          <Message
-            ref={index === groupedMessages.length - 1 ? lastMessageRef : null}
-            key={index}
-            message={message}
-          />
-        ))}
-      </div>
-    </div>
+
+    <Box
+      style={BoxStyle}
+    >
+      {groupedMessages.map((message, index) => (
+        <Message
+          ref={index === groupedMessages.length - 1 ? lastMessageRef : null}
+          key={index}
+          message={message}
+        />
+      ))}
+    </Box>
   );
 };
 
-export default ChatMessagesContainer;
+export default ChatMessagesContainerView;

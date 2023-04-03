@@ -1,6 +1,6 @@
 .button-funky {
 /********Variables********/
-  --border: rgb(3, 169, 244);
+  /* --border: rgb(3, 169, 244); */
   /* --g1: rgb(98, 0, 234);
   --g2: rgb(236, 64, 122);
   --g3: rgb(253, 216, 53); */
@@ -29,7 +29,7 @@
           var(--g1) 66%,
           var(--g2) 83.5%,
           var(--g3) 100%
-  ) 60% 60%;
+  ) 66% 66%;
   background-size: 300% 300%;
   border-radius: 2rem;
   content: "";
