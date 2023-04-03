@@ -1,6 +1,7 @@
 import { Injectable, Logger } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import {
+  ChatMember,
   ChatMemberRank,
   ChatMemberStatus,
   ChatRoom,
@@ -202,6 +203,21 @@ export class PrismaService extends PrismaClient {
     const room = await this.chatRoom.findUnique({ where: { name } });
 
     return room ? room.id : null;
+  }
+
+  async addChatMember(
+    userId: string,
+    roomId: number,
+    rank: ChatMemberRank
+  ): Promise<ChatMember> {
+    return this.chatMember.create({
+      data: {
+        memberId: userId,
+        roomId: roomId,
+        status: ChatMemberStatus.OK,
+        rank: rank
+      }
+    });
   }
 
   // Update a chat room

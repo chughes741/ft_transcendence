@@ -1,5 +1,5 @@
 import { Injectable, Logger } from "@nestjs/common";
-import { ChatRoomStatus } from "@prisma/client";
+import { ChatMemberRank, ChatRoomStatus } from "@prisma/client";
 import { PrismaService } from "../prisma/prisma.service";
 import { UserConnectionsService } from "../user-connections.service";
 import {
@@ -40,14 +40,7 @@ export class ChatService {
     let room = await this.prismaService.chatRoom.findUnique({
       where: { name: roomName }
     });
-
-    // TODO:
-    // 1. Check if the user is already in the room
-    // 2. Check if the user is banned from the room
-    // 3. Check if the room is full
-
     if (!room) {
-      // Room doesn't exist, create it as a public room
       try {
         room = await this.prismaService.createChatRoom({
           name: roomName,
@@ -68,8 +61,6 @@ export class ChatService {
     ) {
       return { name: "IncorrectPasswordError", message: "Incorrect password" };
     }
-
-    // Fetch last 50 messages and send them to the user
     const messagesPage = await this.prismaService.message.findMany({
       where: { roomId: room.id },
       take: 50,
@@ -82,7 +73,21 @@ export class ChatService {
       orderBy: { createdAt: "desc" }
     });
 
-    // Order the messages from oldest to newest and send them to the user
+    // Add the user as a chat member if they are not already a member
+    const userId = await this.prismaService.getUserIdByNick(user);
+    // This should really be a findUnique, but I can't figure out how to make it work
+    const chatMember = await this.prismaService.chatMember.findFirst({
+      where: { memberId: userId, roomId: room.id }
+    });
+
+    if (!chatMember) {
+      await this.prismaService.addChatMember(
+        userId,
+        room.id,
+        ChatMemberRank.USER
+      );
+    }
+
     return messagesPage.reverse();
   }
 
