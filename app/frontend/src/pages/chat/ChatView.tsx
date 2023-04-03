@@ -6,6 +6,9 @@ import RoomList from "./components/RoomList";
 import ChatAreaView from "./components/ChatArea.view";
 import { useChatViewModelContext } from "./contexts/ChatViewModelContext";
 
+import UserList from "src/components/chat/UserList";
+
+
 export const ChatView: React.FC = () => {
   const { currentRoomName, tempUsername, setTempUsername } =
     useChatViewModelContext();
@@ -47,6 +50,7 @@ export const ChatView: React.FC = () => {
           >
             <ChatAreaView key={currentRoomName} />
           </Box>
+          <UserList chatRoomName = {currentRoomName} />
         </Box>
       </Box>
     </Box>

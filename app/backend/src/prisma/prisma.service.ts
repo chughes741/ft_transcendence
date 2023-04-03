@@ -77,8 +77,8 @@ export class PrismaService extends PrismaClient {
       return []
     }
     console.log("Prisma service returns something");
-
-    const members = chat?.members?.map(user => members.member)
+    
+    const members = chat?.members?.map(user => user.member)
     return members;
   }
   // End

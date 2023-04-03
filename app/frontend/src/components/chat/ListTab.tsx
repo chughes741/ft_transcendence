@@ -7,6 +7,7 @@ import { myUsers } from './UserList';
 import GroupIcon from "@mui/icons-material/Group";
 
 
+
 interface Props {
     users: myUsers[];
     heading: string;
@@ -46,16 +47,16 @@ function ListTabulation({ users, heading, onSelectItem }: Props) {
                         {users.map((users, index) => (
                             <ListItemButton
                                 selected={SelectedIndex === index ? true : false}
-                                key={users.uuid} //don't forget to add user.id unique key
+                                key={users.username} //don't forget to add user.id unique key
                                 onClick={() => {
                                     setSelectedIndex(index)
                                     onSelectItem(users)
                                 }}
                             >
                                 <ListItemIcon>
-                                    <img src= {`https://i.pravatar.cc/150?u=${users.uuid}`} />
+                                    <img src= {`https://i.pravatar.cc/150?u=${users.username}`} />
                                 </ListItemIcon>
-                                <ListItemText primary={users.nick} secondary={users.email} />
+                                <ListItemText primary={users.username} secondary="active" />
                             </ListItemButton>
                         ))}
                     </List>
