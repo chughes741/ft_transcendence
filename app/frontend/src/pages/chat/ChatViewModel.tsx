@@ -318,6 +318,10 @@ export const ChatViewModelProvider = ({ children }) => {
   useEffect(() => {
     // Try to create a temporary user
     if (tempUsername) {
+      setRooms((prevRooms) => {
+        const newRooms = {};
+        return newRooms;
+      });
       const createTempUser = async (username: string): Promise<void> => {
         const userCreated = await createUser(username);
         if (!userCreated) {

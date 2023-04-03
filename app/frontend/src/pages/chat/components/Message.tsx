@@ -61,7 +61,6 @@ const Message = forwardRef<HTMLDivElement, MessageProps>(({ message }, ref) => {
       hour12: true
     }
   );
-  console.log(`tooltip_timestamp: ${tooltip_timestamp}`);
   return (
     <StyledMessage
       isCurrentUser={message.isOwn}
