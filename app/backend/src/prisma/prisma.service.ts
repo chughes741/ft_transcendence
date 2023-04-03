@@ -3,6 +3,7 @@ import { ConfigService } from "@nestjs/config";
 import {
   ChatMemberRank,
   ChatMemberStatus,
+  ChatRoom,
   Prisma,
   PrismaClient
 } from "@prisma/client";
@@ -82,7 +83,7 @@ export class PrismaService extends PrismaClient {
     return dto;
   }
   // Create a new chat room
-  async createChatRoom(dto: ChatRoomDto): Promise<ChatRoomDto> {
+  async createChatRoom(dto: ChatRoomDto): Promise<ChatRoom> {
     // Check if the owner UUID is valid
     // FIXME: this should use the userExists() method
     // TODO: remove this code when authentication is enabled
@@ -175,11 +176,6 @@ export class PrismaService extends PrismaClient {
    * @returns {Promise<MessageDto[]>} a page of messages
    * @async
    * @memberof PrismaService
-   * @see https://www.prisma.io/docs/concepts/components/prisma-client/crud#pagination
-   * @see https://www.prisma.io/docs/concepts/components/prisma-client/crud#filtering
-   * @see https://www.prisma.io/docs/concepts/components/prisma-client/crud#sorting
-   * @see https://www.prisma.io/docs/concepts/components/prisma-client/crud#limiting
-   * @see https://www.prisma.io/docs/concepts/components/prisma-client/crud#working-with-dates
    */
   async getChatMessagesPage(
     id: number,

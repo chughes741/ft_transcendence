@@ -42,12 +42,9 @@ const DevLoginBanner: React.FC<BannerProps> = ({
         padding: "10px",
         display: "flex",
         justifyContent: "space-between",
-        position: "fixed",
         height: "50px",
-        top: 0,
-        left: 0,
         width: "100%",
-        zIndex: 1000
+        zIndex: 3000
       }}
     >
       <div>Logged in as {username}</div>
@@ -75,7 +72,10 @@ const DevLoginBanner: React.FC<BannerProps> = ({
             value={newUsername}
             onChange={(e) => setNewUsername(e.target.value)}
             onKeyDown={(e) => {
-              if (e.key === "Enter") handleSave();
+              if (e.key === "Enter") {
+                e.preventDefault();
+                handleSave();
+              }
             }}
           />
         </DialogContent>

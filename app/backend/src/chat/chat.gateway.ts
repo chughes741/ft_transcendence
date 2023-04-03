@@ -16,6 +16,11 @@ import { ChatService } from "./chat.service";
 // Trickaroo to add fields to the Prisma Message type
 import { Message as PrismaMessage } from "@prisma/client";
 
+// FIXME: temporary error type until we can share btw back and frontend
+export type DevError = {
+  error: string;
+};
+
 export interface Message extends PrismaMessage {
   sender: { username: string };
   room: { name: string };
@@ -77,37 +82,42 @@ export class ChatGateway
     logger.log(`Client disconnected: ${client.id}`);
   }
 
+  /**
+   * Temporary function to create a user
+   *
+   * If there is an error in the service, return it
+   *
+   * TODO: remove this function when authentication is enabled
+   * @param client socket client
+   * @param username
+   * @returns DevError or username
+   */
   @SubscribeMessage("userCreation")
   async createTempUser(
     client: Socket,
     username: string
-  ): Promise<{ error: string } | string> {
+  ): Promise<DevError | string> {
     logger.log(
       `Received createUser request from ${client.id} for user ${username}`
     );
-    // Check if the user already exists
-    const userExists = await this.prismaService.getUserIdByNick(username);
-    if (userExists) {
-      // Warn the client that the user already exists
-      // client.emit("userExists");
-      logger.log(`UserCreation error: User ${username} already exists`);
-      // return new Error("User already exists");
-      return { error: "User already exists" };
-    } else {
-      // If the user does not exist, create it
-      const prismaReturn = await this.prismaService.addUser({
-        username,
-        password: "secret"
-      });
-      logger.log(`User ${username} created: `);
-      console.log(prismaReturn);
-      // Add the user connection to the UserConnections map
-      this.userConnectionsService.addUserConnection(username, client.id);
-      // client.emit("userCreated", username);
-      return username;
+    const userWasCreated = await this.chatService.createTempUser(
+      client.id,
+      username
+    );
+    if (userWasCreated instanceof Error) {
+      return { error: userWasCreated.message };
     }
+    return username;
   }
 
+  /**
+   * Temporary function to login a user
+   * If the user does not exist, return an error
+   * TODO: remove this function when authentication is enabled
+   * @param client socket client
+   * @param username
+   * @returns DevError or username
+   */
   @SubscribeMessage("userLogin")
   async devUserLogin(
     client: Socket,
@@ -116,57 +126,55 @@ export class ChatGateway
     logger.log(
       `Received createUser request from ${client.id} for user ${username}`
     );
-    // Check if the user already exists
-    const userExists = await this.prismaService.getUserIdByNick(username);
-    if (!userExists) {
-      // Warn the client that the user already exists
-      // client.emit("userDoesNotExist");
-      logger.log(`UserLogin error: User ${username} does not exist`);
-      return { error: "User already exists" };
+
+    const userWasLoggedIn = await this.chatService.devUserLogin(username);
+    if (userWasLoggedIn instanceof Error) {
+      console.log(userWasLoggedIn);
+      return { error: userWasLoggedIn.message };
     }
-    // FIXME: add password protection
-    logger.log(`User ${username} logged in: `);
-    console.log(userExists);
 
     // Add the user connection to the UserConnections map
     this.userConnectionsService.addUserConnection(username, client.id);
-    // client.emit("userLoggedIn", username);
     return username;
   }
 
   /**
-   * Create a new chat room
+   * Create a new chat room.
+   *
+   * If the chat room is successfully created, add the user to the socket room.
+   * If the chat service returns an error, return it
+   *
    * @param client socket client
    * @param room CreateRoomDto
+   * @returns DevError or room name
    */
   @SubscribeMessage("createRoom")
-  async createRoom(client: Socket, createDto: CreateChatRoomDto) {
+  async createRoom(
+    client: Socket,
+    createDto: CreateChatRoomDto
+  ): Promise<DevError | string> {
+    // Log the request
     logger.log(
       `Received createRoom request from ${createDto.owner} for room ${
         createDto.name
       }: ${createDto.status} ${
-        createDto.password ? `with password ${createDto.password}` : ""
+        createDto.password ? `, with password ${createDto.password}.` : "."
       }`
     );
+
+    // Add the room to the database
+    const ret = await this.chatService.createRoom(createDto);
+
+    // If the room already exists, return an error
+    if (ret instanceof Error) {
+      return { error: ret.message };
+    }
+
     // Add the user to the socket room
     client.join(createDto.name);
     logger.log(`User ${createDto.owner} joined socket room ${createDto.name}`);
     console.log(createDto);
-
-    // Add the room to the database
-    const ret = await this.prismaService.createChatRoom(createDto);
-    logger.log(`Room ${createDto.name} created: `);
-    console.log(ret);
-
-    // Send a confirmation message to all clients in the room
-    this.server
-      .to(createDto.name)
-      .emit(
-        "roomMessage",
-        `User ${createDto.owner} CREATED room ${createDto.name}`
-      );
-
-    logger.log(`User ${createDto.owner} CREATED room ${createDto.name}`);
+    return createDto.name;
   }
 
   /**
@@ -178,9 +186,10 @@ export class ChatGateway
    *
    * @param client client socket
    * @param dto JoinRoomDto, containing the room name and password
+   * @returns DevError or room name
    */
   @SubscribeMessage("joinRoom")
-  async joinRoom(client: Socket, dto: JoinRoomDto) {
+  async joinRoom(client: Socket, dto: JoinRoomDto): Promise<DevError | string> {
     const userId: string = this.userConnectionsService.getUserBySocket(
       client.id
     );
@@ -190,12 +199,13 @@ export class ChatGateway
       }`
     );
 
+    // TODO: move this to a "getChatRoomMessages" handler
     // Assign the user id to the dto instead of the socket id
     dto.user = userId;
     const ret = await this.chatService.joinRoom(dto);
     if (ret instanceof Error) {
       logger.error(ret);
-      client.emit("joinRoomError", ret.message);
+      return { error: ret.message };
     } else if (ret instanceof Array) {
       const messages: Message[] = ret;
       client.join(dto.roomName);
@@ -203,13 +213,15 @@ export class ChatGateway
         client.emit("onMessage", {
           sender: message.sender.username,
           roomName: message.room.name,
-          content: message.content
+          content: message.content,
+          timestamp: message.updatedAt
         });
       });
       this.server
         .to(dto.roomName)
         .emit("roomMessage", `User ${dto.user} joined room ${dto.roomName}`);
       logger.log(`User ${dto.user} joined room ${dto.roomName}`);
+      return dto.roomName;
     }
   }
 
@@ -219,17 +231,44 @@ export class ChatGateway
    * @param room name of the room to leave
    */
   @SubscribeMessage("leaveRoom")
-  async leaveRoom(client: Socket, room: string) {
+  async leaveRoom(client: Socket, room: string): Promise<DevError | string> {
     client.leave(room);
+    // TODO: add business logic to remove the user from the room in the database
     this.server
       .to(room)
       .emit("roomMessage", `User ${client.id} left room ${room}`);
     logger.log(`User ${client.id} left room ${room}`);
+    return room;
   }
 
+  /**
+   * Send a message to a chat room.
+   *
+   * If the room does not exist, return an error.
+   * If the room exists, send the message to the room and broadcast it to
+   * all clients in the room
+   *
+   * @param client
+   * @param sendDto
+   * @returns
+   */
   @SubscribeMessage("sendMessage")
-  async sendMessage(client: Socket, sendDto: SendMessageDto) {
+  async sendMessage(
+    client: Socket,
+    sendDto: SendMessageDto
+  ): Promise<DevError | string> {
     if (!sendDto.content) return;
+
+    // Log the request
+    logger.log(
+      `Received sendMessage request from ${sendDto.sender} to room ${sendDto.roomName}.`
+    );
+
+    // Delegate business logic to the chat service
+    const ret = await this.chatService.sendMessage(sendDto);
+    if (ret instanceof Error) return { error: ret.message };
+
+    // If nothing went wrong, send the message to the room
     this.server.to(sendDto.roomName).emit("roomMessage", {
       sender: sendDto.sender,
       roomName: sendDto.roomName,
@@ -243,22 +282,6 @@ export class ChatGateway
     logger.log(
       `User ${sendDto.sender} sent message in room ${sendDto.roomName}: ${sendDto.content}`
     );
-
-    // Try to get the room database ID
-    const roomId = await this.prismaService.getChatRoomId(sendDto.roomName);
-    logger.log(`Room name: ${sendDto.roomName} has a room ID: ${roomId}`);
-
-    // Try to get the user database ID
-    const userId = await this.prismaService.getUserIdByNick(sendDto.sender);
-    logger.log(`User name: ${sendDto.sender} has a user ID: ${userId}`);
-
-    // Add the message to the database
-    const ret = await this.prismaService.addMessageToChatRoom({
-      content: sendDto.content,
-      senderId: userId,
-      roomId
-    });
-    logger.log(`Message added to the database: `);
-    console.log(ret);
+    return sendDto.roomName;
   }
 }
