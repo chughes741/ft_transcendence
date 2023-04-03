@@ -3,14 +3,14 @@ import './ListTab.tsx.css'
 import { Box, Typography, AppBar } from "@mui/material";
 import { List, ListItem, ListItemIcon, ListItemText, ListItemButton } from '@mui/material';
 import { MouseEvent, useState, useEffect } from 'react';
-import { UserType } from '../User';
+import { myUsers } from './UserList';
 import GroupIcon from "@mui/icons-material/Group";
 
 
 interface Props {
-    users: UserType[];
+    users: myUsers[];
     heading: string;
-    onSelectItem: (user: UserType) => void
+    onSelectItem: (user: myUsers) => void
 }
 
 function ListTabulation({ users, heading, onSelectItem }: Props) {
@@ -64,18 +64,5 @@ function ListTabulation({ users, heading, onSelectItem }: Props) {
         </>
     )
 }
-
-/* //To Put instead of list item
-<List className="list-tab">
-                        {users.map((users, index) => (
-<li 
-className={SelectedIndex === index ? 'list-group-active' : 'list-group-inactive'}
-key={users.uuid} //don't forget to add user.id unique key
-onClick={() => {
-    setSelectedIndex(index);
-    onSelectItem(users)
-}}
-> {users.nick}
-</li>*/
 
 export default ListTabulation;
