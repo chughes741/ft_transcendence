@@ -2,11 +2,12 @@ import { Module } from '@nestjs/common';
 import { UserlistService } from './userlist.service';
 import { UserlistGateway } from './userlist.gateway';
 import { PrismaService } from "../prisma/prisma.service";
-import { Prisma } from '@prisma/client';
+import { PrismaModule } from 'src/prisma/prisma.module';
 
 
 @Module({
-  imports : [PrismaService],
-  providers: [UserlistService, UserlistGateway, PrismaService]
+  imports : [PrismaModule],
+  providers: [UserlistService, UserlistGateway],
+  exports: [PrismaService]
 })
 export class UserlistModule {}
