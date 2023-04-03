@@ -25,21 +25,21 @@ export function RootView() {
       <Helmet>
         <title>King Pong | {page_name[pageState]}</title>
       </Helmet>
-      <Container
-        id="page-container"
-        style={{ margin: "0", padding: "0", maxWidth: "100vw" }}
+      <Box
+        id="topbar-container"
       >
-        <Box
-          id="test1"
-          sx={{ display: "flex", flexDirection: "column" }}
-        >
           <TopBar setPageState={setPageState} />
+        </Box>
+        <Box id="content-container" style={{width: "100%", height: "fit-content"}}>
           <Box id="sidebar-container">
+
             <SideBar setPageState={setPageState} />
           </Box>
-          <RootViewModel state={pageState} />
-        </Box>
-      </Container>
+          <Box id="view-container">
+
+            <RootViewModel state={pageState} />
+          </Box>
+      </Box>
     </>
   );
 }

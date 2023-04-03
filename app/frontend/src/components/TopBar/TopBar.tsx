@@ -62,7 +62,7 @@ function TopBar({setPageState}) {
         >
           {/* Logo wrapped in button to return to home */}
 
-          <Box sx={{ marginTop: 2, flexGrow: 1 }}>
+          <Box sx={{ flexGrow: 1 }}>
             <ButtonUnstyled
                 onClick={() => setPageState(0)}
                 style={{
