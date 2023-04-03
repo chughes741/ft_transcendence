@@ -5,13 +5,13 @@ import Toolbar from "@mui/material/Toolbar";
 import IconButton from "@mui/material/IconButton";
 import Typography from "@mui/material/Typography";
 import Menu from "@mui/material/Menu";
-import Container from "@mui/material/Container";
 import Avatar from "@mui/material/Avatar";
 import MenuItem from "@mui/material/MenuItem";
 import { LogoSvg } from "./logoComponent";
 import { ButtonUnstyled } from "@mui/base";
 import { Button, Tooltip } from "@mui/material";
 import VideogameAssetIcon from "@mui/icons-material/VideogameAsset";
+import { PageState } from "src/views/root.model";
 
 const TopBarHeight = 85;
 
@@ -47,7 +47,7 @@ function TopBar({setPageState}) {
   };
 
   const onClickProfile = ()  => {
-    setPageState(3);
+    setPageState(PageState.Profile);
     handleCloseUserMenu();
   }
 
@@ -77,7 +77,7 @@ function TopBar({setPageState}) {
 
           <Box>
             <Button
-              onClick={() => setPageState(1)}
+              onClick={() => setPageState(PageState.Game)}
               color="primary"
               sx={{ mr: 5 }}
               variant="outlined"

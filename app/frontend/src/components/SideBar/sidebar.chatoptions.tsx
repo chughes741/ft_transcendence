@@ -4,12 +4,9 @@ import ListItemButton from "@mui/material/ListItemButton";
 import ListItemIcon from "@mui/material/ListItemIcon";
 import ListItemText from "@mui/material/ListItemText";
 import Collapse from "@mui/material/Collapse";
-import ExpandLess from "@mui/icons-material/ExpandLess";
-import ExpandMore from "@mui/icons-material/ExpandMore";
-import AddCircleIcon from "@mui/icons-material/AddCircle";
-import ListIcon from "@mui/icons-material/List";
 import GroupAddIcon from "@mui/icons-material/GroupAdd";
 import { ChatRoomListItem } from "./sidebar.chatroomlistitem";
+import { PageState } from "src/views/root.model";
 
 class ChatRoomListItemDto {
   room_name: string;
@@ -35,7 +32,7 @@ export default function SidebarChatOptions({ setPageState }) {
       component="nav"
     >
       {/* Temp button to change pages */}
-      <ListItemButton onClick={() => setPageState(2)}>
+      <ListItemButton onClick={() => setPageState(PageState.Chat)}>
         <ListItemIcon>
           <GroupAddIcon />
         </ListItemIcon>

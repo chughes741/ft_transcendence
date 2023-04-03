@@ -1,13 +1,16 @@
 import Box from "@mui/material/Box";
 import Drawer from "@mui/material/Drawer";
-import Toolbar from "@mui/material/Toolbar";
 import Divider from "@mui/material/Divider";
-import { Container } from "@mui/material";
 import SidebarChatOptions from "./sidebar.chatoptions";
 import RoomList from "../../pages/chat/components/RoomList";
 
 const drawerWidth = "20%";
 
+/**
+ * Creates the side bar component
+ * @param - Current page state
+ * @returns - Box containing sidebar
+ */
 export default function SideBar({ setPageState }) {
   return (
       <>
