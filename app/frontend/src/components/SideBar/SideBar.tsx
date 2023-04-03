@@ -1,48 +1,40 @@
 import Box from "@mui/material/Box";
 import Drawer from "@mui/material/Drawer";
-import CssBaseline from "@mui/material/CssBaseline";
-import Toolbar from "@mui/material/Toolbar";
 import Divider from "@mui/material/Divider";
-import { Container } from "@mui/material";
-import ChatList from "./ChatList";
 import SidebarChatOptions from "./sidebar.chatoptions";
 import RoomList from "../../pages/chat/components/RoomList";
-import { Chat } from "@mui/icons-material";
-import { ChatViewModelProvider } from "../../pages/chat/ChatViewModel";
 
-const drawerWidth = 300;
+const drawerWidth = "20%";
 
+/**
+ * Creates the side bar component
+ * @param - Current page state
+ * @returns - Box containing sidebar
+ */
 export default function SideBar({ setPageState }) {
   return (
-    <Container
-      sx={{ display: "flex", flexDirection: "column" }}
-      style={{ maxWidth: "17vw", padding: "0", margin: "0" }}
-    >
-      <Box sx={{ display: "flex" }}>
-        <CssBaseline />
-        <Drawer
-          variant="permanent"
-          sx={{
+    <>
+      <Drawer
+        variant="permanent"
+        sx={{
+          width: drawerWidth,
+          flexShrink: 0,
+          [`& .MuiDrawer-paper`]: {
             width: drawerWidth,
-            flexShrink: 0,
-            [`& .MuiDrawer-paper`]: {
-              width: drawerWidth,
-              boxSizing: "border-box"
-            }
-          }}
-        >
-          <Toolbar sx={{ height: 100 }} />
-          <Box sx={{ overflow: "auto" }}>
-            <SidebarChatOptions setPageState={setPageState} />
-            <Divider />
-            <RoomList />
-          </Box>
-        </Drawer>
-        <Box
-          component="main"
-          sx={{ flexGrow: 1, p: 3, mt: 5 }}
-        ></Box>
-      </Box>
-    </Container>
+            boxSizing: "border-box",
+            position: "fixed",
+            top: "87px"
+          }
+        }}
+      >
+        <Box sx={{ overflow: "hidden" }}>
+          <SidebarChatOptions setPageState={setPageState} />
+          <Divider />
+        </Box>
+        <Box sx={{ overflow: "hidden auto" }}>
+          <RoomList />
+        </Box>
+      </Drawer>
+    </>
   );
 }

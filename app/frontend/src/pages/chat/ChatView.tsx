@@ -13,17 +13,13 @@ export const ChatView: React.FC = () => {
   return (
     <Box
       id="chat-page-container"
-      style={{ width: "100vw", height: "100vh", display: "flex" }}
+      style={{ width: "100%", height: "100%", display: "flex" }}
     >
-      <Helmet>
-        <title>King Pong | Chat</title>
-      </Helmet>
       <Box
         id="chat"
         style={{ width: "100%" }}
         sx={{ flexDirection: "column" }}
       >
-        <Box style={{ height: "11.5vh" }}></Box>
         <Box
           id="login-banner"
           style={{ width: "100%" }}
@@ -37,7 +33,7 @@ export const ChatView: React.FC = () => {
         </Box>
         <Box
           id="chat-reste"
-          style={{ display: "flex", height: "82vh" }}
+          style={{ display: "flex", height: "75vh" }}
           sx={{ flexDirection: "row" }}
         >
 
