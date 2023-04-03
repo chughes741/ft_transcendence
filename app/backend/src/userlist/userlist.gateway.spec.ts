@@ -1,6 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { UserlistGateway } from './userlist.gateway';
-import { PrismaModule } from 'src/prisma/prisma.module';
+import { PrismaModule } from "../prisma/prisma.module";
 import { UserlistService } from './userlist.service';
 
 describe('UserlistGateway', () => {
