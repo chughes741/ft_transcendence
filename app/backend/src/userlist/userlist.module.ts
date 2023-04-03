@@ -8,6 +8,5 @@ import { PrismaModule } from 'src/prisma/prisma.module';
 @Module({
   imports : [PrismaModule],
   providers: [UserlistService, UserlistGateway],
-  exports: [PrismaService]
 })
 export class UserlistModule {}

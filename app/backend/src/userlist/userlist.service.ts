@@ -28,6 +28,6 @@ export class UserlistService {
         
           
 
-        return userMembers;
+        return users;
     }
 }
