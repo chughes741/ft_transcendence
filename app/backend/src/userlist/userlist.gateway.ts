@@ -4,7 +4,7 @@ import { Injectable } from '@nestjs/common';
 
 @WebSocketGateway()
 export class UserlistGateway {
-  constructor(private readonly userlistService: UserlistService) {}
+  constructor(private userlistService: UserlistService) {}
 
   @SubscribeMessage('listUsers')  
   async handleMessage(client: any, payload: any): Promise<any> {      
