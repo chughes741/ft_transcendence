@@ -27,9 +27,9 @@ export function RootView() {
             <title>King Pong | {page_name[pageState]}</title>
           </Helmet>
           {/* Outer wrapper for content*/}
-          <Container>
+          <Container id="containertest" style={{margin: "0", padding:"0", maxWidth:"100vw"}}>
             {/* Outer box for handling vertical flex with topbar */}
-            <Box sx={{ display: "flex", flexDirection: "column" }}>
+            <Box id="test1" sx={{ display: "flex", flexDirection: "column" }}>
               <TopBar setPageState={setPageState} />
               {/* Inner box for horizontal flex with sidebar */}
               <Box sx={{ display: "flex", flexDirection: "row", flexGrow: 1 }}>

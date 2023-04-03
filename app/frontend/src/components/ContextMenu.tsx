@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Menu, MenuItem } from "@mui/material";
-import { useChatViewModelContext } from "../pages/Chat/contexts/ChatViewModelContext";
+import { useChatViewModelContext } from "../pages/chat/contexts/ChatViewModelContext";
 
 type ContextMenuOption = {
   label: string;

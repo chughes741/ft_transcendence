@@ -1,7 +1,7 @@
 import GamePage from "../pages/GamePage";
 import ProfilePage from "src/pages/profile/ProfilePage";
-import { ChatViewModelProvider } from "../pages/Chat/ChatViewModel";
-import { ChatView } from "../pages/Chat/ChatView";
+import { ChatViewModelProvider } from "../pages/chat/ChatViewModel";
+import { ChatView } from "../pages/chat/ChatView";
 
 /**
  * Root view model
