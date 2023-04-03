@@ -52,8 +52,10 @@ function TopBar({setPageState}) {
   }
 
   return (
-    <AppBar sx={{ zIndex: (theme) => theme.zIndex.drawer + 1, flexGrow: 0 }}>
-      <Container maxWidth={false}>
+    <AppBar 
+      position="static"
+      sx={{ zIndex: (theme) => theme.zIndex.drawer + 1, flexGrow: 0 }}
+      >
         <Toolbar
           disableGutters
           style={toolbarStyle}
@@ -124,7 +126,6 @@ function TopBar({setPageState}) {
             </Menu>
           </Box>
         </Toolbar>
-      </Container>
     </AppBar>
   );
 }

@@ -15,15 +15,11 @@ export const ChatView: React.FC = () => {
       id="chat-page-container"
       style={{ width: "100vw", height: "100vh", display: "flex" }}
     >
-      <Helmet>
-        <title>King Pong | Chat</title>
-      </Helmet>
       <Box
         id="chat"
         style={{ width: "100%" }}
         sx={{ flexDirection: "column" }}
       >
-        <Box style={{ height: "11.5vh" }}></Box>
         <Box
           id="login-banner"
           style={{ width: "100%" }}
