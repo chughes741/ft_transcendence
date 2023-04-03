@@ -20,7 +20,7 @@ export default function SideBar({ setPageState }) {
             [`& .MuiDrawer-paper`]: {
               width: drawerWidth,
               boxSizing: "border-box",
-              position:"fixed", top: "85px"
+              position:"fixed", top: "87px"
             }
           }}
 
@@ -29,7 +29,7 @@ export default function SideBar({ setPageState }) {
             <SidebarChatOptions setPageState={setPageState} />
             <Divider />
           </Box>
-          <Box sx={{ overflowY: "auto", overflowX: "hidden" }}>
+          <Box sx={{ overflow: "hidden auto" }}>
             <RoomList />
           </Box>
         </Drawer>
