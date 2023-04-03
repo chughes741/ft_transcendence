@@ -1,5 +1,4 @@
 import { Injectable } from '@nestjs/common';
-import { Prisma, PrismaClient } from '@prisma/client';
 import { PrismaService } from "../prisma/prisma.service";
 
 
@@ -11,18 +10,13 @@ export class UserlistService {
     async getUserList(chatRoomName: string) {
         console.log("Inside getUserList");
 
-/*
-        const chat =  this.prisma.chatRoom.findUnique({
-            where: { name: chatRoomName },
-            include: { members: true } ,
-        });*/
-        const members = await this.prisma.getMembersByRoom(chatRoomName);
+        //get all users that are members of a specific Chat Room (with string name)
+        const userMembers = await this.prisma.getMembersByRoom(chatRoomName); 
         
-        if (members != null)
+        if (userMembers.length > 0)
         {
             console.log("members not NULL");
-
-            return members
+            return userMembers
         }
         console.log("members is NULL");
         
@@ -35,6 +29,6 @@ export class UserlistService {
         
           
 
-        return members;
+        return userMembers;
     }
 }

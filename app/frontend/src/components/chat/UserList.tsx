@@ -2,6 +2,7 @@ import { UserType } from "src/components/User";
 import ListTabulation from "src/components/chat/ListTab";
 import { useContext, useState, useEffect } from "react";
 import { WebSocketContext } from "src/contexts/WebSocketContext";
+import { SocketAddress } from "net";
 
 export interface myUsers {
     uuid: string;
@@ -26,7 +27,11 @@ function UserList() {
     }
 
     const socket = useContext(WebSocketContext);
+    
+
     const [userList, setUserList] = useState<myUsers[]>([]);
+
+
 
     // Send "listUsers" event to server to get the user list
     useEffect(() => {
