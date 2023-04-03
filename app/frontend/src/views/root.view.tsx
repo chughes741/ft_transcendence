@@ -6,6 +6,7 @@ import { Box, Container, ThemeProvider } from "@mui/material";
 import SideBar from "src/components/SideBar/SideBar";
 import TopBar from "src/components/TopBar/TopBar";
 import { RootViewModel } from "./root.viewModel";
+import { ChatViewModelProvider } from "../pages/chat/ChatViewModel";
 
 /**
  * Rendering entrypoint
@@ -27,15 +28,25 @@ export function RootView() {
             <title>King Pong | {page_name[pageState]}</title>
           </Helmet>
           {/* Outer wrapper for content*/}
-          <Container id="containertest" style={{margin: "0", padding:"0", maxWidth:"100vw"}}>
+          <Container
+            id="containertest"
+            style={{ margin: "0", padding: "0", maxWidth: "100vw" }}
+          >
             {/* Outer box for handling vertical flex with topbar */}
-            <Box id="test1" sx={{ display: "flex", flexDirection: "column" }}>
-              <TopBar setPageState={setPageState} />
-              {/* Inner box for horizontal flex with sidebar */}
-              <Box sx={{ display: "flex", flexDirection: "row", flexGrow: 1 }}>
-                <SideBar setPageState={setPageState} />
-                <RootViewModel state={pageState} />
-              </Box>
+            <Box
+              id="test1"
+              sx={{ display: "flex", flexDirection: "column" }}
+            >
+              <ChatViewModelProvider>
+                <TopBar setPageState={setPageState} />
+                {/* Inner box for horizontal flex with sidebar */}
+                <Box
+                  sx={{ display: "flex", flexDirection: "row", flexGrow: 1 }}
+                >
+                  <SideBar setPageState={setPageState} />
+                  <RootViewModel state={pageState} />
+                </Box>
+              </ChatViewModelProvider>
             </Box>
           </Container>
         </ThemeProvider>

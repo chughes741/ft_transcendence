@@ -1,6 +1,5 @@
 import GamePage from "../pages/GamePage";
 import ProfilePage from "src/pages/profile/ProfilePage";
-import { ChatViewModelProvider } from "../pages/chat/ChatViewModel";
 import { ChatView } from "../pages/chat/ChatView";
 
 /**
@@ -17,11 +16,7 @@ export function RootViewModel(props) {
       return <GamePage />;
     }
     case 2: {
-      return (
-        <ChatViewModelProvider>
-          <ChatView />;
-        </ChatViewModelProvider>
-      );
+      return <ChatView />;
     }
     case 3: {
       return <ProfilePage />;

@@ -7,15 +7,16 @@ import { Container } from "@mui/material";
 import ChatList from "./ChatList";
 import SidebarChatOptions from "./sidebar.chatoptions";
 import RoomList from "../../pages/chat/components/RoomList";
-import {Chat} from "@mui/icons-material";
-import {ChatViewModelProvider} from "../../pages/chat/ChatViewModel";
+import { Chat } from "@mui/icons-material";
+import { ChatViewModelProvider } from "../../pages/chat/ChatViewModel";
 
 const drawerWidth = 300;
 
 export default function SideBar({ setPageState }) {
   return (
-    <Container sx={{ display: "flex", flexDirection: "column" }}
-               style={{ maxWidth: "17vw", padding: "0", margin: "0"}}
+    <Container
+      sx={{ display: "flex", flexDirection: "column" }}
+      style={{ maxWidth: "17vw", padding: "0", margin: "0" }}
     >
       <Box sx={{ display: "flex" }}>
         <CssBaseline />
@@ -34,9 +35,7 @@ export default function SideBar({ setPageState }) {
           <Box sx={{ overflow: "auto" }}>
             <SidebarChatOptions setPageState={setPageState} />
             <Divider />
-            <ChatViewModelProvider>
-              <RoomList />
-            </ChatViewModelProvider>
+            <RoomList />
           </Box>
         </Drawer>
         <Box
