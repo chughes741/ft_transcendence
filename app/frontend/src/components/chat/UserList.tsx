@@ -11,9 +11,12 @@ export interface myUsers {
     avatar: string;
 }
 
-function UserList() {
+interface UserListProsp{
+    chatRoomName :string;
+}
+
+function UserList( { chatRoomName } : UserListProsp) {
     
-    const chatRoomName = "Name of chatroom has been passed";
 
     const myusers: myUsers[] = [
         { uuid: '000', nick: 'Gwineth', email: 'bitchplease@666.com', avatar: 'goo.fuckyou', },
@@ -52,7 +55,7 @@ function UserList() {
 
     return (
         <>
-            <ListTabulation users={userList} heading='Chat Room Users' onSelectItem={handleSelectItem} />
+            <ListTabulation users={userList} heading={chatRoomName} onSelectItem={handleSelectItem} />
         </>
     )
 }
