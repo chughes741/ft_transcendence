@@ -13,30 +13,28 @@ const drawerWidth = "20%";
  */
 export default function SideBar({ setPageState }) {
   return (
-      <>
-        <Box>
-        <Drawer
-          variant="permanent"
-          sx={{
+    <>
+      <Drawer
+        variant="permanent"
+        sx={{
+          width: drawerWidth,
+          flexShrink: 0,
+          [`& .MuiDrawer-paper`]: {
             width: drawerWidth,
-            flexShrink: 0,
-            [`& .MuiDrawer-paper`]: {
-              width: drawerWidth,
-              boxSizing: "border-box",
-              position:"fixed", top: "87px"
-            }
-          }}
-
-        >
-          <Box sx={{ overflow: "hidden" }}>
-            <SidebarChatOptions setPageState={setPageState} />
-            <Divider />
-          </Box>
-          <Box sx={{ overflow: "hidden auto" }}>
-            <RoomList />
-          </Box>
-        </Drawer>
+            boxSizing: "border-box",
+            position: "fixed",
+            top: "87px"
+          }
+        }}
+      >
+        <Box sx={{ overflow: "hidden" }}>
+          <SidebarChatOptions setPageState={setPageState} />
+          <Divider />
         </Box>
-      </>
+        <Box sx={{ overflow: "hidden auto" }}>
+          <RoomList />
+        </Box>
+      </Drawer>
+    </>
   );
 }
