@@ -45,7 +45,9 @@ export function RootView() {
           <Box id="sidebar-container"
             sx={{ display: "flex" }}>
             <SideBar setPageState={setPageState} />
-            <Box component={"main"}>
+            <Box component={"main"}
+                 sx={{width: "100%", display:"flex", justifyContent:"center"}}
+            >
               <RootViewModel state={pageState} />
             </Box>
           </Box>

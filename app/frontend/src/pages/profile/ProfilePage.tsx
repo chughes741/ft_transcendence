@@ -14,17 +14,13 @@ import { MatchHistory } from "./components/MatchHistory";
 export default function ProfilePage() {
   return (
     <>
-      <Box className="profile-page">
-        <Box className="profile-box">
-          <Stack
-            className="profile-stack"
-            spacing={2}
-          >
-            <ProfileHeader />
-            <MatchHistory />
-          </Stack>
-        </Box>
-      </Box>
+      <Stack
+        className="profile-stack"
+        spacing={2}
+      >
+        <ProfileHeader />
+        <MatchHistory />
+      </Stack>
     </>
   );
 }
