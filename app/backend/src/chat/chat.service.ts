@@ -5,11 +5,10 @@ import { UserConnectionsService } from "../user-connections.service";
 import {
   CreateChatRoomDto,
   JoinRoomDto,
-  Message,
+  MessageEntity,
   SendMessageDto
 } from "./chat.gateway";
 import { CreateChatDto } from "./dto/create-chat.dto";
-import { UpdateChatDto } from "./dto/update-chat.dto";
 
 const logger = new Logger("ChatService");
 
@@ -35,7 +34,7 @@ export class ChatService {
    * @param joinDto - The room name, password, and user
    * @returns - The last 50 messages in the room, or an error
    */
-  async joinRoom(joinDto: JoinRoomDto): Promise<Message[] | Error> {
+  async joinRoom(joinDto: JoinRoomDto): Promise<MessageEntity[] | Error> {
     const { roomName, password, user } = joinDto;
     let room = await this.prismaService.chatRoom.findUnique({
       where: { name: roomName }
@@ -61,17 +60,11 @@ export class ChatService {
     ) {
       return { name: "IncorrectPasswordError", message: "Incorrect password" };
     }
-    const messagesPage = await this.prismaService.message.findMany({
-      where: { roomId: room.id },
-      take: 50,
-      include: {
-        sender: {
-          select: { username: true }
-        },
-        room: { select: { name: true } }
-      },
-      orderBy: { createdAt: "desc" }
-    });
+    const messagesPage = await this.prismaService.getChatMessagesPage(
+      room.id,
+      new Date(),
+      50
+    );
 
     // Add the user as a chat member if they are not already a member
     const userId = await this.prismaService.getUserIdByNick(user);
@@ -187,7 +180,17 @@ export class ChatService {
     return username;
   }
 
-  async sendMessage(sendDto: SendMessageDto): Promise<Error | string> {
+  /**
+   * Send a message to a chat room.
+   *
+   * If the room does not exist, return an error.
+   * If the message is successfully added to the database, return the room name
+   *
+   * @param client
+   * @param sendDto
+   * @returns
+   */
+  async sendMessage(sendDto: SendMessageDto): Promise<Error | MessageEntity> {
     if (!sendDto.content) return;
 
     // Try to get the room database ID
@@ -207,11 +210,15 @@ export class ChatService {
       });
       logger.log(`Message added to the database: `);
       console.log(ret);
+      const entity: MessageEntity = {
+        ...ret,
+        sender: { username: sendDto.sender },
+        room: { name: sendDto.roomName }
+      };
+      return entity;
     } catch (e) {
       logger.error(e);
       return Error("Error adding message to database");
     }
-
-    return sendDto.roomName;
   }
 }

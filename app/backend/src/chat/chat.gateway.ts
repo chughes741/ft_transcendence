@@ -21,7 +21,7 @@ export type DevError = {
   error: string;
 };
 
-export interface Message extends PrismaMessage {
+export interface MessageEntity extends PrismaMessage {
   sender: { username: string };
   room: { name: string };
 }
@@ -207,7 +207,7 @@ export class ChatGateway
       logger.error(ret);
       return { error: ret.message };
     } else if (ret instanceof Array) {
-      const messages: Message[] = ret;
+      const messages: MessageEntity[] = ret;
       client.join(dto.roomName);
       messages.forEach((message) => {
         client.emit("onMessage", {
@@ -268,16 +268,20 @@ export class ChatGateway
     const ret = await this.chatService.sendMessage(sendDto);
     if (ret instanceof Error) return { error: ret.message };
 
+    logger.log(`Message sent successfully: `);
+    console.log(ret);
     // If nothing went wrong, send the message to the room
     this.server.to(sendDto.roomName).emit("roomMessage", {
-      sender: sendDto.sender,
-      roomName: sendDto.roomName,
-      content: sendDto.content
+      sender: ret.sender.username,
+      roomName: ret.room.name,
+      content: ret.content,
+      timestamp: ret.createdAt
     });
     this.server.emit("onMessage", {
-      sender: sendDto.sender,
-      roomName: sendDto.roomName,
-      content: sendDto.content
+      sender: ret.sender.username,
+      roomName: ret.room.name,
+      content: ret.content,
+      timestamp: ret.createdAt
     }); // FIXME: temporarily broadcast to all clients, for testing purposes
     logger.log(
       `User ${sendDto.sender} sent message in room ${sendDto.roomName}: ${sendDto.content}`
