@@ -22,35 +22,24 @@ export function RootView() {
 
   return (
     <>
-      <WebSocketProvider value={socket}>
-        <ThemeProvider theme={theme}>
-          <Helmet>
-            <title>King Pong | {page_name[pageState]}</title>
-          </Helmet>
-          {/* Outer wrapper for content*/}
-          <Container
-            id="containertest"
-            style={{ margin: "0", padding: "0", maxWidth: "100vw" }}
-          >
-            {/* Outer box for handling vertical flex with topbar */}
-            <Box
-              id="test1"
-              sx={{ display: "flex", flexDirection: "column" }}
-            >
-              <ChatViewModelProvider>
-                <TopBar setPageState={setPageState} />
-                {/* Inner box for horizontal flex with sidebar */}
-                <Box
-                  sx={{ display: "flex", flexDirection: "row", flexGrow: 1 }}
-                >
-                  <SideBar setPageState={setPageState} />
-                  <RootViewModel state={pageState} />
-                </Box>
-              </ChatViewModelProvider>
-            </Box>
-          </Container>
-        </ThemeProvider>
-      </WebSocketProvider>
+      <Helmet>
+        <title>King Pong | {page_name[pageState]}</title>
+      </Helmet>
+      <Container
+        id="page-container"
+        style={{ margin: "0", padding: "0", maxWidth: "100vw" }}
+      >
+        <Box
+          id="test1"
+          sx={{ display: "flex", flexDirection: "column" }}
+        >
+          <TopBar setPageState={setPageState} />
+          <Box id="sidebar-container">
+            <SideBar setPageState={setPageState} />
+          </Box>
+          <RootViewModel state={pageState} />
+        </Box>
+      </Container>
     </>
   );
 }
