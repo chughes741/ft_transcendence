@@ -18,6 +18,7 @@ import "src/views/profile/profile.view.tsx.css";
 /** Mock data import */
 import { Item, FetchMatchHistory } from "src/views/profile/profile.viewModel";
 import { MatchHistoryItem } from "./profile.model";
+import { useEffect, useState } from "react";
 
 /**
  * Creates profile page header
@@ -65,7 +66,19 @@ function MatchHistoryRow(row: MatchHistoryItem) {
 /**
  * Loads match history component
  */
+
 function MatchHistory() {
+  const [matches, setMatches] = useState<MatchHistoryItem[]>([]);
+
+  useEffect(() => {
+    async function fetchMatches() {
+      const history = await FetchMatchHistory();
+      console.log(history);
+      setMatches(history);
+    }
+    fetchMatches();
+  }, []);
+
   return (
     <>
       <TableContainer component={Paper}>
@@ -78,9 +91,7 @@ function MatchHistory() {
               <TableCell align="center">Date</TableCell>
             </TableRow>
           </TableHead>
-          <TableBody>
-            {FetchMatchHistory().map((row) => MatchHistoryRow(row))}
-          </TableBody>
+          <TableBody>{matches.map((row) => MatchHistoryRow(row))}</TableBody>
         </Table>
       </TableContainer>
     </>

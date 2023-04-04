@@ -4,12 +4,28 @@ import {
   MessageBody
 } from "@nestjs/websockets";
 import { ProfileService } from "./profile.service";
-import { CreateProfileDto } from "./dto/create-profile.dto";
-import { UpdateProfileDto } from "./dto/update-profile.dto";
+import {
+  UpdateProfileDto,
+  CreateProfileDto,
+  FetchMatchHistoryDto
+} from "./dto/profile.dto";
+import { MatchHistoryEntity } from "./entities/profile.entity";
 
 @WebSocketGateway()
 export class ProfileGateway {
   constructor(private readonly profileService: ProfileService) {}
+
+  /**
+   * Gateway for requesting a players match history
+   * @param {FetchMatchHistoryDto} fetchMatchHistoryDto - 
+   * @returns {MatchHistory} - Array of MatchHistoryItem
+   */
+  @SubscribeMessage("fetchMatchHistory")
+  fetchMatchHistory(
+    @MessageBody() fetchMatchHistoryDto: FetchMatchHistoryDto
+  ): MatchHistoryEntity {
+    return this.profileService.fetchMatchHistory(fetchMatchHistoryDto);
+  }
 
   @SubscribeMessage("createProfile")
   create(@MessageBody() createProfileDto: CreateProfileDto) {

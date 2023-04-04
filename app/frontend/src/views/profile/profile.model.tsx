@@ -9,3 +9,11 @@ export class MatchHistoryItem {
 	date: string;
 	winner: boolean;
 }
+
+/**
+ * 
+ */
+export class MatchHistory {
+	matches: MatchHistoryItem[];
+  }
+  
