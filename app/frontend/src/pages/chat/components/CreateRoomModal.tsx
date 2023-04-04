@@ -13,10 +13,9 @@ import {
   FormControl,
   MenuItem,
   Button,
-  DialogActions,
-  makeStyles
+  DialogActions
 } from "@mui/material";
-import React, { useState, useCallback, useEffect } from "react";
+import React, { useState, useCallback } from "react";
 import { FiEye, FiEyeOff } from "react-icons/fi";
 import ButtonFunky from "../../../components/ButtonFunky";
 // import Button from "../../../components/Button";
@@ -54,7 +53,6 @@ export const CreateRoomModal: React.FC<CreateRoomModalProps> = ({
     password,
     setPassword,
     showPassword,
-    roomNameInput,
     togglePasswordVisibility
   } = useRoomModal(showModal, closeModal);
 

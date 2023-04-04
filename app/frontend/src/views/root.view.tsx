@@ -1,56 +1,67 @@
 import { useState } from "react";
 import { Helmet } from "react-helmet";
-import { socket, WebSocketProvider } from "src/contexts/WebSocketContext";
-import customTheme from "src/theme";
-import { Box, Container, ThemeProvider } from "@mui/material";
+import { Box, Container } from "@mui/material";
 import SideBar from "src/components/SideBar/SideBar";
 import TopBar from "src/components/TopBar/TopBar";
 import { RootViewModel } from "./root.viewModel";
-import { ChatViewModelProvider } from "../pages/chat/ChatViewModel";
+import { PageState } from "./root.model";
+import { usePageStateContext } from "../contexts/PageStateContext";
+
+/**
+ * Helmet with dynamic page names
+ * @param - Current page state
+ * @returns - Helmet component
+ */
+function HelmetView({ state }) {
+  const page_name = ["Home", "Game", "Chat", "Profile"];
+
+  return (
+    <>
+      <Helmet>
+        <title>King Pong | {page_name[state]}</title>
+      </Helmet>
+    </>
+  );
+}
 
 /**
  * Rendering entrypoint
  * @returns - View model with dynamic content
  */
-export function RootView() {
-  const [pageState, setPageState] = useState(0);
-
-  /** Theme setup */
-  const theme = customTheme();
-
-  const page_name = ["Home", "Game", "Chat", "Profile"];
+export function RootView(): JSX.Element {
+  const { pageState, setPageState } = usePageStateContext();
 
   return (
     <>
-      <WebSocketProvider value={socket}>
-        <ThemeProvider theme={theme}>
-          <Helmet>
-            <title>King Pong | {page_name[pageState]}</title>
-          </Helmet>
-          {/* Outer wrapper for content*/}
-          <Container
-            id="containertest"
-            style={{ margin: "0", padding: "0", maxWidth: "100vw" }}
+      <HelmetView state={pageState} />
+      <Container
+        id="page-container"
+        style={{ margin: "0", padding: "0", maxWidth: "100vw" }}
+      >
+        <Box
+          id="page-box"
+          sx={{ display: "flex", flexDirection: "column" }}
+        >
+          <TopBar setPageState={setPageState} />
+          <Box
+            id="sidebar-container"
+            sx={{ display: "flex" }}
           >
-            {/* Outer box for handling vertical flex with topbar */}
+            <SideBar setPageState={setPageState} />
             <Box
-              id="test1"
-              sx={{ display: "flex", flexDirection: "column" }}
+              component={"main"}
+              sx={{
+                width: "100%",
+                display: "flex",
+                justifyContent: "center",
+                overflow: "hidden"
+              }}
             >
-              <ChatViewModelProvider>
-                <TopBar setPageState={setPageState} />
-                {/* Inner box for horizontal flex with sidebar */}
-                <Box
-                  sx={{ display: "flex", flexDirection: "row", flexGrow: 1 }}
-                >
-                  <SideBar setPageState={setPageState} />
-                  <RootViewModel state={pageState} />
-                </Box>
-              </ChatViewModelProvider>
+              <RootViewModel state={pageState} />
             </Box>
-          </Container>
-        </ThemeProvider>
-      </WebSocketProvider>
+          </Box>
+        </Box>
+      </Container>
     </>
   );
 }

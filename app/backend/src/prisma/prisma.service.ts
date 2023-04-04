@@ -5,6 +5,7 @@ import {
   ChatMemberRank,
   ChatMemberStatus,
   ChatRoom,
+  Message,
   Prisma,
   PrismaClient,
   User
@@ -16,6 +17,7 @@ import {
   UserDto,
   MessageDto
 } from "../auth/dto/prisma.dto";
+import { MessageEntity } from "../chat/chat.gateway";
 import config from "../config";
 
 const logger = new Logger("PrismaService");
@@ -203,11 +205,17 @@ export class PrismaService extends PrismaClient {
     id: number,
     date: Date,
     pageSize: number
-  ): Promise<MessageDto[]> {
+  ): Promise<MessageEntity[]> {
     return this.message.findMany({
       where: {
         room: { id },
         createdAt: { lt: date } // Here, lt stands for less than
+      },
+      include: {
+        sender: {
+          select: { username: true }
+        },
+        room: { select: { name: true } }
       },
       take: pageSize, // take is the same as limit, and specifies the number of rows to return
       orderBy: { createdAt: "desc" }
@@ -224,6 +232,21 @@ export class PrismaService extends PrismaClient {
     const room = await this.chatRoom.findUnique({ where: { name } });
 
     return room ? room.id : null;
+  }
+
+  async addChatMember(
+    userId: string,
+    roomId: number,
+    rank: ChatMemberRank
+  ): Promise<ChatMember> {
+    return this.chatMember.create({
+      data: {
+        memberId: userId,
+        roomId: roomId,
+        status: ChatMemberStatus.OK,
+        rank: rank
+      }
+    });
   }
 
   // Update a chat room
@@ -245,7 +268,7 @@ export class PrismaService extends PrismaClient {
   }
 
   // Add a new message to a chat room
-  async addMessageToChatRoom(dto: MessageDto): Promise<any> {
+  async addMessageToChatRoom(dto: MessageDto): Promise<Message> {
     // Check if the owner UUID is valid
     const userExists = await this.userExists(dto.senderId);
     if (dto.senderId && !userExists) {
@@ -261,19 +284,32 @@ export class PrismaService extends PrismaClient {
     };
 
     // Add the message to the database and update the chat room's last activity
-    return this.$transaction([
+    const object = await this.$transaction([
       this.message.create({ data }),
       this.chatRoom.update({
         where: { id: dto.roomId },
         data: { updatedAt: new Date() }
       })
     ]);
+    return object[0];
   }
 
   // Get all messages in a chat room
   async getMessagesInChatRoom(roomId: number): Promise<MessageDto[]> {
     return this.message.findMany({ where: { roomId } });
   }
+
+  async getLatestMessage(roomId: number): Promise<MessageEntity | null> {
+    return this.message.findFirst({
+      where: { roomId },
+      orderBy: { createdAt: "desc" },
+      include: {
+        sender: { select: { username: true } },
+        room: { select: { name: true } }
+      }
+    });
+  }
+
   addMatch(dto1: PlayerDto, dto2: PlayerDto) {
     return { dto1, dto2 };
   }

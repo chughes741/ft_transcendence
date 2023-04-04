@@ -18,8 +18,6 @@ const RoomList: React.FC = () => {
   const {
     rooms,
     currentRoomName,
-    setCurrentRoomName,
-    setCurrentRoomMessages,
     setShowCreateRoomModal,
     setShowJoinRoomModal,
     contextMenuData,
@@ -31,38 +29,36 @@ const RoomList: React.FC = () => {
     changeRoomStatus,
     showCreateRoomModal,
     showJoinRoomModal,
-    joinRoom
+    joinRoom,
+    selectRoom
   } = useChatViewModelContext();
 
   return (
     <div className="room-list">
-      <ButtonFunky
-        content="Create New Room"
-        onClick={() => setShowCreateRoomModal(true)}
-        width="100%"
-      />
-      <br />
-      <ButtonFunky
-        content="Join Room"
-        onClick={() => setShowJoinRoomModal(true)}
-        width="100%"
-      />
-      <br />
+      {/*<ButtonFunky*/}
+      {/*  content="Create New Room"*/}
+      {/*  onClick={() => setShowCreateRoomModal(true)}*/}
+      {/*  width="100%"*/}
+      {/*/>*/}
+      {/*<br />*/}
+      {/*<ButtonFunky*/}
+      {/*  content="Join Room"*/}
+      {/*  onClick={() => setShowJoinRoomModal(true)}*/}
+      {/*  width="100%"*/}
+      {/*/>*/}
+          {/*<br />*/}
       <Box sx={{ overflow: "auto" }}>
         <List>
           {Object.entries(rooms).map(([roomId, messages]) => (
             <ListItem
               key={roomId}
-              onClick={() => {
-                setCurrentRoomName(roomId);
-                setCurrentRoomMessages(messages);
-              }}
+              onClick={() => selectRoom(roomId)}
               onContextMenu={(e) => handleContextMenu(e, { name: roomId })}
             >
               <ListItemButton selected={currentRoomName === roomId}>
                 <ListItemIcon>
                   <img
-                    src={`https://i.pravatar.cc/150?u=${roomId}`} // Use a random profile picture for each room
+                    src={`https://i.pravatar.cc/150?u=${roomId}`}
                     alt="Profile"
                   />
                 </ListItemIcon>

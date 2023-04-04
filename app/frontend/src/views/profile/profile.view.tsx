@@ -1,6 +1,8 @@
 /** Module Imports */
 import {
+  Avatar,
   Paper,
+  Stack,
   Table,
   TableBody,
   TableCell,
@@ -8,38 +10,33 @@ import {
   TableHead,
   TableRow
 } from "@mui/material";
+import { deepOrange } from "@mui/material/colors";
+
+/** Component Imports */
+import "src/views/profile/profile.view.tsx.css";
+
+/** Mock data import */
+import { Item, FetchMatchHistory } from "src/views/profile/profile.viewModel";
+import { MatchHistoryItem } from "./profile.model";
 
 /**
- * Creates test object with params
- * @param match_type
- * @param players
- * @param results
- * @param date
- * @param winner
+ * Creates profile page header
  */
-function createData(
-  match_type: string,
-  players: string,
-  results: string,
-  date: string,
-  winner: boolean
-) {
-  return { match_type, players, results, date, winner };
+export function ProfileHeader() {
+  return (
+    <>
+      <Item>
+        <Avatar sx={{ bgcolor: deepOrange[500] }}>N</Avatar>
+      </Item>
+    </>
+  );
 }
 
-const rows = [
-  createData("Ranked", "Me, you", "2-0", "32-01-2023", true),
-  createData("Ranked", "Me, you", "69-5", "15-03-1066", true),
-  createData("Unranked", "You, me", "42-0", "31-12-1999", false),
-  createData("Ranked", "Me, myself, and I", "42-43", "25-12-0001", false),
-  createData("Unranked", "Just you", "4-2", "25-12-0001", true)
-];
-
 /**
- * Creates a TableRow
- * @param row - Data object to enter into row
+ * Creates a TableRow with MatchHistoryItem
+ * @param {MatchHistoryItem} row
  */
-function MatchRow(row) {
+function MatchHistoryRow(row: MatchHistoryItem) {
   return (
     <>
       <TableRow
@@ -68,7 +65,7 @@ function MatchRow(row) {
 /**
  * Loads match history component
  */
-export function MatchHistory() {
+function MatchHistory() {
   return (
     <>
       <TableContainer component={Paper}>
@@ -81,9 +78,28 @@ export function MatchHistory() {
               <TableCell align="center">Date</TableCell>
             </TableRow>
           </TableHead>
-          <TableBody>{rows.map((row) => MatchRow(row))}</TableBody>
+          <TableBody>
+            {FetchMatchHistory().map((row) => MatchHistoryRow(row))}
+          </TableBody>
         </Table>
       </TableContainer>
+    </>
+  );
+}
+
+/**
+ * Loads profile page
+ */
+export default function ProfileView() {
+  return (
+    <>
+      <Stack
+        className="profile-stack"
+        spacing={2}
+      >
+        <ProfileHeader />
+        <MatchHistory />
+      </Stack>
     </>
   );
 }

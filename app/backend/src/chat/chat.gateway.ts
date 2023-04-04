@@ -21,9 +21,16 @@ export type DevError = {
   error: string;
 };
 
-export interface Message extends PrismaMessage {
+export interface MessageEntity extends PrismaMessage {
   sender: { username: string };
   room: { name: string };
+}
+
+export interface ChatRoomEntity {
+  name: string;
+  status: ChatRoomStatus;
+  latestMessage: MessageEntity;
+  lastActivity: Date;
 }
 
 const logger = new Logger("ChatGateway");
@@ -65,14 +72,9 @@ export class ChatGateway
   afterInit() {
     logger.log("ChatGateway initialized");
   }
-  // FIXME: temporary code to create a user for each client
-  // TODO: remove this code when authentication is enabled
-  async handleConnection(client: Socket, ...args: any[]) {
-    logger.log(`Client connected: ${client.id}`);
 
-    logger.log(`Connection args: ${args}`);
-    // Add the user connection
-    // this.userConnectionsService.addUserConnection(client.id, client.id);
+  async handleConnection(client: Socket) {
+    logger.log(`Client connected: ${client.id}`);
   }
 
   handleDisconnect(client: Socket) {
@@ -189,7 +191,10 @@ export class ChatGateway
    * @returns DevError or room name
    */
   @SubscribeMessage("joinRoom")
-  async joinRoom(client: Socket, dto: JoinRoomDto): Promise<DevError | string> {
+  async joinRoom(
+    client: Socket,
+    dto: JoinRoomDto
+  ): Promise<DevError | ChatRoomEntity> {
     const userId: string = this.userConnectionsService.getUserBySocket(
       client.id
     );
@@ -206,23 +211,29 @@ export class ChatGateway
     if (ret instanceof Error) {
       logger.error(ret);
       return { error: ret.message };
-    } else if (ret instanceof Array) {
-      const messages: Message[] = ret;
+    } else {
+      const roomInfo: ChatRoomEntity = ret;
       client.join(dto.roomName);
-      messages.forEach((message) => {
-        client.emit("onMessage", {
-          sender: message.sender.username,
-          roomName: message.room.name,
-          content: message.content,
-          timestamp: message.updatedAt
-        });
-      });
       this.server
         .to(dto.roomName)
         .emit("roomMessage", `User ${dto.user} joined room ${dto.roomName}`);
       logger.log(`User ${dto.user} joined room ${dto.roomName}`);
-      return dto.roomName;
+      return roomInfo;
     }
+  }
+
+  // Add a new event to get a page of messages
+  @SubscribeMessage("getRoomMessagesPage")
+  async getRoomMessagesPage(
+    client: Socket,
+    dto: { roomName: string; date: Date; pageSize: number }
+  ): Promise<MessageEntity[]> {
+    const messages = await this.chatService.getRoomMessagesPage(
+      dto.roomName,
+      dto.date,
+      dto.pageSize
+    );
+    return messages;
   }
 
   /**
@@ -268,17 +279,11 @@ export class ChatGateway
     const ret = await this.chatService.sendMessage(sendDto);
     if (ret instanceof Error) return { error: ret.message };
 
+    logger.log(`Message sent successfully: `);
+    console.log(ret);
     // If nothing went wrong, send the message to the room
-    this.server.to(sendDto.roomName).emit("roomMessage", {
-      sender: sendDto.sender,
-      roomName: sendDto.roomName,
-      content: sendDto.content
-    });
-    this.server.emit("onMessage", {
-      sender: sendDto.sender,
-      roomName: sendDto.roomName,
-      content: sendDto.content
-    }); // FIXME: temporarily broadcast to all clients, for testing purposes
+    this.server.to(sendDto.roomName).emit("roomMessage", ret);
+    this.server.emit("onMessage", ret); // FIXME: temporarily broadcast to all clients, for testing purposes
     logger.log(
       `User ${sendDto.sender} sent message in room ${sendDto.roomName}: ${sendDto.content}`
     );
