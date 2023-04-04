@@ -18,8 +18,6 @@ const RoomList: React.FC = () => {
   const {
     rooms,
     currentRoomName,
-    setCurrentRoomName,
-    setCurrentRoomMessages,
     setShowCreateRoomModal,
     setShowJoinRoomModal,
     contextMenuData,
@@ -31,7 +29,8 @@ const RoomList: React.FC = () => {
     changeRoomStatus,
     showCreateRoomModal,
     showJoinRoomModal,
-    joinRoom
+    joinRoom,
+    selectRoom
   } = useChatViewModelContext();
 
   return (
@@ -53,10 +52,7 @@ const RoomList: React.FC = () => {
           {Object.entries(rooms).map(([roomId, messages]) => (
             <ListItem
               key={roomId}
-              onClick={() => {
-                setCurrentRoomName(roomId);
-                setCurrentRoomMessages(messages);
-              }}
+              onClick={() => selectRoom(roomId)}
               onContextMenu={(e) => handleContextMenu(e, { name: roomId })}
             >
               <ListItemButton selected={currentRoomName === roomId}>

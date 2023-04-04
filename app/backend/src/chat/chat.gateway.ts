@@ -21,16 +21,16 @@ export type DevError = {
   error: string;
 };
 
+export interface MessageEntity extends PrismaMessage {
+  sender: { username: string };
+  room: { name: string };
+}
+
 export interface ChatRoomEntity {
   name: string;
   status: ChatRoomStatus;
   latestMessage: MessageEntity;
   lastActivity: Date;
-}
-
-export interface MessageEntity extends PrismaMessage {
-  sender: { username: string };
-  room: { name: string };
 }
 
 const logger = new Logger("ChatGateway");
@@ -72,14 +72,9 @@ export class ChatGateway
   afterInit() {
     logger.log("ChatGateway initialized");
   }
-  // FIXME: temporary code to create a user for each client
-  // TODO: remove this code when authentication is enabled
-  async handleConnection(client: Socket, ...args: any[]) {
-    logger.log(`Client connected: ${client.id}`);
 
-    logger.log(`Connection args: ${args}`);
-    // Add the user connection
-    // this.userConnectionsService.addUserConnection(client.id, client.id);
+  async handleConnection(client: Socket) {
+    logger.log(`Client connected: ${client.id}`);
   }
 
   handleDisconnect(client: Socket) {
@@ -287,18 +282,8 @@ export class ChatGateway
     logger.log(`Message sent successfully: `);
     console.log(ret);
     // If nothing went wrong, send the message to the room
-    this.server.to(sendDto.roomName).emit("roomMessage", {
-      sender: ret.sender.username,
-      roomName: ret.room.name,
-      content: ret.content,
-      timestamp: ret.createdAt
-    });
-    this.server.emit("onMessage", {
-      sender: ret.sender.username,
-      roomName: ret.room.name,
-      content: ret.content,
-      timestamp: ret.createdAt
-    }); // FIXME: temporarily broadcast to all clients, for testing purposes
+    this.server.to(sendDto.roomName).emit("roomMessage", ret);
+    this.server.emit("onMessage", ret); // FIXME: temporarily broadcast to all clients, for testing purposes
     logger.log(
       `User ${sendDto.sender} sent message in room ${sendDto.roomName}: ${sendDto.content}`
     );
