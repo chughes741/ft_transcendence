@@ -46,7 +46,7 @@ const RoomList: React.FC = () => {
       {/*  onClick={() => setShowJoinRoomModal(true)}*/}
       {/*  width="100%"*/}
       {/*/>*/}
-          {/*<br />*/}
+      {/*<br />*/}
       <Box sx={{ overflow: "auto" }}>
         <List>
           {Object.entries(rooms).map(([roomId, messages]) => (
@@ -67,7 +67,7 @@ const RoomList: React.FC = () => {
                   primary={roomId}
                   secondary={
                     messages.length > 0
-                      ? truncateText(messages[messages.length - 1].message, 42)
+                      ? truncateText(messages[messages.length - 1].content, 42)
                       : ""
                   }
                 />

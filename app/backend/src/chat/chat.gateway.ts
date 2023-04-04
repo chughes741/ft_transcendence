@@ -15,15 +15,23 @@ import { ChatService } from "./chat.service";
 
 // Trickaroo to add fields to the Prisma Message type
 import { Message as PrismaMessage } from "@prisma/client";
+import { MessageEntity } from "./entities/message.entity";
 
 // FIXME: temporary error type until we can share btw back and frontend
 export type DevError = {
   error: string;
 };
 
-export interface MessageEntity extends PrismaMessage {
+export interface PrismaMessageType extends PrismaMessage {
   sender: { username: string };
   room: { name: string };
+}
+
+export interface IMessageEntity {
+  username: string;
+  roomName: string;
+  content: string;
+  timestamp: Date;
 }
 
 export interface ChatRoomEntity {

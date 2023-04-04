@@ -6,10 +6,10 @@ import {
   ChatRoomEntity,
   CreateChatRoomDto,
   JoinRoomDto,
-  MessageEntity,
   SendMessageDto
 } from "./chat.gateway";
 import { CreateChatDto } from "./dto/create-chat.dto";
+import { MessageEntity } from "./entities/message.entity";
 
 const logger = new Logger("ChatService");
 
@@ -84,7 +84,7 @@ export class ChatService {
     return {
       name: room.name,
       status: room.status,
-      latestMessage: latestMessage,
+      latestMessage: new MessageEntity(latestMessage),
       lastActivity: lastActivity
     };
   }
@@ -105,9 +105,10 @@ export class ChatService {
     if (!roomId) {
       throw new Error("Room not found");
     }
-    return (
+    const messagesPage = (
       await this.prismaService.getChatMessagesPage(roomId, date, pageSize)
     ).reverse();
+    return messagesPage.map((message) => new MessageEntity(message));
   }
 
   /**
@@ -236,12 +237,7 @@ export class ChatService {
       });
       logger.log(`Message added to the database: `);
       console.log(ret);
-      const entity: MessageEntity = {
-        ...ret,
-        sender: { username: sendDto.sender },
-        room: { name: sendDto.roomName }
-      };
-      return entity;
+      return new MessageEntity(ret);
     } catch (e) {
       logger.error(e);
       return Error("Error adding message to database");

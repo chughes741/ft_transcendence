@@ -10,10 +10,10 @@ import { ChatViewModelContext } from "./contexts/ChatViewModelContext";
 export type ChatRoomStatus = "PUBLIC" | "PRIVATE" | "PASSWORD";
 
 export type MessagePayload = {
+  username: string;
+  roomName: string;
   content: string;
-  createdAt: Date;
-  room: { name: string };
-  sender: { username: string };
+  timestamp: Date;
 };
 
 export interface ChatRoomPayload {
@@ -137,7 +137,7 @@ export const ChatViewModelProvider = ({ children }) => {
   const convertMessagePayloadToMessageType = (
     messagePayload: MessagePayload
   ): MessageType => {
-    const timestamp = new Date(messagePayload.createdAt);
+    const timestamp = new Date(messagePayload.timestamp);
     const timestamp_readable = timestamp.toLocaleTimeString("en-US", {
       hour: "numeric",
       minute: "numeric",
@@ -145,12 +145,12 @@ export const ChatViewModelProvider = ({ children }) => {
     });
 
     return {
-      user: messagePayload.sender.username,
-      roomId: messagePayload.room.name,
-      message: messagePayload.content,
+      user: messagePayload.username,
+      roomId: messagePayload.roomName,
+      content: messagePayload.content,
       timestamp_readable,
       timestamp,
-      isOwn: messagePayload.sender.username === tempUsername,
+      isOwn: messagePayload.username === tempUsername,
       displayUser: true,
       displayTimestamp: true,
       displayDate: true
@@ -362,7 +362,7 @@ export const ChatViewModelProvider = ({ children }) => {
       console.log("Ding ding, you've got mail:", newMessage);
 
       const messageData = convertMessagePayloadToMessageType(newMessage);
-      addMessageToRoom(newMessage.room.name, messageData);
+      addMessageToRoom(newMessage.roomName, messageData);
     });
 
     return () => {
