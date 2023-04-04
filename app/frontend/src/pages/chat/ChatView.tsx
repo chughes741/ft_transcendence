@@ -33,10 +33,9 @@ export const ChatView: React.FC = () => {
         </Box>
         <Box
           id="chat-reste"
-          style={{ display: "flex", height: "75vh" }}
+          style={{ display: "flex", height: "80vh" }}
           sx={{ flexDirection: "row" }}
         >
-
           <Box
             id="chat-area"
             style={{ width: "80%" }}

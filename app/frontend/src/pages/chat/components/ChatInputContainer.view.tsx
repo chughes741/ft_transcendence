@@ -1,5 +1,6 @@
-import { Box, TextareaAutosize } from "@mui/material";
-import { useEffect, useRef, useState } from "react";
+import React, { useState, useRef, useEffect } from "react";
+import { Box, TextareaAutosize, IconButton } from "@mui/material";
+import SendIcon from "@mui/icons-material/Send";
 import { useChatViewModelContext } from "../contexts/ChatViewModelContext";
 
 const ChatInputContainerView = () => {
@@ -28,18 +29,52 @@ const ChatInputContainerView = () => {
   }
 
   return (
-    <Box>
+    <Box
+      sx={{
+        paddingRight: "15%", // Add paddingRight and paddingLeft
+        paddingLeft: "15%",
+        paddingBottom: "10px",
+        paddingTop: "10px"
+      }}
+    >
       <form onSubmit={sendMessage}>
-        <TextareaAutosize
-          minRows={1}
-          maxRows={12}
-          ref={messageInputRef}
-          value={textValue}
-          placeholder="You take the text, and you put it in the box."
-          onChange={(event) => setTextValue(event.target.value)}
-          onKeyDown={onEnterPress}
-          style={{ width: "100%", resize: "none", display: "block" }}
-        />
+        <Box
+          sx={{
+            display: "flex",
+            alignItems: "center",
+            borderRadius: "25px",
+            border: "1px solid #ccc",
+            backgroundColor: "#1a1a1a",
+            padding: "10px"
+          }}
+        >
+          <TextareaAutosize
+            minRows={1}
+            maxRows={12}
+            ref={messageInputRef}
+            value={textValue}
+            placeholder="You take the text, and you put it in the box."
+            onChange={(event) => setTextValue(event.target.value)}
+            onKeyDown={onEnterPress}
+            style={{
+              width: "100%",
+              resize: "none",
+              display: "block",
+              border: "none",
+              outline: "none",
+              backgroundColor: "transparent",
+              color: "white",
+              fontSize: "1rem",
+              fontFamily: "Raleway, sans-serif"
+            }}
+          />
+          <IconButton
+            type="submit"
+            color="primary"
+          >
+            <SendIcon />
+          </IconButton>
+        </Box>
       </form>
     </Box>
   );
