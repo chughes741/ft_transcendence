@@ -60,16 +60,17 @@ const Message = forwardRef<HTMLDivElement, MessageProps>(({ message }, ref) => {
         </>
       )}
       {message.displayUser && (
-        <Box
-          display="flex"
-          flexDirection="row"
+        <Tooltip
+          title={message.isOwn ? "Me" : message.user}
+          TransitionComponent={Fade}
+          placement={message.isOwn ? "left-end" : "right-end"}
+          enterDelay={100}
         >
           <Avatar
             alt={message.user}
             src={`https://i.pravatar.cc/150?u=${message.user}`}
           />
-          <span className="sender">{message.isOwn ? "Me" : message.user}</span>
-        </Box>
+        </Tooltip>
       )}
       <Tooltip
         title={tooltip_timestamp}

@@ -2,6 +2,7 @@ import { useEffect, useRef } from "react";
 import { MessageType } from "./Message";
 import Message from "./Message";
 import { Box } from "@mui/material";
+import { useChatViewModelContext } from "../contexts/ChatViewModelContext";
 
 type ChatMessagesContainerProps = {
   messages: Array<MessageType>;
@@ -23,11 +24,13 @@ const isSameDate = (date1: Date, date2: Date): boolean => {
   );
 };
 
-const groupMessages = (messages: Array<MessageType>): Array<MessageType> => {
+const groupMessages = (
+  messages: Array<MessageType>
+): Array<MessageType> | null => {
   const groupedMessages: Array<MessageType> = [];
   if (!messages) {
     console.log("No messages to display");
-    return;
+    return null;
   }
 
   messages.forEach((msg, index) => {
@@ -54,8 +57,21 @@ const groupMessages = (messages: Array<MessageType>): Array<MessageType> => {
 const ChatMessagesContainerView = ({
   messages
 }: ChatMessagesContainerProps) => {
-  const groupedMessages = groupMessages(messages);
+  const groupedMessagesFromProps = groupMessages(messages);
   const lastMessageRef = useRef<HTMLDivElement>(null);
+
+  const {
+    currentRoomMessages,
+    currentRoomName,
+    rooms,
+    setCurrentRoomMessages
+  } = useChatViewModelContext();
+  useEffect(() => {
+    if (rooms[currentRoomName]) {
+      setCurrentRoomMessages(rooms[currentRoomName]);
+    }
+  }, [currentRoomName]);
+  const groupedMessages = groupMessages(currentRoomMessages);
 
   useEffect(() => {
     if (lastMessageRef.current) {
@@ -77,13 +93,14 @@ const ChatMessagesContainerView = ({
   };
   return (
     <Box style={BoxStyle}>
-      {groupedMessages.map((message, index) => (
-        <Message
-          ref={index === groupedMessages.length - 1 ? lastMessageRef : null}
-          key={index}
-          message={message}
-        />
-      ))}
+      {groupedMessages &&
+        groupedMessages.map((message, index) => (
+          <Message
+            ref={index === groupedMessages.length - 1 ? lastMessageRef : null}
+            key={index}
+            message={message}
+          />
+        ))}
     </Box>
   );
 };
