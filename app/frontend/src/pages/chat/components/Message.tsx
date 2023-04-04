@@ -1,6 +1,7 @@
 import { forwardRef } from "react";
-import { Tooltip, Typography, Divider } from "@mui/material";
+import { Tooltip, Typography, Divider, Avatar } from "@mui/material";
 import "../styles/Message.css";
+import { Box } from "@mui/system";
 
 export type MessageType = {
   user: string;
@@ -59,7 +60,16 @@ const Message = forwardRef<HTMLDivElement, MessageProps>(({ message }, ref) => {
         </>
       )}
       {message.displayUser && (
-        <span className="sender">{message.isOwn ? "Me" : message.user}</span>
+        <Box
+          display="flex"
+          flexDirection="row"
+        >
+          <Avatar
+            alt={message.user}
+            src={`https://i.pravatar.cc/150?u=${message.user}`}
+          />
+          <span className="sender">{message.isOwn ? "Me" : message.user}</span>
+        </Box>
       )}
       <Tooltip
         title={tooltip_timestamp}
