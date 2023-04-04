@@ -1,5 +1,5 @@
 import { forwardRef } from "react";
-import { Tooltip, Typography, Divider, Avatar } from "@mui/material";
+import { Tooltip, Typography, Divider, Avatar, Fade } from "@mui/material";
 import "../styles/Message.css";
 import { Box } from "@mui/system";
 
@@ -73,6 +73,7 @@ const Message = forwardRef<HTMLDivElement, MessageProps>(({ message }, ref) => {
       )}
       <Tooltip
         title={tooltip_timestamp}
+        TransitionComponent={Fade}
         placement={message.isOwn ? "left-end" : "right-end"}
         enterDelay={800}
       >

@@ -42,11 +42,19 @@ export function RootView() {
           sx={{ display: "flex", flexDirection: "column" }}
         >
           <TopBar setPageState={setPageState} />
-          <Box id="sidebar-container"
-            sx={{ display: "flex" }}>
+          <Box
+            id="sidebar-container"
+            sx={{ display: "flex" }}
+          >
             <SideBar setPageState={setPageState} />
-            <Box component={"main"}
-                 sx={{width: "100%", display:"flex", justifyContent:"center"}}
+            <Box
+              component={"main"}
+              sx={{
+                width: "100%",
+                display: "flex",
+                justifyContent: "center",
+                overflow: "hidden"
+              }}
             >
               <RootViewModel state={pageState} />
             </Box>
