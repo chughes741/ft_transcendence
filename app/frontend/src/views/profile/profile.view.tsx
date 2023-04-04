@@ -16,7 +16,7 @@ import {
 
 /** Mock data import */
 import { Item, FetchMatchHistory } from "src/views/profile/profile.viewModel";
-import { MatchHistoryItem } from "./profile.model";
+import { MatchHistoryItem } from "kingpong-lib";
 
 /**
  * Creates profile page header

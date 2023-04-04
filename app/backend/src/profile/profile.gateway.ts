@@ -5,11 +5,11 @@ import {
 } from "@nestjs/websockets";
 import { ProfileService } from "./profile.service";
 import {
-  UpdateProfileDto,
-  CreateProfileDto,
-  FetchMatchHistoryDto
-} from "./dto/profile.dto";
-import { MatchHistoryEntity } from "./entities/profile.entity";
+  CreateProfileEvent,
+  FetchMatchHistoryEvent,
+  FetchMatchHistoryReply,
+  UpdateProfileEvent
+} from "kingpong-lib";
 
 @WebSocketGateway()
 export class ProfileGateway {
@@ -17,18 +17,18 @@ export class ProfileGateway {
 
   /**
    * Gateway for requesting a players match history
-   * @param {FetchMatchHistoryDto} fetchMatchHistoryDto - 
+   * @param {FetchMatchHistoryDto} fetchMatchHistoryDto -
    * @returns {MatchHistory} - Array of MatchHistoryItem
    */
   @SubscribeMessage("fetchMatchHistory")
   fetchMatchHistory(
-    @MessageBody() fetchMatchHistoryDto: FetchMatchHistoryDto
-  ): MatchHistoryEntity {
+    @MessageBody() fetchMatchHistoryDto: FetchMatchHistoryEvent
+  ): FetchMatchHistoryReply {
     return this.profileService.fetchMatchHistory(fetchMatchHistoryDto);
   }
 
   @SubscribeMessage("createProfile")
-  create(@MessageBody() createProfileDto: CreateProfileDto) {
+  create(@MessageBody() createProfileDto: CreateProfileEvent) {
     return this.profileService.create(createProfileDto);
   }
 
@@ -43,7 +43,7 @@ export class ProfileGateway {
   }
 
   @SubscribeMessage("updateProfile")
-  update(@MessageBody() updateProfileDto: UpdateProfileDto) {
+  update(@MessageBody() updateProfileDto: UpdateProfileEvent) {
     return this.profileService.update(updateProfileDto.id, updateProfileDto);
   }
 

@@ -1,7 +1,10 @@
 import { Injectable } from "@nestjs/common";
-import { CreateProfileDto, FetchMatchHistoryDto } from "./dto/profile.dto";
-import { UpdateProfileDto } from "./dto/profile.dto";
-import { MatchHistoryEntity } from "./entities/profile.entity";
+import {
+  CreateProfileEvent,
+  FetchMatchHistoryEvent,
+  FetchMatchHistoryReply,
+  UpdateProfileEvent
+} from "kingpong-lib";
 
 @Injectable()
 export class ProfileService {
@@ -11,9 +14,9 @@ export class ProfileService {
    * @returns {MatchHistory}
    */
   fetchMatchHistory(
-    fetchMatchHistoryDto: FetchMatchHistoryDto
-  ): MatchHistoryEntity {
-    const matchHistory = new MatchHistoryEntity();
+    fetchMatchHistoryDto: FetchMatchHistoryEvent
+  ): FetchMatchHistoryReply {
+    const matchHistory = new FetchMatchHistoryReply();
     matchHistory.matches = [
       {
         match_type: "Solo",
@@ -40,7 +43,7 @@ export class ProfileService {
     return matchHistory;
   }
 
-  create(createProfileDto: CreateProfileDto) {
+  create(createProfileDto: CreateProfileEvent) {
     return "This action adds a new profile";
   }
 
@@ -52,7 +55,7 @@ export class ProfileService {
     return `This action returns a #${id} profile`;
   }
 
-  update(id: number, updateProfileDto: UpdateProfileDto) {
+  update(id: number, updateProfileDto: UpdateProfileEvent) {
     return `This action updates a #${id} profile`;
   }
 

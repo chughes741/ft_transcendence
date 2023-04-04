@@ -4,7 +4,7 @@ import { styled } from "@mui/material/styles";
 import { socket } from "src/contexts/WebSocketContext";
 
 /** Temporary data type import */
-import { MatchHistoryItem } from "src/views/profile/profile.model";
+import { FetchMatchHistoryReply, MatchHistoryItem } from "kingpong-lib";
 
 /**
  * Sends a fetch message to the backend to retrieve match history
@@ -12,8 +12,8 @@ import { MatchHistoryItem } from "src/views/profile/profile.model";
  */
 export function FetchMatchHistory(): Promise<MatchHistoryItem[]> {
   return new Promise((resolve) => {
-    socket.emit("fetchMatchHistory", "someuserID", (matchHistoryEntity) => {
-      resolve(matchHistoryEntity.matches);
+    socket.emit("fetchMatchHistory", "someuserID", (fetchMatchHistoryReply: FetchMatchHistoryReply) => {
+      resolve(fetchMatchHistoryReply.matches);
     });
   });
 }
