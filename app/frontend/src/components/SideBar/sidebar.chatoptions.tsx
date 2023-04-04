@@ -1,3 +1,5 @@
+// noinspection SpellCheckingInspection
+
 import * as React from "react";
 import List from "@mui/material/List";
 import ListItemButton from "@mui/material/ListItemButton";
@@ -42,37 +44,6 @@ export default function SidebarChatOptions({ setPageState }) {
       }}
       component="nav"
     >
-      {/* Temp button to change pages */}
-
-      {/*/!* Join an existing chat *!/*/}
-      {/*<ListItemButton>*/}
-      {/*  <ListItemIcon>*/}
-      {/*    <GroupAddIcon />*/}
-      {/*  </ListItemIcon>*/}
-      {/*  <ListItemText primary="Join Room" />*/}
-      {/*</ListItemButton>*/}
-
-      {/*/!* Create a new chat *!/*/}
-      {/*<ListItemButton>*/}
-      {/*  <ListItemIcon>*/}
-      {/*    <AddCircleIcon />*/}
-      {/*  </ListItemIcon>*/}
-      {/*  <ListItemText primary="Create Room" />*/}
-      {/*</ListItemButton>*/}
-
-      {/*/!* Browse public chats via dropdown *!/*/}
-      {/*<ListItemButton onClick={handleClick}>*/}
-      {/*  <ListItemIcon>*/}
-      {/*    <ListIcon />*/}
-      {/*  </ListItemIcon>*/}
-      {/*  <ListItemText primary="Browse Rooms" />*/}
-      {/*  {open ? <ExpandLess /> : <ExpandMore />}*/}
-      {/*</ListItemButton>*/}
-      {/*<Collapse*/}
-      {/*  in={open}*/}
-      {/*  timeout="auto"*/}
-      {/*  unmountOnExit*/}
-      {/*>*/}
       <ListItemButton onClick={() => setPageState(PageState.Chat)}>
         <ListItemIcon>
           <GroupAddIcon />
@@ -90,17 +61,6 @@ export default function SidebarChatOptions({ setPageState }) {
         width={"80%"}
         onClick={() => setShowJoinRoomModal(true)}
       />
-
-      {/* Populate this list with all open public chats */}
-      {/*<List*/}
-      {/*  component="div"*/}
-      {/*  disablePadding*/}
-      {/*>*/}
-      {/*  {rooms.map((room, index) => (*/}
-      {/*    <ChatRoomListItem room={room} />*/}
-      {/*  ))}*/}
-      {/*</List>*/}
-      {/*</Collapse>*/}
     </List>
   );
 }
