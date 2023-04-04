@@ -28,7 +28,7 @@ export default function SidebarChatOptions({ setPageState }) {
 
   return (
     <List
-      sx={{ width: "100%", maxWidth: 360, bgcolor: "background.paper" }}
+      sx={{ pt: 3, width: "100%", maxWidth: 360, bgcolor: "background.paper" }}
       component="nav"
     >
       {/* Temp button to change pages */}
