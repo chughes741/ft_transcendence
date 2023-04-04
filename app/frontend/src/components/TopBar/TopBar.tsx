@@ -68,7 +68,9 @@ function TopBar({setPageState}) {
                 style={{
                   border: "none",
                   backgroundColor: "transparent",
-                  cursor: "pointer"
+                  cursor: "pointer",
+                  paddingTop: "2vh",
+                  paddingLeft: "1vw"
                 }}
             >
               <LogoSvg />
@@ -94,7 +96,7 @@ function TopBar({setPageState}) {
             <Tooltip title="Open settings">
               <IconButton
                 onClick={handleOpenUserMenu}
-                sx={{ p: 0 }}
+                sx={{ p: 0, pr: 2 }}
               >
                 <Avatar alt="Remy" />
               </IconButton>
