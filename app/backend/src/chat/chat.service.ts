@@ -84,7 +84,7 @@ export class ChatService {
     return {
       name: room.name,
       status: room.status,
-      latestMessage: new MessageEntity(latestMessage),
+      latestMessage: latestMessage ? new MessageEntity(latestMessage) : null,
       lastActivity: lastActivity
     };
   }
