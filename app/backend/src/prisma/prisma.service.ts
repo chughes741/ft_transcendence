@@ -7,7 +7,8 @@ import {
   ChatRoom,
   Message,
   Prisma,
-  PrismaClient
+  PrismaClient,
+  User
 } from "@prisma/client";
 import {
   ChatRoomDto,
@@ -63,6 +64,26 @@ export class PrismaService extends PrismaClient {
 
     return user ? user.id : null;
   }
+
+
+  //GET ROOM MEMBERS
+  async getMembersByRoom(roomName: string): Promise<User[]>{
+      const chat = await this.chatRoom.findUnique({
+        where: { name: roomName },
+        include: { members: { select: { member: true } } },
+    });
+
+    if (chat === null || chat.members.length === 0)
+    {
+      console.log("Prisma service returs NULL");
+      return []
+    }
+    console.log("Prisma service returns something");
+    
+    const members = chat?.members?.map(user => user.member)
+    return members;
+  }
+  // End
 
   async addUser(dto: UserDto) {
     const data: Prisma.UserCreateInput = {
@@ -292,4 +313,7 @@ export class PrismaService extends PrismaClient {
   addMatch(dto1: PlayerDto, dto2: PlayerDto) {
     return { dto1, dto2 };
   }
+
 }
+
+

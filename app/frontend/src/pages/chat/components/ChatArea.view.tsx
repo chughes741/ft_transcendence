@@ -32,10 +32,12 @@ const ChatAreaView = () => {
           sx={{
             textAlign: "center",
             backgroundColor: "#1f1f1f",
-            padding: "6px"
+            padding: "6px",
+            height: "5vh",
+            fontSize: "1.5rem"
           }}
         >
-          <h2>{currentRoomName}</h2>
+          {currentRoomName}
         </Grid>
         <Grid
           item
