@@ -1,5 +1,5 @@
 import GamePage from "../pages/GamePage";
-import ProfilePage from "src/pages/profile/ProfilePage";
+import ProfileView from "src/views/profile/profile.view";
 import { ChatView } from "../pages/chat/ChatView";
 
 /**
@@ -19,7 +19,7 @@ export function RootViewModel(props) {
       return <ChatView />;
     }
     case 3: {
-      return <ProfilePage />;
+      return <ProfileView />;
     }
     default: {
       return <div></div>;
