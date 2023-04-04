@@ -36,18 +36,18 @@ const RoomList: React.FC = () => {
 
   return (
     <div className="room-list">
-      <ButtonFunky
-        content="Create New Room"
-        onClick={() => setShowCreateRoomModal(true)}
-        width="100%"
-      />
-      <br />
-      <ButtonFunky
-        content="Join Room"
-        onClick={() => setShowJoinRoomModal(true)}
-        width="100%"
-      />
-      <br />
+      {/*<ButtonFunky*/}
+      {/*  content="Create New Room"*/}
+      {/*  onClick={() => setShowCreateRoomModal(true)}*/}
+      {/*  width="100%"*/}
+      {/*/>*/}
+      {/*<br />*/}
+      {/*<ButtonFunky*/}
+      {/*  content="Join Room"*/}
+      {/*  onClick={() => setShowJoinRoomModal(true)}*/}
+      {/*  width="100%"*/}
+      {/*/>*/}
+          {/*<br />*/}
       <Box sx={{ overflow: "auto" }}>
         <List>
           {Object.entries(rooms).map(([roomId, messages]) => (
