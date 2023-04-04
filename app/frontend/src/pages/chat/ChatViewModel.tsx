@@ -294,10 +294,11 @@ export const ChatViewModelProvider = ({ children }) => {
         roomId: newMessage.roomName,
         message: newMessage.content,
         timestamp_readable,
-        timestamp,
+        timestamp: new Date(timestamp),
         isOwn: newMessage.sender === tempUsername,
         displayUser: true,
-        displayTimestamp: true
+        displayTimestamp: true,
+        displayDate: true
       };
       addMessageToRoom(newMessage.roomName, messageData);
     });

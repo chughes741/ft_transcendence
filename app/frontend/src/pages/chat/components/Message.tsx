@@ -1,7 +1,7 @@
 /*******************/
 /*     System      */
 /*******************/
-import { Tooltip } from "@mui/material";
+import { Divider, Tooltip, Typography } from "@mui/material";
 import { forwardRef } from "react";
 import styled from "styled-components";
 
@@ -43,6 +43,7 @@ export type MessageType = {
   isOwn: boolean;
   displayUser: boolean;
   displayTimestamp: boolean;
+  displayDate: boolean;
 };
 
 type MessageProps = {
@@ -66,6 +67,28 @@ const Message = forwardRef<HTMLDivElement, MessageProps>(({ message }, ref) => {
       isCurrentUser={message.isOwn}
       ref={ref}
     >
+      {message.displayDate && (
+        <>
+          <li style={{ width: "100%", display: "flex", alignItems: "center" }}>
+            <Divider style={{ flex: 1 }} />
+            <Typography
+              sx={{ mx: 1, mt: 0.5 }}
+              color="text.secondary"
+              display="block"
+              variant="caption"
+              component="span"
+            >
+              {message.timestamp.toLocaleDateString("en-US", {
+                weekday: "long",
+                day: "numeric",
+                month: "long",
+                year: "numeric"
+              })}
+            </Typography>
+            <Divider style={{ flex: 1 }} />
+          </li>
+        </>
+      )}
       {message.displayUser && (
         <span className="sender">{message.isOwn ? "Me" : message.user}</span>
       )}
