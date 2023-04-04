@@ -192,7 +192,13 @@ export const ChatViewModelProvider = ({ children }) => {
         { roomName, password, user: tempUsername },
         // Socket callback
         (res: DevError | ChatRoomPayload) => {
-          if (typeof res === "object") {
+          if ((res as DevError).error !== undefined) {
+            console.log(
+              "Error response from join room: ",
+              (res as DevError).error
+            );
+          } else {
+            // res is ChatRoomPayload
             console.log("Response from join room: ", res);
           }
         }
@@ -338,27 +344,28 @@ export const ChatViewModelProvider = ({ children }) => {
     socket.on("onMessage", (newMessage: MessagePayload) => {
       console.log("Ding ding, you've got mail:", newMessage);
 
-      const timestamp = newMessage.createdAt;
-      const timestamp_readable = new Date(timestamp).toLocaleTimeString(
-        "en-US",
-        {
-          hour: "numeric",
-          minute: "numeric",
-          hour12: true
-        }
-      );
+      // const timestamp = newMessage.createdAt;
+      // const timestamp_readable = new Date(timestamp).toLocaleTimeString(
+      //   "en-US",
+      //   {
+      //     hour: "numeric",
+      //     minute: "numeric",
+      //     hour12: true
+      //   }
+      // );
 
-      const messageData: MessageType = {
-        user: newMessage.sender.username,
-        roomId: newMessage.room.name,
-        message: newMessage.content,
-        timestamp_readable,
-        timestamp: new Date(timestamp),
-        isOwn: newMessage.sender.username === tempUsername,
-        displayUser: true,
-        displayTimestamp: true,
-        displayDate: true
-      };
+      // const messageData: MessageType = {
+      //   user: newMessage.sender.username,
+      //   roomId: newMessage.room.name,
+      //   message: newMessage.content,
+      //   timestamp_readable,
+      //   timestamp: new Date(timestamp),
+      //   isOwn: newMessage.sender.username === tempUsername,
+      //   displayUser: true,
+      //   displayTimestamp: true,
+      //   displayDate: true
+      // };
+      const messageData = convertMessagePayloadToMessageType(newMessage);
       addMessageToRoom(newMessage.room.name, messageData);
     });
 

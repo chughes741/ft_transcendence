@@ -287,18 +287,8 @@ export class ChatGateway
     logger.log(`Message sent successfully: `);
     console.log(ret);
     // If nothing went wrong, send the message to the room
-    this.server.to(sendDto.roomName).emit("roomMessage", {
-      sender: ret.sender.username,
-      roomName: ret.room.name,
-      content: ret.content,
-      timestamp: ret.createdAt
-    });
-    this.server.emit("onMessage", {
-      sender: ret.sender.username,
-      roomName: ret.room.name,
-      content: ret.content,
-      timestamp: ret.createdAt
-    }); // FIXME: temporarily broadcast to all clients, for testing purposes
+    this.server.to(sendDto.roomName).emit("roomMessage", ret);
+    this.server.emit("onMessage", ret); // FIXME: temporarily broadcast to all clients, for testing purposes
     logger.log(
       `User ${sendDto.sender} sent message in room ${sendDto.roomName}: ${sendDto.content}`
     );
