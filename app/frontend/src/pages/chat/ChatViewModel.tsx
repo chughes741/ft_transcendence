@@ -103,7 +103,7 @@ export const ChatViewModelProvider = ({ children }) => {
       });
     }
     setCurrentRoomName(roomName);
-    if (rooms[roomName]) setCurrentRoomMessages(rooms[roomName]);
+    setCurrentRoomMessages(rooms[roomName]);
     setPageState(PageState.Chat);
   };
 
