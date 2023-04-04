@@ -7,6 +7,7 @@ import { ChatViewModelProvider } from "src/pages/chat/ChatViewModel";
 import { CssBaseline, ThemeProvider } from "@mui/material";
 import { socket, WebSocketProvider } from "src/contexts/WebSocketContext";
 import customTheme from "src/theme";
+import { PageStateProvider } from "./contexts/PageStateContext";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 const theme = customTheme();
@@ -16,10 +17,12 @@ root.render(
     <React.StrictMode>
       <WebSocketProvider value={socket}>
         <ThemeProvider theme={theme}>
-          <ChatViewModelProvider>
-            <CssBaseline />
-            <RootView />
-          </ChatViewModelProvider>
+          <PageStateProvider>
+            <ChatViewModelProvider>
+              <CssBaseline />
+              <RootView />
+            </ChatViewModelProvider>
+          </PageStateProvider>
         </ThemeProvider>
       </WebSocketProvider>
     </React.StrictMode>

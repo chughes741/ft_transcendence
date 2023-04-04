@@ -5,6 +5,7 @@ import SideBar from "src/components/SideBar/SideBar";
 import TopBar from "src/components/TopBar/TopBar";
 import { RootViewModel } from "./root.viewModel";
 import { PageState } from "./root.model";
+import { usePageStateContext } from "../contexts/PageStateContext";
 
 /**
  * Helmet with dynamic page names
@@ -27,8 +28,8 @@ function HelmetView({ state }) {
  * Rendering entrypoint
  * @returns - View model with dynamic content
  */
-export function RootView() {
-  const [pageState, setPageState] = useState(PageState.Home);
+export function RootView(): JSX.Element {
+  const { pageState, setPageState } = usePageStateContext();
 
   return (
     <>

@@ -26,7 +26,6 @@ export const useRoomModal = (showModal: boolean, closeModal: () => void) => {
     setPassword,
     showPassword,
     setShowPassword,
-    roomNameInput,
     togglePasswordVisibility
   };
 };

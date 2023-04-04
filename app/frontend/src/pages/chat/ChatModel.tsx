@@ -5,22 +5,22 @@ import { MessageType } from "./components/Message";
 
 export interface ChatModelType {
   tempUsername: string;
-  setTempUsername: (string) => void;
-  contextMenuVisible: boolean;
-  setContextMenuVisible: (arg: boolean) => void;
-  contextMenuPosition: { x: number; y: number };
+  setTempUsername: (username: string) => void;
+  currentRoomName: string;
+  setCurrentRoomName: (roomName: string) => void;
   rooms: { [key: string]: Array<MessageType> };
   setRooms: (
     callback: (prevRooms: { [key: string]: Array<MessageType> }) => {
       [key: string]: Array<MessageType>;
     }
   ) => void;
-  currentRoomName: string;
-  setCurrentRoomName: (roomName: string) => void;
-  contextMenuData: RoomType | null;
-  handleContextMenu: (e: React.MouseEvent, roomData: { name: string }) => void;
   currentRoomMessages: Array<MessageType>;
   setCurrentRoomMessages: (messages: Array<MessageType>) => void;
+  contextMenuVisible: boolean;
+  setContextMenuVisible: (arg: boolean) => void;
+  contextMenuPosition: { x: number; y: number };
+  contextMenuData: RoomType | null;
+  handleContextMenu: (e: React.MouseEvent, roomData: { name: string }) => void;
   showCreateRoomModal: boolean;
   setShowCreateRoomModal: (visible: boolean) => void;
   showJoinRoomModal: boolean;
@@ -31,13 +31,13 @@ export interface ChatModelType {
 }
 
 export const useChatModel = (): ChatModelType => {
+  const [tempUsername, setTempUsername] = useState("");
   const [currentRoomName, setCurrentRoomName] = useState("");
   const [rooms, setRooms] = useState({});
   const [currentRoomMessages, setCurrentRoomMessages] = useState([]);
   const [showCreateRoomModal, setShowCreateRoomModal] = useState(false);
   const [showJoinRoomModal, setShowJoinRoomModal] = useState(false);
   const [unreadMessages, setUnreadMessages] = useState({});
-  const [tempUsername, setTempUsername] = useState("");
   const [contextMenuData, setContextMenuData] = useState(null);
   const [contextMenuVisible, setContextMenuVisible] = useState(false);
   const [contextMenuPosition, setContextMenuPosition] = useState({
@@ -60,25 +60,25 @@ export const useChatModel = (): ChatModelType => {
   };
 
   return {
+    tempUsername,
+    setTempUsername,
     currentRoomName,
     setCurrentRoomName,
     rooms,
     setRooms,
     currentRoomMessages,
     setCurrentRoomMessages,
+    contextMenuData,
+    contextMenuPosition,
+    handleContextMenu,
+    contextMenuVisible,
+    setContextMenuVisible,
     showCreateRoomModal,
     setShowCreateRoomModal,
     showJoinRoomModal,
     setShowJoinRoomModal,
     unreadMessages,
     setUnreadMessages,
-    tempUsername,
-    setTempUsername,
-    contextMenuData,
-    contextMenuVisible,
-    setContextMenuVisible,
-    contextMenuPosition,
-    handleContextMenu,
     truncateText
   };
 };

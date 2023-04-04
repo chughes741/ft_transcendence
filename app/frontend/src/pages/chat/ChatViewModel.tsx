@@ -1,6 +1,8 @@
 // ChatViewModel.tsx
 import { useEffect } from "react";
+import { usePageStateContext } from "../../contexts/PageStateContext";
 import { socket } from "../../contexts/WebSocketContext";
+import { PageState } from "../../views/root.model";
 import { ChatModelType, useChatModel } from "./ChatModel";
 import { MessageType } from "./components/Message";
 import { ChatViewModelContext } from "./contexts/ChatViewModelContext";
@@ -49,6 +51,7 @@ export interface ChatViewModelType extends ChatModelType {
     roomName: string,
     newStatus: "PRIVATE" | "PUBLIC" | "PASSWORD"
   ) => Promise<boolean>;
+  selectRoom: (roomName: string) => void;
 }
 
 export const ChatViewModelProvider = ({ children }) => {
@@ -56,27 +59,53 @@ export const ChatViewModelProvider = ({ children }) => {
   /*   State Variables   */
   /***********************/
   const {
+    tempUsername,
+    setTempUsername,
     currentRoomName,
     setCurrentRoomName,
     rooms,
     setRooms,
     currentRoomMessages,
     setCurrentRoomMessages,
+    contextMenuPosition,
+    contextMenuData,
+    handleContextMenu,
+    contextMenuVisible,
+    setContextMenuVisible,
     showCreateRoomModal,
     setShowCreateRoomModal,
     showJoinRoomModal,
     setShowJoinRoomModal,
     unreadMessages,
     setUnreadMessages,
-    tempUsername,
-    setTempUsername,
-    contextMenuData,
-    contextMenuVisible,
-    setContextMenuVisible,
-    contextMenuPosition,
-    handleContextMenu,
     truncateText
   } = useChatModel();
+
+  const { setPageState } = usePageStateContext();
+
+  /*******************************/
+  /*   Wrapper State Functions   */
+  /*******************************/
+
+  // This function will be called when a room focus is changed.
+  // If the previous room is the same as the current one, toggle the page state to PageState.Home
+  const selectRoom = (roomName: string) => {
+    if (currentRoomName === roomName) {
+      setCurrentRoomName("");
+      setPageState(PageState.Home);
+      return;
+    }
+    if (!rooms[roomName]) {
+      setRooms((prevRooms) => {
+        const newRooms = { ...prevRooms };
+        newRooms[roomName] = [];
+        return newRooms;
+      });
+    }
+    setCurrentRoomName(roomName);
+    if (rooms[roomName]) setCurrentRoomMessages(rooms[roomName]);
+    setPageState(PageState.Chat);
+  };
 
   /**********************/
   /*   Room Functions   */
@@ -151,12 +180,7 @@ export const ChatViewModelProvider = ({ children }) => {
       });
 
       // Will only reach this line if the socket callback is successful
-      setRooms((prevRooms) => {
-        const newRooms = { ...prevRooms };
-        newRooms[roomName] = [];
-        return newRooms;
-      });
-      setCurrentRoomName(roomName);
+      selectRoom(roomName);
       // setCurrentRoomMessages(rooms[roomName]);
       resolve(true);
     });
@@ -222,14 +246,7 @@ export const ChatViewModelProvider = ({ children }) => {
         }
       );
 
-      setRooms((prevRooms) => {
-        const newRooms = { ...prevRooms };
-        newRooms[roomName] = [];
-        return newRooms;
-      });
-
-      setCurrentRoomName(roomName);
-      // setCurrentRoomMessages(rooms[roomName]);
+      selectRoom(roomName);
       resolve(true);
     });
   };
@@ -344,27 +361,6 @@ export const ChatViewModelProvider = ({ children }) => {
     socket.on("onMessage", (newMessage: MessagePayload) => {
       console.log("Ding ding, you've got mail:", newMessage);
 
-      // const timestamp = newMessage.createdAt;
-      // const timestamp_readable = new Date(timestamp).toLocaleTimeString(
-      //   "en-US",
-      //   {
-      //     hour: "numeric",
-      //     minute: "numeric",
-      //     hour12: true
-      //   }
-      // );
-
-      // const messageData: MessageType = {
-      //   user: newMessage.sender.username,
-      //   roomId: newMessage.room.name,
-      //   message: newMessage.content,
-      //   timestamp_readable,
-      //   timestamp: new Date(timestamp),
-      //   isOwn: newMessage.sender.username === tempUsername,
-      //   displayUser: true,
-      //   displayTimestamp: true,
-      //   displayDate: true
-      // };
       const messageData = convertMessagePayloadToMessageType(newMessage);
       addMessageToRoom(newMessage.room.name, messageData);
     });
@@ -404,6 +400,21 @@ export const ChatViewModelProvider = ({ children }) => {
     }
   }, [tempUsername, ""]);
 
+  // // If the current room name is changed, set the previous room name to the old current room name
+  // // and set the current room messages to the new room's messages.
+  // // If the name is not the same as the previous room name, set the page state to PageState.Chat
+  // useEffect(() => {
+  //   console.log(`Current room name: ${currentRoomName}`);
+  //   console.log(`Previous room name: ${prevRoomName}`);
+  //   if (currentRoomName !== prevRoomName) {
+  //     setPageState(PageState.Chat);
+  //     setPrevRoomName(currentRoomName);
+  //     setCurrentRoomMessages(rooms[currentRoomName]);
+  //   } else {
+  //     setPageState(PageState.Home);
+  //   }
+  // }, [currentRoomName, ""]);
+
   // Attempt at focusing the room messages when a new room is selected
   useEffect(() => {
     if (currentRoomMessages && rooms[currentRoomName]) {
@@ -414,6 +425,8 @@ export const ChatViewModelProvider = ({ children }) => {
   return (
     <ChatViewModelContext.Provider
       value={{
+        tempUsername,
+        setTempUsername,
         currentRoomName,
         setCurrentRoomName,
         rooms,
@@ -424,21 +437,20 @@ export const ChatViewModelProvider = ({ children }) => {
         setShowCreateRoomModal,
         showJoinRoomModal,
         setShowJoinRoomModal,
-        unreadMessages,
-        setUnreadMessages,
-        tempUsername,
-        setTempUsername,
         contextMenuData,
-        contextMenuVisible,
-        setContextMenuVisible,
         contextMenuPosition,
         handleContextMenu,
+        contextMenuVisible,
+        setContextMenuVisible,
+        unreadMessages,
+        setUnreadMessages,
         truncateText,
         joinRoom,
         sendRoomMessage,
         createNewRoom,
         leaveRoom,
-        changeRoomStatus
+        changeRoomStatus,
+        selectRoom
       }}
     >
       {children}
