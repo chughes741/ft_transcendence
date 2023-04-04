@@ -1,38 +1,7 @@
-/*******************/
-/*     System      */
-/*******************/
-import { Tooltip } from "@mui/material";
 import { forwardRef } from "react";
-import styled from "styled-components";
-
-/***************/
-/*     CSS     */
-/***************/
+import { Tooltip, Typography, Divider, Avatar } from "@mui/material";
 import "../styles/Message.css";
-
-interface StyledMessageProps {
-  isCurrentUser: boolean;
-}
-
-// FIXME: implement regular css with conditionals
-const StyledMessage = styled.div<StyledMessageProps>`
-  display: flex;
-  flex-direction: column;
-  align-items: ${({ isCurrentUser }) =>
-    isCurrentUser ? "flex-end" : "flex-start"};
-  width: 94%;
-  margin: 5px 3%;
-
-  .sender {
-    font-weight: 700;
-    color: #999;
-  }
-
-  .timestamp {
-    font-size: 12px;
-    color: #999;
-  }
-`;
+import { Box } from "@mui/system";
 
 export type MessageType = {
   user: string;
@@ -43,6 +12,7 @@ export type MessageType = {
   isOwn: boolean;
   displayUser: boolean;
   displayTimestamp: boolean;
+  displayDate: boolean;
 };
 
 type MessageProps = {
@@ -61,14 +31,45 @@ const Message = forwardRef<HTMLDivElement, MessageProps>(({ message }, ref) => {
       hour12: true
     }
   );
-  console.log(`tooltip_timestamp: ${tooltip_timestamp}`);
+
   return (
-    <StyledMessage
-      isCurrentUser={message.isOwn}
+    <div
+      className={`message-wrapper ${message.isOwn ? "own-message" : ""}`}
       ref={ref}
     >
+      {message.displayDate && (
+        <>
+          <li style={{ width: "100%", display: "flex", alignItems: "center" }}>
+            <Divider style={{ flex: 1 }} />
+            <Typography
+              sx={{ mx: 1, mt: 0.5 }}
+              color="text.secondary"
+              display="block"
+              variant="caption"
+              component="span"
+            >
+              {message.timestamp.toLocaleDateString("en-US", {
+                weekday: "long",
+                day: "numeric",
+                month: "long",
+                year: "numeric"
+              })}
+            </Typography>
+            <Divider style={{ flex: 1 }} />
+          </li>
+        </>
+      )}
       {message.displayUser && (
-        <span className="sender">{message.isOwn ? "Me" : message.user}</span>
+        <Box
+          display="flex"
+          flexDirection="row"
+        >
+          <Avatar
+            alt={message.user}
+            src={`https://i.pravatar.cc/150?u=${message.user}`}
+          />
+          <span className="sender">{message.isOwn ? "Me" : message.user}</span>
+        </Box>
       )}
       <Tooltip
         title={tooltip_timestamp}
@@ -84,7 +85,7 @@ const Message = forwardRef<HTMLDivElement, MessageProps>(({ message }, ref) => {
       {message.displayTimestamp && (
         <span className="timestamp">{message.timestamp_readable}</span>
       )}
-    </StyledMessage>
+    </div>
   );
 });
 

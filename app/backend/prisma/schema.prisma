@@ -118,6 +118,7 @@ model ChatMember {
   endOfBan  DateTime?
   endOfMute DateTime?
 
+  @@unique([memberId, roomId])
   @@map("chatMembers")
 }
 

@@ -62,7 +62,7 @@ const RoomList: React.FC = () => {
               <ListItemButton selected={currentRoomName === roomId}>
                 <ListItemIcon>
                   <img
-                    src={`https://i.pravatar.cc/150?u=${roomId}`} // Use a random profile picture for each room
+                    src={`https://i.pravatar.cc/150?u=${roomId}`}
                     alt="Profile"
                   />
                 </ListItemIcon>

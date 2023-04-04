@@ -21,7 +21,14 @@ export type DevError = {
   error: string;
 };
 
-export interface Message extends PrismaMessage {
+export interface ChatRoomEntity {
+  name: string;
+  status: ChatRoomStatus;
+  latestMessage: MessageEntity;
+  lastActivity: Date;
+}
+
+export interface MessageEntity extends PrismaMessage {
   sender: { username: string };
   room: { name: string };
 }
@@ -189,7 +196,10 @@ export class ChatGateway
    * @returns DevError or room name
    */
   @SubscribeMessage("joinRoom")
-  async joinRoom(client: Socket, dto: JoinRoomDto): Promise<DevError | string> {
+  async joinRoom(
+    client: Socket,
+    dto: JoinRoomDto
+  ): Promise<DevError | ChatRoomEntity> {
     const userId: string = this.userConnectionsService.getUserBySocket(
       client.id
     );
@@ -206,23 +216,29 @@ export class ChatGateway
     if (ret instanceof Error) {
       logger.error(ret);
       return { error: ret.message };
-    } else if (ret instanceof Array) {
-      const messages: Message[] = ret;
+    } else {
+      const roomInfo: ChatRoomEntity = ret;
       client.join(dto.roomName);
-      messages.forEach((message) => {
-        client.emit("onMessage", {
-          sender: message.sender.username,
-          roomName: message.room.name,
-          content: message.content,
-          timestamp: message.updatedAt
-        });
-      });
       this.server
         .to(dto.roomName)
         .emit("roomMessage", `User ${dto.user} joined room ${dto.roomName}`);
       logger.log(`User ${dto.user} joined room ${dto.roomName}`);
-      return dto.roomName;
+      return roomInfo;
     }
+  }
+
+  // Add a new event to get a page of messages
+  @SubscribeMessage("getRoomMessagesPage")
+  async getRoomMessagesPage(
+    client: Socket,
+    dto: { roomName: string; date: Date; pageSize: number }
+  ): Promise<MessageEntity[]> {
+    const messages = await this.chatService.getRoomMessagesPage(
+      dto.roomName,
+      dto.date,
+      dto.pageSize
+    );
+    return messages;
   }
 
   /**
@@ -268,16 +284,20 @@ export class ChatGateway
     const ret = await this.chatService.sendMessage(sendDto);
     if (ret instanceof Error) return { error: ret.message };
 
+    logger.log(`Message sent successfully: `);
+    console.log(ret);
     // If nothing went wrong, send the message to the room
     this.server.to(sendDto.roomName).emit("roomMessage", {
-      sender: sendDto.sender,
-      roomName: sendDto.roomName,
-      content: sendDto.content
+      sender: ret.sender.username,
+      roomName: ret.room.name,
+      content: ret.content,
+      timestamp: ret.createdAt
     });
     this.server.emit("onMessage", {
-      sender: sendDto.sender,
-      roomName: sendDto.roomName,
-      content: sendDto.content
+      sender: ret.sender.username,
+      roomName: ret.room.name,
+      content: ret.content,
+      timestamp: ret.createdAt
     }); // FIXME: temporarily broadcast to all clients, for testing purposes
     logger.log(
       `User ${sendDto.sender} sent message in room ${sendDto.roomName}: ${sendDto.content}`
