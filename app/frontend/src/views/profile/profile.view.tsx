@@ -1,8 +1,11 @@
+import { useEffect, useState } from "react";
+
 /** Module Imports */
+import { Avatar, Paper, Stack } from "@mui/material";
+import { deepOrange } from "@mui/material/colors";
+
+/** Table from MUI */
 import {
-  Avatar,
-  Paper,
-  Stack,
   Table,
   TableBody,
   TableCell,
@@ -10,15 +13,10 @@ import {
   TableHead,
   TableRow
 } from "@mui/material";
-import { deepOrange } from "@mui/material/colors";
-
-/** Component Imports */
-import "src/views/profile/profile.view.tsx.css";
 
 /** Mock data import */
 import { Item, FetchMatchHistory } from "src/views/profile/profile.viewModel";
 import { MatchHistoryItem } from "./profile.model";
-import { useEffect, useState } from "react";
 
 /**
  * Creates profile page header
@@ -34,7 +32,7 @@ export function ProfileHeader() {
 }
 
 /**
- * Creates a TableRow with MatchHistoryItem
+ * Creates a TableRow with a MatchHistoryItem
  * @param {MatchHistoryItem} row
  */
 function MatchHistoryRow(row: MatchHistoryItem) {
@@ -42,7 +40,7 @@ function MatchHistoryRow(row: MatchHistoryItem) {
     <>
       <TableRow
         sx={{
-          bgcolor: row.winner === true ? "info.light" : "error.light",
+          bgcolor: row.winner === true ? "info.dark" : "error.dark",
           "&:hover": {
             opacity: [0.9, 0.8, 0.7]
           }
@@ -66,18 +64,20 @@ function MatchHistoryRow(row: MatchHistoryItem) {
 /**
  * Loads match history component
  */
-
 function MatchHistory() {
   const [matches, setMatches] = useState<MatchHistoryItem[]>([]);
 
+  /** Fetch players match history from server */
   useEffect(() => {
     async function fetchMatches() {
       const history = await FetchMatchHistory();
-      console.log(history);
       setMatches(history);
     }
     fetchMatches();
   }, []);
+
+  /** Data column names */
+  const cell_names = ["Match type", "Players", "Results", "Date"];
 
   return (
     <>
@@ -85,10 +85,9 @@ function MatchHistory() {
         <Table>
           <TableHead>
             <TableRow>
-              <TableCell align="center">Match Type</TableCell>
-              <TableCell align="center">Players</TableCell>
-              <TableCell align="center">Results</TableCell>
-              <TableCell align="center">Date</TableCell>
+              {cell_names.map((cell) => (
+                <TableCell align="center">{cell}</TableCell>
+              ))}
             </TableRow>
           </TableHead>
           <TableBody>{matches.map((row) => MatchHistoryRow(row))}</TableBody>
@@ -105,7 +104,8 @@ export default function ProfileView() {
   return (
     <>
       <Stack
-        className="profile-stack"
+        id="profile-stack"
+        width={"80%"}
         spacing={2}
       >
         <ProfileHeader />

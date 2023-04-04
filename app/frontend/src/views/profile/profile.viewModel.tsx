@@ -7,7 +7,7 @@ import { socket } from "src/contexts/WebSocketContext";
 import { MatchHistoryItem } from "src/views/profile/profile.model";
 
 /**
- *
+ * Sends a fetch message to the backend to retrieve match history
  * @returns {Promise<MatchHistoryItem[]>}
  */
 export function FetchMatchHistory(): Promise<MatchHistoryItem[]> {
@@ -18,6 +18,7 @@ export function FetchMatchHistory(): Promise<MatchHistoryItem[]> {
   });
 }
 
+/** Styling for Profile header */
 export const Item = styled(Paper)(({ theme }) => ({
   backgroundColor: theme.palette.mode === "dark" ? "#1A2027" : "#fff",
   ...theme.typography.body2,
