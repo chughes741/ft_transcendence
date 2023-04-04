@@ -1,38 +1,6 @@
-/*******************/
-/*     System      */
-/*******************/
-import { Divider, Tooltip, Typography } from "@mui/material";
 import { forwardRef } from "react";
-import styled from "styled-components";
-
-/***************/
-/*     CSS     */
-/***************/
+import { Tooltip, Typography, Divider } from "@mui/material";
 import "../styles/Message.css";
-
-interface StyledMessageProps {
-  isCurrentUser: boolean;
-}
-
-// FIXME: implement regular css with conditionals
-const StyledMessage = styled.div<StyledMessageProps>`
-  display: flex;
-  flex-direction: column;
-  align-items: ${({ isCurrentUser }) =>
-    isCurrentUser ? "flex-end" : "flex-start"};
-  width: 94%;
-  margin: 5px 3%;
-
-  .sender {
-    font-weight: 700;
-    color: #999;
-  }
-
-  .timestamp {
-    font-size: 12px;
-    color: #999;
-  }
-`;
 
 export type MessageType = {
   user: string;
@@ -62,9 +30,10 @@ const Message = forwardRef<HTMLDivElement, MessageProps>(({ message }, ref) => {
       hour12: true
     }
   );
+
   return (
-    <StyledMessage
-      isCurrentUser={message.isOwn}
+    <div
+      className={`message-wrapper ${message.isOwn ? "own-message" : ""}`}
       ref={ref}
     >
       {message.displayDate && (
@@ -106,7 +75,7 @@ const Message = forwardRef<HTMLDivElement, MessageProps>(({ message }, ref) => {
       {message.displayTimestamp && (
         <span className="timestamp">{message.timestamp_readable}</span>
       )}
-    </StyledMessage>
+    </div>
   );
 });
 

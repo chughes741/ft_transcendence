@@ -1,3 +1,15 @@
+.message-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  width: 94%;
+  margin: 5px 3%;
+}
+
+.message-wrapper.own-message {
+  align-items: flex-end;
+}
+
 .sender {
   font-weight: 700;
   color: #999;
@@ -18,5 +30,4 @@
 
 .message-content.own-message {
   background-color: #00b4d8;
-  align-self: flex-end;
 }
