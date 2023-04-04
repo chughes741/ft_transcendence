@@ -277,6 +277,18 @@ export class PrismaService extends PrismaClient {
   async getMessagesInChatRoom(roomId: number): Promise<MessageDto[]> {
     return this.message.findMany({ where: { roomId } });
   }
+
+  async getLatestMessage(roomId: number): Promise<MessageEntity | null> {
+    return this.message.findFirst({
+      where: { roomId },
+      orderBy: { createdAt: "desc" },
+      include: {
+        sender: { select: { username: true } },
+        room: { select: { name: true } }
+      }
+    });
+  }
+
   addMatch(dto1: PlayerDto, dto2: PlayerDto) {
     return { dto1, dto2 };
   }

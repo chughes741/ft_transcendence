@@ -3,6 +3,7 @@ import { ChatMemberRank, ChatRoomStatus } from "@prisma/client";
 import { PrismaService } from "../prisma/prisma.service";
 import { UserConnectionsService } from "../user-connections.service";
 import {
+  ChatRoomEntity,
   CreateChatRoomDto,
   JoinRoomDto,
   MessageEntity,
@@ -34,7 +35,7 @@ export class ChatService {
    * @param joinDto - The room name, password, and user
    * @returns - The last 50 messages in the room, or an error
    */
-  async joinRoom(joinDto: JoinRoomDto): Promise<MessageEntity[] | Error> {
+  async joinRoom(joinDto: JoinRoomDto): Promise<ChatRoomEntity | Error> {
     const { roomName, password, user } = joinDto;
     let room = await this.prismaService.chatRoom.findUnique({
       where: { name: roomName }
@@ -60,11 +61,6 @@ export class ChatService {
     ) {
       return { name: "IncorrectPasswordError", message: "Incorrect password" };
     }
-    const messagesPage = await this.prismaService.getChatMessagesPage(
-      room.id,
-      new Date(),
-      50
-    );
 
     // Add the user as a chat member if they are not already a member
     const userId = await this.prismaService.getUserIdByNick(user);
@@ -72,7 +68,6 @@ export class ChatService {
     const chatMember = await this.prismaService.chatMember.findFirst({
       where: { memberId: userId, roomId: room.id }
     });
-
     if (!chatMember) {
       await this.prismaService.addChatMember(
         userId,
@@ -81,7 +76,38 @@ export class ChatService {
       );
     }
 
-    return messagesPage.reverse();
+    const latestMessage = await this.prismaService.getLatestMessage(room.id);
+    const lastActivity = latestMessage
+      ? latestMessage.createdAt
+      : room.createdAt;
+
+    return {
+      name: room.name,
+      status: room.status,
+      latestMessage: latestMessage,
+      lastActivity: lastActivity
+    };
+  }
+
+  /**
+   * get a page of messages from a room
+   * @param roomName - The name of the room
+   * @param date - The date to start from
+   * @param pageSize - The number of messages to return
+   * @returns - An array of messages from oldest to newest, or an error
+   */
+  async getRoomMessagesPage(
+    roomName: string,
+    date: Date,
+    pageSize: number
+  ): Promise<MessageEntity[]> {
+    const roomId = await this.prismaService.getChatRoomId(roomName);
+    if (!roomId) {
+      throw new Error("Room not found");
+    }
+    return (
+      await this.prismaService.getChatMessagesPage(roomId, date, pageSize)
+    ).reverse();
   }
 
   /**

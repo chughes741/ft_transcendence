@@ -5,12 +5,21 @@ import { ChatModelType, useChatModel } from "./ChatModel";
 import { MessageType } from "./components/Message";
 import { ChatViewModelContext } from "./contexts/ChatViewModelContext";
 
+export type ChatRoomStatus = "PUBLIC" | "PRIVATE" | "PASSWORD";
+
 export type MessagePayload = {
-  sender: string;
-  roomName: string;
   content: string;
-  timestamp: Date;
+  createdAt: Date;
+  room: { name: string };
+  sender: { username: string };
 };
+
+export interface ChatRoomPayload {
+  name: string;
+  status: ChatRoomStatus;
+  latestMessage: MessagePayload;
+  lastActivity: Date;
+}
 
 export type RoomType = {
   name: string;
@@ -75,7 +84,6 @@ export const ChatViewModelProvider = ({ children }) => {
 
   // FIXME: move to model?
   const addMessageToRoom = (roomName: string, message: MessageType) => {
-    console.log("ChatPage: Adding message to room", { roomName, message });
     setRooms((prevRooms) => {
       const newRooms = { ...prevRooms };
       if (!newRooms[roomName]) {
@@ -84,6 +92,40 @@ export const ChatViewModelProvider = ({ children }) => {
       newRooms[roomName].push(message);
       return newRooms;
     });
+  };
+
+  const addMessagesToRoom = (roomName: string, messages: MessageType[]) => {
+    setRooms((prevRooms) => {
+      const newRooms = { ...prevRooms };
+      if (!newRooms[roomName]) {
+        newRooms[roomName] = [];
+      }
+      newRooms[roomName].push(...messages);
+      return newRooms;
+    });
+  };
+
+  const convertMessagePayloadToMessageType = (
+    messagePayload: MessagePayload
+  ): MessageType => {
+    const timestamp = new Date(messagePayload.createdAt);
+    const timestamp_readable = timestamp.toLocaleTimeString("en-US", {
+      hour: "numeric",
+      minute: "numeric",
+      hour12: true
+    });
+
+    return {
+      user: messagePayload.sender.username,
+      roomId: messagePayload.room.name,
+      message: messagePayload.content,
+      timestamp_readable,
+      timestamp,
+      isOwn: messagePayload.sender.username === tempUsername,
+      displayUser: true,
+      displayTimestamp: true,
+      displayDate: true
+    };
   };
 
   // Create a new room
@@ -149,9 +191,27 @@ export const ChatViewModelProvider = ({ children }) => {
         "joinRoom",
         { roomName, password, user: tempUsername },
         // Socket callback
-        (res: DevError | string) => {
-          if (typeof res === "object" && res.error) {
-            resolve(false); // This will exit the function
+        (res: DevError | ChatRoomPayload) => {
+          if (typeof res === "object") {
+            console.log("Response from join room: ", res);
+          }
+        }
+      );
+      socket.emit(
+        "getRoomMessagesPage",
+        { roomName, date: new Date(), pageSize: 50 },
+        (res: DevError | MessagePayload[]) => {
+          if (res instanceof Array) {
+            console.log("getRoomMessagesPage response: ", res);
+            // Convert all the messages to MessageType, and add them to the room
+            const messages = res.map((message) =>
+              convertMessagePayloadToMessageType(message)
+            );
+            console.log("Converted messages: ", messages);
+            addMessagesToRoom(roomName, messages);
+            console.log("Added messages to room: ", roomName);
+          } else {
+            console.log("Error response from get room messages: ", res.error);
           }
         }
       );
@@ -278,7 +338,7 @@ export const ChatViewModelProvider = ({ children }) => {
     socket.on("onMessage", (newMessage: MessagePayload) => {
       console.log("Ding ding, you've got mail:", newMessage);
 
-      const timestamp = newMessage.timestamp;
+      const timestamp = newMessage.createdAt;
       const timestamp_readable = new Date(timestamp).toLocaleTimeString(
         "en-US",
         {
@@ -287,20 +347,19 @@ export const ChatViewModelProvider = ({ children }) => {
           hour12: true
         }
       );
-      console.log("timestamp_readable: ", timestamp_readable);
 
       const messageData: MessageType = {
-        user: newMessage.sender,
-        roomId: newMessage.roomName,
+        user: newMessage.sender.username,
+        roomId: newMessage.room.name,
         message: newMessage.content,
         timestamp_readable,
         timestamp: new Date(timestamp),
-        isOwn: newMessage.sender === tempUsername,
+        isOwn: newMessage.sender.username === tempUsername,
         displayUser: true,
         displayTimestamp: true,
         displayDate: true
       };
-      addMessageToRoom(newMessage.roomName, messageData);
+      addMessageToRoom(newMessage.room.name, messageData);
     });
 
     return () => {
