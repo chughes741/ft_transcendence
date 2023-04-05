@@ -6,7 +6,7 @@ import {
   FetchMatchHistoryReply,
   UpdateProfileEvent
 } from "kingpong-lib";
-import { FetchProfileEvent, FetchProfileReply } from "./profile.dto";
+import { FetchProfileEvent, FetchProfileReply, UserStatus } from "./profile.dto";
 
 @Injectable()
 export class ProfileService {
@@ -52,7 +52,12 @@ export class ProfileService {
    */
   fetchProfile(fetchProfileEvent: FetchProfileEvent): FetchProfileReply {
     const profile = new FetchProfileReply();
-    profile.profile_name = "schlurp";
+    profile.profile = {
+      username: "schlurp",
+      avatar: "https://i.pravatar.cc/150",
+      status: UserStatus.ONLINE,
+      createdAt: "like three seconds ago, did you already forget?"
+    };
     return profile;
   }
 

@@ -21,11 +21,26 @@ import {
 } from "src/views/profile/profile.viewModel";
 import { MatchHistoryItem } from "kingpong-lib";
 
+/** @todo move to kingpong-lib */
+enum UserStatus {
+  ONLINE,
+  OFFLINE,
+  AWAY
+}
+
+/** @todo move to kingpong-lib */
+class Profile {
+  username: string; 
+  avatar: string;
+  status: UserStatus;
+  createdAt: string;
+}
+
 /**
  * Creates profile page header
  */
 export function ProfileHeader() {
-  const [profile, setProfile] = useState<string>();
+  const [profile, setProfile] = useState<Profile | undefined>();
 
   /** Fetch profile from server */
   useEffect(() => {
@@ -38,16 +53,18 @@ export function ProfileHeader() {
 
   return (
     <>
-      <Item>
-        <Avatar src={`https://i.pravatar.cc/150`}></Avatar>
-        <Typography
-          sx={{ fontSize: 14 }}
-          color="text.primary"
-          gutterBottom
-        >
-          {profile}
-        </Typography>
-      </Item>
+      {profile && (
+        <Item>
+          <Avatar src={profile.avatar}></Avatar>
+          <Typography
+            sx={{ fontSize: 14 }}
+            color="text.primary"
+            gutterBottom
+          >
+            {profile.username}
+          </Typography>
+        </Item>
+      )}
     </>
   );
 }

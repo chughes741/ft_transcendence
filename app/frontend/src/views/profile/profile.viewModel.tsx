@@ -23,20 +23,35 @@ export function FetchMatchHistory(): Promise<MatchHistoryItem[]> {
 }
 
 /** @todo move to kingpong-lib */
+enum UserStatus {
+  ONLINE,
+  OFFLINE,
+  AWAY
+}
+
+/** @todo move to kingpong-lib */
+class Profile {
+  username: string; 
+  avatar: string;
+  status: UserStatus;
+  createdAt: string;
+}
+
+/** @todo move to kingpong-lib */
 class FetchProfileReply {
-  profile_name: string;
+  profile: Profile;
 }
 
 /**
  *
  */
-export function FetchProfile(): Promise<string> {
+export function FetchProfile(): Promise<Profile> {
   return new Promise((resolve) => {
     socket.emit(
       "fetchProfile",
       "someuserID",
       (fetchProfileReply: FetchProfileReply) => {
-        resolve(fetchProfileReply.profile_name);
+        resolve(fetchProfileReply.profile);
       }
     );
   });
