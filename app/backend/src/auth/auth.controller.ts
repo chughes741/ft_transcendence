@@ -9,7 +9,6 @@ import {
 } from "@nestjs/common";
 import { ApiTags } from "@nestjs/swagger";
 import { SubscribeMessage } from "@nestjs/websockets";
-import { Profile } from "@prisma/client";
 import { PrismaClientExceptionFilterHttp } from "../prisma-client-exception.filter";
 import { AuthService } from "./auth.service";
 import { GetUser } from "./decorators";
@@ -46,7 +45,7 @@ export class AuthController {
   }
 
   @Get("signin")
-  signin_ft(@GetUser() user: Profile) {
+  signin_ft(@GetUser() user) {
     // The barren export pattern in ./dto/index.ts allows automatic exposition
 
     console.log("Succesfully signed in!");

@@ -6,10 +6,10 @@ import {
   ChatRoomEntity,
   CreateChatRoomDto,
   JoinRoomDto,
-  MessageEntity,
   SendMessageDto
 } from "./chat.gateway";
 import { CreateChatDto } from "./dto/create-chat.dto";
+import { MessageEntity } from "./entities/message.entity";
 
 const logger = new Logger("ChatService");
 
@@ -23,6 +23,44 @@ export class ChatService {
   create(createChatDto: CreateChatDto) {
     logger.log("Created a new chat");
     return createChatDto;
+  }
+
+  /**
+   * Create a new chat room.
+   *
+   * If the room already exists, return an error.
+   * If the room does not exist, add it to the database and send a confirmation
+   * @param client socket client
+   * @param room CreateRoomDto
+   * @returns Error or room name
+   */
+  async createRoom(
+    createDto: CreateChatRoomDto
+  ): Promise<ChatRoomEntity | Error> {
+    // Check if the room already exists
+    const roomExists = await this.prismaService.chatRoom.findUnique({
+      where: { name: createDto.name }
+    });
+    if (roomExists) {
+      // Warn the client that the room already exists
+      logger.log(`RoomCreation error: Room ${createDto.name} already exists`);
+      return Error("Room already exists");
+    }
+    // Add the room to the database
+    try {
+      const room = await this.prismaService.createChatRoom(createDto);
+      logger.log(`Room ${createDto.name} successfully added to the database: `);
+      console.log(room);
+      return {
+        name: room.name,
+        status: room.status,
+        latestMessage: null,
+        lastActivity: room.createdAt
+      };
+    } catch (e) {
+      logger.error(e);
+      return Error("Error creating room in database");
+    }
   }
 
   /**
@@ -59,7 +97,7 @@ export class ChatService {
       room.status === ChatRoomStatus.PASSWORD &&
       room.password !== password
     ) {
-      return { name: "IncorrectPasswordError", message: "Incorrect password" };
+      return Error("Incorrect password");
     }
 
     // Add the user as a chat member if they are not already a member
@@ -80,12 +118,19 @@ export class ChatService {
     const lastActivity = latestMessage
       ? latestMessage.createdAt
       : room.createdAt;
+    const roomMembers = await this.prismaService.getRoomMembers(room.id, 3);
+    const avatars = roomMembers.map((member) =>
+      member.member.avatar
+        ? member.member.avatar
+        : `https://i.pravatar.cc/150?u=${member.member.username}`
+    );
 
     return {
       name: room.name,
       status: room.status,
-      latestMessage: latestMessage,
-      lastActivity: lastActivity
+      latestMessage: latestMessage ? new MessageEntity(latestMessage) : null,
+      lastActivity: lastActivity,
+      avatars
     };
   }
 
@@ -105,43 +150,52 @@ export class ChatService {
     if (!roomId) {
       throw new Error("Room not found");
     }
-    return (
+    const messagesPage = (
       await this.prismaService.getChatMessagesPage(roomId, date, pageSize)
     ).reverse();
+    return messagesPage.map((message) => new MessageEntity(message));
   }
 
   /**
-   * Create a new chat room.
+   * Send a message to a chat room.
    *
-   * If the room already exists, return an error.
-   * If the room does not exist, add it to the database and send a confirmation
-   * @param client socket client
-   * @param room CreateRoomDto
-   * @returns Error or room name
+   * If the room does not exist, return an error.
+   * If the message is successfully added to the database, return the room name
+   *
+   * @param client
+   * @param sendDto
+   * @returns
    */
-  async createRoom(createDto: CreateChatRoomDto): Promise<Error | string> {
-    // Check if the room already exists
-    const roomExists = await this.prismaService.chatRoom.findUnique({
-      where: { name: createDto.name }
-    });
-    if (roomExists) {
-      // Warn the client that the room already exists
-      logger.log(`RoomCreation error: Room ${createDto.name} already exists`);
-      return Error("Room already exists");
-    }
-    // Add the room to the database
+  async sendMessage(sendDto: SendMessageDto): Promise<Error | MessageEntity> {
+    if (!sendDto.content) return;
+
+    // Try to get the room database ID
+    const roomId = await this.prismaService.getChatRoomId(sendDto.roomName);
+    if (!roomId) return Error("Room not found");
+
+    // Try to get the user database ID
+    const userId = await this.prismaService.getUserIdByNick(sendDto.sender);
+    if (!userId) return Error("User not found");
+
+    // Add the message to the database
     try {
-      const ret = await this.prismaService.createChatRoom(createDto);
-      // Log the room creation
-      logger.log(`Room ${createDto.name} successfully added to the database: `);
+      const ret = await this.prismaService.addMessageToChatRoom({
+        content: sendDto.content,
+        senderId: userId,
+        roomId
+      });
+      logger.log(`Message added to the database: `);
       console.log(ret);
+      return new MessageEntity(ret);
     } catch (e) {
       logger.error(e);
-      return Error("Error creating room in database");
+      return Error("Error adding message to database");
     }
-
-    return createDto.name;
   }
+
+  /*****************************************/
+  /* Dev Signin Functions - To Be Removed  */
+  /*****************************************/
 
   /**
    * Temporary function to create a user
@@ -204,47 +258,5 @@ export class ChatService {
     console.log(userExists);
 
     return username;
-  }
-
-  /**
-   * Send a message to a chat room.
-   *
-   * If the room does not exist, return an error.
-   * If the message is successfully added to the database, return the room name
-   *
-   * @param client
-   * @param sendDto
-   * @returns
-   */
-  async sendMessage(sendDto: SendMessageDto): Promise<Error | MessageEntity> {
-    if (!sendDto.content) return;
-
-    // Try to get the room database ID
-    const roomId = await this.prismaService.getChatRoomId(sendDto.roomName);
-    if (!roomId) return Error("Room not found");
-
-    // Try to get the user database ID
-    const userId = await this.prismaService.getUserIdByNick(sendDto.sender);
-    if (!userId) return Error("User not found");
-
-    // Add the message to the database
-    try {
-      const ret = await this.prismaService.addMessageToChatRoom({
-        content: sendDto.content,
-        senderId: userId,
-        roomId
-      });
-      logger.log(`Message added to the database: `);
-      console.log(ret);
-      const entity: MessageEntity = {
-        ...ret,
-        sender: { username: sendDto.sender },
-        room: { name: sendDto.roomName }
-      };
-      return entity;
-    } catch (e) {
-      logger.error(e);
-      return Error("Error adding message to database");
-    }
   }
 }
