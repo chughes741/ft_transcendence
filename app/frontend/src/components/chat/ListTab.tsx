@@ -83,7 +83,7 @@ function ListTabulation({ users, heading, onSelectItem }: Props) {
                 </ListItemIcon>
                 <ListItemText
                   primary={users.username}
-                  secondary="active"
+                  secondary= {users.status}
                 />
               </ListItemButton>
             ))}

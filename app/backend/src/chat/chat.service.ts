@@ -118,7 +118,7 @@ export class ChatService {
     const lastActivity = latestMessage
       ? latestMessage.createdAt
       : room.createdAt;
-    const roomMembers = await this.prismaService.getRoomMembers(room.id, 3);
+    const roomMembers = await this.prismaService.getRoomMembers(room.name);
     const avatars = roomMembers.map((member) =>
       member.member.avatar
         ? member.member.avatar

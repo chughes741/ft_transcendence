@@ -69,34 +69,42 @@ export class PrismaService extends PrismaClient {
    * @param limit - number of members to return
    * @returns - list of members
    */
-  async getRoomMembers(
-    roomId: number,
-    limit: number
-  ): Promise<ChatMemberPrismaType[]> {
-    return this.chatMember.findMany({
-      where: { roomId },
-      orderBy: { member: { createdAt: "desc" } },
-      include: { member: { select: { avatar: true, username: true } } },
-      take: limit
-    });
-  }
 
-  //GET ROOM MEMBERS
-  async getMembersByRoom(roomName: string): Promise<User[]> {
-    const chat = await this.chatRoom.findUnique({
-      where: { name: roomName },
-      include: { members: { select: { member: true } } }
-    });
-
-    if (chat === null || chat.members.length === 0) {
-      console.log("Prisma service returs NULL");
-      return [];
+    //GET ROOM MEMBERS : Only function to exists now , returns ChatMemberPrismaType
+    async getRoomMembers(roomName: string): Promise<ChatMemberPrismaType[]> {
+      const room = await this.chatRoom.findUnique({
+        where: { name: roomName },
+        include: {
+          members: {
+            include: {
+              member: {
+                select : {
+                  //avatar: true,
+                  username : true
+                }
+              }
+              },
+          },
+        },
+      });
+  
+      if (room === null || room.members.length === 0) {
+        console.log("Prisma service returs NULL");
+        return [];
+      }
+      
+      const chatMembers = room.members.map((chatMember) => ({
+        ...chatMember,
+        member: {
+          //avatar: chatMember.member.avatar,
+          avatar: `https://i.pravatar.cc/150?u=${chatMember.member.username}`,
+          username: chatMember.member.username,
+        },
+      }));
+  
+      const chatMembersWithUserInfo: ChatMemberPrismaType[] = chatMembers;
+      return chatMembersWithUserInfo;
     }
-    console.log("Prisma service returns something");
-
-    const members = chat?.members?.map((user) => user.member);
-    return members;
-  }
   // End
 
   async addUser(dto: UserDto) {

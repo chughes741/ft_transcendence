@@ -29,7 +29,11 @@ export interface MessagePrismaType extends PrismaMessage {
 }
 
 export interface ChatMemberPrismaType extends ChatMember {
-  member: { avatar: string; username: string };
+  member: 
+  { 
+    avatar: string; 
+    username: string 
+  };
 }
 
 export interface IMessageEntity {
