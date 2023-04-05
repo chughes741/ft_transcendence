@@ -12,9 +12,33 @@ import { FetchMatchHistoryReply, MatchHistoryItem } from "kingpong-lib";
  */
 export function FetchMatchHistory(): Promise<MatchHistoryItem[]> {
   return new Promise((resolve) => {
-    socket.emit("fetchMatchHistory", "someuserID", (fetchMatchHistoryReply: FetchMatchHistoryReply) => {
-      resolve(fetchMatchHistoryReply.matches);
-    });
+    socket.emit(
+      "fetchMatchHistory",
+      "someuserID",
+      (fetchMatchHistoryReply: FetchMatchHistoryReply) => {
+        resolve(fetchMatchHistoryReply.matches);
+      }
+    );
+  });
+}
+
+/** @todo move to kingpong-lib */
+class FetchProfileReply {
+  profile_name: string;
+}
+
+/**
+ *
+ */
+export function FetchProfile(): Promise<string> {
+  return new Promise((resolve) => {
+    socket.emit(
+      "fetchProfile",
+      "someuserID",
+      (fetchProfileReply: FetchProfileReply) => {
+        resolve(fetchProfileReply.profile_name);
+      }
+    );
   });
 }
 

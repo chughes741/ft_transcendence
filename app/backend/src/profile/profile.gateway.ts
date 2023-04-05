@@ -6,10 +6,13 @@ import {
 import { ProfileService } from "./profile.service";
 import {
   CreateProfileEvent,
+  CreateProfileReply,
   FetchMatchHistoryEvent,
   FetchMatchHistoryReply,
-  UpdateProfileEvent
+  UpdateProfileEvent,
+  UpdateProfileReply
 } from "kingpong-lib";
+import { FetchProfileEvent, FetchProfileReply } from "./profile.dto";
 
 @WebSocketGateway()
 export class ProfileGateway {
@@ -17,36 +20,77 @@ export class ProfileGateway {
 
   /**
    * Gateway for requesting a players match history
-   * @param {FetchMatchHistoryDto} fetchMatchHistoryDto -
+   * @param {FetchMatchHistoryEvent} fetchMatchHistoryEvent
    * @returns {MatchHistory} - Array of MatchHistoryItem
    */
   @SubscribeMessage("fetchMatchHistory")
   fetchMatchHistory(
-    @MessageBody() fetchMatchHistoryDto: FetchMatchHistoryEvent
+    @MessageBody() fetchMatchHistoryEvent: FetchMatchHistoryEvent
   ): FetchMatchHistoryReply {
-    return this.profileService.fetchMatchHistory(fetchMatchHistoryDto);
+    return this.profileService.fetchMatchHistory(fetchMatchHistoryEvent);
   }
 
+  /**
+   * Returns profile information to display on a profile page
+   * @param {FetchProfileEvent} fetchProfileEvent
+   * @return {FetchProfileReply}
+   */
+  @SubscribeMessage("fetchProfile")
+  fetchProfile(@MessageBody() fetchProfileEvent: FetchProfileEvent): FetchProfileReply {
+    return this.profileService.fetchProfile(fetchProfileEvent);
+  }
+
+  /**
+   * @todo currently not implemented
+   * @param {CreateProfileEvent} createProfileEvent
+   * @returns {CreateProfileReply}
+   */
   @SubscribeMessage("createProfile")
-  create(@MessageBody() createProfileDto: CreateProfileEvent) {
-    return this.profileService.create(createProfileDto);
+  create(
+    @MessageBody() createProfileEvent: CreateProfileEvent
+  ): CreateProfileReply {
+    return this.profileService.create(createProfileEvent);
   }
 
+  /**
+   * @todo currently not implemented
+   * @returns {void}
+   */
   @SubscribeMessage("findAllProfile")
   findAll() {
     return this.profileService.findAll();
   }
 
+  /**
+   * @todo currently not implemented
+   * @param {number} id
+   * @returns {void}
+   */
   @SubscribeMessage("findOneProfile")
   findOne(@MessageBody() id: number) {
     return this.profileService.findOne(id);
   }
 
+  /**
+   * @todo currently not implemented
+   * @param {UpdateProfileEvent} updateProfileEvent
+   * @returns {UpdateProfileReply}
+   */
   @SubscribeMessage("updateProfile")
-  update(@MessageBody() updateProfileDto: UpdateProfileEvent) {
-    return this.profileService.update(updateProfileDto.id, updateProfileDto);
+  update(
+    @MessageBody() updateProfileEvent: UpdateProfileEvent
+  ): UpdateProfileReply {
+    return this.profileService.update(
+      updateProfileEvent.id,
+      updateProfileEvent
+    );
   }
 
+  /**
+   * @todo currently not implemented
+   * @param {number} id
+   * @returns {void}
+   */
   @SubscribeMessage("removeProfile")
   remove(@MessageBody() id: number) {
     return this.profileService.remove(id);
