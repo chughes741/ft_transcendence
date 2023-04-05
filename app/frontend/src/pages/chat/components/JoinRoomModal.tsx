@@ -30,7 +30,6 @@ export const JoinRoomModal: React.FC<JoinRoomModalProps> = ({
     password,
     setPassword,
     showPassword,
-    roomNameInput,
     togglePasswordVisibility
   } = useRoomModal(showModal, closeModal);
 

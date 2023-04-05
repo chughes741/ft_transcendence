@@ -1,15 +1,16 @@
+// noinspection SpellCheckingInspection
+
 import * as React from "react";
 import List from "@mui/material/List";
 import ListItemButton from "@mui/material/ListItemButton";
 import ListItemIcon from "@mui/material/ListItemIcon";
 import ListItemText from "@mui/material/ListItemText";
 import Collapse from "@mui/material/Collapse";
-import ExpandLess from "@mui/icons-material/ExpandLess";
-import ExpandMore from "@mui/icons-material/ExpandMore";
-import AddCircleIcon from "@mui/icons-material/AddCircle";
-import ListIcon from "@mui/icons-material/List";
 import GroupAddIcon from "@mui/icons-material/GroupAdd";
 import { ChatRoomListItem } from "./sidebar.chatroomlistitem";
+import { PageState } from "src/views/root.model";
+import ButtonFunky from "../ButtonFunky";
+import { useChatViewModelContext } from "../../pages/chat/contexts/ChatViewModelContext";
 
 class ChatRoomListItemDto {
   room_name: string;
@@ -18,6 +19,8 @@ class ChatRoomListItemDto {
 }
 
 export default function SidebarChatOptions({ setPageState }) {
+  const { setShowJoinRoomModal, setShowCreateRoomModal } =
+    useChatViewModelContext();
   const [open, setOpen] = React.useState(true);
 
   const handleClick = () => {
@@ -31,56 +34,33 @@ export default function SidebarChatOptions({ setPageState }) {
 
   return (
     <List
-      sx={{ width: "100%", maxWidth: 360, bgcolor: "background.paper" }}
+      sx={{
+        pt: 2,
+        width: "100%",
+        maxWidth: 360,
+        bgcolor: "background.paper",
+        display: "flex",
+        flexDirection: "column"
+      }}
       component="nav"
     >
-      {/* Temp button to change pages */}
-      <ListItemButton onClick={() => setPageState(2)}>
+      <ListItemButton onClick={() => setPageState(PageState.Chat)}>
         <ListItemIcon>
           <GroupAddIcon />
         </ListItemIcon>
-        <ListItemText primary="Chat Page" />
+        <ListItemText>Chat Page</ListItemText>
       </ListItemButton>
 
-      {/*/!* Join an existing chat *!/*/}
-      {/*<ListItemButton>*/}
-      {/*  <ListItemIcon>*/}
-      {/*    <GroupAddIcon />*/}
-      {/*  </ListItemIcon>*/}
-      {/*  <ListItemText primary="Join Room" />*/}
-      {/*</ListItemButton>*/}
-
-      {/*/!* Create a new chat *!/*/}
-      {/*<ListItemButton>*/}
-      {/*  <ListItemIcon>*/}
-      {/*    <AddCircleIcon />*/}
-      {/*  </ListItemIcon>*/}
-      {/*  <ListItemText primary="Create Room" />*/}
-      {/*</ListItemButton>*/}
-
-      {/*/!* Browse public chats via dropdown *!/*/}
-      {/*<ListItemButton onClick={handleClick}>*/}
-      {/*  <ListItemIcon>*/}
-      {/*    <ListIcon />*/}
-      {/*  </ListItemIcon>*/}
-      {/*  <ListItemText primary="Browse Rooms" />*/}
-      {/*  {open ? <ExpandLess /> : <ExpandMore />}*/}
-      {/*</ListItemButton>*/}
-      <Collapse
-        in={open}
-        timeout="auto"
-        unmountOnExit
-      >
-        {/* Populate this list with all open public chats */}
-        <List
-          component="div"
-          disablePadding
-        >
-          {rooms.map((room, index) => (
-            <ChatRoomListItem room={room} />
-          ))}
-        </List>
-      </Collapse>
+      <ButtonFunky
+        content="Create a room"
+        width={"80%"}
+        onClick={() => setShowCreateRoomModal(true)}
+      />
+      <ButtonFunky
+        content="Join a room"
+        width={"80%"}
+        onClick={() => setShowJoinRoomModal(true)}
+      />
     </List>
   );
 }

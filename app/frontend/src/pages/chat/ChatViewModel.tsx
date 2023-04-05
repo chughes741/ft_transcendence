@@ -1,16 +1,27 @@
 // ChatViewModel.tsx
 import { useEffect } from "react";
+import { usePageStateContext } from "../../contexts/PageStateContext";
 import { socket } from "../../contexts/WebSocketContext";
+import { PageState } from "../../views/root.model";
 import { ChatModelType, useChatModel } from "./ChatModel";
 import { MessageType } from "./components/Message";
 import { ChatViewModelContext } from "./contexts/ChatViewModelContext";
 
+export type ChatRoomStatus = "PUBLIC" | "PRIVATE" | "PASSWORD";
+
 export type MessagePayload = {
-  sender: string;
-  roomName: string;
   content: string;
-  timestamp: Date;
+  createdAt: Date;
+  room: { name: string };
+  sender: { username: string };
 };
+
+export interface ChatRoomPayload {
+  name: string;
+  status: ChatRoomStatus;
+  latestMessage: MessagePayload;
+  lastActivity: Date;
+}
 
 export type RoomType = {
   name: string;
@@ -40,6 +51,7 @@ export interface ChatViewModelType extends ChatModelType {
     roomName: string,
     newStatus: "PRIVATE" | "PUBLIC" | "PASSWORD"
   ) => Promise<boolean>;
+  selectRoom: (roomName: string) => void;
 }
 
 export const ChatViewModelProvider = ({ children }) => {
@@ -47,27 +59,53 @@ export const ChatViewModelProvider = ({ children }) => {
   /*   State Variables   */
   /***********************/
   const {
+    tempUsername,
+    setTempUsername,
     currentRoomName,
     setCurrentRoomName,
     rooms,
     setRooms,
     currentRoomMessages,
     setCurrentRoomMessages,
+    contextMenuPosition,
+    contextMenuData,
+    handleContextMenu,
+    contextMenuVisible,
+    setContextMenuVisible,
     showCreateRoomModal,
     setShowCreateRoomModal,
     showJoinRoomModal,
     setShowJoinRoomModal,
     unreadMessages,
     setUnreadMessages,
-    tempUsername,
-    setTempUsername,
-    contextMenuData,
-    contextMenuVisible,
-    setContextMenuVisible,
-    contextMenuPosition,
-    handleContextMenu,
     truncateText
   } = useChatModel();
+
+  const { setPageState } = usePageStateContext();
+
+  /*******************************/
+  /*   Wrapper State Functions   */
+  /*******************************/
+
+  // This function will be called when a room focus is changed.
+  // If the previous room is the same as the current one, toggle the page state to PageState.Home
+  const selectRoom = (roomName: string) => {
+    if (currentRoomName === roomName) {
+      setCurrentRoomName("");
+      setPageState(PageState.Home);
+      return;
+    }
+    if (!rooms[roomName]) {
+      setRooms((prevRooms) => {
+        const newRooms = { ...prevRooms };
+        newRooms[roomName] = [];
+        return newRooms;
+      });
+    }
+    setCurrentRoomName(roomName);
+    setCurrentRoomMessages(rooms[roomName]);
+    setPageState(PageState.Chat);
+  };
 
   /**********************/
   /*   Room Functions   */
@@ -75,7 +113,6 @@ export const ChatViewModelProvider = ({ children }) => {
 
   // FIXME: move to model?
   const addMessageToRoom = (roomName: string, message: MessageType) => {
-    console.log("ChatPage: Adding message to room", { roomName, message });
     setRooms((prevRooms) => {
       const newRooms = { ...prevRooms };
       if (!newRooms[roomName]) {
@@ -84,6 +121,40 @@ export const ChatViewModelProvider = ({ children }) => {
       newRooms[roomName].push(message);
       return newRooms;
     });
+  };
+
+  const addMessagesToRoom = (roomName: string, messages: MessageType[]) => {
+    setRooms((prevRooms) => {
+      const newRooms = { ...prevRooms };
+      if (!newRooms[roomName]) {
+        newRooms[roomName] = [];
+      }
+      newRooms[roomName].push(...messages);
+      return newRooms;
+    });
+  };
+
+  const convertMessagePayloadToMessageType = (
+    messagePayload: MessagePayload
+  ): MessageType => {
+    const timestamp = new Date(messagePayload.createdAt);
+    const timestamp_readable = timestamp.toLocaleTimeString("en-US", {
+      hour: "numeric",
+      minute: "numeric",
+      hour12: true
+    });
+
+    return {
+      user: messagePayload.sender.username,
+      roomId: messagePayload.room.name,
+      message: messagePayload.content,
+      timestamp_readable,
+      timestamp,
+      isOwn: messagePayload.sender.username === tempUsername,
+      displayUser: true,
+      displayTimestamp: true,
+      displayDate: true
+    };
   };
 
   // Create a new room
@@ -109,12 +180,7 @@ export const ChatViewModelProvider = ({ children }) => {
       });
 
       // Will only reach this line if the socket callback is successful
-      setRooms((prevRooms) => {
-        const newRooms = { ...prevRooms };
-        newRooms[roomName] = [];
-        return newRooms;
-      });
-      setCurrentRoomName(roomName);
+      selectRoom(roomName);
       // setCurrentRoomMessages(rooms[roomName]);
       resolve(true);
     });
@@ -149,21 +215,38 @@ export const ChatViewModelProvider = ({ children }) => {
         "joinRoom",
         { roomName, password, user: tempUsername },
         // Socket callback
-        (res: DevError | string) => {
-          if (typeof res === "object" && res.error) {
-            resolve(false); // This will exit the function
+        (res: DevError | ChatRoomPayload) => {
+          if ((res as DevError).error !== undefined) {
+            console.log(
+              "Error response from join room: ",
+              (res as DevError).error
+            );
+          } else {
+            // res is ChatRoomPayload
+            console.log("Response from join room: ", res);
+          }
+        }
+      );
+      socket.emit(
+        "getRoomMessagesPage",
+        { roomName, date: new Date(), pageSize: 50 },
+        (res: DevError | MessagePayload[]) => {
+          if (res instanceof Array) {
+            console.log("getRoomMessagesPage response: ", res);
+            // Convert all the messages to MessageType, and add them to the room
+            const messages = res.map((message) =>
+              convertMessagePayloadToMessageType(message)
+            );
+            console.log("Converted messages: ", messages);
+            addMessagesToRoom(roomName, messages);
+            console.log("Added messages to room: ", roomName);
+          } else {
+            console.log("Error response from get room messages: ", res.error);
           }
         }
       );
 
-      setRooms((prevRooms) => {
-        const newRooms = { ...prevRooms };
-        newRooms[roomName] = [];
-        return newRooms;
-      });
-
-      setCurrentRoomName(roomName);
-      // setCurrentRoomMessages(rooms[roomName]);
+      selectRoom(roomName);
       resolve(true);
     });
   };
@@ -278,28 +361,8 @@ export const ChatViewModelProvider = ({ children }) => {
     socket.on("onMessage", (newMessage: MessagePayload) => {
       console.log("Ding ding, you've got mail:", newMessage);
 
-      const timestamp = newMessage.timestamp;
-      const timestamp_readable = new Date(timestamp).toLocaleTimeString(
-        "en-US",
-        {
-          hour: "numeric",
-          minute: "numeric",
-          hour12: true
-        }
-      );
-      console.log("timestamp_readable: ", timestamp_readable);
-
-      const messageData: MessageType = {
-        user: newMessage.sender,
-        roomId: newMessage.roomName,
-        message: newMessage.content,
-        timestamp_readable,
-        timestamp,
-        isOwn: newMessage.sender === tempUsername,
-        displayUser: true,
-        displayTimestamp: true
-      };
-      addMessageToRoom(newMessage.roomName, messageData);
+      const messageData = convertMessagePayloadToMessageType(newMessage);
+      addMessageToRoom(newMessage.room.name, messageData);
     });
 
     return () => {
@@ -318,6 +381,10 @@ export const ChatViewModelProvider = ({ children }) => {
   useEffect(() => {
     // Try to create a temporary user
     if (tempUsername) {
+      setRooms((prevRooms) => {
+        const newRooms = {};
+        return newRooms;
+      });
       const createTempUser = async (username: string): Promise<void> => {
         const userCreated = await createUser(username);
         if (!userCreated) {
@@ -333,6 +400,21 @@ export const ChatViewModelProvider = ({ children }) => {
     }
   }, [tempUsername, ""]);
 
+  // // If the current room name is changed, set the previous room name to the old current room name
+  // // and set the current room messages to the new room's messages.
+  // // If the name is not the same as the previous room name, set the page state to PageState.Chat
+  // useEffect(() => {
+  //   console.log(`Current room name: ${currentRoomName}`);
+  //   console.log(`Previous room name: ${prevRoomName}`);
+  //   if (currentRoomName !== prevRoomName) {
+  //     setPageState(PageState.Chat);
+  //     setPrevRoomName(currentRoomName);
+  //     setCurrentRoomMessages(rooms[currentRoomName]);
+  //   } else {
+  //     setPageState(PageState.Home);
+  //   }
+  // }, [currentRoomName, ""]);
+
   // Attempt at focusing the room messages when a new room is selected
   useEffect(() => {
     if (currentRoomMessages && rooms[currentRoomName]) {
@@ -343,6 +425,8 @@ export const ChatViewModelProvider = ({ children }) => {
   return (
     <ChatViewModelContext.Provider
       value={{
+        tempUsername,
+        setTempUsername,
         currentRoomName,
         setCurrentRoomName,
         rooms,
@@ -353,21 +437,20 @@ export const ChatViewModelProvider = ({ children }) => {
         setShowCreateRoomModal,
         showJoinRoomModal,
         setShowJoinRoomModal,
-        unreadMessages,
-        setUnreadMessages,
-        tempUsername,
-        setTempUsername,
         contextMenuData,
-        contextMenuVisible,
-        setContextMenuVisible,
         contextMenuPosition,
         handleContextMenu,
+        contextMenuVisible,
+        setContextMenuVisible,
+        unreadMessages,
+        setUnreadMessages,
         truncateText,
         joinRoom,
         sendRoomMessage,
         createNewRoom,
         leaveRoom,
-        changeRoomStatus
+        changeRoomStatus,
+        selectRoom
       }}
     >
       {children}

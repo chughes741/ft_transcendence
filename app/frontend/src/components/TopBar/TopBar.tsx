@@ -5,13 +5,13 @@ import Toolbar from "@mui/material/Toolbar";
 import IconButton from "@mui/material/IconButton";
 import Typography from "@mui/material/Typography";
 import Menu from "@mui/material/Menu";
-import Container from "@mui/material/Container";
 import Avatar from "@mui/material/Avatar";
 import MenuItem from "@mui/material/MenuItem";
 import { LogoSvg } from "./logoComponent";
 import { ButtonUnstyled } from "@mui/base";
 import { Button, Tooltip } from "@mui/material";
 import VideogameAssetIcon from "@mui/icons-material/VideogameAsset";
+import { PageState } from "src/views/root.model";
 
 const TopBarHeight = 85;
 
@@ -47,26 +47,30 @@ function TopBar({setPageState}) {
   };
 
   const onClickProfile = ()  => {
-    setPageState(3);
+    setPageState(PageState.Profile);
     handleCloseUserMenu();
   }
 
   return (
-    <AppBar sx={{ zIndex: (theme) => theme.zIndex.drawer + 1, flexGrow: 0 }}>
-      <Container maxWidth={false}>
+    <AppBar 
+      position="static"
+      sx={{ zIndex: (theme) => theme.zIndex.drawer + 1, flexGrow: 0 }}
+      >
         <Toolbar
           disableGutters
           style={toolbarStyle}
         >
           {/* Logo wrapped in button to return to home */}
 
-          <Box sx={{ marginTop: 2, flexGrow: 1 }}>
+          <Box sx={{ flexGrow: 1 }}>
             <ButtonUnstyled
                 onClick={() => setPageState(0)}
                 style={{
                   border: "none",
                   backgroundColor: "transparent",
-                  cursor: "pointer"
+                  cursor: "pointer",
+                  paddingTop: "2vh",
+                  paddingLeft: "1vw"
                 }}
             >
               <LogoSvg />
@@ -75,7 +79,7 @@ function TopBar({setPageState}) {
 
           <Box>
             <Button
-              onClick={() => setPageState(1)}
+              onClick={() => setPageState(PageState.Game)}
               color="primary"
               sx={{ mr: 5 }}
               variant="outlined"
@@ -92,7 +96,7 @@ function TopBar({setPageState}) {
             <Tooltip title="Open settings">
               <IconButton
                 onClick={handleOpenUserMenu}
-                sx={{ p: 0 }}
+                sx={{ p: 0, pr: 2 }}
               >
                 <Avatar alt="Remy" />
               </IconButton>
@@ -124,7 +128,6 @@ function TopBar({setPageState}) {
             </Menu>
           </Box>
         </Toolbar>
-      </Container>
     </AppBar>
   );
 }

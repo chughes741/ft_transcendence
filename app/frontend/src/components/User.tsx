@@ -9,7 +9,7 @@ const StyledUser = styled.div`
   background-color: #f1f1f1;
 `;
 
-type UserType = {
+export type UserType = {
   uuid: string;
   nick: string;
   email: string;

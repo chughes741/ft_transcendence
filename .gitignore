@@ -16,3 +16,6 @@ build
 
 #VScode settings
 .vscode
+
+#ChatGPT
+generate.sh

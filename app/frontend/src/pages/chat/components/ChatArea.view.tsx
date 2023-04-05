@@ -13,11 +13,11 @@ const ChatAreaView = () => {
   const { currentRoomName, currentRoomMessages } = useChatViewModelContext();
 
   const GridStyle = {
-      height: "100%",
-      width: "100%",
-      maxWidth: "100%",
-      overflow: "hidden"
-  }
+    height: "100%",
+    width: "100%",
+    maxWidth: "100%",
+    overflow: "hidden"
+  };
 
   return (
     <>
@@ -25,23 +25,29 @@ const ChatAreaView = () => {
         container
         direction="column"
         wrap="nowrap"
-        style={GridStyle}
+        sx={GridStyle}
       >
         <Grid
           item
-          style={{ alignItems: "center", padding: 0 }}
+          sx={{
+            textAlign: "center",
+            backgroundColor: "#1f1f1f",
+            padding: "6px",
+            height: "5vh",
+            fontSize: "1.5rem"
+          }}
         >
-          <h2>{currentRoomName}</h2>
+          {currentRoomName}
         </Grid>
         <Grid
           item
-          style={{ flexGrow: 1, overflowY: "auto", overflowX: "hidden" }}
+          sx={{ flexGrow: 1, overflowY: "auto", overflowX: "hidden" }}
         >
           <ChatMessagesContainerView messages={currentRoomMessages} />
         </Grid>
         <Grid
           item
-          style={{ flexGrow: 0, flexShrink: 0, maxHeight: "30%" }}
+          sx={{ flexGrow: 0, flexShrink: 0 }}
         >
           <ChatInputContainerView />
         </Grid>

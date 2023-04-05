@@ -1,15 +1,15 @@
 import { Injectable, Logger } from "@nestjs/common";
-import { ChatRoomStatus } from "@prisma/client";
+import { ChatMemberRank, ChatRoomStatus } from "@prisma/client";
 import { PrismaService } from "../prisma/prisma.service";
 import { UserConnectionsService } from "../user-connections.service";
 import {
+  ChatRoomEntity,
   CreateChatRoomDto,
   JoinRoomDto,
-  Message,
+  MessageEntity,
   SendMessageDto
 } from "./chat.gateway";
 import { CreateChatDto } from "./dto/create-chat.dto";
-import { UpdateChatDto } from "./dto/update-chat.dto";
 
 const logger = new Logger("ChatService");
 
@@ -35,19 +35,12 @@ export class ChatService {
    * @param joinDto - The room name, password, and user
    * @returns - The last 50 messages in the room, or an error
    */
-  async joinRoom(joinDto: JoinRoomDto): Promise<Message[] | Error> {
+  async joinRoom(joinDto: JoinRoomDto): Promise<ChatRoomEntity | Error> {
     const { roomName, password, user } = joinDto;
     let room = await this.prismaService.chatRoom.findUnique({
       where: { name: roomName }
     });
-
-    // TODO:
-    // 1. Check if the user is already in the room
-    // 2. Check if the user is banned from the room
-    // 3. Check if the room is full
-
     if (!room) {
-      // Room doesn't exist, create it as a public room
       try {
         room = await this.prismaService.createChatRoom({
           name: roomName,
@@ -69,21 +62,52 @@ export class ChatService {
       return { name: "IncorrectPasswordError", message: "Incorrect password" };
     }
 
-    // Fetch last 50 messages and send them to the user
-    const messagesPage = await this.prismaService.message.findMany({
-      where: { roomId: room.id },
-      take: 50,
-      include: {
-        sender: {
-          select: { username: true }
-        },
-        room: { select: { name: true } }
-      },
-      orderBy: { createdAt: "desc" }
+    // Add the user as a chat member if they are not already a member
+    const userId = await this.prismaService.getUserIdByNick(user);
+    // This should really be a findUnique, but I can't figure out how to make it work
+    const chatMember = await this.prismaService.chatMember.findFirst({
+      where: { memberId: userId, roomId: room.id }
     });
+    if (!chatMember) {
+      await this.prismaService.addChatMember(
+        userId,
+        room.id,
+        ChatMemberRank.USER
+      );
+    }
 
-    // Order the messages from oldest to newest and send them to the user
-    return messagesPage.reverse();
+    const latestMessage = await this.prismaService.getLatestMessage(room.id);
+    const lastActivity = latestMessage
+      ? latestMessage.createdAt
+      : room.createdAt;
+
+    return {
+      name: room.name,
+      status: room.status,
+      latestMessage: latestMessage,
+      lastActivity: lastActivity
+    };
+  }
+
+  /**
+   * get a page of messages from a room
+   * @param roomName - The name of the room
+   * @param date - The date to start from
+   * @param pageSize - The number of messages to return
+   * @returns - An array of messages from oldest to newest, or an error
+   */
+  async getRoomMessagesPage(
+    roomName: string,
+    date: Date,
+    pageSize: number
+  ): Promise<MessageEntity[]> {
+    const roomId = await this.prismaService.getChatRoomId(roomName);
+    if (!roomId) {
+      throw new Error("Room not found");
+    }
+    return (
+      await this.prismaService.getChatMessagesPage(roomId, date, pageSize)
+    ).reverse();
   }
 
   /**
@@ -182,7 +206,17 @@ export class ChatService {
     return username;
   }
 
-  async sendMessage(sendDto: SendMessageDto): Promise<Error | string> {
+  /**
+   * Send a message to a chat room.
+   *
+   * If the room does not exist, return an error.
+   * If the message is successfully added to the database, return the room name
+   *
+   * @param client
+   * @param sendDto
+   * @returns
+   */
+  async sendMessage(sendDto: SendMessageDto): Promise<Error | MessageEntity> {
     if (!sendDto.content) return;
 
     // Try to get the room database ID
@@ -202,11 +236,15 @@ export class ChatService {
       });
       logger.log(`Message added to the database: `);
       console.log(ret);
+      const entity: MessageEntity = {
+        ...ret,
+        sender: { username: sendDto.sender },
+        room: { name: sendDto.roomName }
+      };
+      return entity;
     } catch (e) {
       logger.error(e);
       return Error("Error adding message to database");
     }
-
-    return sendDto.roomName;
   }
 }
