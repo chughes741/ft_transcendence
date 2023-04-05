@@ -19,12 +19,18 @@ export type MessagePayload = {
 export interface ChatRoomPayload {
   name: string;
   status: ChatRoomStatus;
-  latestMessage: MessagePayload;
+  latestMessage?: MessagePayload;
   lastActivity: Date;
+  avatars?: string[];
 }
 
 export type RoomType = {
   name: string;
+  status: ChatRoomStatus;
+  latestMessage?: MessagePayload;
+  lastActivity: Date;
+  hasUnreadMessages: boolean;
+  avatars?: string[];
 };
 
 export type DevError = {
@@ -172,12 +178,21 @@ export const ChatViewModelProvider = ({ children }) => {
       };
 
       console.log("ChatPage: Creating new room", { ...roomRequest });
-      socket.emit("createRoom", roomRequest, (response: DevError | string) => {
-        if (typeof response === "object" && response.error) {
-          console.log("Error response from create room: ", response.error);
-          resolve(false);
+      socket.emit(
+        "createRoom",
+        roomRequest,
+        (res: DevError | ChatRoomPayload) => {
+          if ((res as DevError).error !== undefined) {
+            console.log(
+              "Error response from join room: ",
+              (res as DevError).error
+            );
+          } else {
+            // res is ChatRoomPayload
+            console.log("Response from join room: ", res);
+          }
         }
-      });
+      );
 
       // Will only reach this line if the socket callback is successful
       selectRoom(roomName);
@@ -186,26 +201,7 @@ export const ChatViewModelProvider = ({ children }) => {
     });
   };
 
-  const leaveRoom = async (): Promise<boolean> => {
-    return new Promise<boolean>((resolve) => {
-      if (!contextMenuData) return;
-      const roomName = contextMenuData.name;
-      socket.emit("leaveRoom", { roomName }, (response: DevError | string) => {
-        if (typeof response === "object" && response.error) {
-          console.log("Error response from leave room: ", response.error);
-          resolve(false);
-        }
-      });
-      setRooms((prevRooms) => {
-        const newRooms = { ...prevRooms };
-        delete newRooms[roomName];
-        return newRooms;
-      });
-      setContextMenuVisible(false);
-      resolve(true);
-    });
-  };
-
+  // Join a room
   const joinRoom = async (
     roomName: string,
     password: string
@@ -247,6 +243,26 @@ export const ChatViewModelProvider = ({ children }) => {
       );
 
       selectRoom(roomName);
+      resolve(true);
+    });
+  };
+
+  const leaveRoom = async (): Promise<boolean> => {
+    return new Promise<boolean>((resolve) => {
+      if (!contextMenuData) return;
+      const roomName = contextMenuData.name;
+      socket.emit("leaveRoom", { roomName }, (response: DevError | string) => {
+        if (typeof response === "object" && response.error) {
+          console.log("Error response from leave room: ", response.error);
+          resolve(false);
+        }
+      });
+      setRooms((prevRooms) => {
+        const newRooms = { ...prevRooms };
+        delete newRooms[roomName];
+        return newRooms;
+      });
+      setContextMenuVisible(false);
       resolve(true);
     });
   };
@@ -358,11 +374,13 @@ export const ChatViewModelProvider = ({ children }) => {
       console.log("Successfully connected to the server");
     });
 
-    socket.on("onMessage", (newMessage: MessagePayload) => {
+    socket.on("onMessage", (newMessage: MessagePayload): boolean => {
       console.log("Ding ding, you've got mail:", newMessage);
 
       const messageData = convertMessagePayloadToMessageType(newMessage);
       addMessageToRoom(newMessage.roomName, messageData);
+      // TODO: Implement a callback in the backend to check if user has read the message
+      return newMessage.roomName === currentRoomName ? true : false;
     });
 
     return () => {
@@ -381,9 +399,8 @@ export const ChatViewModelProvider = ({ children }) => {
   useEffect(() => {
     // Try to create a temporary user
     if (tempUsername) {
-      setRooms((prevRooms) => {
-        const newRooms = {};
-        return newRooms;
+      setRooms(() => {
+        return {};
       });
       const createTempUser = async (username: string): Promise<void> => {
         const userCreated = await createUser(username);
@@ -399,21 +416,6 @@ export const ChatViewModelProvider = ({ children }) => {
       createTempUser(tempUsername);
     }
   }, [tempUsername, ""]);
-
-  // // If the current room name is changed, set the previous room name to the old current room name
-  // // and set the current room messages to the new room's messages.
-  // // If the name is not the same as the previous room name, set the page state to PageState.Chat
-  // useEffect(() => {
-  //   console.log(`Current room name: ${currentRoomName}`);
-  //   console.log(`Previous room name: ${prevRoomName}`);
-  //   if (currentRoomName !== prevRoomName) {
-  //     setPageState(PageState.Chat);
-  //     setPrevRoomName(currentRoomName);
-  //     setCurrentRoomMessages(rooms[currentRoomName]);
-  //   } else {
-  //     setPageState(PageState.Home);
-  //   }
-  // }, [currentRoomName, ""]);
 
   // Attempt at focusing the room messages when a new room is selected
   useEffect(() => {

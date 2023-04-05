@@ -5,19 +5,17 @@ import {
   ChatMemberRank,
   ChatMemberStatus,
   ChatRoom,
-  Message,
   Prisma,
   PrismaClient,
   User
 } from "@prisma/client";
 import {
   ChatRoomDto,
-  PlayerDto,
   ProfileDto,
   UserDto,
   MessageDto
 } from "../auth/dto/prisma.dto";
-import { PrismaMessageType } from "../chat/chat.gateway";
+import { ChatMemberPrismaType, MessagePrismaType } from "../chat/chat.gateway";
 import config from "../config";
 
 const logger = new Logger("PrismaService");
@@ -62,6 +60,25 @@ export class PrismaService extends PrismaClient {
     const user = await this.user.findUnique({ where: { username: nick } });
 
     return user ? user.id : null;
+  }
+
+  /**
+   * Returns a list of `limit` chat rooms members, including
+   * their username and avatar.
+   * @param roomId - id of the room
+   * @param limit - number of members to return
+   * @returns - list of members
+   */
+  async getRoomMembers(
+    roomId: number,
+    limit: number
+  ): Promise<ChatMemberPrismaType[]> {
+    return this.chatMember.findMany({
+      where: { roomId },
+      orderBy: { member: { createdAt: "desc" } },
+      include: { member: { select: { avatar: true, username: true } } },
+      take: limit
+    });
   }
 
   //GET ROOM MEMBERS
@@ -202,7 +219,7 @@ export class PrismaService extends PrismaClient {
     id: number,
     date: Date,
     pageSize: number
-  ): Promise<PrismaMessageType[]> {
+  ): Promise<MessagePrismaType[]> {
     return this.message.findMany({
       where: {
         room: { id },
@@ -220,17 +237,12 @@ export class PrismaService extends PrismaClient {
   }
 
   // Get a chat room by ID
-  async getChatRoom(id: number): Promise<ChatRoomDto | null> {
-    return this.chatRoom.findUnique({ where: { id } });
-  }
-
-  // Get a chat room by ID
   async getChatRoomId(name: string): Promise<number | null> {
     const room = await this.chatRoom.findUnique({ where: { name } });
-
     return room ? room.id : null;
   }
 
+  // Add a chat member to a chat room
   async addChatMember(
     userId: string,
     roomId: number,
@@ -265,7 +277,7 @@ export class PrismaService extends PrismaClient {
   }
 
   // Add a new message to a chat room
-  async addMessageToChatRoom(dto: MessageDto): Promise<PrismaMessageType> {
+  async addMessageToChatRoom(dto: MessageDto): Promise<MessagePrismaType> {
     // Check if the owner UUID is valid
     const userExists = await this.userExists(dto.senderId);
     if (dto.senderId && !userExists) {
@@ -291,12 +303,7 @@ export class PrismaService extends PrismaClient {
     return object[0];
   }
 
-  // Get all messages in a chat room
-  async getMessagesInChatRoom(roomId: number): Promise<MessageDto[]> {
-    return this.message.findMany({ where: { roomId } });
-  }
-
-  async getLatestMessage(roomId: number): Promise<PrismaMessageType | null> {
+  async getLatestMessage(roomId: number): Promise<MessagePrismaType | null> {
     return this.message.findFirst({
       where: { roomId },
       orderBy: { createdAt: "desc" },
@@ -305,9 +312,5 @@ export class PrismaService extends PrismaClient {
         room: { select: { name: true } }
       }
     });
-  }
-
-  addMatch(dto1: PlayerDto, dto2: PlayerDto) {
-    return { dto1, dto2 };
   }
 }
