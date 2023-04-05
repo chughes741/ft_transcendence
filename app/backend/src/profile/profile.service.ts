@@ -4,9 +4,11 @@ import {
   CreateProfileReply,
   FetchMatchHistoryEvent,
   FetchMatchHistoryReply,
-  UpdateProfileEvent
+  FetchProfileEvent,
+  FetchProfileReply,
+  UpdateProfileEvent,
+  UserStatus
 } from "kingpong-lib";
-import { FetchProfileEvent, FetchProfileReply, UserStatus } from "./profile.dto";
 
 @Injectable()
 export class ProfileService {

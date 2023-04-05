@@ -4,7 +4,12 @@ import { styled } from "@mui/material/styles";
 import { socket } from "src/contexts/WebSocketContext";
 
 /** Temporary data type import */
-import { FetchMatchHistoryReply, MatchHistoryItem } from "kingpong-lib";
+import {
+  FetchMatchHistoryReply,
+  FetchProfileReply,
+  MatchHistoryItem,
+  Profile
+} from "kingpong-lib";
 
 /**
  * Sends a fetch message to the backend to retrieve match history
@@ -20,26 +25,6 @@ export function FetchMatchHistory(): Promise<MatchHistoryItem[]> {
       }
     );
   });
-}
-
-/** @todo move to kingpong-lib */
-enum UserStatus {
-  ONLINE,
-  OFFLINE,
-  AWAY
-}
-
-/** @todo move to kingpong-lib */
-class Profile {
-  username: string; 
-  avatar: string;
-  status: UserStatus;
-  createdAt: string;
-}
-
-/** @todo move to kingpong-lib */
-class FetchProfileReply {
-  profile: Profile;
 }
 
 /**

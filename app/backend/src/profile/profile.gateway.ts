@@ -9,10 +9,11 @@ import {
   CreateProfileReply,
   FetchMatchHistoryEvent,
   FetchMatchHistoryReply,
+  FetchProfileEvent,
+  FetchProfileReply,
   UpdateProfileEvent,
   UpdateProfileReply
 } from "kingpong-lib";
-import { FetchProfileEvent, FetchProfileReply } from "./profile.dto";
 
 @WebSocketGateway()
 export class ProfileGateway {

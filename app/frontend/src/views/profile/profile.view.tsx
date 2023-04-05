@@ -19,22 +19,7 @@ import {
   FetchMatchHistory,
   FetchProfile
 } from "src/views/profile/profile.viewModel";
-import { MatchHistoryItem } from "kingpong-lib";
-
-/** @todo move to kingpong-lib */
-enum UserStatus {
-  ONLINE,
-  OFFLINE,
-  AWAY
-}
-
-/** @todo move to kingpong-lib */
-class Profile {
-  username: string; 
-  avatar: string;
-  status: UserStatus;
-  createdAt: string;
-}
+import { MatchHistoryItem, Profile, UserStatus } from "kingpong-lib";
 
 /**
  * Creates profile page header
@@ -64,7 +49,8 @@ export function ProfileHeader() {
             {profile.username}
           </Typography>
           <Typography>
-            Status: {profile.status === UserStatus.ONLINE ? "Online" : "Offline"}
+            Status:{" "}
+            {profile.status === UserStatus.ONLINE ? "Online" : "Offline"}
           </Typography>
         </Item>
       )}
