@@ -57,11 +57,14 @@ export function ProfileHeader() {
         <Item>
           <Avatar src={profile.avatar}></Avatar>
           <Typography
-            sx={{ fontSize: 14 }}
+            variant="h5"
             color="text.primary"
             gutterBottom
           >
             {profile.username}
+          </Typography>
+          <Typography>
+            Status: {profile.status === UserStatus.ONLINE ? "Online" : "Offline"}
           </Typography>
         </Item>
       )}
