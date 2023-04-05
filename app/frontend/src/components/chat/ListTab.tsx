@@ -1,5 +1,5 @@
 import "./ListTab.tsx.css";
-import { Box, Typography, AppBar } from "@mui/material";
+import { Box, Typography, AppBar, Avatar } from "@mui/material";
 import {
   List,
   ListItem,
@@ -43,15 +43,17 @@ function ListTabulation({ users, heading, onSelectItem }: Props) {
             wordWrap: "breakword"
           }}
         >
-          <Box style={{
+          <Box
+            style={{
               width: "100vw",
               height: "5vh",
               backgroundColor: "rgb(31,31,31)"
-          }}>
+            }}
+          >
             <Box
               className="list-title"
               style={{
-                fontSize: "1rem",
+                fontSize: "1rem"
               }}
             >
               <ListItemIcon>
@@ -73,7 +75,9 @@ function ListTabulation({ users, heading, onSelectItem }: Props) {
                 }}
               >
                 <ListItemIcon>
-                  <img src={`https://i.pravatar.cc/150?u=${users.username}`} />
+                  <Avatar
+                    src={`https://i.pravatar.cc/150?u=${users.username}`}
+                  />
                 </ListItemIcon>
                 <ListItemText
                   primary={users.username}

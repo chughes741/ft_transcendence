@@ -5,6 +5,7 @@ import ContextMenu from "../../../components/ContextMenu";
 import { JoinRoomModal } from "./JoinRoomModal";
 import { CreateRoomModal } from "./CreateRoomModal";
 import {
+  Avatar,
   Box,
   List,
   ListItem,
@@ -45,7 +46,8 @@ const RoomList: React.FC = () => {
             >
               <ListItemButton selected={currentRoomName === roomId}>
                 <ListItemIcon>
-                  <img
+                  <Avatar
+                    // className="room-list-avatar"
                     src={`https://i.pravatar.cc/150?u=${roomId}`}
                     alt="Profile"
                   />
