@@ -15,22 +15,36 @@ import { ChatService } from "./chat.service";
 
 // Trickaroo to add fields to the Prisma Message type
 import { Message as PrismaMessage } from "@prisma/client";
+import { ChatMember } from "@prisma/client";
+import { MessageEntity } from "./entities/message.entity";
 
 // FIXME: temporary error type until we can share btw back and frontend
 export type DevError = {
   error: string;
 };
 
-export interface MessageEntity extends PrismaMessage {
+export interface MessagePrismaType extends PrismaMessage {
   sender: { username: string };
   room: { name: string };
+}
+
+export interface ChatMemberPrismaType extends ChatMember {
+  member: { avatar: string; username: string };
+}
+
+export interface IMessageEntity {
+  username: string;
+  roomName: string;
+  content: string;
+  timestamp: Date;
 }
 
 export interface ChatRoomEntity {
   name: string;
   status: ChatRoomStatus;
-  latestMessage: MessageEntity;
+  latestMessage?: IMessageEntity;
   lastActivity: Date;
+  avatars?: string[];
 }
 
 const logger = new Logger("ChatGateway");
@@ -154,7 +168,7 @@ export class ChatGateway
   async createRoom(
     client: Socket,
     createDto: CreateChatRoomDto
-  ): Promise<DevError | string> {
+  ): Promise<ChatRoomEntity | DevError> {
     // Log the request
     logger.log(
       `Received createRoom request from ${createDto.owner} for room ${
@@ -176,7 +190,7 @@ export class ChatGateway
     client.join(createDto.name);
     logger.log(`User ${createDto.owner} joined socket room ${createDto.name}`);
     console.log(createDto);
-    return createDto.name;
+    return ret;
   }
 
   /**

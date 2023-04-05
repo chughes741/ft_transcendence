@@ -17,36 +17,22 @@ model User {
   username String @unique // To prevent duplicates in the DB
   hash     String
 
+  avatar String  @default("default_avatar.png")
+  email  String? @unique // To prevent duplicates in the DB
+
+  firstName String?
+  lastName  String?
+  status    UserStatus @default(OFFLINE)
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   messages        Message[]
   chatOwnerships  ChatRoom[]
   chatMemberships ChatMember[]
-  profile         Profile?
   games           Player[]
 
   @@map("users")
-}
-
-model Profile {
-  id Int @id @default(autoincrement())
-
-  avatar String @default("default_avatar.png")
-  email  String @unique // To prevent duplicates in the DB
-
-  firstName String?
-  lastName  String?
-
-  userId String @unique
-  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  status UserStatus
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  @@map("profiles")
 }
 
 enum UserStatus {

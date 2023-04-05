@@ -5,6 +5,7 @@ import ContextMenu from "../../../components/ContextMenu";
 import { JoinRoomModal } from "./JoinRoomModal";
 import { CreateRoomModal } from "./CreateRoomModal";
 import {
+  Avatar,
   Box,
   List,
   ListItem,
@@ -35,18 +36,6 @@ const RoomList: React.FC = () => {
 
   return (
     <div className="room-list">
-      {/*<ButtonFunky*/}
-      {/*  content="Create New Room"*/}
-      {/*  onClick={() => setShowCreateRoomModal(true)}*/}
-      {/*  width="100%"*/}
-      {/*/>*/}
-      {/*<br />*/}
-      {/*<ButtonFunky*/}
-      {/*  content="Join Room"*/}
-      {/*  onClick={() => setShowJoinRoomModal(true)}*/}
-      {/*  width="100%"*/}
-      {/*/>*/}
-          {/*<br />*/}
       <Box sx={{ overflow: "auto" }}>
         <List>
           {Object.entries(rooms).map(([roomId, messages]) => (
@@ -57,7 +46,8 @@ const RoomList: React.FC = () => {
             >
               <ListItemButton selected={currentRoomName === roomId}>
                 <ListItemIcon>
-                  <img
+                  <Avatar
+                    // className="room-list-avatar"
                     src={`https://i.pravatar.cc/150?u=${roomId}`}
                     alt="Profile"
                   />
@@ -67,7 +57,7 @@ const RoomList: React.FC = () => {
                   primary={roomId}
                   secondary={
                     messages.length > 0
-                      ? truncateText(messages[messages.length - 1].message, 42)
+                      ? truncateText(messages[messages.length - 1].content, 42)
                       : ""
                   }
                 />

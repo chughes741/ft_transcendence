@@ -6,7 +6,7 @@ import { Box } from "@mui/system";
 export type MessageType = {
   user: string;
   roomId: string;
-  message: string;
+  content: string;
   timestamp_readable: string;
   timestamp: Date;
   isOwn: boolean;
@@ -81,7 +81,7 @@ const Message = forwardRef<HTMLDivElement, MessageProps>(({ message }, ref) => {
         <div
           className={`message-content ${message.isOwn ? "own-message" : ""}`}
         >
-          {message.message}
+          {message.content}
         </div>
       </Tooltip>
       {message.displayTimestamp && (
