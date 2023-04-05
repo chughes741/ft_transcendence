@@ -1,8 +1,7 @@
 import { useEffect, useState } from "react";
 
 /** Module Imports */
-import { Avatar, Paper, Stack } from "@mui/material";
-import { deepOrange } from "@mui/material/colors";
+import { Avatar, Paper, Stack, Typography } from "@mui/material";
 
 /** Table from MUI */
 import {
@@ -15,18 +14,46 @@ import {
 } from "@mui/material";
 
 /** Mock data import */
-import { Item, FetchMatchHistory } from "src/views/profile/profile.viewModel";
-import { MatchHistoryItem } from "kingpong-lib";
+import {
+  Item,
+  FetchMatchHistory,
+  FetchProfile
+} from "src/views/profile/profile.viewModel";
+import { MatchHistoryItem, Profile, UserStatus } from "kingpong-lib";
 
 /**
  * Creates profile page header
  */
 export function ProfileHeader() {
+  const [profile, setProfile] = useState<Profile | undefined>();
+
+  /** Fetch profile from server */
+  useEffect(() => {
+    async function fetchProfile() {
+      const profileinfo = await FetchProfile();
+      setProfile(profileinfo);
+    }
+    fetchProfile();
+  }, []);
+
   return (
     <>
-      <Item>
-        <Avatar sx={{ bgcolor: deepOrange[500] }}>N</Avatar>
-      </Item>
+      {profile && (
+        <Item>
+          <Avatar src={profile.avatar}></Avatar>
+          <Typography
+            variant="h5"
+            color="text.primary"
+            gutterBottom
+          >
+            {profile.username}
+          </Typography>
+          <Typography>
+            Status:{" "}
+            {profile.status === UserStatus.ONLINE ? "Online" : "Offline"}
+          </Typography>
+        </Item>
+      )}
     </>
   );
 }

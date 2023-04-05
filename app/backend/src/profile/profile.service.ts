@@ -1,20 +1,24 @@
 import { Injectable } from "@nestjs/common";
 import {
   CreateProfileEvent,
+  CreateProfileReply,
   FetchMatchHistoryEvent,
   FetchMatchHistoryReply,
-  UpdateProfileEvent
+  FetchProfileEvent,
+  FetchProfileReply,
+  UpdateProfileEvent,
+  UserStatus
 } from "kingpong-lib";
 
 @Injectable()
 export class ProfileService {
   /**
    * Fetches match history of requested player
-   * @param {FetchMatchHistoryDto} fetchMatchHistoryDto
+   * @param {FetchMatchHistoryEvent} fetchMatchHistoryEvent
    * @returns {MatchHistory}
    */
   fetchMatchHistory(
-    fetchMatchHistoryDto: FetchMatchHistoryEvent
+    fetchMatchHistoryEvent: FetchMatchHistoryEvent
   ): FetchMatchHistoryReply {
     const matchHistory = new FetchMatchHistoryReply();
     matchHistory.matches = [
@@ -43,22 +47,63 @@ export class ProfileService {
     return matchHistory;
   }
 
-  create(createProfileDto: CreateProfileEvent) {
+  /**
+   * Fetches profile information from storage
+   * @param {FetchProfileEvent} fetchProfileEvent
+   * @returns {FetchProfileReply}
+   */
+  fetchProfile(fetchProfileEvent: FetchProfileEvent): FetchProfileReply {
+    const profile = new FetchProfileReply();
+    profile.profile = {
+      username: "schlurp",
+      avatar: "https://i.pravatar.cc/150",
+      status: UserStatus.ONLINE,
+      createdAt: "like three seconds ago, did you already forget?"
+    };
+    return profile;
+  }
+
+  /**
+   * @todo currently not implemented
+   * @param {CreateProfileEvent} createProfileEvent
+   * @returns {CreateProfileReply}
+   */
+  create(createProfileEvent: CreateProfileEvent): CreateProfileReply {
     return "This action adds a new profile";
   }
 
+  /**
+   * @todo currently not implemented
+   * @returns
+   */
   findAll() {
     return `This action returns all profile`;
   }
 
+  /**
+   * @todo currently not implemented
+   * @param {number} id
+   * @returns
+   */
   findOne(id: number) {
     return `This action returns a #${id} profile`;
   }
 
-  update(id: number, updateProfileDto: UpdateProfileEvent) {
+  /**
+   * @todo currently not implemented
+   * @param {number} id
+   * @param {UpdateProfileEvent} updateProfileEvent
+   * @returns
+   */
+  update(id: number, updateProfileEvent: UpdateProfileEvent) {
     return `This action updates a #${id} profile`;
   }
 
+  /**
+   * @todo currently not implemented
+   * @param {number} id
+   * @returns
+   */
   remove(id: number) {
     return `This action removes a #${id} profile`;
   }
