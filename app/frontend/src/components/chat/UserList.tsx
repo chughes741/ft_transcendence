@@ -1,8 +1,10 @@
 import { UserType } from "src/components/User";
 import ListTabulation from "src/components/chat/ListTab";
-import { useContext, useState, useEffect } from "react";
+import React, { useContext, useState, useEffect } from "react";
 import { WebSocketContext } from "src/contexts/WebSocketContext";
 import { SocketAddress } from "net";
+import {useChatViewModelContext} from "../../pages/chat/contexts/ChatViewModelContext";
+import ContextMenu from "../ContextMenu";
 
 export interface myUsers {
     username : string;
@@ -13,7 +15,8 @@ interface UserListProsp{
 }
 
 function UserList( { chatRoomName } : UserListProsp) {
-    
+
+    const {contextMenuPosition, handleContextMenu} = useChatViewModelContext();
 /*
     const myusers: myUsers[] = [
         { uuid: '000', nick: 'Gwineth', email: 'bitchplease@666.com', avatar: 'goo.fuckyou', },
@@ -49,10 +52,20 @@ function UserList( { chatRoomName } : UserListProsp) {
             socket.off('userList');
         };
     }, [socket]);
-
     return (
         <>
-            <ListTabulation users={userList} heading={chatRoomName} onSelectItem={handleSelectItem} />
+            <ListTabulation users={userList} heading={chatRoomName} onSelectItem={handleSelectItem}
+            />
+            <ContextMenu
+                position={contextMenuPosition}
+                options={[
+                {
+                    label:"view Profile",
+                    onClick: ()=> {console.log('ogog')}
+                }
+                ]}
+
+            />
         </>
     )
 }

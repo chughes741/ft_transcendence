@@ -10,6 +10,7 @@ import {
 import { MouseEvent, useState, useEffect } from "react";
 import { myUsers } from "./UserList";
 import GroupIcon from "@mui/icons-material/Group";
+import {useChatViewModelContext} from "../../pages/chat/contexts/ChatViewModelContext";
 
 interface Props {
   users: myUsers[];
@@ -24,7 +25,7 @@ function ListTabulation({ users, heading, onSelectItem }: Props) {
   // const [name, setName ] = useState(''); this could be use to modify also the state of the name
 
   const [SelectedIndex, setSelectedIndex] = useState(-1);
-
+  const {contextMenuPosition, handleContextMenu} = useChatViewModelContext();
   return (
     <>
       <Box
@@ -71,6 +72,7 @@ function ListTabulation({ users, heading, onSelectItem }: Props) {
                   setSelectedIndex(index);
                   onSelectItem(users);
                 }}
+                onContextMenu={(e) => handleContextMenu(e, { name: "poilu" })}
               >
                 <ListItemIcon>
                   <img src={`https://i.pravatar.cc/150?u=${users.username}`} />
