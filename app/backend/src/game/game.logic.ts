@@ -34,6 +34,8 @@ export class GameLogic {
     );
   }
 
+
+
   //Calculate game state and send server update
   async sendServerUpdate(gameState: GameData) {
     gameState = this.calculateGameState(gameState);

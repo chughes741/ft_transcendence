@@ -36,7 +36,7 @@ export class GameModuleData {
   }
 
   /**
-   * What does this do
+   * 
    * @method  getPairQueue
    * @returns {GameTypes.PlayerQueue[]}
    *
@@ -51,5 +51,22 @@ export class GameModuleData {
     } else {
       return null;
     }
+  }
+
+  /**
+   *
+   */
+  setPaddlePosition(payload: GameTypes.ClientGameStateUpdate) {
+    //Find correct match
+    GameModuleData.lobbies.forEach((element) => {
+      //If match_id is found then update paddle pos
+      if (element.match_id === payload.match_id) {
+        if (payload.player_side === "left") {
+          element.gamestate.paddle_left.pos.y = payload.paddle_pos;
+        } else {
+          element.gamestate.paddle_right.pos.y = payload.paddle_pos;
+        }
+      }
+    });
   }
 }
