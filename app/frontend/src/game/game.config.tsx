@@ -1,9 +1,9 @@
 import { Vector3 } from "three";
 
 export class PaddleConfig {
-  static readonly height: number = 1;
-  static readonly width: number = 0.5;
-  static readonly depth: number = 0.5;
+  static readonly height: number = 2;
+  static readonly width: number = 0.25;
+  static readonly depth: number = 0.0;
   static readonly borderOffset: number = 0.1;
 }
 
@@ -15,8 +15,8 @@ export class BallConfig {
 }
 
 export class GameConfig {
-  static readonly playAreaWidth: number = 6;
-  static readonly playAreaHeight: number = 4;
+  static readonly playAreaWidth: number = 16;
+  static readonly playAreaHeight: number = 8;
   static readonly serverUpdateRate: number = 17;
   static readonly backgroundZOffset: number = -5;
 }
@@ -24,7 +24,7 @@ export class GameConfig {
 //Colours
 
 export class GameColours {
-  static readonly paddle: string = "red";
+  static readonly paddle: string = "white";
   static readonly background: string = "black";
   static readonly ball: string = "white";
 }
