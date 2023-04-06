@@ -21,26 +21,28 @@ export class ProfileGateway {
    * Gateway for requesting a players match history
    *
    * @param {GetMatchHistoryRequest} getMatchHistoryRequest
-   * @returns {MatchHistoryEntity} - Array of MatchHistoryItem
+   * @async
+   * @returns {Promise<MatchHistoryEntity>} - MatchHistoryItem[]
    */
   @SubscribeMessage(ProfileEvents.GetMatchHistory)
-  getMatchHistory(
+  async getMatchHistory(
     @MessageBody() getMatchHistoryRequest: GetMatchHistoryRequest
-  ): MatchHistoryEntity {
-    return this.profileService.getMatchHistory(getMatchHistoryRequest);
+  ): Promise<MatchHistoryEntity> {
+    return await this.profileService.getMatchHistory(getMatchHistoryRequest);
   }
 
   /**
    * Returns profile information to display on a profile page
    *
    * @param {GetProfileRequest} getProfileRequest
+   * @async
    * @return {ProfileEntity} - Requested users profile
    */
   @SubscribeMessage(ProfileEvents.GetProfile)
-  getProfile(
+  async getProfile(
     @MessageBody() getProfileRequest: GetProfileRequest
-  ): ProfileEntity {
-    return this.profileService.getProfile(getProfileRequest);
+  ): Promise<ProfileEntity> {
+    return await this.profileService.getProfile(getProfileRequest);
   }
 
   /**

@@ -18,6 +18,15 @@ import {
 import { ChatMemberPrismaType, MessagePrismaType } from "../chat/chat.gateway";
 import config from "../config";
 
+/** Here for profile */
+import {
+  GetMatchHistoryRequest,
+  GetProfileRequest,
+  MatchHistoryEntity,
+  ProfileEntity,
+  UserStatus
+} from "kingpong-lib";
+
 const logger = new Logger("PrismaService");
 
 @Injectable()
@@ -312,5 +321,62 @@ export class PrismaService extends PrismaClient {
         room: { select: { name: true } }
       }
     });
+  }
+
+  /**
+   * Fetches match history page from the database
+   *
+   * @todo fetch from db
+   * @param {GetMatchHistoryRequest} getMatchHistoryRequest
+   * @async
+   * @returns {MatchHistoryEntity} - MatchHistoryItem[]
+   */
+  async GetMatchHistory(
+    getMatchHistoryRequest: GetMatchHistoryRequest
+  ): Promise<MatchHistoryEntity> {
+    const matchHistory = new MatchHistoryEntity();
+    matchHistory.matches = [
+      {
+        match_type: "Solo",
+        players: "John",
+        results: "Victory",
+        date: "2022-03-15",
+        winner: true
+      },
+      {
+        match_type: "Duo",
+        players: "John, Jane",
+        results: "Defeat",
+        date: "2022-03-16",
+        winner: false
+      },
+      {
+        match_type: "Squad",
+        players: "John, Jane, Bob, Alice",
+        results: "Victory",
+        date: "2022-03-17",
+        winner: true
+      }
+    ];
+    return matchHistory;
+  }
+
+  /**
+   * Returns a profile from the database
+   *
+   * @todo fetch from db
+   * @param {GetProfileRequest} getProfileRequest
+   * @async
+   * @returns {ProfileEntity}
+   */
+  async GetProfile(
+    getProfileRequest: GetProfileRequest
+  ): Promise<ProfileEntity> {
+    const profile = new ProfileEntity();
+    profile.username = "schlurp";
+    profile.avatar = "https://i.pravatar.cc/150";
+    profile.status = UserStatus.ONLINE;
+    profile.createdAt = "like three seconds ago, did you already forget?";
+    return profile;
   }
 }

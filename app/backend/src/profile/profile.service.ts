@@ -7,66 +7,40 @@ import {
   UpdateProfileRequest,
   UserStatus
 } from "kingpong-lib";
+import { PrismaService } from "src/prisma/prisma.service";
 
 @Injectable()
 export class ProfileService {
+  constructor(private readonly prismaService: PrismaService) {}
   /**
    * Fetches match history of requested player
    *
-   * @todo connect to prisma service
    * @param {GetMatchHistoryRequest} getMatchHistoryRequest
-   * @returns {MatchHistoryEntity}
+   * @async
+   * @returns {Promise<MatchHistoryEntity>}
    */
-  getMatchHistory(
+  async getMatchHistory(
     getMatchHistoryRequest: GetMatchHistoryRequest
-  ): MatchHistoryEntity {
-    const matchHistory = new MatchHistoryEntity();
-    matchHistory.matches = [
-      {
-        match_type: "Solo",
-        players: "John",
-        results: "Victory",
-        date: "2022-03-15",
-        winner: true
-      },
-      {
-        match_type: "Duo",
-        players: "John, Jane",
-        results: "Defeat",
-        date: "2022-03-16",
-        winner: false
-      },
-      {
-        match_type: "Squad",
-        players: "John, Jane, Bob, Alice",
-        results: "Victory",
-        date: "2022-03-17",
-        winner: true
-      }
-    ];
-    return matchHistory;
+  ): Promise<MatchHistoryEntity> {
+    return await this.prismaService.GetMatchHistory(getMatchHistoryRequest);
   }
 
   /**
    * Fetches profile information from storage
    *
-   * @todo connect to prisma service
    * @param {GetProfileRequest} getProfileRequest
-   * @returns {ProfileEntity}
+   * @async
+   * @returns {Promise<ProfileEntity>}
    */
-  getProfile(getProfileRequest: GetProfileRequest): ProfileEntity {
-    const profile = new ProfileEntity();
-    profile.username = "schlurp";
-    profile.avatar = "https://i.pravatar.cc/150";
-    profile.status = UserStatus.ONLINE;
-    profile.createdAt = "like three seconds ago, did you already forget?";
-    return profile;
+  async getProfile(
+    getProfileRequest: GetProfileRequest
+  ): Promise<ProfileEntity> {
+    return await this.prismaService.GetProfile(getProfileRequest);
   }
 
   /**
    * Makes an update request to the database for a users profile
    *
-   * @todo currently not implemented
    * @param {UpdateProfileRequest} updateProfileRequest
    * @returns {boolean} - Update successful
    */
