@@ -1,7 +1,5 @@
 import { Injectable } from "@nestjs/common";
 import {
-  CreateProfileEvent,
-  CreateProfileReply,
   FetchMatchHistoryEvent,
   FetchMatchHistoryReply,
   FetchProfileEvent,
@@ -14,6 +12,8 @@ import {
 export class ProfileService {
   /**
    * Fetches match history of requested player
+   * 
+   * @todo connect to prisma service
    * @param {FetchMatchHistoryEvent} fetchMatchHistoryEvent
    * @returns {MatchHistory}
    */
@@ -49,6 +49,8 @@ export class ProfileService {
 
   /**
    * Fetches profile information from storage
+   * 
+   * @todo connect to prisma service
    * @param {FetchProfileEvent} fetchProfileEvent
    * @returns {FetchProfileReply}
    */
@@ -64,47 +66,13 @@ export class ProfileService {
   }
 
   /**
+   * Makes an update request to the database for a users profile
+   * 
    * @todo currently not implemented
-   * @param {CreateProfileEvent} createProfileEvent
-   * @returns {CreateProfileReply}
-   */
-  create(createProfileEvent: CreateProfileEvent): CreateProfileReply {
-    return "This action adds a new profile";
-  }
-
-  /**
-   * @todo currently not implemented
-   * @returns
-   */
-  findAll() {
-    return `This action returns all profile`;
-  }
-
-  /**
-   * @todo currently not implemented
-   * @param {number} id
-   * @returns
-   */
-  findOne(id: number) {
-    return `This action returns a #${id} profile`;
-  }
-
-  /**
-   * @todo currently not implemented
-   * @param {number} id
    * @param {UpdateProfileEvent} updateProfileEvent
-   * @returns
+   * @returns {boolean} - Update successful
    */
-  update(id: number, updateProfileEvent: UpdateProfileEvent) {
-    return `This action updates a #${id} profile`;
-  }
-
-  /**
-   * @todo currently not implemented
-   * @param {number} id
-   * @returns
-   */
-  remove(id: number) {
-    return `This action removes a #${id} profile`;
+  updateProfile(updateProfileEvent: UpdateProfileEvent): boolean {
+    return true;
   }
 }

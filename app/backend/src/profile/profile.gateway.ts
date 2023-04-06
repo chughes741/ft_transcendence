@@ -5,8 +5,6 @@ import {
 } from "@nestjs/websockets";
 import { ProfileService } from "./profile.service";
 import {
-  CreateProfileEvent,
-  CreateProfileReply,
   FetchMatchHistoryEvent,
   FetchMatchHistoryReply,
   FetchProfileEvent,
@@ -21,6 +19,7 @@ export class ProfileGateway {
 
   /**
    * Gateway for requesting a players match history
+   *
    * @param {FetchMatchHistoryEvent} fetchMatchHistoryEvent
    * @returns {MatchHistory} - Array of MatchHistoryItem
    */
@@ -33,67 +32,27 @@ export class ProfileGateway {
 
   /**
    * Returns profile information to display on a profile page
+   *
    * @param {FetchProfileEvent} fetchProfileEvent
-   * @return {FetchProfileReply}
+   * @return {FetchProfileReply} - Requested users profile
    */
   @SubscribeMessage("fetchProfile")
-  fetchProfile(@MessageBody() fetchProfileEvent: FetchProfileEvent): FetchProfileReply {
+  fetchProfile(
+    @MessageBody() fetchProfileEvent: FetchProfileEvent
+  ): FetchProfileReply {
     return this.profileService.fetchProfile(fetchProfileEvent);
   }
 
   /**
-   * @todo currently not implemented
-   * @param {CreateProfileEvent} createProfileEvent
-   * @returns {CreateProfileReply}
-   */
-  @SubscribeMessage("createProfile")
-  create(
-    @MessageBody() createProfileEvent: CreateProfileEvent
-  ): CreateProfileReply {
-    return this.profileService.create(createProfileEvent);
-  }
-
-  /**
-   * @todo currently not implemented
-   * @returns {void}
-   */
-  @SubscribeMessage("findAllProfile")
-  findAll() {
-    return this.profileService.findAll();
-  }
-
-  /**
-   * @todo currently not implemented
-   * @param {number} id
-   * @returns {void}
-   */
-  @SubscribeMessage("findOneProfile")
-  findOne(@MessageBody() id: number) {
-    return this.profileService.findOne(id);
-  }
-
-  /**
-   * @todo currently not implemented
+   * Updates users profile information
+   *
    * @param {UpdateProfileEvent} updateProfileEvent
-   * @returns {UpdateProfileReply}
+   * @returns {boolean} - Update successful
    */
   @SubscribeMessage("updateProfile")
-  update(
+  updateProfile(
     @MessageBody() updateProfileEvent: UpdateProfileEvent
-  ): UpdateProfileReply {
-    return this.profileService.update(
-      updateProfileEvent.id,
-      updateProfileEvent
-    );
-  }
-
-  /**
-   * @todo currently not implemented
-   * @param {number} id
-   * @returns {void}
-   */
-  @SubscribeMessage("removeProfile")
-  remove(@MessageBody() id: number) {
-    return this.profileService.remove(id);
+  ): boolean {
+    return this.profileService.updateProfile(updateProfileEvent);
   }
 }
