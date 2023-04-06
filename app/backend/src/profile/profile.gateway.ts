@@ -3,17 +3,15 @@ import {
   SubscribeMessage,
   MessageBody
 } from "@nestjs/websockets";
-import { ProfileService } from "./profile.service";
 import {
-  CreateProfileEvent,
-  CreateProfileReply,
-  FetchMatchHistoryEvent,
-  FetchMatchHistoryReply,
-  FetchProfileEvent,
-  FetchProfileReply,
-  UpdateProfileEvent,
-  UpdateProfileReply
+  GetMatchHistoryRequest,
+  GetProfileRequest,
+  MatchHistoryEntity,
+  ProfileEntity,
+  ProfileEvents,
+  UpdateProfileRequest
 } from "kingpong-lib";
+import { ProfileService } from "./profile.service";
 
 @WebSocketGateway()
 export class ProfileGateway {
@@ -21,79 +19,42 @@ export class ProfileGateway {
 
   /**
    * Gateway for requesting a players match history
-   * @param {FetchMatchHistoryEvent} fetchMatchHistoryEvent
-   * @returns {MatchHistory} - Array of MatchHistoryItem
+   *
+   * @param {GetMatchHistoryRequest} getMatchHistoryRequest
+   * @async
+   * @returns {Promise<MatchHistoryEntity>} - MatchHistoryItem[]
    */
-  @SubscribeMessage("fetchMatchHistory")
-  fetchMatchHistory(
-    @MessageBody() fetchMatchHistoryEvent: FetchMatchHistoryEvent
-  ): FetchMatchHistoryReply {
-    return this.profileService.fetchMatchHistory(fetchMatchHistoryEvent);
+  @SubscribeMessage(ProfileEvents.GetMatchHistory)
+  async getMatchHistory(
+    @MessageBody() getMatchHistoryRequest: GetMatchHistoryRequest
+  ): Promise<MatchHistoryEntity> {
+    return await this.profileService.getMatchHistory(getMatchHistoryRequest);
   }
 
   /**
    * Returns profile information to display on a profile page
-   * @param {FetchProfileEvent} fetchProfileEvent
-   * @return {FetchProfileReply}
+   *
+   * @param {GetProfileRequest} getProfileRequest
+   * @async
+   * @return {ProfileEntity} - Requested users profile
    */
-  @SubscribeMessage("fetchProfile")
-  fetchProfile(@MessageBody() fetchProfileEvent: FetchProfileEvent): FetchProfileReply {
-    return this.profileService.fetchProfile(fetchProfileEvent);
+  @SubscribeMessage(ProfileEvents.GetProfile)
+  async getProfile(
+    @MessageBody() getProfileRequest: GetProfileRequest
+  ): Promise<ProfileEntity> {
+    return await this.profileService.getProfile(getProfileRequest);
   }
 
   /**
-   * @todo currently not implemented
-   * @param {CreateProfileEvent} createProfileEvent
-   * @returns {CreateProfileReply}
+   * Updates users profile information
+   *
+   * @param {UpdateProfileRequest} updateProfileRequest
+   * @returns {boolean} - Update successful
    */
-  @SubscribeMessage("createProfile")
-  create(
-    @MessageBody() createProfileEvent: CreateProfileEvent
-  ): CreateProfileReply {
-    return this.profileService.create(createProfileEvent);
-  }
-
-  /**
-   * @todo currently not implemented
-   * @returns {void}
-   */
-  @SubscribeMessage("findAllProfile")
-  findAll() {
-    return this.profileService.findAll();
-  }
-
-  /**
-   * @todo currently not implemented
-   * @param {number} id
-   * @returns {void}
-   */
-  @SubscribeMessage("findOneProfile")
-  findOne(@MessageBody() id: number) {
-    return this.profileService.findOne(id);
-  }
-
-  /**
-   * @todo currently not implemented
-   * @param {UpdateProfileEvent} updateProfileEvent
-   * @returns {UpdateProfileReply}
-   */
-  @SubscribeMessage("updateProfile")
-  update(
-    @MessageBody() updateProfileEvent: UpdateProfileEvent
-  ): UpdateProfileReply {
-    return this.profileService.update(
-      updateProfileEvent.id,
-      updateProfileEvent
-    );
-  }
-
-  /**
-   * @todo currently not implemented
-   * @param {number} id
-   * @returns {void}
-   */
-  @SubscribeMessage("removeProfile")
-  remove(@MessageBody() id: number) {
-    return this.profileService.remove(id);
+  @SubscribeMessage(ProfileEvents.UpdateProfile)
+  updateProfile(
+    @MessageBody() updateProfileRequest: UpdateProfileRequest
+  ): boolean {
+    return this.profileService.updateProfile(updateProfileRequest);
   }
 }
