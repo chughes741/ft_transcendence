@@ -56,6 +56,7 @@ export class PrismaService extends PrismaClient {
     const user = await this.user.findUnique({ where: { id: userId } });
     return !!user;
   }
+
   async getUserIdByNick(nick: string): Promise<string> {
     const user = await this.user.findUnique({ where: { username: nick } });
 
@@ -72,38 +73,50 @@ export class PrismaService extends PrismaClient {
 
     //GET ROOM MEMBERS : Only function to exists now , returns ChatMemberPrismaType
     async getRoomMembers(roomName: string): Promise<ChatMemberPrismaType[]> {
-      const room = await this.chatRoom.findUnique({
-        where: { name: roomName },
-        include: {
-          members: {
-            include: {
-              member: {
-                select : {
-                  //avatar: true,
-                  username : true
-                }
-              }
-              },
-          },
+      /*
+      const chatRoom = await this.chatRoom.findUnique({
+        where: {
+          name: roomName,
         },
       });
-  
-      if (room === null || room.members.length === 0) {
-        console.log("Prisma service returs NULL");
-        return [];
+    
+      if (!chatRoom) {
+        throw new Error(`Chat room with name "${roomName}" not found`);
       }
-      
-      const chatMembers = room.members.map((chatMember) => ({
-        ...chatMember,
-        member: {
-          //avatar: chatMember.member.avatar,
-          avatar: `https://i.pravatar.cc/150?u=${chatMember.member.username}`,
-          username: chatMember.member.username,
+    
+      const members = await this.chatMember.findMany({
+        where: {
+          id: chatRoom.id,
         },
-      }));
-  
-      const chatMembersWithUserInfo: ChatMemberPrismaType[] = chatMembers;
-      return chatMembersWithUserInfo;
+        include: {
+          member: true,
+        },
+      });      
+
+      const chatMembersWithUserInfo: ChatMemberPrismaType[] = members.map((member) => {
+        const { id, memberId, roomId, status, rank, endOfBan, endOfMute } = member;
+        const { id : Userid2, username, email, avatar, status : status2 } = member.member;
+    
+        return {
+          id,
+          memberId,
+          roomId,
+          status,
+          rank,
+          endOfBan,
+          endOfMute,
+          member: {
+            id : Userid2,
+            username,
+            email,
+            avatar,
+            status : status2,
+          },
+        };
+      });*/
+
+
+      return [];
     }
   // End
 
