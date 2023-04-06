@@ -3,15 +3,15 @@ import {
   SubscribeMessage,
   MessageBody
 } from "@nestjs/websockets";
-import { ProfileService } from "./profile.service";
 import {
-  FetchMatchHistoryEvent,
-  FetchMatchHistoryReply,
-  FetchProfileEvent,
-  FetchProfileReply,
-  UpdateProfileEvent,
-  UpdateProfileReply
+  GetMatchHistoryRequest,
+  GetProfileRequest,
+  MatchHistoryEntity,
+  ProfileEntity,
+  ProfileEvents,
+  UpdateProfileRequest
 } from "kingpong-lib";
+import { ProfileService } from "./profile.service";
 
 @WebSocketGateway()
 export class ProfileGateway {
@@ -20,39 +20,39 @@ export class ProfileGateway {
   /**
    * Gateway for requesting a players match history
    *
-   * @param {FetchMatchHistoryEvent} fetchMatchHistoryEvent
-   * @returns {MatchHistory} - Array of MatchHistoryItem
+   * @param {GetMatchHistoryRequest} getMatchHistoryRequest
+   * @returns {MatchHistoryEntity} - Array of MatchHistoryItem
    */
-  @SubscribeMessage("fetchMatchHistory")
-  fetchMatchHistory(
-    @MessageBody() fetchMatchHistoryEvent: FetchMatchHistoryEvent
-  ): FetchMatchHistoryReply {
-    return this.profileService.fetchMatchHistory(fetchMatchHistoryEvent);
+  @SubscribeMessage(ProfileEvents.GetMatchHistory)
+  getMatchHistory(
+    @MessageBody() getMatchHistoryRequest: GetMatchHistoryRequest
+  ): MatchHistoryEntity {
+    return this.profileService.getMatchHistory(getMatchHistoryRequest);
   }
 
   /**
    * Returns profile information to display on a profile page
    *
-   * @param {FetchProfileEvent} fetchProfileEvent
-   * @return {FetchProfileReply} - Requested users profile
+   * @param {GetProfileRequest} getProfileRequest
+   * @return {ProfileEntity} - Requested users profile
    */
-  @SubscribeMessage("fetchProfile")
-  fetchProfile(
-    @MessageBody() fetchProfileEvent: FetchProfileEvent
-  ): FetchProfileReply {
-    return this.profileService.fetchProfile(fetchProfileEvent);
+  @SubscribeMessage(ProfileEvents.GetProfile)
+  getProfile(
+    @MessageBody() getProfileRequest: GetProfileRequest
+  ): ProfileEntity {
+    return this.profileService.getProfile(getProfileRequest);
   }
 
   /**
    * Updates users profile information
    *
-   * @param {UpdateProfileEvent} updateProfileEvent
+   * @param {UpdateProfileRequest} updateProfileRequest
    * @returns {boolean} - Update successful
    */
-  @SubscribeMessage("updateProfile")
+  @SubscribeMessage(ProfileEvents.UpdateProfile)
   updateProfile(
-    @MessageBody() updateProfileEvent: UpdateProfileEvent
+    @MessageBody() updateProfileRequest: UpdateProfileRequest
   ): boolean {
-    return this.profileService.updateProfile(updateProfileEvent);
+    return this.profileService.updateProfile(updateProfileRequest);
   }
 }

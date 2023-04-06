@@ -1,10 +1,10 @@
 import { Injectable } from "@nestjs/common";
 import {
-  FetchMatchHistoryEvent,
-  FetchMatchHistoryReply,
-  FetchProfileEvent,
-  FetchProfileReply,
-  UpdateProfileEvent,
+  GetMatchHistoryRequest,
+  GetProfileRequest,
+  MatchHistoryEntity,
+  ProfileEntity,
+  UpdateProfileRequest,
   UserStatus
 } from "kingpong-lib";
 
@@ -12,15 +12,15 @@ import {
 export class ProfileService {
   /**
    * Fetches match history of requested player
-   * 
+   *
    * @todo connect to prisma service
-   * @param {FetchMatchHistoryEvent} fetchMatchHistoryEvent
-   * @returns {MatchHistory}
+   * @param {GetMatchHistoryRequest} getMatchHistoryRequest
+   * @returns {MatchHistoryEntity}
    */
-  fetchMatchHistory(
-    fetchMatchHistoryEvent: FetchMatchHistoryEvent
-  ): FetchMatchHistoryReply {
-    const matchHistory = new FetchMatchHistoryReply();
+  getMatchHistory(
+    getMatchHistoryRequest: GetMatchHistoryRequest
+  ): MatchHistoryEntity {
+    const matchHistory = new MatchHistoryEntity();
     matchHistory.matches = [
       {
         match_type: "Solo",
@@ -49,30 +49,28 @@ export class ProfileService {
 
   /**
    * Fetches profile information from storage
-   * 
+   *
    * @todo connect to prisma service
-   * @param {FetchProfileEvent} fetchProfileEvent
-   * @returns {FetchProfileReply}
+   * @param {GetProfileRequest} getProfileRequest
+   * @returns {ProfileEntity}
    */
-  fetchProfile(fetchProfileEvent: FetchProfileEvent): FetchProfileReply {
-    const profile = new FetchProfileReply();
-    profile.profile = {
-      username: "schlurp",
-      avatar: "https://i.pravatar.cc/150",
-      status: UserStatus.ONLINE,
-      createdAt: "like three seconds ago, did you already forget?"
-    };
+  getProfile(getProfileRequest: GetProfileRequest): ProfileEntity {
+    const profile = new ProfileEntity();
+    profile.username = "schlurp";
+    profile.avatar = "https://i.pravatar.cc/150";
+    profile.status = UserStatus.ONLINE;
+    profile.createdAt = "like three seconds ago, did you already forget?";
     return profile;
   }
 
   /**
    * Makes an update request to the database for a users profile
-   * 
+   *
    * @todo currently not implemented
-   * @param {UpdateProfileEvent} updateProfileEvent
+   * @param {UpdateProfileRequest} updateProfileRequest
    * @returns {boolean} - Update successful
    */
-  updateProfile(updateProfileEvent: UpdateProfileEvent): boolean {
+  updateProfile(updateProfileRequest: UpdateProfileRequest): boolean {
     return true;
   }
 }
