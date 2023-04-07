@@ -32,7 +32,10 @@ export interface ChatMemberPrismaType extends ChatMember {
   member: 
   { 
     avatar: string; 
-    username: string 
+    username: string;
+    email: string,
+    status : any,
+    id : any,
   };
 }
 

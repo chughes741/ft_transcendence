@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { PrismaService } from "../prisma/prisma.service";
 import { ChatMemberPrismaType } from 'src/chat/chat.gateway';
 import { ChatMemberEntity } from './userlist.gateway';
+import { updateChatMemberStatusDto } from './dto/userlist.dto';
 
 
 @Injectable()
@@ -18,10 +19,13 @@ export class UserlistService {
             return {
               username : chatMembers.member.username,
               id : chatMembers.id,
-              status : chatMembers.status,
+              chatMemberstatus : chatMembers.status,
+              userStatus : chatMembers.member.status,
               rank : chatMembers.rank,
               endOfBan : chatMembers.endOfBan,
               endOfMute : chatMembers.endOfMute,
+              email : chatMembers.member.email,
+              avatar : chatMembers.member.avatar,
             }
           })
         console.log("ENTITIES" , CMEntities);
@@ -32,5 +36,15 @@ export class UserlistService {
         }
         console.log("There is no members in room");
         return [];
+    }
+
+    async updateStatus (updateDto: updateChatMemberStatusDto)  {
+      try {
+        const response = await this.prisma.updateChatMemberStatus(updateDto);
+        return response;
+      } catch (error) {
+        console.error(error);
+        throw error;
+      }
     }
 }

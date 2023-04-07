@@ -26,6 +26,7 @@ import {
   ProfileEntity,
   UserStatus
 } from "kingpong-lib";
+import { updateChatMemberStatusDto } from "src/userlist/dto/userlist.dto";
 
 const logger = new Logger("PrismaService");
 
@@ -80,52 +81,52 @@ export class PrismaService extends PrismaClient {
    * @returns - list of members
    */
 
-    //GET ROOM MEMBERS : Only function to exists now , returns ChatMemberPrismaType
-    async getRoomMembers(roomName: string): Promise<ChatMemberPrismaType[]> {
-      
-      const chatRoom = await this.chatRoom.findUnique({
-        where: {
-          name: roomName,
-        },
-      });
-    
-      if (!chatRoom) {
-        throw new Error(`Chat room with name "${roomName}" not found`);
-      }
-    
-      const members = await this.chatMember.findMany({
-        where: {
-          id: chatRoom.id,
-        },
-        include: {
-          member: true,
-        },
-      });      
+  //GET ROOM MEMBERS : Only function to exists now , returns ChatMemberPrismaType
+  async getRoomMembers(roomName: string): Promise<ChatMemberPrismaType[]> {
 
-      const chatMembersWithUserInfo: ChatMemberPrismaType[] = members.map((member) => {
-        const { id, memberId, roomId, status, rank, endOfBan, endOfMute } = member;
-        const { id : Userid2, username, email, avatar, status : status2 } = member.member;
-    
-        return {
-          id,
-          memberId,
-          roomId,
-          status,
-          rank,
-          endOfBan,
-          endOfMute,
-          member: {
-            id : Userid2,
-            username,
-            email,
-            avatar,
-            status : status2,
-          },
-        };
-      });
-      console.log("PRISMA TYPE", chatMembersWithUserInfo);
-      return chatMembersWithUserInfo;
+    const chatRoom = await this.chatRoom.findUnique({
+      where: {
+        name: roomName,
+      },
+    });
+
+    if (!chatRoom) {
+      throw new Error(`Chat room with name "${roomName}" not found`);
     }
+
+    const members = await this.chatMember.findMany({
+      where: {
+        id: chatRoom.id,
+      },
+      include: {
+        member: true,
+      },
+    });
+
+    const chatMembersWithUserInfo: ChatMemberPrismaType[] = members.map((member) => {
+      const { id, memberId, roomId, status, rank, endOfBan, endOfMute } = member;
+      const { id: Userid2, username, email, avatar, status: status2 } = member.member;
+
+      return {
+        id,
+        memberId,
+        roomId,
+        status,
+        rank,
+        endOfBan,
+        endOfMute,
+        member: {
+          id: Userid2,
+          username,
+          email,
+          avatar,
+          status: status2,
+        },
+      };
+    });
+    console.log("PRISMA TYPE", chatMembersWithUserInfo);
+    return chatMembersWithUserInfo;
+  }
   // End
 
   async addUser(dto: UserDto) {
@@ -398,5 +399,29 @@ export class PrismaService extends PrismaClient {
     profile.status = UserStatus.ONLINE;
     profile.createdAt = "like three seconds ago, did you already forget?";
     return profile;
+  }
+
+  async updateChatMemberStatus(updateDto: updateChatMemberStatusDto) {
+    try {
+      const chatroom = await this.chatRoom.findUnique({
+        where: { name: updateDto.roomName },
+        include: { members: true },
+      });
+
+      const member = chatroom.members.find((member) => member.id === updateDto.memberId);
+
+      if (!member) {
+        throw new Error('User is not a member of this chatroom');
+      }
+
+      const updatedMember = await this.chatMember.update({
+        where: { id: member.id },
+        data: { status: updateDto.status},
+      });
+
+      return updatedMember;
+    } catch (error) {
+      throw new Error(`Failed to mute chat member: ${error.message}`);
+    }
   }
 }
