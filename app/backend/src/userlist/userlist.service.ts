@@ -11,6 +11,7 @@ export class UserlistService {
     async getUserList(chatRoomName: string) : Promise<ChatMemberEntity[]> {
         console.log("Inside getUserList");
 
+      
         //get all users that are members of a specific Chat Room (with string name)
         const userMembers : ChatMemberPrismaType[] = await this.prisma.getRoomMembers(chatRoomName);
         const CMEntities : ChatMemberEntity[] = userMembers.map( (chatMembers) => {
@@ -23,7 +24,7 @@ export class UserlistService {
               endOfMute : chatMembers.endOfMute,
             }
           })
-        
+        console.log("ENTITIES" , CMEntities);
         if (userMembers.length > 0)
         {
             console.log ("First member in " , CMEntities[0])

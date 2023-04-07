@@ -82,7 +82,7 @@ export class PrismaService extends PrismaClient {
 
     //GET ROOM MEMBERS : Only function to exists now , returns ChatMemberPrismaType
     async getRoomMembers(roomName: string): Promise<ChatMemberPrismaType[]> {
-      /*
+      
       const chatRoom = await this.chatRoom.findUnique({
         where: {
           name: roomName,
@@ -122,10 +122,9 @@ export class PrismaService extends PrismaClient {
             status : status2,
           },
         };
-      });*/
-
-
-      return [];
+      });
+      console.log("PRISMA TYPE", chatMembersWithUserInfo);
+      return chatMembersWithUserInfo;
     }
   // End
 
