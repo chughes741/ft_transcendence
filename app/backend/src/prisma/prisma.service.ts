@@ -325,7 +325,6 @@ export class PrismaService extends PrismaClient {
   /**
    * Fetches match history page from the database
    *
-   * @todo fetch from db
    * @param {GetMatchHistoryRequest} getMatchHistoryRequest
    * @async
    * @returns {MatchHistoryEntity} - MatchHistoryItem[]
@@ -333,29 +332,29 @@ export class PrismaService extends PrismaClient {
   async GetMatchHistory(
     getMatchHistoryRequest: GetMatchHistoryRequest
   ): Promise<MatchHistoryEntity> {
-    // const matchHistory = new MatchHistoryEntity();
-    // matchHistory.matches = [
-    // {
-    // match_type: "Solo",
-    // players: "John",
-    // results: "Victory",
-    // date: "2022-03-15",
+    const matchHistory = new MatchHistoryEntity();
+    matchHistory.matches = [
+      {
+        match_type: "Solo",
+        players: "John",
+        results: "Victory",
+        date: "2022-03-15",
+        winner: true
+      }
+    ];
+
+    // function convertToMatchHistoryEntity(matchesPrisma: Match[]): MatchHistoryEntity {
+    // const matches = matchesPrisma.map(match => {
+    // return {
+    // match_type: match.gameType,
+    // players: {match.player1Id, match.player2Id},
+    // results: {match.scorePlayer1, match.scorePlayer2},
+    // date: match.timestamp,
     // winner: true
     // }
-    // ];
-    
-    function convertToMatchHistoryEntity(matchesPrisma: Match[]): MatchHistoryEntity {
-      const matches = matchesPrisma.map(match => {
-        return {          
-          match_type: match.gameType,
-          players: {match.player1Id, match.player2Id},
-          results: {match.scorePlayer1, match.scorePlayer2},
-          date: match.timestamp,
-          winner: true
-        }
-      });
-      return matches;
-    } 
+    // });
+    // return matches;
+    // }
 
     const matches = await this.match.findMany({
       where: {
@@ -369,7 +368,8 @@ export class PrismaService extends PrismaClient {
         ]
       }
     });
-    return convertToMatchHistoryEntity(matches);
+    // return convertToMatchHistoryEntity(matches);
+    return matchHistory;
   }
 
   /**
