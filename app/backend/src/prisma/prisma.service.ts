@@ -419,6 +419,11 @@ export class PrismaService extends PrismaClient {
         data: { status: updateDto.status},
       });
 
+      
+      const oneDayInMillis = 24 * 60 * 60 * 1000; // One day in milliseconds
+      const futureDate = new Date(Date.now() + oneDayInMillis);
+
+
       return updatedMember;
     } catch (error) {
       throw new Error(`Failed to mute chat member: ${error.message}`);
