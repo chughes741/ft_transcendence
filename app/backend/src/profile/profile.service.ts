@@ -4,8 +4,7 @@ import {
   GetProfileRequest,
   MatchHistoryEntity,
   ProfileEntity,
-  UpdateProfileRequest,
-  UserStatus
+  UpdateProfileRequest
 } from "kingpong-lib";
 import { PrismaService } from "src/prisma/prisma.service";
 
