@@ -333,7 +333,7 @@ export class PrismaService extends PrismaClient {
   async GetMatchHistory(
     getMatchHistoryRequest: GetMatchHistoryRequest
   ): Promise<Match[]> {
-    const matches = await this.match.findMany({
+    return await this.match.findMany({
       where: {
         OR: [
           {
@@ -349,25 +349,20 @@ export class PrismaService extends PrismaClient {
         ]
       }
     });
-    return matches;
   }
 
   /**
    * Returns a profile from the database
    *
-   * @todo fetch from db
    * @param {GetProfileRequest} getProfileRequest
    * @async
-   * @returns {ProfileEntity}
+   * @returns {Promise<User>}
    */
   async GetProfile(
     getProfileRequest: GetProfileRequest
-  ): Promise<ProfileEntity> {
-    const profile = new ProfileEntity();
-    profile.username = "schlurp";
-    profile.avatar = "https://i.pravatar.cc/150";
-    profile.status = UserStatus.ONLINE;
-    profile.createdAt = "like three seconds ago, did you already forget?";
-    return profile;
+  ): Promise<User> {
+    return await this.user.findUnique({
+      where: { id: getProfileRequest.id }
+    });
   }
 }

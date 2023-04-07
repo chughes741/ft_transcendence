@@ -4,7 +4,8 @@ import {
   GetProfileRequest,
   MatchHistoryItem,
   ProfileEntity,
-  UpdateProfileRequest
+  UpdateProfileRequest,
+  UserStatus
 } from "kingpong-lib";
 import { PrismaService } from "src/prisma/prisma.service";
 
@@ -51,7 +52,15 @@ export class ProfileService {
   async getProfile(
     getProfileRequest: GetProfileRequest
   ): Promise<ProfileEntity> {
-    return await this.prismaService.GetProfile(getProfileRequest);
+    const user = await this.prismaService.GetProfile(getProfileRequest);
+    const profile = {
+      username: user.username,
+      avatar: user.avatar,
+      status: UserStatus.ONLINE,
+      createdAt: user.createdAt.toLocaleTimeString()
+    };
+
+    return profile;
   }
 
   /**

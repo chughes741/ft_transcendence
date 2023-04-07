@@ -35,7 +35,7 @@ export async function GetProfile(id: string): Promise<ProfileEntity> {
   return new Promise((resolve) => {
     socket.emit(
       ProfileEvents.GetProfile,
-      id,
+      { id },
       (profileEntity: ProfileEntity) => {
         resolve(profileEntity);
       }
