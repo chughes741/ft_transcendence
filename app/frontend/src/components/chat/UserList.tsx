@@ -31,12 +31,8 @@ function UserList( { chatRoomName } : UserListProsp) {
     }
 
     const socket = useContext(WebSocketContext);
-    
 
     const [userList, setUserList] = useState<myUsers[]>([]);
-
-
-
 
     // Send "listUsers" event to server to get the user list
     useEffect(() => {
@@ -54,6 +50,7 @@ function UserList( { chatRoomName } : UserListProsp) {
             socket.off('userList');
         };
     }, [socket]);
+    
     return (
         <>
             <ListTabulation users={userList} heading={chatRoomName} onSelectItem={handleSelectItem}

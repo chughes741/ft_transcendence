@@ -4,8 +4,10 @@ import { Injectable } from '@nestjs/common';
 import { ChatMemberRank, ChatMemberStatus, UserStatus } from '@prisma/client';
 import { Socket, Server } from "socket.io";
 import { WebSocketServer } from '@nestjs/websockets';
-import { updateChatMemberStatusDto } from './dto/userlist.dto';
+import { updateChatMemberStatusDto } from '../chat/dto/userlist.dto';
+import { ChatGateway } from 'src/chat/chat.gateway';
 
+/*
 export interface ChatMemberEntity{
   username: string;
   avatar: string;
@@ -16,19 +18,22 @@ export interface ChatMemberEntity{
   rank : ChatMemberRank;
   endOfBan : any;
   endOfMute : any;
-}
+}*/
 
 @WebSocketGateway()
 export class UserlistGateway {
-  constructor(private userlistService: UserlistService) {}
+  constructor(private userlistService: UserlistService, private readonly chatGateway : ChatGateway) {
+  }
 
-  @WebSocketServer() server: Server;
-
+ // @WebSocketServer() server: Server;
+/*
   @SubscribeMessage('listUsers')  
   async handleMessage(client: any, payload: any): Promise<any> {      
     const list : ChatMemberEntity[] = await this.userlistService.getUserList(payload.chatRoomName);
-    console.log(list);
-    return {event: 'userList' , data: list}
+    console.log(payload.chatRoomName);
+    //return {event: 'userList' , data: list}
+    this.chatGateway.server.to(payload.chatRoomName).emit('userList', list);
+    //this.server.emit('userList', list )
   }
 
   @SubscribeMessage('muteChatMember')
@@ -36,6 +41,6 @@ export class UserlistGateway {
     const chatMember = await this.userlistService.updateStatus(data);
 
     // Broadcast the updated chat member information to all clients connected to the chat
-    this.server.to(data.roomName).emit('chatMemberUpdated', chatMember);
-  }
+    this.chatGateway.server.to(data.roomName).emit('chatMemberUpdated', chatMember);
+  }*/
 }

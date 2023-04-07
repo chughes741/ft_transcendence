@@ -26,7 +26,7 @@ import {
   ProfileEntity,
   UserStatus
 } from "kingpong-lib";
-import { updateChatMemberStatusDto } from "src/userlist/dto/userlist.dto";
+import { updateChatMemberStatusDto } from "src/chat/dto/userlist.dto";
 
 const logger = new Logger("PrismaService");
 
