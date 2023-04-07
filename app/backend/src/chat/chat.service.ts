@@ -1,5 +1,5 @@
 import { Injectable, Logger } from "@nestjs/common";
-import { ChatMemberRank, ChatRoomStatus } from "@prisma/client";
+import { ChatMemberRank, ChatMemberStatus, ChatRoomStatus } from "@prisma/client";
 import { PrismaService } from "../prisma/prisma.service";
 import { UserConnectionsService } from "../user-connections.service";
 import {
@@ -10,7 +10,7 @@ import {
 } from "./chat.gateway";
 import { CreateChatDto } from "./dto/create-chat.dto";
 import { MessageEntity } from "./entities/message.entity";
-import { updateChatMemberStatusDto } from "./dto/userlist.dto";
+import { kickMemberDto, updateChatMemberStatusDto } from "./dto/userlist.dto";
 import { ChatMemberPrismaType, ChatMemberEntity } from "./chat.gateway";
 
 const logger = new Logger("ChatService");
@@ -20,7 +20,7 @@ export class ChatService {
   constructor(
     private readonly prismaService: PrismaService,
     private userConnectionsService: UserConnectionsService
-  ) {}
+  ) { }
 
   create(createChatDto: CreateChatDto) {
     logger.log("Created a new chat");
@@ -267,42 +267,54 @@ export class ChatService {
     GET USER LIST : Get all user information relevant for the chat user tab Component
     Takes a ChatmemberPrismaType array and transforms it into a ChatMemberEntity[], expected by the client
   */
-  async getUserList(chatRoomName: string) : Promise<ChatMemberEntity[]> {
+  async getUserList(chatRoomName: string): Promise<ChatMemberEntity[]> {
     console.log("Inside getUserList");
 
-  
+
     //get all users that are members of a specific Chat Room (with string name)
-    const userMembers : ChatMemberPrismaType[] = await this.prismaService.getRoomMembers(chatRoomName);
-    const CMEntities : ChatMemberEntity[] = userMembers.map( (chatMembers) => {
-        return {
-          username : chatMembers.member.username,
-          id : chatMembers.id,
-          chatMemberstatus : chatMembers.status,
-          userStatus : chatMembers.member.status,
-          rank : chatMembers.rank,
-          endOfBan : chatMembers.endOfBan,
-          endOfMute : chatMembers.endOfMute,
-          email : chatMembers.member.email,
-          avatar : chatMembers.member.avatar,
-        }
-      })
-    if (userMembers.length > 0)
-    {
-        return CMEntities
+    const userMembers: ChatMemberPrismaType[] = await this.prismaService.getRoomMembers(chatRoomName);
+    const CMEntities: ChatMemberEntity[] = userMembers.map((chatMembers) => {
+      return {
+        username: chatMembers.member.username,
+        id: chatMembers.id,
+        chatMemberstatus: chatMembers.status,
+        userStatus: chatMembers.member.status,
+        rank: chatMembers.rank,
+        endOfBan: chatMembers.endOfBan,
+        endOfMute: chatMembers.endOfMute,
+        email: chatMembers.member.email,
+        avatar: chatMembers.member.avatar,
+      }
+    })
+    if (userMembers.length > 0) {
+      return CMEntities
     }
     console.log("There is no members in room");
     return [];
-}
-
-async updateStatus (updateDto: updateChatMemberStatusDto)  {
-  try {
-    const response = await this.prismaService.updateChatMemberStatus(updateDto);
-    return response;
-  } catch (error) {
-    console.error(error);
-    throw error;
   }
-}
+
+  async updateStatus(updateDto: updateChatMemberStatusDto) {
+    try {
+      const response = await this.prismaService.updateChatMemberStatus(updateDto);
+      return response;
+    } catch (error) {
+      console.error(error);
+      throw error;
+    }
+  }
+
+  async kickMember(kickDto : kickMemberDto) : Promise <string> {
+
+    const ChatMember = await this.prismaService.getChatMember(kickDto.ChatMemberToKickId);
+
+    if (kickDto.memberRequestingRank === ChatMemberRank.USER || kickDto.memberRequestingRank === ChatMemberRank.DISCONNECTED
+          || kickDto.memberToKickStatus === ChatMemberRank.OWNER)
+        return "Can't kick User : Wrong rank";
+    if (kickDto.memberToKickStatus === ChatMemberRank.ADMIN && kickDto.memberRequestingRank === ChatMemberRank.ADMIN)
+        return "Can't kick User : Wrong rank";
+      this.prismaService.destroyChatMember(kickDto.ChatMemberToKickId);
+      return "Chat Member " + kickDto.ChatMemberToKickName + " kicked out successfully !";
+  }
 
 
 }

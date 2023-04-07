@@ -2,7 +2,8 @@ import { Injectable } from '@nestjs/common';
 import { PrismaService } from "../prisma/prisma.service";
 import { ChatMemberPrismaType } from 'src/chat/chat.gateway';
 import { ChatMemberEntity } from 'src/chat/chat.gateway';
-import { updateChatMemberStatusDto } from '../chat/dto/userlist.dto';
+import { updateChatMemberStatusDto } from 'src/chat/dto/userlist.dto';
+
 
 
 @Injectable()
