@@ -1,10 +1,11 @@
 import { useEffect, useState } from "react";
 
-/** Module Imports */
-import { Avatar, Paper, Stack, Typography } from "@mui/material";
-
-/** Table from MUI */
+/** MUI */
 import {
+  Avatar,
+  Paper,
+  Stack,
+  Typography,
   Table,
   TableBody,
   TableCell,
@@ -13,18 +14,22 @@ import {
   TableRow
 } from "@mui/material";
 
-/** Mock data import */
+/** Shared Library */
+import { MatchHistoryItem, ProfileEntity, UserStatus } from "kingpong-lib";
+
+/** View Model */
 import {
   GetMatchHistory,
   GetProfile,
   Item
 } from "src/views/profile/profile.viewModel";
-import { MatchHistoryItem, ProfileEntity, UserStatus } from "kingpong-lib";
 
 /**
  * Creates profile page header
+ * 
+ * @returns {JSX.Element | null}
  */
-export function ProfileHeader() {
+export function ProfileHeader(): JSX.Element | null {
   const [profile, setProfile] = useState<ProfileEntity | undefined>();
 
   /** Fetch profile from server */
@@ -60,9 +65,11 @@ export function ProfileHeader() {
 
 /**
  * Creates a TableRow with a MatchHistoryItem
+ * 
  * @param {MatchHistoryItem} row
+ * @returns {JSX.Element | null}
  */
-function MatchHistoryRow(row: MatchHistoryItem) {
+function MatchHistoryRow(row: MatchHistoryItem): JSX.Element | null {
   return (
     <>
       <TableRow
@@ -90,8 +97,10 @@ function MatchHistoryRow(row: MatchHistoryItem) {
 
 /**
  * Loads match history component
+ * 
+ * @returns {JSX.Element | null}
  */
-function MatchHistory() {
+function MatchHistory(): JSX.Element | null {
   const [matches, setMatches] = useState<MatchHistoryItem[]>([]);
 
   /** Fetch players match history from server */
@@ -126,8 +135,10 @@ function MatchHistory() {
 
 /**
  * Loads profile page
+ * 
+ * @returns {JSX.Element | null}
  */
-export default function ProfileView() {
+export default function ProfileView(): JSX.Element | null {
   return (
     <>
       <Stack
