@@ -22,7 +22,7 @@ interface UserListProsp{
 
 function UserList( { chatRoomName } : UserListProsp) {
 
-    const {contextMenuPosition, handleContextMenu} = useChatViewModelContext();
+    const {contextMenuPosition} = useChatViewModelContext();
 
     const handleSelectItem = (user: myUsers) => {
         console.log(user);

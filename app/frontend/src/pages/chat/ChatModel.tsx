@@ -17,10 +17,13 @@ export interface ChatModelType {
   currentRoomMessages: Array<MessageType>;
   setCurrentRoomMessages: (messages: Array<MessageType>) => void;
   contextMenuVisible: boolean;
+  contextMenuUsersVisible: boolean;
   setContextMenuVisible: (arg: boolean) => void;
+  setContextMenuUsersVisible: (arg: boolean) => void;
   contextMenuPosition: { x: number; y: number };
   contextMenuData: RoomType | null;
   handleContextMenu: (e: React.MouseEvent, roomData: { name: string }) => void;
+  handleContextMenuUsers: (e: React.MouseEvent, roomData: { name: string }) => void;
   showCreateRoomModal: boolean;
   setShowCreateRoomModal: (visible: boolean) => void;
   showJoinRoomModal: boolean;
@@ -40,17 +43,28 @@ export const useChatModel = (): ChatModelType => {
   const [unreadMessages, setUnreadMessages] = useState({});
   const [contextMenuData, setContextMenuData] = useState(null);
   const [contextMenuVisible, setContextMenuVisible] = useState(false);
+  const [contextMenuUsersVisible, setContextMenuUsersVisible] = useState(false);
   const [contextMenuPosition, setContextMenuPosition] = useState({
     x: 0,
     y: 0
   });
 
+
   const handleContextMenu = (e, roomData) => {
     e.preventDefault();
     setContextMenuVisible(true);
+    setContextMenuUsersVisible(false);
     setContextMenuPosition({ x: e.clientX, y: e.clientY });
     setContextMenuData(roomData);
   };
+
+  const handleContextMenuUsers = (e, roomData) => {
+    e.preventDefault();
+    setContextMenuUsersVisible(true);
+    setContextMenuVisible(false);
+    setContextMenuPosition({ x: e.clientX, y: e.clientY });
+    setContextMenuData(roomData);
+  }
 
   const truncateText = (text: string, maxLength: number) => {
     if (text.length <= maxLength) {
@@ -71,8 +85,11 @@ export const useChatModel = (): ChatModelType => {
     contextMenuData,
     contextMenuPosition,
     handleContextMenu,
+    handleContextMenuUsers,
     contextMenuVisible,
+    contextMenuUsersVisible,
     setContextMenuVisible,
+    setContextMenuUsersVisible,
     showCreateRoomModal,
     setShowCreateRoomModal,
     showJoinRoomModal,
