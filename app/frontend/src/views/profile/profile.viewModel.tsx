@@ -5,9 +5,10 @@ import { socket } from "src/contexts/WebSocketContext";
 
 /** Temporary data type import */
 import {
-  GetMatchHistoryRequest,
   MatchHistoryEntity,
-  MatchHistoryItem, ProfileEntity, ProfileEvents
+  MatchHistoryItem,
+  ProfileEntity,
+  ProfileEvents
 } from "kingpong-lib";
 
 /**
