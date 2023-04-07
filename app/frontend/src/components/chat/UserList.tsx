@@ -8,9 +8,11 @@ import ContextMenu from "../ContextMenu";
 
 export interface myUsers {
     username: string;
-    //avatar: string;
+    avatar: string;
     id : number;
-    status : any;
+    chatMemberstatus : any;
+    userStatus : any;
+    email : string,
     rank : any;
     endOfBan : any;
     endOfMute : any;
@@ -32,6 +34,7 @@ function UserList( { chatRoomName } : UserListProsp) {
     
 
     const [userList, setUserList] = useState<myUsers[]>([]);
+
 
 
 
