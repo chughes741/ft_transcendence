@@ -11,6 +11,7 @@ import { MouseEvent, useState, useEffect } from "react";
 import { myUsers } from "./UserList";
 import GroupIcon from "@mui/icons-material/Group";
 import { useChatViewModelContext } from "../../pages/chat/contexts/ChatViewModelContext";
+import ContextMenuUsers from "../ContextMenuUsers";
 
 interface Props {
   users: myUsers[];
@@ -25,15 +26,14 @@ function ListTabulation({ users, heading, onSelectItem }: Props) {
   // const [name, setName ] = useState(''); this could be use to modify also the state of the name
 
   const [SelectedIndex, setSelectedIndex] = useState(-1);
-  const { contextMenuPosition, handleContextMenu, handleContextMenuUsers } =
-    useChatViewModelContext();
+  const { handleContextMenuUsers } = useChatViewModelContext();
   return (
     <>
       <Box
         id="userlist-container"
         style={{
           height: "100%",
-          position: "relative",
+          position: "fixed",
           right: "0",
           width: "16vw",
           wordWrap: "break-word"
@@ -44,13 +44,12 @@ function ListTabulation({ users, heading, onSelectItem }: Props) {
             display: "flex",
             flexDirection: "column",
             maxWidth: "16vw",
-            wordWrap: "breakword"
+            wordWrap: "break-word"
           }}
         >
           <Box
             style={{
               minHeight: "5vh",
-              justifySelf: "center",
               backgroundColor: "rgb(31,31,31)"
             }}
           >
@@ -58,8 +57,7 @@ function ListTabulation({ users, heading, onSelectItem }: Props) {
               className="list-title"
               style={{
                 fontSize: "1rem",
-                display: "flex",
-                justifyContent: "center"
+                maxWidth: "16vw",
               }}
             >
               <ListItemIcon>
@@ -68,34 +66,42 @@ function ListTabulation({ users, heading, onSelectItem }: Props) {
               {heading}
             </Box>
           </Box>
-          {users.length === 0 && <Box>No one in chat </Box>}
+          <Box id="members-container"
+          style={{
+              maxHeight: "75vh",
+              overflowY: "auto",
+              overflowX: "hidden"
+          }}>
+            {users.length === 0 && <Box>No one in chat </Box>}
 
-          <List
-            onContextMenu={(e) => handleContextMenuUsers(e, { name: "FUCK" })}
-          >
-            {users.map((users, index) => (
-              <ListItemButton
-                selected={SelectedIndex === index ? true : false}
-                key={users.username} //don't forget to add user.id unique key
-                onClick={() => {
-                  setSelectedIndex(index);
-                  onSelectItem(users);
-                }}
-              >
-                <ListItemIcon>
-                  <Avatar
-                    src={`https://i.pravatar.cc/150?u=${users.username}`}
+            <List
+              onContextMenu={(e) => handleContextMenuUsers(e, { name: "FUCK" })}
+            >
+              {users.map((users, index) => (
+                <ListItemButton
+                  selected={SelectedIndex === index ? true : false}
+                  key={users.username} //don't forget to add user.id unique key
+                  onClick={() => {
+                    setSelectedIndex(index);
+                    onSelectItem(users);
+                  }}
+                >
+                  <ListItemIcon>
+                    <Avatar
+                      src={`https://i.pravatar.cc/150?u=${users.username}`}
+                    />
+                  </ListItemIcon>
+                  <ListItemText
+                    primary={users.username}
+                    secondary={users.userStatus}
                   />
-                </ListItemIcon>
-                <ListItemText
-                  primary={users.username}
-                  secondary={users.userStatus}
-                />
-              </ListItemButton>
-            ))}
-          </List>
+                </ListItemButton>
+              ))}
+            </List>
+          </Box>
         </Box>
       </Box>
+        <ContextMenuUsers />
     </>
   );
 }
