@@ -1,10 +1,8 @@
-import { useState } from "react";
 import { Helmet } from "react-helmet";
 import { Box, Container } from "@mui/material";
 import SideBar from "src/components/SideBar/SideBar";
 import TopBar from "src/components/TopBar/TopBar";
 import { RootViewModel } from "./root.viewModel";
-import { PageState } from "./root.model";
 import { usePageStateContext } from "../contexts/PageStateContext";
 
 /**
