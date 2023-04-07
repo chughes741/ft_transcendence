@@ -28,10 +28,8 @@ export class UserlistService {
               avatar : chatMembers.member.avatar,
             }
           })
-        console.log("ENTITIES" , CMEntities);
         if (userMembers.length > 0)
         {
-            console.log ("First member in " , CMEntities[0])
             return CMEntities
         }
         console.log("There is no members in room");

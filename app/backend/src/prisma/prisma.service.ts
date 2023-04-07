@@ -105,8 +105,6 @@ export class PrismaService extends PrismaClient {
       },
     });
 
-    console.log("MEMBER BEFORE MAPPING: ", members)
-
     const chatMembersWithUserInfo: ChatMemberPrismaType[] = members.map((member) => {
       const { id, memberId, roomId, status, rank, endOfBan, endOfMute } = member;
       const { id: Userid2, username, email, avatar, status: status2 } = member.member;
@@ -128,7 +126,6 @@ export class PrismaService extends PrismaClient {
         },
       };
     });
-    console.log("PRISMA TYPE", chatMembersWithUserInfo);
     return chatMembersWithUserInfo;
   }
   // End

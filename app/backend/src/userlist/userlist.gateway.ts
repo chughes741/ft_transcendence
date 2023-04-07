@@ -26,8 +26,8 @@ export class UserlistGateway {
 
   @SubscribeMessage('listUsers')  
   async handleMessage(client: any, payload: any): Promise<any> {      
-    console.log("Inside Handle message " + payload.chatRoomName);
     const list : ChatMemberEntity[] = await this.userlistService.getUserList(payload.chatRoomName);
+    console.log(list);
     return {event: 'userList' , data: list}
   }
 
