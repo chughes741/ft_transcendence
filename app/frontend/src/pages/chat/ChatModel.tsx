@@ -1,5 +1,5 @@
 // ChatModel.tsx
-import { useState } from "react";
+import { useReducer, useState } from "react";
 import { RoomType } from "./ChatViewModel";
 import { MessageType } from "./components/Message";
 
@@ -33,7 +33,21 @@ export interface ChatModelType {
 export const useChatModel = (): ChatModelType => {
   const [tempUsername, setTempUsername] = useState("");
   const [currentRoomName, setCurrentRoomName] = useState("");
-  const [rooms, setRooms] = useState<{ [key: string]: RoomType }>({});
+
+  const roomsReducer = (
+    state: { [key: string]: RoomType },
+    action: { type: string; payload: any }
+  ): { [key: string]: RoomType } => {
+    switch (action.type) {
+      case "UPDATE_ROOMS":
+        return action.payload(state);
+      default:
+        return state;
+    }
+  };
+
+  const [rooms, dispatchRooms] = useReducer(roomsReducer, {});
+
   const [currentRoomMessages, setCurrentRoomMessages] = useState([]);
   const [showCreateRoomModal, setShowCreateRoomModal] = useState(false);
   const [showJoinRoomModal, setShowJoinRoomModal] = useState(false);
@@ -57,6 +71,14 @@ export const useChatModel = (): ChatModelType => {
       return text;
     }
     return text.substring(0, maxLength - 1) + "…";
+  };
+
+  const setRooms = (
+    callback: (prevRooms: { [key: string]: RoomType }) => {
+      [key: string]: RoomType;
+    }
+  ) => {
+    dispatchRooms({ type: "UPDATE_ROOMS", payload: callback });
   };
 
   return {

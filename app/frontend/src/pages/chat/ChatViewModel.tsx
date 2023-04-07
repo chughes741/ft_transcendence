@@ -106,10 +106,9 @@ export const ChatViewModelProvider = ({ children }) => {
       return;
     }
     if (!rooms[roomName]) {
-      console.log(`selectRoom: Room ${roomName} does not exist`);
       return;
     }
-    console.log(`selectRoom: Room ${roomName} selected!: `, rooms[roomName]);
+    console.log(`selectRoom: Room ${roomName} selected! `, rooms[roomName]);
     setCurrentRoomName(roomName);
     setCurrentRoomMessages(rooms[roomName].messages);
     setPageState(PageState.Chat);
@@ -178,18 +177,19 @@ export const ChatViewModelProvider = ({ children }) => {
         const newRooms = { ...prevRooms };
 
         if (!newRooms[name]) {
-          console.log("addChatRoom: Good shit! adding the room:", name);
           newRooms[name] = newRoom;
         }
 
-        return resolve(newRoom), newRooms;
+        console.log("Added room to rooms: ", newRooms);
+
+        resolve(newRoom);
+        return newRooms;
       });
     });
   };
 
   // FIXME: move to model?
   const addMessageToRoom = (roomName: string, message: MessageType) => {
-    console.log(`in addMessageToRoom, room:`, roomName);
     setRooms((prevRooms) => {
       const newRooms = { ...prevRooms };
       if (!newRooms[roomName]) {
@@ -200,7 +200,6 @@ export const ChatViewModelProvider = ({ children }) => {
   };
 
   const addMessagesToRoom = (roomName: string, messages: MessageType[]) => {
-    console.log(`in addMessagesSSSssSSToRoom, room:`, roomName);
     setRooms((prevRooms) => {
       const newRooms = { ...prevRooms };
       if (!newRooms[roomName]) {
@@ -239,7 +238,6 @@ export const ChatViewModelProvider = ({ children }) => {
             // res is ChatRoomPayload
             console.log("Response from join room: ", res);
             room = await addChatRoom(res as ChatRoomPayload);
-            selectRoom(room.name);
             resolve(true);
           }
         }
@@ -276,7 +274,6 @@ export const ChatViewModelProvider = ({ children }) => {
         } else {
           console.log("Response from join room: ", joinRoomRes);
           room = await addChatRoom(joinRoomRes as ChatRoomPayload);
-          console.log("Added room to rooms: ", room);
           selectRoom(room.name);
 
           socket.emit(
@@ -290,6 +287,7 @@ export const ChatViewModelProvider = ({ children }) => {
                 );
                 console.log("Converted messages: ", messages);
                 addMessagesToRoom(roomName, messages);
+                setCurrentRoomName(roomName);
                 console.log("Added messages to room: ", roomName);
                 resolve(true);
               } else {
@@ -448,6 +446,10 @@ export const ChatViewModelProvider = ({ children }) => {
     };
   }, [socket, tempUsername]);
 
+  /******************/
+  /*   useEffects   */
+  /******************/
+
   // FIXME: temporary addition for dev build to test user creation
   // TODO: remove this when user creation is implemented
   useEffect(() => {
@@ -455,6 +457,19 @@ export const ChatViewModelProvider = ({ children }) => {
       setTempUsername("temp_user");
     }
   }, [socket, ""]);
+
+  // Select the current room only once the room is ready
+  useEffect(() => {
+    if (currentRoomName && rooms[currentRoomName]) {
+      console.log(
+        `selectRoom: Room ${currentRoomName} selected!: `,
+        rooms[currentRoomName]
+      );
+      setCurrentRoomName(currentRoomName);
+      setCurrentRoomMessages(rooms[currentRoomName].messages);
+      setPageState(PageState.Chat);
+    }
+  }, [currentRoomName, rooms]);
 
   useEffect(() => {
     // Try to create a temporary user
