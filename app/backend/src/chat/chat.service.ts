@@ -1,5 +1,5 @@
 import { Injectable, Logger } from "@nestjs/common";
-import { ChatMemberRank, ChatMemberStatus, ChatRoomStatus } from "@prisma/client";
+import { ChatMemberRank, ChatRoomStatus } from "@prisma/client";
 import { PrismaService } from "../prisma/prisma.service";
 import { UserConnectionsService } from "../user-connections.service";
 import {
@@ -12,6 +12,7 @@ import { CreateChatDto } from "./dto/create-chat.dto";
 import { MessageEntity } from "./entities/message.entity";
 import { kickMemberDto, updateChatMemberStatusDto } from "./dto/userlist.dto";
 import { ChatMemberPrismaType, ChatMemberEntity } from "./chat.gateway";
+import { error } from "console";
 
 const logger = new Logger("ChatService");
 
@@ -295,25 +296,35 @@ export class ChatService {
 
   async updateStatus(updateDto: updateChatMemberStatusDto) {
     try {
+      //MANAGES INVALID INPUTS:
+      if (updateDto.memberRequestRank === ChatMemberRank.USER)
+        throw new Error("Wrong rank: Can't request operation");
+      if (updateDto.memberRequestRank === ChatMemberRank.DISCONNECTED)
+        throw new Error("You are disconnected: Can't request operation");
+      if (updateDto.memberToUpdateRANK === ChatMemberRank.OWNER)
+        throw new Error("ALARM: Trying to modify the owner's status, this activity will be reported !");
+      
+      //TRIES TO UPDATE STATUS with Prisma and returns if successful response
       const response = await this.prismaService.updateChatMemberStatus(updateDto);
       return response;
-    } catch (error) {
+   
+    } catch (error) { //RETURNS ERROR from any Error message
       console.error(error);
       throw error;
     }
   }
 
-  async kickMember(kickDto : kickMemberDto) : Promise <string> {
+  async kickMember(kickDto: kickMemberDto): Promise<string> {
 
     const ChatMember = await this.prismaService.getChatMember(kickDto.ChatMemberToKickId);
 
     if (kickDto.memberRequestingRank === ChatMemberRank.USER || kickDto.memberRequestingRank === ChatMemberRank.DISCONNECTED
-          || kickDto.memberToKickStatus === ChatMemberRank.OWNER)
-        return "Can't kick User : Wrong rank";
+      || kickDto.memberToKickStatus === ChatMemberRank.OWNER)
+       throw new Error("Wrong rank: Can't request operation");
     if (kickDto.memberToKickStatus === ChatMemberRank.ADMIN && kickDto.memberRequestingRank === ChatMemberRank.ADMIN)
-        return "Can't kick User : Wrong rank";
-      this.prismaService.destroyChatMember(kickDto.ChatMemberToKickId);
-      return "Chat Member " + kickDto.ChatMemberToKickName + " kicked out successfully !";
+       throw new Error("Wrong rank: Can't request operation");
+    this.prismaService.destroyChatMember(kickDto.ChatMemberToKickId);
+    return "Chat Member " + kickDto.ChatMemberToKickName + " kicked out successfully !";
   }
 
 

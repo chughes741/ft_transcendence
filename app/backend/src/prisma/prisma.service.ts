@@ -28,6 +28,10 @@ import {
 } from "kingpong-lib";
 import { updateChatMemberStatusDto } from "src/chat/dto/userlist.dto";
 
+/*End of Mute and End of Ban:  */
+//Is added to the current date (now)
+const GLOBAL_T_IN_DAYS =  5 /*DAYS*/ * (24 * 60 * 60 * 1000); // One day in milliseconds
+
 const logger = new Logger("PrismaService");
 
 @Injectable()
@@ -405,28 +409,65 @@ export class PrismaService extends PrismaClient {
   async updateChatMemberStatus(updateDto: updateChatMemberStatusDto) {
     try {
       const chatroom = await this.chatRoom.findUnique({
-        where: { name: updateDto.roomName },
+        where: { name: updateDto.forRoomName },
         include: { members: true },
       });
 
-      const member = chatroom.members.find((member) => member.id === updateDto.memberId);
+      const member = chatroom.members.find((member) => member.id === updateDto.memberToUpdateID);
 
       if (!member) {
         throw new Error('User is not a member of this chatroom');
       }
 
-      const updatedMember = await this.chatMember.update({
-        where: { id: member.id },
-        data: { status: updateDto.status },
-      });
+      //STATUS to UPDATE to:
+      let newStatus: ChatMemberStatus = updateDto.changeStatusTo;
+      //Return RESULT of status update
+      let chatMember : ChatMember;
 
-      const oneDayInMillis = 24 * 60 * 60 * 1000; // One day in milliseconds
-      const futureDate = new Date(Date.now() + oneDayInMillis);
-
-
-      return updatedMember;
+      // A future Date limit is established
+      const futureDate = new Date(Date.now() + GLOBAL_T_IN_DAYS);
+      
+      //CASES : SWITCH BETWEEN STATUSES
+      switch (newStatus) {
+        case ChatMemberStatus.OK:
+          console.log("User is OK");
+          chatMember = await this.chatMember.update({
+            where: { id: member.id },
+            data: { 
+              status: newStatus,
+              endOfBan : null,
+              endOfMute : null,
+            },
+          });
+          break;
+        case ChatMemberStatus.BLOCKED:
+          console.log("User is blocked");
+          chatMember = await this.chatMember.update({
+            where: { id: member.id },
+            data: {  status: newStatus },
+          });
+          break;
+        case ChatMemberStatus.MUTED:
+          console.log("User is muted");
+          chatMember = await this.chatMember.update({
+            where: { id: member.id },
+            data: {  status: newStatus, endOfMute: futureDate,},
+          });
+          break;
+        case ChatMemberStatus.BANNED:
+          console.log("User is banned");
+          chatMember = await this.chatMember.update({
+            where: { id: member.id },
+            data: {  status: newStatus, endOfBan: futureDate,},
+          });
+          break;
+        default:
+          console.log("Unknown status");
+      }
+      return chatMember;
+      //CATCH PRISMA ERROR
     } catch (error) {
-      throw new Error(`Failed to mute chat member: ${error.message}`);
+      throw new Error(`Failed to member's status: ${error.message}`);
     }
   }
 
@@ -438,7 +479,7 @@ export class PrismaService extends PrismaClient {
     }))
   }
 
-  async destroyChatMember(id : number) : Promise<void> {
+  async destroyChatMember(id: number): Promise<void> {
     await this.chatMember.delete({
       where: { id },
     });
