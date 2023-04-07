@@ -417,10 +417,9 @@ export class PrismaService extends PrismaClient {
 
       const updatedMember = await this.chatMember.update({
         where: { id: member.id },
-        data: { status: updateDto.status},
+        data: { status: updateDto.status },
       });
 
-      
       const oneDayInMillis = 24 * 60 * 60 * 1000; // One day in milliseconds
       const futureDate = new Date(Date.now() + oneDayInMillis);
 
@@ -430,4 +429,19 @@ export class PrismaService extends PrismaClient {
       throw new Error(`Failed to mute chat member: ${error.message}`);
     }
   }
+
+  async getChatMember(chatMemberId: number) {
+    return (await this.chatMember.findUnique({
+      where: {
+        id: chatMemberId,
+      }
+    }))
+  }
+
+  async destroyChatMember(id : number) : Promise<void> {
+    await this.chatMember.delete({
+      where: { id },
+    });
+  }
 }
+

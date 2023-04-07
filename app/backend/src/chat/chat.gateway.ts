@@ -18,7 +18,8 @@ import { Message as PrismaMessage } from "@prisma/client";
 import { ChatMember } from "@prisma/client";
 import { MessageEntity } from "./entities/message.entity";
 import { ChatMemberStatus, UserStatus, ChatMemberRank } from "@prisma/client";
-import { updateChatMemberStatusDto } from "./dto/userlist.dto";
+import { kickMemberDto, updateChatMemberStatusDto } from "./dto/userlist.dto";
+import { RESPONSE_PASSTHROUGH_METADATA } from "@nestjs/common/constants";
 
 // FIXME: temporary error type until we can share btw back and frontend
 export type DevError = {
@@ -347,4 +348,17 @@ export class ChatGateway
     this.server.to(data.roomName).emit('chatMemberUpdated', chatMember);
     return {event: 'userList' , chatMember}
   }
+
+  @SubscribeMessage('kickChatMember')
+  async kickChatMember(client : Socket, data : kickMemberDto) : Promise<any> {
+
+    const response = await this.chatService.kickMember(data);
+    if (response === "Chat Member " + data.ChatMemberToKickName + " kicked out successfully !")
+    {
+      const list : ChatMemberEntity[] = await this.chatService.getUserList(data.roomName);
+      this.server.to(data.roomName).emit('userList', list);
+    }
+    return response;
+  }
+
 }
