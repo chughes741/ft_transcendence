@@ -5,6 +5,7 @@ import { WebSocketContext } from "src/contexts/WebSocketContext";
 import { SocketAddress } from "net";
 import {useChatViewModelContext} from "../../pages/chat/contexts/ChatViewModelContext";
 import ContextMenu from "../ContextMenu";
+import ContextMenuUsers from "../ContextMenuUsers";
 
 export interface myUsers {
     username: string;
@@ -24,7 +25,6 @@ interface UserListProps{
 
 function UserList( { chatRoomName } : UserListProps) {
 
-    const {contextMenuUsersPosition, contextMenuUsersVisible, setContextMenuUsersVisible} = useChatViewModelContext();
 
     const handleSelectItem = (user: myUsers) => {
         console.log(user);
@@ -56,22 +56,9 @@ function UserList( { chatRoomName } : UserListProps) {
     }, [socket]);
     return (
         <>
-            <ListTabulation users={userList} heading={chatRoomName} onSelectItem={handleSelectItem}
+            <ListTabulation users={userList} heading={chatRoomName} onSelectItem={handleSelectItem}/>
+            <ContextMenuUsers />
 
-            />
-
-            <ContextMenu
-                setContextMenuVisible={setContextMenuUsersVisible}
-                contextMenuVisible={contextMenuUsersVisible}
-                position={contextMenuUsersPosition}
-                options={[
-                {
-                    label:"view Profile",
-                    onClick: ()=> {console.log('ogog')}
-                }
-                ]}
-
-            />
         </>
     )
 }

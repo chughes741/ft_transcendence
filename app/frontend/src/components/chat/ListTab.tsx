@@ -10,7 +10,7 @@ import {
 import { MouseEvent, useState, useEffect } from "react";
 import { myUsers } from "./UserList";
 import GroupIcon from "@mui/icons-material/Group";
-import {useChatViewModelContext} from "../../pages/chat/contexts/ChatViewModelContext";
+import { useChatViewModelContext } from "../../pages/chat/contexts/ChatViewModelContext";
 
 interface Props {
   users: myUsers[];
@@ -25,15 +25,18 @@ function ListTabulation({ users, heading, onSelectItem }: Props) {
   // const [name, setName ] = useState(''); this could be use to modify also the state of the name
 
   const [SelectedIndex, setSelectedIndex] = useState(-1);
-  const {contextMenuPosition, handleContextMenu, handleContextMenuUsers} = useChatViewModelContext();
+  const { contextMenuPosition, handleContextMenu, handleContextMenuUsers } =
+    useChatViewModelContext();
   return (
     <>
       <Box
+        id="userlist-container"
         style={{
           height: "100%",
-          position: "fixed",
+          position: "relative",
           right: "0",
-          width: "16vw"
+          width: "16vw",
+          wordWrap: "break-word"
         }}
       >
         <Box
@@ -46,15 +49,17 @@ function ListTabulation({ users, heading, onSelectItem }: Props) {
         >
           <Box
             style={{
-              width: "100vw",
-              height: "5vh",
+              minHeight: "5vh",
+              justifySelf: "center",
               backgroundColor: "rgb(31,31,31)"
             }}
           >
             <Box
               className="list-title"
               style={{
-                fontSize: "1rem"
+                fontSize: "1rem",
+                display: "flex",
+                justifyContent: "center"
               }}
             >
               <ListItemIcon>
@@ -65,7 +70,8 @@ function ListTabulation({ users, heading, onSelectItem }: Props) {
           </Box>
           {users.length === 0 && <Box>No one in chat </Box>}
 
-          <List onContextMenu={(e) => handleContextMenuUsers(e, { name: "FUCK" })}
+          <List
+            onContextMenu={(e) => handleContextMenuUsers(e, { name: "FUCK" })}
           >
             {users.map((users, index) => (
               <ListItemButton
@@ -83,7 +89,7 @@ function ListTabulation({ users, heading, onSelectItem }: Props) {
                 </ListItemIcon>
                 <ListItemText
                   primary={users.username}
-                  secondary= {users.userStatus}
+                  secondary={users.userStatus}
                 />
               </ListItemButton>
             ))}
