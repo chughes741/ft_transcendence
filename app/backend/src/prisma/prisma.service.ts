@@ -57,8 +57,7 @@ export class PrismaService extends PrismaClient {
       this.user.deleteMany(),
       this.chatMember.deleteMany(),
       this.message.deleteMany(),
-      this.match.deleteMany(),
-      this.player.deleteMany()
+      this.match.deleteMany()
     ]);
   }
   async userExists(userId: string): Promise<boolean> {
@@ -334,31 +333,43 @@ export class PrismaService extends PrismaClient {
   async GetMatchHistory(
     getMatchHistoryRequest: GetMatchHistoryRequest
   ): Promise<MatchHistoryEntity> {
-    const matchHistory = new MatchHistoryEntity();
-    matchHistory.matches = [
-      {
-        match_type: "Solo",
-        players: "John",
-        results: "Victory",
-        date: "2022-03-15",
-        winner: true
-      },
-      {
-        match_type: "Duo",
-        players: "John, Jane",
-        results: "Defeat",
-        date: "2022-03-16",
-        winner: false
-      },
-      {
-        match_type: "Squad",
-        players: "John, Jane, Bob, Alice",
-        results: "Victory",
-        date: "2022-03-17",
-        winner: true
+    // const matchHistory = new MatchHistoryEntity();
+    // matchHistory.matches = [
+    // {
+    // match_type: "Solo",
+    // players: "John",
+    // results: "Victory",
+    // date: "2022-03-15",
+    // winner: true
+    // }
+    // ];
+    
+    function convertToMatchHistoryEntity(matchesPrisma: Match[]): MatchHistoryEntity {
+      const matches = matchesPrisma.map(match => {
+        return {          
+          match_type: match.gameType,
+          players: {match.player1Id, match.player2Id},
+          results: {match.scorePlayer1, match.scorePlayer2},
+          date: match.timestamp,
+          winner: true
+        }
+      });
+      return matches;
+    } 
+
+    const matches = await this.match.findMany({
+      where: {
+        OR: [
+          {
+            player1Id: getMatchHistoryRequest.id
+          },
+          {
+            player2Id: getMatchHistoryRequest.id
+          }
+        ]
       }
-    ];
-    return matchHistory;
+    });
+    return convertToMatchHistoryEntity(matches);
   }
 
   /**

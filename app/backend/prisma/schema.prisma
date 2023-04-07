@@ -30,7 +30,8 @@ model User {
   messages        Message[]
   chatOwnerships  ChatRoom[]
   chatMemberships ChatMember[]
-  games           Player[]
+  player1           Match[] @relation("player1")
+  player2           Match[] @relation("player2")
 
   @@map("users")
 }
@@ -109,7 +110,6 @@ model ChatMember {
 }
 
 enum ChatMemberRank {
-  DISCONNECTED
   USER
   ADMIN
   OWNER
@@ -117,7 +117,6 @@ enum ChatMemberRank {
 
 enum ChatMemberStatus {
   OK
-  BLOCKED
   MUTED
   BANNED
 }
@@ -131,32 +130,21 @@ model Match {
 
   roomId String?
 
-  status MatchStatus
+  gameType GameType
 
-  startedAt DateTime  @default(now())
-  endedAt   DateTime?
-  players   Player[]
+  player1Id String
+  player1 User @relation(name: "player1", fields: [player1Id], references: [id], onDelete: Cascade)
+  player2Id String
+  player2 User @relation(name: "player2", fields: [player2Id], references: [id], onDelete: Cascade)
+
+  scorePlayer1 Int
+  scorePlayer2 Int
+
+  timestamp DateTime 
+  @@map("matches")
 }
 
-enum MatchStatus {
-  ACTIVE
-  ENDED
-}
-
-model Player {
-  id Int @id @default(autoincrement())
-
-  memberId String? // So that account deletion doesn't break other users' scores
-  member   User?   @relation(fields: [memberId], references: [id], onDelete: SetNull)
-
-  matchId Int
-  match   Match @relation(fields: [matchId], references: [id], onDelete: Cascade)
-
-  score      Int
-  sidePlayed PlayerSide
-}
-
-enum PlayerSide {
-  SIDE1
-  SIDE2
+enum GameType {
+  RANKED
+  UNRANKED
 }
