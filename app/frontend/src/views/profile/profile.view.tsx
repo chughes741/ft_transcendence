@@ -26,16 +26,17 @@ import {
 
 /**
  * Creates profile page header
- * 
+ *
+ * @param {string} user - user ID of profile to load
  * @returns {JSX.Element | null}
  */
-export function ProfileHeader(): JSX.Element | null {
+export function ProfileHeader({user}: {user: string}): JSX.Element | null {
   const [profile, setProfile] = useState<ProfileEntity | undefined>();
 
   /** Fetch profile from server */
   useEffect(() => {
     async function fetchProfile() {
-      const profileinfo = await GetProfile();
+      const profileinfo = await GetProfile(user);
       setProfile(profileinfo);
     }
     fetchProfile();
@@ -65,7 +66,7 @@ export function ProfileHeader(): JSX.Element | null {
 
 /**
  * Creates a TableRow with a MatchHistoryItem
- * 
+ *
  * @param {MatchHistoryItem} row
  * @returns {JSX.Element | null}
  */
@@ -97,16 +98,17 @@ function MatchHistoryRow(row: MatchHistoryItem): JSX.Element | null {
 
 /**
  * Loads match history component
- * 
+ *
+ * @param {string} user - user ID of profile to load
  * @returns {JSX.Element | null}
  */
-function MatchHistory(): JSX.Element | null {
+function MatchHistory({user}: {user: string}): JSX.Element | null {
   const [matches, setMatches] = useState<MatchHistoryItem[]>([]);
 
   /** Fetch players match history from server */
   useEffect(() => {
     async function fetchMatches() {
-      const history = await GetMatchHistory();
+      const history = await GetMatchHistory(user);
       setMatches(history);
     }
     fetchMatches();
@@ -135,10 +137,13 @@ function MatchHistory(): JSX.Element | null {
 
 /**
  * Loads profile page
- * 
+ *
  * @returns {JSX.Element | null}
  */
 export default function ProfileView(): JSX.Element | null {
+  /** @todo handle default userID */
+  const [user, setUser] = useState<string>("my userID");
+
   return (
     <>
       <Stack
@@ -146,8 +151,8 @@ export default function ProfileView(): JSX.Element | null {
         width={"80%"}
         spacing={2}
       >
-        <ProfileHeader />
-        <MatchHistory />
+        <ProfileHeader user={user} />
+        <MatchHistory user={user} />
       </Stack>
     </>
   );

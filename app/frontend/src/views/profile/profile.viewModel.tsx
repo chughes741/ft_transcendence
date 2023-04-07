@@ -12,14 +12,16 @@ import {
 } from "kingpong-lib";
 
 /**
- * Sends a fetch message to the backend to retrieve match history
+ * Sends a getMatchHistory request to the server
+ *
+ * @param {string} id
  * @returns {Promise<MatchHistoryItem[]>}
  */
-export function GetMatchHistory(): Promise<MatchHistoryItem[]> {
+export function GetMatchHistory(id: string): Promise<MatchHistoryItem[]> {
   return new Promise((resolve) => {
     socket.emit(
       ProfileEvents.GetMatchHistory,
-      "someuserID",
+      id,
       (matchHistoryEntity: MatchHistoryEntity) => {
         resolve(matchHistoryEntity.matches);
       }
@@ -28,13 +30,16 @@ export function GetMatchHistory(): Promise<MatchHistoryItem[]> {
 }
 
 /**
+ * Sends a getProfile request to the server
  *
+ * @param {string} id
+ * @returns {Promise<ProfileEntity>}
  */
-export function GetProfile(): Promise<ProfileEntity> {
+export function GetProfile(id: string): Promise<ProfileEntity> {
   return new Promise((resolve) => {
     socket.emit(
       ProfileEvents.GetProfile,
-      "someuserID",
+      id,
       (profileEntity: ProfileEntity) => {
         resolve(profileEntity);
       }
