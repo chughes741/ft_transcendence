@@ -9,12 +9,12 @@ import {
 } from "@nestjs/websockets";
 import { Socket, Server } from "socket.io";
 import { PrismaService } from "../prisma/prisma.service";
-import { ChatRoomStatus } from "@prisma/client";
+import { ChatMemberRank, ChatRoomStatus } from "@prisma/client";
 import { UserConnectionsService } from "../user-connections.service";
 import { ChatService } from "./chat.service";
 
 // Trickaroo to add fields to the Prisma Message type
-import { Message as PrismaMessage } from "@prisma/client";
+import { Message } from "@prisma/client";
 import { ChatMember } from "@prisma/client";
 import { MessageEntity } from "./entities/message.entity";
 
@@ -23,7 +23,7 @@ export type DevError = {
   error: string;
 };
 
-export interface MessagePrismaType extends PrismaMessage {
+export interface MessagePrismaType extends Message {
   sender: { username: string };
   room: { name: string };
 }
@@ -41,6 +41,7 @@ export interface IMessageEntity {
 
 export interface ChatRoomEntity {
   name: string;
+  queryingUserRank: ChatMemberRank; // FIXME: This should be embedded in the ChatMember type
   status: ChatRoomStatus;
   latestMessage?: IMessageEntity;
   lastActivity: Date;
@@ -159,7 +160,6 @@ export class ChatGateway
    *
    * If the chat room is successfully created, add the user to the socket room.
    * If the chat service returns an error, return it
-   *
    * @param client socket client
    * @param room CreateRoomDto
    * @returns DevError or room name
