@@ -3,8 +3,8 @@
  * @enum
  */
 export enum PageState {
-	Home,
-	Game,
-	Chat,
-	Profile
+  Home,
+  Game,
+  Chat,
+  Profile
 }

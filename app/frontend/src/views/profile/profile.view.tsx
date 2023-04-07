@@ -17,7 +17,7 @@ import {
 import {
   GetMatchHistory,
   GetProfile,
-  Item,
+  Item
 } from "src/views/profile/profile.viewModel";
 import { MatchHistoryItem, ProfileEntity, UserStatus } from "kingpong-lib";
 
