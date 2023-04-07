@@ -96,12 +96,16 @@ export class PrismaService extends PrismaClient {
 
     const members = await this.chatMember.findMany({
       where: {
-        id: chatRoom.id,
+        room: {
+          name: roomName,
+        }
       },
       include: {
         member: true,
       },
     });
+
+    console.log("MEMBER BEFORE MAPPING: ", members)
 
     const chatMembersWithUserInfo: ChatMemberPrismaType[] = members.map((member) => {
       const { id, memberId, roomId, status, rank, endOfBan, endOfMute } = member;
