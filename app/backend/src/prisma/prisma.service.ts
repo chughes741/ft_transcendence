@@ -26,7 +26,7 @@ import {
   ProfileEntity,
   UserStatus
 } from "kingpong-lib";
-import { updateChatMemberStatusDto } from "src/userlist/dto/userlist.dto";
+import { updateChatMemberStatusDto } from "src/chat/dto/userlist.dto";
 
 const logger = new Logger("PrismaService");
 
@@ -96,7 +96,9 @@ export class PrismaService extends PrismaClient {
 
     const members = await this.chatMember.findMany({
       where: {
-        id: chatRoom.id,
+        room: {
+          name: roomName,
+        }
       },
       include: {
         member: true,
@@ -124,7 +126,6 @@ export class PrismaService extends PrismaClient {
         },
       };
     });
-    console.log("PRISMA TYPE", chatMembersWithUserInfo);
     return chatMembersWithUserInfo;
   }
   // End
@@ -418,6 +419,11 @@ export class PrismaService extends PrismaClient {
         where: { id: member.id },
         data: { status: updateDto.status},
       });
+
+      
+      const oneDayInMillis = 24 * 60 * 60 * 1000; // One day in milliseconds
+      const futureDate = new Date(Date.now() + oneDayInMillis);
+
 
       return updatedMember;
     } catch (error) {

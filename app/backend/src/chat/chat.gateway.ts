@@ -17,6 +17,8 @@ import { ChatService } from "./chat.service";
 import { Message as PrismaMessage } from "@prisma/client";
 import { ChatMember } from "@prisma/client";
 import { MessageEntity } from "./entities/message.entity";
+import { ChatMemberStatus, UserStatus, ChatMemberRank } from "@prisma/client";
+import { updateChatMemberStatusDto } from "./dto/userlist.dto";
 
 // FIXME: temporary error type until we can share btw back and frontend
 export type DevError = {
@@ -37,6 +39,18 @@ export interface ChatMemberPrismaType extends ChatMember {
     status : any,
     id : any,
   };
+}
+
+export interface ChatMemberEntity{
+  username: string;
+  avatar: string;
+  id : number;
+  chatMemberstatus : ChatMemberStatus;
+  userStatus : UserStatus;
+  email : string,
+  rank : ChatMemberRank;
+  endOfBan : any;
+  endOfMute : any;
 }
 
 export interface IMessageEntity {
@@ -309,5 +323,28 @@ export class ChatGateway
       `User ${sendDto.sender} sent message in room ${sendDto.roomName}: ${sendDto.content}`
     );
     return sendDto.roomName;
+  }
+
+
+  /*
+    GET USER LIST : Get all user information relevant for the chat user tab Component
+    Takes a ChatmemberPrismaType array and transforms it into a ChatMemberEntity[], expected by the client
+  */
+  
+  @SubscribeMessage('listUsers')  
+  async listUsers(client: any, payload: any): Promise<any> {      
+    const list : ChatMemberEntity[] = await this.chatService.getUserList(payload.chatRoomName);
+    console.log(payload.chatRoomName);
+    this.server.to(payload.chatRoomName).emit('userList', list);
+    return {event: 'userList' , data: list}
+  }
+
+  @SubscribeMessage('updateChatMemberStatus')
+  async updateChatMemberStatus(client: Socket, data: updateChatMemberStatusDto): Promise<any> {
+    const chatMember = await this.chatService.updateStatus(data);
+
+    // Broadcast the updated chat member information to all clients connected to the chat
+    this.server.to(data.roomName).emit('chatMemberUpdated', chatMember);
+    return {event: 'userList' , chatMember}
   }
 }

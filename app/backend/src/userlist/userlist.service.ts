@@ -1,14 +1,15 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from "../prisma/prisma.service";
 import { ChatMemberPrismaType } from 'src/chat/chat.gateway';
-import { ChatMemberEntity } from './userlist.gateway';
-import { updateChatMemberStatusDto } from './dto/userlist.dto';
+import { ChatMemberEntity } from 'src/chat/chat.gateway';
+import { updateChatMemberStatusDto } from '../chat/dto/userlist.dto';
 
 
 @Injectable()
 export class UserlistService {
     constructor(private readonly prisma: PrismaService) { }
 
+    
     async getUserList(chatRoomName: string) : Promise<ChatMemberEntity[]> {
         console.log("Inside getUserList");
 
@@ -28,10 +29,8 @@ export class UserlistService {
               avatar : chatMembers.member.avatar,
             }
           })
-        console.log("ENTITIES" , CMEntities);
         if (userMembers.length > 0)
         {
-            console.log ("First member in " , CMEntities[0])
             return CMEntities
         }
         console.log("There is no members in room");
