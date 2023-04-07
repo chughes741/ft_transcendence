@@ -30,7 +30,7 @@ import {
  * @param {string} user - user ID of profile to load
  * @returns {JSX.Element | null}
  */
-export function ProfileHeader({user}: {user: string}): JSX.Element | null {
+function ProfileHeader({ user }: { user: string }): JSX.Element | null {
   const [profile, setProfile] = useState<ProfileEntity | undefined>();
 
   /** Fetch profile from server */
@@ -102,7 +102,7 @@ function MatchHistoryRow(row: MatchHistoryItem): JSX.Element | null {
  * @param {string} user - user ID of profile to load
  * @returns {JSX.Element | null}
  */
-function MatchHistory({user}: {user: string}): JSX.Element | null {
+function MatchHistory({ user }: { user: string }): JSX.Element | null {
   const [matches, setMatches] = useState<MatchHistoryItem[]>([]);
 
   /** Fetch players match history from server */
@@ -142,7 +142,9 @@ function MatchHistory({user}: {user: string}): JSX.Element | null {
  */
 export default function ProfileView(): JSX.Element | null {
   /** @todo handle default userID */
-  const [user, setUser] = useState<string>("my userID");
+  const [user, setUser] = useState<string>(
+    "989e72d2-bf18-49d5-8bb1-201a1770958e"
+  );
 
   return (
     <>

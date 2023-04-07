@@ -5,6 +5,7 @@ import {
   ChatMemberRank,
   ChatMemberStatus,
   ChatRoom,
+  Match,
   Prisma,
   PrismaClient,
   User
@@ -327,49 +328,28 @@ export class PrismaService extends PrismaClient {
    *
    * @param {GetMatchHistoryRequest} getMatchHistoryRequest
    * @async
-   * @returns {MatchHistoryEntity} - MatchHistoryItem[]
+   * @returns {Promise<Match[]>}
    */
   async GetMatchHistory(
     getMatchHistoryRequest: GetMatchHistoryRequest
-  ): Promise<MatchHistoryEntity> {
-    const matchHistory = new MatchHistoryEntity();
-    matchHistory.matches = [
-      {
-        match_type: "Solo",
-        players: "John",
-        results: "Victory",
-        date: "2022-03-15",
-        winner: true
-      }
-    ];
-
-    // function convertToMatchHistoryEntity(matchesPrisma: Match[]): MatchHistoryEntity {
-    // const matches = matchesPrisma.map(match => {
-    // return {
-    // match_type: match.gameType,
-    // players: {match.player1Id, match.player2Id},
-    // results: {match.scorePlayer1, match.scorePlayer2},
-    // date: match.timestamp,
-    // winner: true
-    // }
-    // });
-    // return matches;
-    // }
-
+  ): Promise<Match[]> {
     const matches = await this.match.findMany({
       where: {
         OR: [
           {
-            player1Id: getMatchHistoryRequest.id
+            player1: {
+              id: getMatchHistoryRequest.id
+            }
           },
           {
-            player2Id: getMatchHistoryRequest.id
+            player2: {
+              id: getMatchHistoryRequest.id
+            }
           }
         ]
       }
     });
-    // return convertToMatchHistoryEntity(matches);
-    return matchHistory;
+    return matches;
   }
 
   /**

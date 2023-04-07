@@ -2,7 +2,7 @@ import { Injectable } from "@nestjs/common";
 import {
   GetMatchHistoryRequest,
   GetProfileRequest,
-  MatchHistoryEntity,
+  MatchHistoryItem,
   ProfileEntity,
   UpdateProfileRequest
 } from "kingpong-lib";
@@ -14,14 +14,31 @@ export class ProfileService {
   /**
    * Fetches match history of requested player
    *
+   * @todo update to return MatchHistoryEntity once kingpong-lib is updated
    * @param {GetMatchHistoryRequest} getMatchHistoryRequest
    * @async
-   * @returns {Promise<MatchHistoryEntity>}
+   * @returns {Promise<MatchHistoryItem[]>}
    */
   async getMatchHistory(
     getMatchHistoryRequest: GetMatchHistoryRequest
-  ): Promise<MatchHistoryEntity> {
-    return await this.prismaService.GetMatchHistory(getMatchHistoryRequest);
+  ): Promise<MatchHistoryItem[]> {
+    /** Fetch match history from prisma service */
+    const matches = await this.prismaService.GetMatchHistory(
+      getMatchHistoryRequest
+    );
+
+    /** Map the return of prisma service to a MatchHistoryEntity */
+    const matchHistory = matches.map((match) => {
+      return {
+        match_type: match.gameType,
+        players: match.player1Id + match.player2Id,
+        results: match.scorePlayer1.toString() + match.scorePlayer2.toString(),
+        date: match.timestamp.toLocaleTimeString(),
+        winner: true
+      };
+    });
+
+    return matchHistory;
   }
 
   /**

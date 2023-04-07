@@ -6,7 +6,7 @@ import {
 import {
   GetMatchHistoryRequest,
   GetProfileRequest,
-  MatchHistoryEntity,
+  MatchHistoryItem,
   ProfileEntity,
   ProfileEvents,
   UpdateProfileRequest
@@ -20,6 +20,7 @@ export class ProfileGateway {
   /**
    * Gateway for requesting a players match history
    *
+   * @todo update to return MatchHistoryEntity once kingpong-lib is updated
    * @param {GetMatchHistoryRequest} getMatchHistoryRequest
    * @async
    * @returns {Promise<MatchHistoryEntity>} - MatchHistoryItem[]
@@ -27,7 +28,7 @@ export class ProfileGateway {
   @SubscribeMessage(ProfileEvents.GetMatchHistory)
   async getMatchHistory(
     @MessageBody() getMatchHistoryRequest: GetMatchHistoryRequest
-  ): Promise<MatchHistoryEntity> {
+  ): Promise<MatchHistoryItem[]> {
     return await this.profileService.getMatchHistory(getMatchHistoryRequest);
   }
 
