@@ -15,22 +15,22 @@ import {
 
 /** Mock data import */
 import {
+  GetMatchHistory,
+  GetProfile,
   Item,
-  FetchMatchHistory,
-  FetchProfile
 } from "src/views/profile/profile.viewModel";
-import { MatchHistoryItem, Profile, UserStatus } from "kingpong-lib";
+import { MatchHistoryItem, ProfileEntity, UserStatus } from "kingpong-lib";
 
 /**
  * Creates profile page header
  */
 export function ProfileHeader() {
-  const [profile, setProfile] = useState<Profile | undefined>();
+  const [profile, setProfile] = useState<ProfileEntity | undefined>();
 
   /** Fetch profile from server */
   useEffect(() => {
     async function fetchProfile() {
-      const profileinfo = await FetchProfile();
+      const profileinfo = await GetProfile();
       setProfile(profileinfo);
     }
     fetchProfile();
@@ -97,7 +97,7 @@ function MatchHistory() {
   /** Fetch players match history from server */
   useEffect(() => {
     async function fetchMatches() {
-      const history = await FetchMatchHistory();
+      const history = await GetMatchHistory();
       setMatches(history);
     }
     fetchMatches();

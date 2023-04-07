@@ -5,23 +5,22 @@ import { socket } from "src/contexts/WebSocketContext";
 
 /** Temporary data type import */
 import {
-  FetchMatchHistoryReply,
-  FetchProfileReply,
-  MatchHistoryItem,
-  Profile
+  GetMatchHistoryRequest,
+  MatchHistoryEntity,
+  MatchHistoryItem, ProfileEntity, ProfileEvents
 } from "kingpong-lib";
 
 /**
  * Sends a fetch message to the backend to retrieve match history
  * @returns {Promise<MatchHistoryItem[]>}
  */
-export function FetchMatchHistory(): Promise<MatchHistoryItem[]> {
+export function GetMatchHistory(): Promise<MatchHistoryItem[]> {
   return new Promise((resolve) => {
     socket.emit(
-      "fetchMatchHistory",
+      ProfileEvents.GetMatchHistory,
       "someuserID",
-      (fetchMatchHistoryReply: FetchMatchHistoryReply) => {
-        resolve(fetchMatchHistoryReply.matches);
+      (matchHistoryEntity: MatchHistoryEntity) => {
+        resolve(matchHistoryEntity.matches);
       }
     );
   });
@@ -30,13 +29,13 @@ export function FetchMatchHistory(): Promise<MatchHistoryItem[]> {
 /**
  *
  */
-export function FetchProfile(): Promise<Profile> {
+export function GetProfile(): Promise<ProfileEntity> {
   return new Promise((resolve) => {
     socket.emit(
-      "fetchProfile",
+      ProfileEvents.GetProfile,
       "someuserID",
-      (fetchProfileReply: FetchProfileReply) => {
-        resolve(fetchProfileReply.profile);
+      (profileEntity: ProfileEntity) => {
+        resolve(profileEntity);
       }
     );
   });

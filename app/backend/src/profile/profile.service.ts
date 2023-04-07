@@ -1,110 +1,50 @@
 import { Injectable } from "@nestjs/common";
 import {
-  CreateProfileEvent,
-  CreateProfileReply,
-  FetchMatchHistoryEvent,
-  FetchMatchHistoryReply,
-  FetchProfileEvent,
-  FetchProfileReply,
-  UpdateProfileEvent,
+  GetMatchHistoryRequest,
+  GetProfileRequest,
+  MatchHistoryEntity,
+  ProfileEntity,
+  UpdateProfileRequest,
   UserStatus
 } from "kingpong-lib";
+import { PrismaService } from "src/prisma/prisma.service";
 
 @Injectable()
 export class ProfileService {
+  constructor(private readonly prismaService: PrismaService) {}
   /**
    * Fetches match history of requested player
-   * @param {FetchMatchHistoryEvent} fetchMatchHistoryEvent
-   * @returns {MatchHistory}
+   *
+   * @param {GetMatchHistoryRequest} getMatchHistoryRequest
+   * @async
+   * @returns {Promise<MatchHistoryEntity>}
    */
-  fetchMatchHistory(
-    fetchMatchHistoryEvent: FetchMatchHistoryEvent
-  ): FetchMatchHistoryReply {
-    const matchHistory = new FetchMatchHistoryReply();
-    matchHistory.matches = [
-      {
-        match_type: "Solo",
-        players: "John",
-        results: "Victory",
-        date: "2022-03-15",
-        winner: true
-      },
-      {
-        match_type: "Duo",
-        players: "John, Jane",
-        results: "Defeat",
-        date: "2022-03-16",
-        winner: false
-      },
-      {
-        match_type: "Squad",
-        players: "John, Jane, Bob, Alice",
-        results: "Victory",
-        date: "2022-03-17",
-        winner: true
-      }
-    ];
-    return matchHistory;
+  async getMatchHistory(
+    getMatchHistoryRequest: GetMatchHistoryRequest
+  ): Promise<MatchHistoryEntity> {
+    return await this.prismaService.GetMatchHistory(getMatchHistoryRequest);
   }
 
   /**
    * Fetches profile information from storage
-   * @param {FetchProfileEvent} fetchProfileEvent
-   * @returns {FetchProfileReply}
+   *
+   * @param {GetProfileRequest} getProfileRequest
+   * @async
+   * @returns {Promise<ProfileEntity>}
    */
-  fetchProfile(fetchProfileEvent: FetchProfileEvent): FetchProfileReply {
-    const profile = new FetchProfileReply();
-    profile.profile = {
-      username: "schlurp",
-      avatar: "https://i.pravatar.cc/150",
-      status: UserStatus.ONLINE,
-      createdAt: "like three seconds ago, did you already forget?"
-    };
-    return profile;
+  async getProfile(
+    getProfileRequest: GetProfileRequest
+  ): Promise<ProfileEntity> {
+    return await this.prismaService.GetProfile(getProfileRequest);
   }
 
   /**
-   * @todo currently not implemented
-   * @param {CreateProfileEvent} createProfileEvent
-   * @returns {CreateProfileReply}
+   * Makes an update request to the database for a users profile
+   *
+   * @param {UpdateProfileRequest} updateProfileRequest
+   * @returns {boolean} - Update successful
    */
-  create(createProfileEvent: CreateProfileEvent): CreateProfileReply {
-    return "This action adds a new profile";
-  }
-
-  /**
-   * @todo currently not implemented
-   * @returns
-   */
-  findAll() {
-    return `This action returns all profile`;
-  }
-
-  /**
-   * @todo currently not implemented
-   * @param {number} id
-   * @returns
-   */
-  findOne(id: number) {
-    return `This action returns a #${id} profile`;
-  }
-
-  /**
-   * @todo currently not implemented
-   * @param {number} id
-   * @param {UpdateProfileEvent} updateProfileEvent
-   * @returns
-   */
-  update(id: number, updateProfileEvent: UpdateProfileEvent) {
-    return `This action updates a #${id} profile`;
-  }
-
-  /**
-   * @todo currently not implemented
-   * @param {number} id
-   * @returns
-   */
-  remove(id: number) {
-    return `This action removes a #${id} profile`;
+  updateProfile(updateProfileRequest: UpdateProfileRequest): boolean {
+    return true;
   }
 }
