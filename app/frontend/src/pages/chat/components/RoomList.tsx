@@ -23,6 +23,8 @@ const RoomList: React.FC = () => {
     setShowJoinRoomModal,
     contextMenuData,
     contextMenuPosition,
+    contextMenuRoomsVisible,
+    setContextMenuRoomsVisible,
     handleContextMenu,
     truncateText,
     createNewRoom,
@@ -77,6 +79,8 @@ const RoomList: React.FC = () => {
         onJoinRoom={joinRoom}
       />
       <ContextMenu
+        contextMenuVisible={contextMenuRoomsVisible}
+        setContextMenuVisible={setContextMenuRoomsVisible}
         position={contextMenuPosition}
         options={[
           {

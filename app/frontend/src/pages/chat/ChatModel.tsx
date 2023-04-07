@@ -16,12 +16,16 @@ export interface ChatModelType {
   ) => void;
   currentRoomMessages: Array<MessageType>;
   setCurrentRoomMessages: (messages: Array<MessageType>) => void;
-  contextMenuVisible: boolean;
+  contextMenuRoomsVisible: boolean;
   contextMenuUsersVisible: boolean;
-  setContextMenuVisible: (arg: boolean) => void;
+  setContextMenuRoomsVisible: (arg: boolean) => void;
   setContextMenuUsersVisible: (arg: boolean) => void;
   contextMenuPosition: { x: number; y: number };
+  contextMenuUsersPosition: { x: number; y: number };
   contextMenuData: RoomType | null;
+  //FIXER CETTE MERDE
+  contextMenuUsersData : string | null;
+
   handleContextMenu: (e: React.MouseEvent, roomData: { name: string }) => void;
   handleContextMenuUsers: (e: React.MouseEvent, roomData: { name: string }) => void;
   showCreateRoomModal: boolean;
@@ -42,9 +46,15 @@ export const useChatModel = (): ChatModelType => {
   const [showJoinRoomModal, setShowJoinRoomModal] = useState(false);
   const [unreadMessages, setUnreadMessages] = useState({});
   const [contextMenuData, setContextMenuData] = useState(null);
-  const [contextMenuVisible, setContextMenuVisible] = useState(false);
+  const [contextMenuUsersData, setContextMenuUsersData] = useState(null);
+
+  const [contextMenuRoomsVisible, setContextMenuRoomsVisible] = useState(false);
   const [contextMenuUsersVisible, setContextMenuUsersVisible] = useState(false);
   const [contextMenuPosition, setContextMenuPosition] = useState({
+    x: 0,
+    y: 0
+  });
+  const [contextMenuUsersPosition, setContextMenuUsersPosition] = useState({
     x: 0,
     y: 0
   });
@@ -52,8 +62,7 @@ export const useChatModel = (): ChatModelType => {
 
   const handleContextMenu = (e, roomData) => {
     e.preventDefault();
-    setContextMenuVisible(true);
-    setContextMenuUsersVisible(false);
+    setContextMenuRoomsVisible(true);
     setContextMenuPosition({ x: e.clientX, y: e.clientY });
     setContextMenuData(roomData);
   };
@@ -61,9 +70,8 @@ export const useChatModel = (): ChatModelType => {
   const handleContextMenuUsers = (e, roomData) => {
     e.preventDefault();
     setContextMenuUsersVisible(true);
-    setContextMenuVisible(false);
-    setContextMenuPosition({ x: e.clientX, y: e.clientY });
-    setContextMenuData(roomData);
+    setContextMenuUsersPosition({ x: e.clientX, y: e.clientY });
+    setContextMenuUsersData({name: "ohoh"});
   }
 
   const truncateText = (text: string, maxLength: number) => {
@@ -83,12 +91,14 @@ export const useChatModel = (): ChatModelType => {
     currentRoomMessages,
     setCurrentRoomMessages,
     contextMenuData,
+    contextMenuUsersData,
     contextMenuPosition,
+    contextMenuUsersPosition,
     handleContextMenu,
     handleContextMenuUsers,
-    contextMenuVisible,
+    contextMenuRoomsVisible,
     contextMenuUsersVisible,
-    setContextMenuVisible,
+    setContextMenuRoomsVisible,
     setContextMenuUsersVisible,
     showCreateRoomModal,
     setShowCreateRoomModal,

@@ -18,13 +18,13 @@ export interface myUsers {
     endOfMute : any;
 }
 
-interface UserListProsp{
+interface UserListProps{
     chatRoomName :string;
 }
 
-function UserList( { chatRoomName } : UserListProsp) {
+function UserList( { chatRoomName } : UserListProps) {
 
-    const {contextMenuPosition} = useChatViewModelContext();
+    const {contextMenuUsersPosition, contextMenuUsersVisible, setContextMenuUsersVisible} = useChatViewModelContext();
 
     const handleSelectItem = (user: myUsers) => {
         console.log(user);
@@ -57,9 +57,13 @@ function UserList( { chatRoomName } : UserListProsp) {
     return (
         <>
             <ListTabulation users={userList} heading={chatRoomName} onSelectItem={handleSelectItem}
+
             />
+
             <ContextMenu
-                position={contextMenuPosition}
+                setContextMenuVisible={setContextMenuUsersVisible}
+                contextMenuVisible={contextMenuUsersVisible}
+                position={contextMenuUsersPosition}
                 options={[
                 {
                     label:"view Profile",

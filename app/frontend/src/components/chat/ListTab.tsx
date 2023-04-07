@@ -25,7 +25,7 @@ function ListTabulation({ users, heading, onSelectItem }: Props) {
   // const [name, setName ] = useState(''); this could be use to modify also the state of the name
 
   const [SelectedIndex, setSelectedIndex] = useState(-1);
-  const {contextMenuPosition, handleContextMenu} = useChatViewModelContext();
+  const {contextMenuPosition, handleContextMenu, handleContextMenuUsers} = useChatViewModelContext();
   return (
     <>
       <Box
@@ -65,7 +65,8 @@ function ListTabulation({ users, heading, onSelectItem }: Props) {
           </Box>
           {users.length === 0 && <Box>No one in chat </Box>}
 
-          <List>
+          <List onContextMenu={(e) => handleContextMenuUsers(e, { name: "FUCK" })}
+          >
             {users.map((users, index) => (
               <ListItemButton
                 selected={SelectedIndex === index ? true : false}
@@ -74,7 +75,6 @@ function ListTabulation({ users, heading, onSelectItem }: Props) {
                   setSelectedIndex(index);
                   onSelectItem(users);
                 }}
-                onContextMenu={(e) => handleContextMenu(e, { name: "poilu" })}
               >
                 <ListItemIcon>
                   <Avatar
