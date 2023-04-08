@@ -2,7 +2,6 @@
 import {
   Avatar,
   Paper,
-  Stack,
   Typography,
   Table,
   TableBody,
