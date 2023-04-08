@@ -11,11 +11,16 @@ type ContextMenuOption = {
 type ContextMenuProps = {
   position: { x: number; y: number };
   options: ContextMenuOption[];
-  contextMenuVisible : boolean;
+  contextMenuVisible: boolean;
   setContextMenuVisible: (arg: boolean) => void;
 };
 
-const ContextMenu: React.FC<ContextMenuProps> = ({ position, options, contextMenuVisible, setContextMenuVisible }) => {
+const ContextMenu: React.FC<ContextMenuProps> = ({
+  position,
+  options,
+  contextMenuVisible,
+  setContextMenuVisible
+}) => {
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
   const { x, y } = position;
   let hoverTimeout: ReturnType<typeof setTimeout>;
@@ -41,7 +46,9 @@ const ContextMenu: React.FC<ContextMenuProps> = ({ position, options, contextMen
       anchorReference="anchorPosition"
       anchorPosition={{ top: y, left: x }}
       open={contextMenuVisible}
-      onClose={() => {setContextMenuVisible(false)}}
+      onClose={() => {
+        setContextMenuVisible(false);
+      }}
     >
       {options.map((option, index) => (
         <MenuItem

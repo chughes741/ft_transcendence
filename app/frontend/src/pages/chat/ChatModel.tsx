@@ -24,10 +24,13 @@ export interface ChatModelType {
   contextMenuUsersPosition: { x: number; y: number };
   contextMenuData: RoomType | null;
   //FIXER CETTE MERDE
-  contextMenuUsersData : string | null;
+  contextMenuUsersData: string | null;
 
   handleContextMenu: (e: React.MouseEvent, roomData: { name: string }) => void;
-  handleContextMenuUsers: (e: React.MouseEvent, roomData: { name: string }) => void;
+  handleContextMenuUsers: (
+    e: React.MouseEvent,
+    roomData: { name: string }
+  ) => void;
   showCreateRoomModal: boolean;
   setShowCreateRoomModal: (visible: boolean) => void;
   showJoinRoomModal: boolean;
@@ -73,7 +76,6 @@ export const useChatModel = (): ChatModelType => {
     y: 0
   });
 
-
   const handleContextMenu = (e, roomData: RoomType) => {
     e.preventDefault();
     setContextMenuRoomsVisible(true);
@@ -85,8 +87,8 @@ export const useChatModel = (): ChatModelType => {
     e.preventDefault();
     setContextMenuUsersVisible(true);
     setContextMenuUsersPosition({ x: e.clientX, y: e.clientY });
-    setContextMenuUsersData({name: "ohoh"});
-  }
+    setContextMenuUsersData({ name: "ohoh" });
+  };
 
   const truncateText = (text: string, maxLength: number) => {
     if (text.length <= maxLength) {

@@ -1,6 +1,12 @@
 //This will return a name and ready status for a single player
 import * as React from "react";
-import { Avatar, IconButton, ToggleButton, Typography, useTheme } from "@mui/material";
+import {
+  Avatar,
+  IconButton,
+  ToggleButton,
+  Typography,
+  useTheme
+} from "@mui/material";
 import Box from "@mui/material/Box";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import { ThemeProvider } from "@mui/material";
@@ -12,8 +18,15 @@ import { ThemeProvider } from "@mui/material";
 export default function GameActionBar() {
   const [selected, setSelected] = React.useState(false);
   return (
-    <Box sx={{ backgroundColor: "grey",  display: "flex", flexDirection: "row",  alignItems: "center"}}>
-        {/* Avatar component */}
+    <Box
+      sx={{
+        backgroundColor: "grey",
+        display: "flex",
+        flexDirection: "row",
+        alignItems: "center"
+      }}
+    >
+      {/* Avatar component */}
       <Box>
         <Avatar></Avatar>
       </Box>
@@ -24,7 +37,7 @@ export default function GameActionBar() {
       </Box>
 
       {/* Readybutton component */}
-      <Box sx={{ml: 2 }}>
+      <Box sx={{ ml: 2 }}>
         <ToggleButton
           value="check"
           selected={selected}
@@ -34,12 +47,9 @@ export default function GameActionBar() {
         >
           <CheckCircleIcon />
         </ToggleButton>
-         {/* Score */}
+        {/* Score */}
 
-
-
-         
-         <Box sx={{ flexGrow: 0, alignItems: "space-around" }}>
+        <Box sx={{ flexGrow: 0, alignItems: "space-around" }}>
           <Typography>Score: 2 | 0</Typography>
         </Box>
       </Box>

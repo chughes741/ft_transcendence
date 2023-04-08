@@ -21,7 +21,7 @@ export class ChatService {
   constructor(
     private readonly prismaService: PrismaService,
     private userConnectionsService: UserConnectionsService
-  ) { }
+  ) {}
 
   create(createChatDto: CreateChatDto) {
     logger.log("Created a new chat");
@@ -265,7 +265,6 @@ export class ChatService {
     return username;
   }
 
-
   /*
     GET USER LIST : Get all user information relevant for the chat user tab Component
     Takes a ChatmemberPrismaType array and transforms it into a ChatMemberEntity[], expected by the client
@@ -273,9 +272,9 @@ export class ChatService {
   async getUserList(chatRoomName: string): Promise<ChatMemberEntity[]> {
     console.log("Inside getUserList");
 
-
     //get all users that are members of a specific Chat Room (with string name)
-    const userMembers: ChatMemberPrismaType[] = await this.prismaService.getRoomMembers(chatRoomName);
+    const userMembers: ChatMemberPrismaType[] =
+      await this.prismaService.getRoomMembers(chatRoomName);
     const CMEntities: ChatMemberEntity[] = userMembers.map((chatMembers) => {
       return {
         username: chatMembers.member.username,
@@ -286,11 +285,11 @@ export class ChatService {
         endOfBan: chatMembers.endOfBan,
         endOfMute: chatMembers.endOfMute,
         email: chatMembers.member.email,
-        avatar: chatMembers.member.avatar,
-      }
-    })
+        avatar: chatMembers.member.avatar
+      };
+    });
     if (userMembers.length > 0) {
-      return CMEntities
+      return CMEntities;
     }
     console.log("There is no members in room");
     return [];
@@ -304,30 +303,43 @@ export class ChatService {
       if (updateDto.memberRequestRank === ChatMemberRank.DISCONNECTED)
         throw new Error("You are disconnected: Can't request operation");
       if (updateDto.memberToUpdateRANK === ChatMemberRank.OWNER)
-        throw new Error("ALARM: Trying to modify the owner's status, this activity will be reported !");
-      
+        throw new Error(
+          "ALARM: Trying to modify the owner's status, this activity will be reported !"
+        );
+
       //TRIES TO UPDATE STATUS with Prisma and returns if successful response
-      const response = await this.prismaService.updateChatMemberStatus(updateDto);
+      const response = await this.prismaService.updateChatMemberStatus(
+        updateDto
+      );
       return response;
-   
-    } catch (error) { //RETURNS ERROR from any Error message
+    } catch (error) {
+      //RETURNS ERROR from any Error message
       console.error(error);
       throw error;
     }
   }
 
   async kickMember(kickDto: kickMemberDto): Promise<string> {
+    const ChatMember = await this.prismaService.getChatMember(
+      kickDto.ChatMemberToKickId
+    );
 
-    const ChatMember = await this.prismaService.getChatMember(kickDto.ChatMemberToKickId);
-
-    if (kickDto.memberRequestingRank === ChatMemberRank.USER || kickDto.memberRequestingRank === ChatMemberRank.DISCONNECTED
-      || kickDto.memberToKickStatus === ChatMemberRank.OWNER)
-       throw new Error("Wrong rank: Can't request operation");
-    if (kickDto.memberToKickStatus === ChatMemberRank.ADMIN && kickDto.memberRequestingRank === ChatMemberRank.ADMIN)
-       throw new Error("Wrong rank: Can't request operation");
+    if (
+      kickDto.memberRequestingRank === ChatMemberRank.USER ||
+      kickDto.memberRequestingRank === ChatMemberRank.DISCONNECTED ||
+      kickDto.memberToKickStatus === ChatMemberRank.OWNER
+    )
+      throw new Error("Wrong rank: Can't request operation");
+    if (
+      kickDto.memberToKickStatus === ChatMemberRank.ADMIN &&
+      kickDto.memberRequestingRank === ChatMemberRank.ADMIN
+    )
+      throw new Error("Wrong rank: Can't request operation");
     this.prismaService.destroyChatMember(kickDto.ChatMemberToKickId);
-    return "Chat Member " + kickDto.ChatMemberToKickName + " kicked out successfully !";
+    return (
+      "Chat Member " +
+      kickDto.ChatMemberToKickName +
+      " kicked out successfully !"
+    );
   }
-
-
 }

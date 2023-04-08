@@ -31,7 +31,7 @@ import { updateChatMemberStatusDto } from "src/chat/dto/userlist.dto";
 
 /*End of Mute and End of Ban:  */
 //Is added to the current date (now)
-const GLOBAL_T_IN_DAYS =  5 /*DAYS*/ * (24 * 60 * 60 * 1000); // One day in milliseconds
+const GLOBAL_T_IN_DAYS = 5 /*DAYS*/ * (24 * 60 * 60 * 1000); // One day in milliseconds
 
 const logger = new Logger("PrismaService");
 
@@ -87,11 +87,10 @@ export class PrismaService extends PrismaClient {
 
   //GET ROOM MEMBERS : Only function to exists now , returns ChatMemberPrismaType
   async getRoomMembers(roomName: string): Promise<ChatMemberPrismaType[]> {
-
     const chatRoom = await this.chatRoom.findUnique({
       where: {
-        name: roomName,
-      },
+        name: roomName
+      }
     });
 
     if (!chatRoom) {
@@ -101,35 +100,44 @@ export class PrismaService extends PrismaClient {
     const members = await this.chatMember.findMany({
       where: {
         room: {
-          name: roomName,
+          name: roomName
         }
       },
       include: {
-        member: true,
-      },
+        member: true
+      }
     });
 
-    const chatMembersWithUserInfo: ChatMemberPrismaType[] = members.map((member) => {
-      const { id, memberId, roomId, status, rank, endOfBan, endOfMute } = member;
-      const { id: Userid2, username, email, avatar, status: status2 } = member.member;
-
-      return {
-        id,
-        memberId,
-        roomId,
-        status,
-        rank,
-        endOfBan,
-        endOfMute,
-        member: {
+    const chatMembersWithUserInfo: ChatMemberPrismaType[] = members.map(
+      (member) => {
+        const { id, memberId, roomId, status, rank, endOfBan, endOfMute } =
+          member;
+        const {
           id: Userid2,
           username,
           email,
           avatar,
-          status: status2,
-        },
-      };
-    });
+          status: status2
+        } = member.member;
+
+        return {
+          id,
+          memberId,
+          roomId,
+          status,
+          rank,
+          endOfBan,
+          endOfMute,
+          member: {
+            id: Userid2,
+            username,
+            email,
+            avatar,
+            status: status2
+          }
+        };
+      }
+    );
     return chatMembersWithUserInfo;
   }
   // End
@@ -394,55 +402,57 @@ export class PrismaService extends PrismaClient {
     try {
       const chatroom = await this.chatRoom.findUnique({
         where: { name: updateDto.forRoomName },
-        include: { members: true },
+        include: { members: true }
       });
 
-      const member = chatroom.members.find((member) => member.id === updateDto.memberToUpdateID);
+      const member = chatroom.members.find(
+        (member) => member.id === updateDto.memberToUpdateID
+      );
 
       if (!member) {
-        throw new Error('User is not a member of this chatroom');
+        throw new Error("User is not a member of this chatroom");
       }
 
       //STATUS to UPDATE to:
       let newStatus: ChatMemberStatus = updateDto.changeStatusTo;
       //Return RESULT of status update
-      let chatMember : ChatMember;
+      let chatMember: ChatMember;
 
       // A future Date limit is established
       const futureDate = new Date(Date.now() + GLOBAL_T_IN_DAYS);
-      
+
       //CASES : SWITCH BETWEEN STATUSES
       switch (newStatus) {
         case ChatMemberStatus.OK:
           console.log("User is OK");
           chatMember = await this.chatMember.update({
             where: { id: member.id },
-            data: { 
+            data: {
               status: newStatus,
-              endOfBan : null,
-              endOfMute : null,
-            },
+              endOfBan: null,
+              endOfMute: null
+            }
           });
           break;
         case ChatMemberStatus.BLOCKED:
           console.log("User is blocked");
           chatMember = await this.chatMember.update({
             where: { id: member.id },
-            data: {  status: newStatus },
+            data: { status: newStatus }
           });
           break;
         case ChatMemberStatus.MUTED:
           console.log("User is muted");
           chatMember = await this.chatMember.update({
             where: { id: member.id },
-            data: {  status: newStatus, endOfMute: futureDate,},
+            data: { status: newStatus, endOfMute: futureDate }
           });
           break;
         case ChatMemberStatus.BANNED:
           console.log("User is banned");
           chatMember = await this.chatMember.update({
             where: { id: member.id },
-            data: {  status: newStatus, endOfBan: futureDate,},
+            data: { status: newStatus, endOfBan: futureDate }
           });
           break;
         default:
@@ -456,17 +466,16 @@ export class PrismaService extends PrismaClient {
   }
 
   async getChatMember(chatMemberId: number) {
-    return (await this.chatMember.findUnique({
+    return await this.chatMember.findUnique({
       where: {
-        id: chatMemberId,
+        id: chatMemberId
       }
-    }))
+    });
   }
 
   async destroyChatMember(id: number): Promise<void> {
     await this.chatMember.delete({
-      where: { id },
+      where: { id }
     });
   }
 }
-

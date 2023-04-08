@@ -32,13 +32,12 @@ export interface MessagePrismaType extends Message {
 }
 
 export interface ChatMemberPrismaType extends ChatMember {
-  member:
-  {
+  member: {
     avatar: string;
     username: string;
-    email: string,
-    status: any,
-    id: any,
+    email: string;
+    status: any;
+    id: any;
   };
 }
 
@@ -48,7 +47,7 @@ export interface ChatMemberEntity {
   id: number;
   chatMemberstatus: ChatMemberStatus;
   userStatus: UserStatus;
-  email: string,
+  email: string;
   rank: ChatMemberRank;
   endOfBan: any;
   endOfMute: any;
@@ -95,12 +94,13 @@ export class JoinRoomDto {
 // @UseGuards(JwtWsAuthGuard)
 @WebSocketGateway()
 export class ChatGateway
-  implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect {
+  implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect
+{
   constructor(
     private prismaService: PrismaService,
     private chatService: ChatService,
     private userConnectionsService: UserConnectionsService
-  ) { }
+  ) {}
 
   @WebSocketServer()
   server: Server;
@@ -192,8 +192,10 @@ export class ChatGateway
   ): Promise<ChatRoomEntity | DevError> {
     // Log the request
     logger.log(
-      `Received createRoom request from ${createDto.owner} for room ${createDto.name
-      }: ${createDto.status} ${createDto.password ? `, with password ${createDto.password}.` : "."
+      `Received createRoom request from ${createDto.owner} for room ${
+        createDto.name
+      }: ${createDto.status} ${
+        createDto.password ? `, with password ${createDto.password}.` : "."
       }`
     );
 
@@ -232,7 +234,8 @@ export class ChatGateway
       client.id
     );
     logger.log(
-      `Received joinRoom request from ${userId} for room ${dto.roomName} ${dto.password ? `: with password ${dto.password}` : ""
+      `Received joinRoom request from ${userId} for room ${dto.roomName} ${
+        dto.password ? `: with password ${dto.password}` : ""
       }`
     );
 
@@ -322,51 +325,60 @@ export class ChatGateway
     return sendDto.roomName;
   }
 
-
   /*
     GET USER LIST : Get all user information relevant for the chat user tab Component
     Takes a ChatmemberPrismaType array and transforms it into a ChatMemberEntity[], expected by the client
   */
 
-  @SubscribeMessage('listUsers')
+  @SubscribeMessage("listUsers")
   async listUsers(client: any, payload: any): Promise<any> {
-    const list: ChatMemberEntity[] = await this.chatService.getUserList(payload.chatRoomName);
+    const list: ChatMemberEntity[] = await this.chatService.getUserList(
+      payload.chatRoomName
+    );
     console.log(payload.chatRoomName);
-    this.server.to(payload.chatRoomName).emit('userList', list);
-    return { event: 'userList', data: list }
+    this.server.to(payload.chatRoomName).emit("userList", list);
+    return { event: "userList", data: list };
   }
 
-  @SubscribeMessage('updateChatMemberStatus')
-  async updateChatMemberStatus(client: Socket, data: updateChatMemberStatusDto): Promise<string> {
-
+  @SubscribeMessage("updateChatMemberStatus")
+  async updateChatMemberStatus(
+    client: Socket,
+    data: updateChatMemberStatusDto
+  ): Promise<string> {
     try {
       //Try to update the satus
       const chatMember = await this.chatService.updateStatus(data);
       //If Successful, Broadcast back the updated list
       if (chatMember)
-        await this.listUsers(client,{ chatRoomName: data.forRoomName })
-      
-        // (Might not be useful now that we broadcast the list) Broadcast the updated chat member information to all clients connected to the chat
+        await this.listUsers(client, { chatRoomName: data.forRoomName });
+
+      // (Might not be useful now that we broadcast the list) Broadcast the updated chat member information to all clients connected to the chat
       //this.server.to(data.roomName).emit('chatMemberUpdated', chatMember);
-      
-      return "Chat Member's Status succesfully updated !"
+
+      return "Chat Member's Status succesfully updated !";
     } catch (error) {
-      return error.message
+      return error.message;
     }
   }
 
-  @SubscribeMessage('kickChatMember')
+  @SubscribeMessage("kickChatMember")
   async kickChatMember(client: Socket, data: kickMemberDto): Promise<string> {
     try {
       const response = await this.chatService.kickMember(data);
-      if (response === "Chat Member " + data.ChatMemberToKickName + " kicked out successfully !") {
-        const list: ChatMemberEntity[] = await this.chatService.getUserList(data.roomName);
-        this.server.to(data.roomName).emit('userList', list);
+      if (
+        response ===
+        "Chat Member " +
+          data.ChatMemberToKickName +
+          " kicked out successfully !"
+      ) {
+        const list: ChatMemberEntity[] = await this.chatService.getUserList(
+          data.roomName
+        );
+        this.server.to(data.roomName).emit("userList", list);
       }
-      return response ;
+      return response;
     } catch (error) {
-        return (error.message)
-    }   
+      return error.message;
+    }
   }
-
 }

@@ -1,7 +1,7 @@
 import { ChatMemberRank, ChatMemberStatus } from "@prisma/client";
 
 export class updateChatMemberStatusDto {
-  memberRequestRank: ChatMemberRank
+  memberRequestRank: ChatMemberRank;
   memberToUpdateID: number;
   memberToUpdateRANK: ChatMemberRank;
   changeStatusTo: ChatMemberStatus;

@@ -100,7 +100,6 @@ function Border() {
   );
 }
 
-
 //Main game frame
 export default function Game() {
   let gameState: GameStateDto;

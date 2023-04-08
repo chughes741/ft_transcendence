@@ -33,13 +33,12 @@ export class GameData {
   paddle_right: PaddleData = new PaddleData();
 }
 
-
 export class GameStateDto {
   match_id: string;
   player_side: string;
-  ball_pos:{
-    x: number,
-    y: number
+  ball_pos: {
+    x: number;
+    y: number;
   };
   paddle_left_pos: number;
   paddle_right_pos: number;
@@ -50,6 +49,3 @@ export class ClientGameStateUpdate {
   player_side: string;
   paddle_pos: number;
 }
-
-
-
