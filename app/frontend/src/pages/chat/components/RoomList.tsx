@@ -58,48 +58,49 @@ const RoomList: React.FC = () => {
     <div className="room-list">
       <Box sx={{ overflow: "auto" }}>
         <List>
-          {Object.entries(rooms).map(([roomName, room]) => (
-            <ListItem
-              key={roomName}
-              onClick={() => selectRoom(roomName)}
-              onContextMenu={(e) => handleContextMenu(e, room)}
-            >
-              <ListItemButton selected={currentRoomName === roomName}>
-                <span style={{ marginRight: "auto", marginLeft: "8px" }}>
-                  {room.rank === "OWNER" && <FaCrown />}
-                </span>
-                <ListItemIcon>
-                  <AvatarGroup
-                    max={4}
-                    spacing="small"
-                  >
-                    {room.avatars?.map((avatar, index) => (
-                      <Avatar
-                        key={index}
-                        src={avatar}
-                        alt={`Profile ${index}`}
-                      />
-                    ))}
-                  </AvatarGroup>
-                </ListItemIcon>
-                <ListItemText
-                  style={{ overflowX: "hidden" }}
-                  primary={roomName}
-                  secondary={
-                    room.messages.length > 0
-                      ? truncateText(
-                          room.messages[room.messages.length - 1].content,
-                          42
-                        )
-                      : ""
-                  }
-                />
-                <span style={{ marginLeft: "auto", marginRight: "16px" }}>
-                  {getStatusIcon(room.status)}
-                </span>
-              </ListItemButton>
-            </ListItem>
-          ))}
+          {rooms &&
+            Object.entries(rooms).map(([roomName, room]) => (
+              <ListItem
+                key={roomName}
+                onClick={() => selectRoom(roomName)}
+                onContextMenu={(e) => handleContextMenu(e, room)}
+              >
+                <ListItemButton selected={currentRoomName === roomName}>
+                  <span style={{ marginRight: "auto", marginLeft: "8px" }}>
+                    {room.rank === "OWNER" && <FaCrown />}
+                  </span>
+                  <ListItemIcon>
+                    <AvatarGroup
+                      max={4}
+                      spacing="small"
+                    >
+                      {room.avatars?.map((avatar, index) => (
+                        <Avatar
+                          key={index}
+                          src={avatar}
+                          alt={`Profile ${index}`}
+                        />
+                      ))}
+                    </AvatarGroup>
+                  </ListItemIcon>
+                  <ListItemText
+                    style={{ overflowX: "hidden" }}
+                    primary={roomName}
+                    secondary={
+                      room.messages.length > 0
+                        ? truncateText(
+                            room.messages[room.messages.length - 1].content,
+                            42
+                          )
+                        : ""
+                    }
+                  />
+                  <span style={{ marginLeft: "auto", marginRight: "16px" }}>
+                    {getStatusIcon(room.status)}
+                  </span>
+                </ListItemButton>
+              </ListItem>
+            ))}
         </List>
       </Box>
       <CreateRoomModal

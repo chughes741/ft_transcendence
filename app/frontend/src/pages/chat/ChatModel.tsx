@@ -41,7 +41,7 @@ export interface ChatModelType {
 export const useChatModel = (): ChatModelType => {
   const [tempUsername, setTempUsername] = useState("");
   const [currentRoomName, setCurrentRoomName] = useState("");
-  const [rooms, setRooms] = useState({} as { [key: string]: RoomType });
+  const [rooms, setRooms] = useState({});
   const [currentRoomMessages, setCurrentRoomMessages] = useState([]);
   const [showCreateRoomModal, setShowCreateRoomModal] = useState(false);
   const [showJoinRoomModal, setShowJoinRoomModal] = useState(false);
