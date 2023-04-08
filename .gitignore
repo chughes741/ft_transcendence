@@ -19,3 +19,6 @@ build
 
 #ChatGPT
 generate.sh
+
+# Prisma Migrations
+prisma/migrations
