@@ -17,6 +17,7 @@ import { ProfileModelType, useProfileModel } from "./profile.model";
 export interface ProfileViewModelType extends ProfileModelType {
   getMatchHistory: () => Promise<void>;
   getProfile: () => Promise<void>;
+  getFriends: () => Promise<void>;
 }
 
 /**
@@ -74,10 +75,27 @@ export const ProfileViewModelProvider = ({ children }) => {
     );
   };
 
+  /**
+   * Sends a getFriends request to the server
+   *
+   * @todo Change message name to enum once kingpong-lib is updated
+   */
+  const getFriends = async (): Promise<void> => {
+    console.log("getFriendsRequest", user);
+    socket.emit(
+      "getFriendsRequest",
+      { username: user },
+      (friends: ProfileEntity[]) => {
+        setFriends(friends);
+      }
+    );
+  };
+
   /** Update MatchHistory and Profile when user changes */
   useEffect(() => {
     getMatchHistory();
     getProfile();
+    getFriends();
   }, [user]);
 
   return (
@@ -92,7 +110,8 @@ export const ProfileViewModelProvider = ({ children }) => {
         friends,
         setFriends,
         getMatchHistory,
-        getProfile
+        getProfile,
+        getFriends
       }}
     >
       {children}

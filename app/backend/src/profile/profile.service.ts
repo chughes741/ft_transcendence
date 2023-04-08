@@ -8,6 +8,7 @@ import {
   UserStatus
 } from "kingpong-lib";
 import { PrismaService } from "src/prisma/prisma.service";
+import { GetFriendsRequest } from "./profile.dto";
 
 const logger = new Logger("ProfileService");
 
@@ -65,6 +66,33 @@ export class ProfileService {
     };
 
     return profile;
+  }
+
+  /**
+   * Get a list of all users friends
+   *
+   * @todo update once kingpong-lib is updated
+   * @param {GetFriendsRequest} getFriendsRequest
+   * @async
+   * @returns {Promise<ProfileEntity[]>}
+   */
+  async getFriends(
+    getFriendsRequest: GetFriendsRequest
+  ): Promise<ProfileEntity[]> {
+    logger.log(`Fetching friends for ${getFriendsRequest.username}`);
+    // const friends = await this.prismaService.getFriends(getFriendsRequest);
+    // const friendProfiles = friends.map((friend) => {
+    // return {
+    // username: friend.username,
+    // avatar: friend.avatar,
+    // status: UserStatus.ONLINE,
+    // createdAt: friend.createdAt.toLocaleTimeString()
+    // };
+    // });
+
+    // return friendProfiles;
+
+    return [];
   }
 
   /**

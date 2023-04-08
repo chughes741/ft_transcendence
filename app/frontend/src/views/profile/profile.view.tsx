@@ -2,18 +2,18 @@
 import {
   Avatar,
   Paper,
-  Stack,
   Typography,
   Table,
   TableBody,
   TableCell,
   TableContainer,
   TableHead,
-  TableRow
+  TableRow,
+  Grid
 } from "@mui/material";
 
 /** Shared Library */
-import { MatchHistoryItem, UserStatus } from "kingpong-lib";
+import { MatchHistoryItem, ProfileEntity, UserStatus } from "kingpong-lib";
 
 /** View Model */
 import {
@@ -97,25 +97,69 @@ function MatchHistory(): JSX.Element | null {
 
   return (
     <>
-      {matchHistory && matchHistory.length > 0 && (
-        <TableContainer
-          id="profile-match-history"
-          component={Paper}
-        >
-          <Table>
-            <TableHead>
-              <TableRow>
-                {cell_names.map((cell) => (
-                  <TableCell align="center">{cell}</TableCell>
-                ))}
-              </TableRow>
-            </TableHead>
+      <TableContainer
+        id="profile-match-history"
+        component={Paper}
+      >
+        <Table>
+          <TableHead>
+            <TableRow>
+              {cell_names.map((cell) => (
+                <TableCell align="center">{cell}</TableCell>
+              ))}
+            </TableRow>
+          </TableHead>
+          {matchHistory && matchHistory.length > 0 && (
             <TableBody>
               {matchHistory.map((row) => MatchHistoryRow(row))}
             </TableBody>
-          </Table>
-        </TableContainer>
-      )}
+          )}
+        </Table>
+      </TableContainer>
+    </>
+  );
+}
+
+/**
+ * Creates a TableRow with a ProfileEntity
+ *
+ * @param {ProfileEntity} friend
+ * @returns {JSX.Element | null}
+ */
+function FriendsListRow(friend: ProfileEntity): JSX.Element | null {
+  return (
+    <>
+      <TableRow id="profile-friends-list-row">
+        <TableCell align="center">{friend.username}</TableCell>
+      </TableRow>
+    </>
+  );
+}
+
+/**
+ * Loads friends list component
+ *
+ * @returns {JSX.Element | null}
+ */
+function FriendsList(): JSX.Element | null {
+  const { friends } = useProfileViewModelContext();
+
+  return (
+    <>
+      <TableContainer component={Paper}>
+        <Table>
+          <TableHead>
+            <TableRow>
+              <TableCell align="center">Friends</TableCell>
+            </TableRow>
+          </TableHead>
+          {friends && friends.length > 0 && (
+            <TableBody>
+              {friends.map((friend) => FriendsListRow(friend))}
+            </TableBody>
+          )}
+        </Table>
+      </TableContainer>
     </>
   );
 }
@@ -128,14 +172,31 @@ function MatchHistory(): JSX.Element | null {
 export default function ProfileView(): JSX.Element | null {
   return (
     <>
-      <Stack
-        id="profile-stack"
-        width={"80%"}
-        spacing={2}
+      <Grid
+        container
+        rowSpacing={2}
+        columnSpacing={1}
+        width="80%"
       >
-        <ProfileHeader />
-        <MatchHistory />
-      </Stack>
+        <Grid
+          item
+          xs={12}
+        >
+          <ProfileHeader />
+        </Grid>
+        <Grid
+          item
+          xs={8}
+        >
+          <MatchHistory />
+        </Grid>
+        <Grid
+          item
+          xs={4}
+        >
+          <FriendsList />
+        </Grid>
+      </Grid>
     </>
   );
 }
