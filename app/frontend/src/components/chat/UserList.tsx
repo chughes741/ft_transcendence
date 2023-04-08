@@ -56,7 +56,6 @@ export default function UserList({ chatRoomName }: UserListProps) {
     <>
       <ListTabulation
         users={userList}
-        heading={chatRoomName}
         onSelectItem={handleSelectItem}
       />
       <ContextMenuUsers />

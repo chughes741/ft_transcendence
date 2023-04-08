@@ -15,11 +15,10 @@ import ContextMenuUsers from "../ContextMenuUsers";
 
 interface Props {
   users: myUsers[];
-  heading: string;
   onSelectItem: (user: myUsers) => void;
 }
 
-function ListTabulation({ users, heading, onSelectItem }: Props) {
+function ListTabulation({ users, onSelectItem }: Props) {
   //State hook: means that this function will have variable that will change over time.
   //if the change of our function is updated, React will automatically update the DOM for us
   //const [SelectedIndex, setSelectedIndex] = useState(-1);// Variable (SelectedIndex) and updater function
@@ -57,13 +56,17 @@ function ListTabulation({ users, heading, onSelectItem }: Props) {
               className="list-title"
               style={{
                 fontSize: "1rem",
-                maxWidth: "16vw"
+                maxWidth: "16vw",
+                display: "flex",
+                alignItems: "center",
+                height: "5vh"
               }}
             >
-              <ListItemIcon>
-                <GroupIcon color="secondary" />
-              </ListItemIcon>
-              {heading}
+              <GroupIcon
+                style={{ margin: "1rem" }}
+                color="secondary"
+              />
+              <p>Members List</p>
             </Box>
           </Box>
           <Box
