@@ -12,7 +12,7 @@ export default function ContextMenuUsers() {
   } = useChatViewModelContext();
 
   const {setPageState} = usePageStateContext();
-  const isOwner = true;
+  const isOwner = false;
 
   return (
     <>

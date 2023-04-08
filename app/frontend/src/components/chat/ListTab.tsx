@@ -57,7 +57,7 @@ function ListTabulation({ users, heading, onSelectItem }: Props) {
               className="list-title"
               style={{
                 fontSize: "1rem",
-                maxWidth: "16vw",
+                maxWidth: "16vw"
               }}
             >
               <ListItemIcon>
@@ -66,12 +66,14 @@ function ListTabulation({ users, heading, onSelectItem }: Props) {
               {heading}
             </Box>
           </Box>
-          <Box id="members-container"
-          style={{
+          <Box
+            id="members-container"
+            style={{
               maxHeight: "75vh",
               overflowY: "auto",
               overflowX: "hidden"
-          }}>
+            }}
+          >
             {users.length === 0 && <Box>No one in chat </Box>}
 
             <List
@@ -101,7 +103,7 @@ function ListTabulation({ users, heading, onSelectItem }: Props) {
           </Box>
         </Box>
       </Box>
-        <ContextMenuUsers />
+      <ContextMenuUsers />
     </>
   );
 }

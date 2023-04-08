@@ -23,9 +23,7 @@ interface UserListProps{
     chatRoomName :string;
 }
 
-function UserList( { chatRoomName } : UserListProps) {
-
-
+export default function UserList( { chatRoomName } : UserListProps) {
     const handleSelectItem = (user: myUsers) => {
         console.log(user);
     }
@@ -33,6 +31,11 @@ function UserList( { chatRoomName } : UserListProps) {
     const socket = useContext(WebSocketContext);
 
     const [userList, setUserList] = useState<myUsers[]>([]);
+
+    const kickUser = ()=>{
+        socket.emit('kickMemberChat',)
+    }
+
 
     // Send "listUsers" event to server to get the user list
     useEffect(() => {
@@ -59,5 +62,3 @@ function UserList( { chatRoomName } : UserListProps) {
         </>
     )
 }
-
-export default UserList;
