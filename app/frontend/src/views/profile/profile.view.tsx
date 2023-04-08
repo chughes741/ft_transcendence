@@ -1,10 +1,11 @@
 import { useEffect, useState } from "react";
 
-/** Module Imports */
-import { Avatar, Paper, Stack, Typography } from "@mui/material";
-
-/** Table from MUI */
+/** MUI */
 import {
+  Avatar,
+  Paper,
+  Stack,
+  Typography,
   Table,
   TableBody,
   TableCell,
@@ -13,24 +14,29 @@ import {
   TableRow
 } from "@mui/material";
 
-/** Mock data import */
+/** Shared Library */
+import { MatchHistoryItem, ProfileEntity, UserStatus } from "kingpong-lib";
+
+/** View Model */
 import {
   GetMatchHistory,
   GetProfile,
   Item
 } from "src/views/profile/profile.viewModel";
-import { MatchHistoryItem, ProfileEntity, UserStatus } from "kingpong-lib";
 
 /**
  * Creates profile page header
+ *
+ * @param {string} user - user ID of profile to load
+ * @returns {JSX.Element | null}
  */
-export function ProfileHeader() {
+function ProfileHeader({ user }: { user: string }): JSX.Element | null {
   const [profile, setProfile] = useState<ProfileEntity | undefined>();
 
   /** Fetch profile from server */
   useEffect(() => {
     async function fetchProfile() {
-      const profileinfo = await GetProfile();
+      const profileinfo = await GetProfile(user);
       setProfile(profileinfo);
     }
     fetchProfile();
@@ -60,9 +66,11 @@ export function ProfileHeader() {
 
 /**
  * Creates a TableRow with a MatchHistoryItem
+ *
  * @param {MatchHistoryItem} row
+ * @returns {JSX.Element | null}
  */
-function MatchHistoryRow(row: MatchHistoryItem) {
+function MatchHistoryRow(row: MatchHistoryItem): JSX.Element | null {
   return (
     <>
       <TableRow
@@ -90,14 +98,17 @@ function MatchHistoryRow(row: MatchHistoryItem) {
 
 /**
  * Loads match history component
+ *
+ * @param {string} user - user ID of profile to load
+ * @returns {JSX.Element | null}
  */
-function MatchHistory() {
+function MatchHistory({ user }: { user: string }): JSX.Element | null {
   const [matches, setMatches] = useState<MatchHistoryItem[]>([]);
 
   /** Fetch players match history from server */
   useEffect(() => {
     async function fetchMatches() {
-      const history = await GetMatchHistory();
+      const history = await GetMatchHistory(user);
       setMatches(history);
     }
     fetchMatches();
@@ -126,8 +137,15 @@ function MatchHistory() {
 
 /**
  * Loads profile page
+ *
+ * @returns {JSX.Element | null}
  */
-export default function ProfileView() {
+export default function ProfileView(): JSX.Element | null {
+  /** @todo handle default userID */
+  const [user, setUser] = useState<string>(
+    "989e72d2-bf18-49d5-8bb1-201a1770958e"
+  );
+
   return (
     <>
       <Stack
@@ -135,8 +153,8 @@ export default function ProfileView() {
         width={"80%"}
         spacing={2}
       >
-        <ProfileHeader />
-        <MatchHistory />
+        <ProfileHeader user={user} />
+        <MatchHistory user={user} />
       </Stack>
     </>
   );

@@ -2,9 +2,10 @@ import { Injectable } from "@nestjs/common";
 import {
   GetMatchHistoryRequest,
   GetProfileRequest,
-  MatchHistoryEntity,
+  MatchHistoryItem,
   ProfileEntity,
-  UpdateProfileRequest
+  UpdateProfileRequest,
+  UserStatus
 } from "kingpong-lib";
 import { PrismaService } from "src/prisma/prisma.service";
 
@@ -14,14 +15,31 @@ export class ProfileService {
   /**
    * Fetches match history of requested player
    *
+   * @todo update to return MatchHistoryEntity once kingpong-lib is updated
    * @param {GetMatchHistoryRequest} getMatchHistoryRequest
    * @async
-   * @returns {Promise<MatchHistoryEntity>}
+   * @returns {Promise<MatchHistoryItem[]>}
    */
   async getMatchHistory(
     getMatchHistoryRequest: GetMatchHistoryRequest
-  ): Promise<MatchHistoryEntity> {
-    return await this.prismaService.GetMatchHistory(getMatchHistoryRequest);
+  ): Promise<MatchHistoryItem[]> {
+    /** Fetch match history from prisma service */
+    const matches = await this.prismaService.GetMatchHistory(
+      getMatchHistoryRequest
+    );
+
+    /** Map the return of prisma service to a MatchHistoryEntity */
+    const matchHistory = matches.map((match) => {
+      return {
+        match_type: match.gameType,
+        players: match.player1Id + match.player2Id,
+        results: match.scorePlayer1.toString() + match.scorePlayer2.toString(),
+        date: match.timestamp.toLocaleTimeString(),
+        winner: true
+      };
+    });
+
+    return matchHistory;
   }
 
   /**
@@ -34,7 +52,15 @@ export class ProfileService {
   async getProfile(
     getProfileRequest: GetProfileRequest
   ): Promise<ProfileEntity> {
-    return await this.prismaService.GetProfile(getProfileRequest);
+    const user = await this.prismaService.GetProfile(getProfileRequest);
+    const profile = {
+      username: user.username,
+      avatar: user.avatar,
+      status: UserStatus.ONLINE,
+      createdAt: user.createdAt.toLocaleTimeString()
+    };
+
+    return profile;
   }
 
   /**

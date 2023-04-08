@@ -5,6 +5,7 @@ import {
   ChatMemberRank,
   ChatMemberStatus,
   ChatRoom,
+  Match,
   Prisma,
   PrismaClient,
   User
@@ -57,8 +58,7 @@ export class PrismaService extends PrismaClient {
       this.user.deleteMany(),
       this.chatMember.deleteMany(),
       this.message.deleteMany(),
-      this.match.deleteMany(),
-      this.player.deleteMany()
+      this.match.deleteMany()
     ]);
   }
   async userExists(userId: string): Promise<boolean> {
@@ -326,57 +326,41 @@ export class PrismaService extends PrismaClient {
   /**
    * Fetches match history page from the database
    *
-   * @todo fetch from db
    * @param {GetMatchHistoryRequest} getMatchHistoryRequest
    * @async
-   * @returns {MatchHistoryEntity} - MatchHistoryItem[]
+   * @returns {Promise<Match[]>}
    */
   async GetMatchHistory(
     getMatchHistoryRequest: GetMatchHistoryRequest
-  ): Promise<MatchHistoryEntity> {
-    const matchHistory = new MatchHistoryEntity();
-    matchHistory.matches = [
-      {
-        match_type: "Solo",
-        players: "John",
-        results: "Victory",
-        date: "2022-03-15",
-        winner: true
-      },
-      {
-        match_type: "Duo",
-        players: "John, Jane",
-        results: "Defeat",
-        date: "2022-03-16",
-        winner: false
-      },
-      {
-        match_type: "Squad",
-        players: "John, Jane, Bob, Alice",
-        results: "Victory",
-        date: "2022-03-17",
-        winner: true
+  ): Promise<Match[]> {
+    return await this.match.findMany({
+      where: {
+        OR: [
+          {
+            player1: {
+              id: getMatchHistoryRequest.id
+            }
+          },
+          {
+            player2: {
+              id: getMatchHistoryRequest.id
+            }
+          }
+        ]
       }
-    ];
-    return matchHistory;
+    });
   }
 
   /**
    * Returns a profile from the database
    *
-   * @todo fetch from db
    * @param {GetProfileRequest} getProfileRequest
    * @async
-   * @returns {ProfileEntity}
+   * @returns {Promise<User>}
    */
-  async GetProfile(
-    getProfileRequest: GetProfileRequest
-  ): Promise<ProfileEntity> {
-    const profile = new ProfileEntity();
-    profile.username = "schlurp";
-    profile.avatar = "https://i.pravatar.cc/150";
-    profile.status = UserStatus.ONLINE;
-    profile.createdAt = "like three seconds ago, did you already forget?";
-    return profile;
+  async GetProfile(getProfileRequest: GetProfileRequest): Promise<User> {
+    return await this.user.findUnique({
+      where: { id: getProfileRequest.id }
+    });
   }
 }
