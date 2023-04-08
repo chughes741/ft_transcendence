@@ -12,6 +12,7 @@ import { ButtonUnstyled } from "@mui/base";
 import { Button, Tooltip } from "@mui/material";
 import VideogameAssetIcon from "@mui/icons-material/VideogameAsset";
 import { PageState } from "src/views/root.model";
+import { useProfileViewModelContext } from "src/views/profile/profile.viewModel";
 
 const TopBarHeight = 85;
 
@@ -24,6 +25,8 @@ const toolbarStyle = {
 };
 
 function TopBar({ setPageState }) {
+  const { user, setUser } = useProfileViewModelContext();
+
   const [anchorElNav, setAnchorElNav] = React.useState<null | HTMLElement>(
     null
   );
@@ -47,6 +50,7 @@ function TopBar({ setPageState }) {
   };
 
   const onClickProfile = () => {
+    setUser("schlurp");
     setPageState(PageState.Profile);
     handleCloseUserMenu();
   };
