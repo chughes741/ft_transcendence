@@ -1,5 +1,3 @@
-import { useEffect, useState } from "react";
-
 /** MUI */
 import {
   Avatar,
@@ -15,37 +13,26 @@ import {
 } from "@mui/material";
 
 /** Shared Library */
-import { MatchHistoryItem, ProfileEntity, UserStatus } from "kingpong-lib";
+import { MatchHistoryItem, UserStatus } from "kingpong-lib";
 
 /** View Model */
 import {
-  GetMatchHistory,
-  GetProfile,
-  Item
+  Item,
+  useProfileViewModelContext
 } from "src/views/profile/profile.viewModel";
 
 /**
  * Creates profile page header
  *
- * @param {string} user - user ID of profile to load
  * @returns {JSX.Element | null}
  */
-function ProfileHeader({ user }: { user: string }): JSX.Element | null {
-  const [profile, setProfile] = useState<ProfileEntity | undefined>();
-
-  /** Fetch profile from server */
-  useEffect(() => {
-    async function fetchProfile() {
-      const profileinfo = await GetProfile(user);
-      setProfile(profileinfo);
-    }
-    fetchProfile();
-  }, []);
+function ProfileHeader(): JSX.Element | null {
+  const { profile } = useProfileViewModelContext();
 
   return (
     <>
       {profile && (
-        <Item>
+        <Item id="profile-header">
           <Avatar src={profile.avatar}></Avatar>
           <Typography
             variant="h5"
@@ -74,6 +61,7 @@ function MatchHistoryRow(row: MatchHistoryItem): JSX.Element | null {
   return (
     <>
       <TableRow
+        id="profile-match-history-row"
         sx={{
           bgcolor: row.winner === true ? "info.dark" : "error.dark",
           "&:hover": {
@@ -99,38 +87,35 @@ function MatchHistoryRow(row: MatchHistoryItem): JSX.Element | null {
 /**
  * Loads match history component
  *
- * @param {string} user - user ID of profile to load
  * @returns {JSX.Element | null}
  */
-function MatchHistory({ user }: { user: string }): JSX.Element | null {
-  const [matches, setMatches] = useState<MatchHistoryItem[]>([]);
-
-  /** Fetch players match history from server */
-  useEffect(() => {
-    async function fetchMatches() {
-      const history = await GetMatchHistory(user);
-      setMatches(history);
-    }
-    fetchMatches();
-  }, []);
+function MatchHistory(): JSX.Element | null {
+  const { matchHistory } = useProfileViewModelContext();
 
   /** Data column names */
   const cell_names = ["Match type", "Players", "Results", "Date"];
 
   return (
     <>
-      <TableContainer component={Paper}>
-        <Table>
-          <TableHead>
-            <TableRow>
-              {cell_names.map((cell) => (
-                <TableCell align="center">{cell}</TableCell>
-              ))}
-            </TableRow>
-          </TableHead>
-          <TableBody>{matches.map((row) => MatchHistoryRow(row))}</TableBody>
-        </Table>
-      </TableContainer>
+      {matchHistory && matchHistory.length > 0 && (
+        <TableContainer
+          id="profile-match-history"
+          component={Paper}
+        >
+          <Table>
+            <TableHead>
+              <TableRow>
+                {cell_names.map((cell) => (
+                  <TableCell align="center">{cell}</TableCell>
+                ))}
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {matchHistory.map((row) => MatchHistoryRow(row))}
+            </TableBody>
+          </Table>
+        </TableContainer>
+      )}
     </>
   );
 }
@@ -141,11 +126,6 @@ function MatchHistory({ user }: { user: string }): JSX.Element | null {
  * @returns {JSX.Element | null}
  */
 export default function ProfileView(): JSX.Element | null {
-  /** @todo handle default userID */
-  const [user, setUser] = useState<string>(
-    "989e72d2-bf18-49d5-8bb1-201a1770958e"
-  );
-
   return (
     <>
       <Stack
@@ -153,8 +133,8 @@ export default function ProfileView(): JSX.Element | null {
         width={"80%"}
         spacing={2}
       >
-        <ProfileHeader user={user} />
-        <MatchHistory user={user} />
+        <ProfileHeader />
+        <MatchHistory />
       </Stack>
     </>
   );
