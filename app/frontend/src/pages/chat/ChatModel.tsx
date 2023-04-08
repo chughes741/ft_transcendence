@@ -2,6 +2,7 @@
 import { useReducer, useState } from "react";
 import { RoomType } from "./ChatViewModel";
 import { MessageType } from "./components/Message";
+import {myUsers} from "./components/Userlist.model";
 
 export interface ChatModelType {
   tempUsername: string;
@@ -39,6 +40,7 @@ export interface ChatModelType {
 }
 
 export const useChatModel = (): ChatModelType => {
+  const [users, setUsers] = useState<myUsers[]>([]);
   const [tempUsername, setTempUsername] = useState("");
   const [currentRoomName, setCurrentRoomName] = useState("");
   const [rooms, setRooms] = useState({});

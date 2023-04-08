@@ -1,11 +1,12 @@
 // ChatViewModel.tsx
-import { useEffect } from "react";
+import {useEffect, useState} from "react";
 import { usePageStateContext } from "../../contexts/PageStateContext";
 import { socket } from "../../contexts/WebSocketContext";
 import { PageState } from "../../views/root.model";
 import { ChatModelType, useChatModel } from "./ChatModel";
 import { MessageType } from "./components/Message";
 import { ChatViewModelContext } from "./contexts/ChatViewModelContext";
+import {UserListItem} from "./components/Userlist.model";
 
 export type ChatRoomStatus = "PUBLIC" | "PRIVATE" | "PASSWORD";
 export type ChatMemberRank = "USER" | "ADMIN" | "OWNER";

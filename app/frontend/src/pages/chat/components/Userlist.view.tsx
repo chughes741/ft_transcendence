@@ -1,30 +1,18 @@
-import "./ListTab.tsx.css";
-import { Box, Typography, AppBar, Avatar } from "@mui/material";
+import React, { useState } from "react";
+import { Box, Avatar } from "@mui/material";
 import {
   List,
-  ListItem,
   ListItemIcon,
   ListItemText,
   ListItemButton
 } from "@mui/material";
-import { MouseEvent, useState, useEffect } from "react";
-import { myUsers } from "./UserList";
 import GroupIcon from "@mui/icons-material/Group";
-import { useChatViewModelContext } from "../../pages/chat/contexts/ChatViewModelContext";
-import ContextMenuUsers from "../ContextMenuUsers";
+import ContextMenuUsers from "../../../components/ContextMenuUsers";
+import "../../../components/chat/ListTab.tsx.css";
+import { UserListProps } from "./Userlist.model";
 
-interface Props {
-  users: myUsers[];
-}
-
-function ListTabulation({ users }: Props) {
-  //State hook: means that this function will have variable that will change over time.
-  //if the change of our function is updated, React will automatically update the DOM for us
-  //const [SelectedIndex, setSelectedIndex] = useState(-1);// Variable (SelectedIndex) and updater function
-  // const [name, setName ] = useState(''); this could be use to modify also the state of the name
-
+export default function UserListView(userListProps: UserListProps) {
   const [SelectedIndex, setSelectedIndex] = useState(-1);
-  const { handleContextMenuUsers } = useChatViewModelContext();
   return (
     <>
       <Box
@@ -76,18 +64,18 @@ function ListTabulation({ users }: Props) {
               overflowX: "hidden"
             }}
           >
-            {users.length === 0 && <Box>No one in chat </Box>}
+            {userListProps.userList.length === 0 && <Box>No one in chat </Box>}
 
-            <List
-              onContextMenu={(e) => handleContextMenuUsers(e, { name: "FUCK" })}
-            >
-              {users.map((users, index) => (
+            <List>
+              {userListProps.userList.map((users, index) => (
                 <ListItemButton
-                  selected={SelectedIndex === index ? true : false}
-                  key={users.username} //don't forget to add user.id unique key
+                  onContextMenu={(e) => userListProps.handleClick(users[index])}
+                  selected={SelectedIndex === index}
+                  //TODO don't forget to add user.id unique key
+                  key={users.username}
                   onClick={() => {
                     setSelectedIndex(index);
-                    onSelectItem(users);
+                    userListProps.handleClick(users[index]);
                   }}
                 >
                   <ListItemIcon>
@@ -109,5 +97,3 @@ function ListTabulation({ users }: Props) {
     </>
   );
 }
-
-export default ListTabulation;

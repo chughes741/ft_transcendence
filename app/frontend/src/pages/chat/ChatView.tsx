@@ -1,12 +1,10 @@
 import React from "react";
 import { Box } from "@mui/material";
-import { Helmet } from "react-helmet";
 import DevLoginBanner from "../../components/DevLoginBanner";
-import RoomList from "./components/RoomList";
 import ChatAreaView from "./components/ChatArea.view";
 import { useChatViewModelContext } from "./contexts/ChatViewModelContext";
+import UserListView from "./components/Userlist.view";
 
-import UserList from "src/components/chat/UserList";
 
 export const ChatView: React.FC = () => {
   const { currentRoomName, tempUsername, setTempUsername } =
@@ -44,7 +42,7 @@ export const ChatView: React.FC = () => {
           >
             <ChatAreaView key={currentRoomName} />
           </Box>
-          <UserList chatRoomName={currentRoomName} />
+          <UserListView />
         </Box>
       </Box>
     </Box>
