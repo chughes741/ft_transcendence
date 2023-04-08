@@ -463,7 +463,7 @@ export const ChatViewModelProvider = ({ children }) => {
 
   // Select the current room only once the room is ready
   useEffect(() => {
-    if (currentRoomName && rooms[currentRoomName]) {
+    if (currentRoomName && rooms && rooms[currentRoomName]) {
       console.log(
         `selectRoom: Room ${currentRoomName} selected!: `,
         rooms[currentRoomName]
