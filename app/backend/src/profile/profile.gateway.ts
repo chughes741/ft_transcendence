@@ -43,7 +43,7 @@ export class ProfileGateway {
   @SubscribeMessage(ProfileEvents.GetProfile)
   async getProfile(
     @MessageBody() getProfileRequest: GetProfileRequest
-  ): Promise<ProfileEntity> {
+  ): Promise<ProfileEntity | null> {
     return await this.profileService.getProfile(getProfileRequest);
   }
 

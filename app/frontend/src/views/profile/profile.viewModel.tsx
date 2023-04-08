@@ -52,6 +52,9 @@ export const ProfileViewModelProvider = ({ children }) => {
    */
   const getMatchHistory = async (): Promise<void> => {
     console.log("getMatchHistory", user);
+    if (user === null) {
+      return;
+    }
     socket.emit(
       ProfileEvents.GetMatchHistory,
       { id: user, number_of_items: 50 },
@@ -65,6 +68,9 @@ export const ProfileViewModelProvider = ({ children }) => {
    * Sends a getProfile request to the server
    */
   const getProfile = async (): Promise<void> => {
+    if (user === null) {
+      return;
+    }
     console.log("getProfile", user);
     socket.emit(
       ProfileEvents.GetProfile,
@@ -81,6 +87,9 @@ export const ProfileViewModelProvider = ({ children }) => {
    * @todo Change message name to enum once kingpong-lib is updated
    */
   const getFriends = async (): Promise<void> => {
+    if (user === null) {
+      return;
+    }
     console.log("getFriendsRequest", user);
     socket.emit(
       "getFriendsRequest",

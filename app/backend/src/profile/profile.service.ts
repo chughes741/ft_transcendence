@@ -26,6 +26,10 @@ export class ProfileService {
   async getMatchHistory(
     getMatchHistoryRequest: GetMatchHistoryRequest
   ): Promise<MatchHistoryItem[]> {
+    if (!getMatchHistoryRequest.id) {
+      logger.log("No username is provided");
+      return [];
+    }
     logger.log(`Fetching match history for ${getMatchHistoryRequest.id}`);
     /** Fetch match history from prisma service */
     const matches = await this.prismaService.GetMatchHistory(
@@ -55,7 +59,11 @@ export class ProfileService {
    */
   async getProfile(
     getProfileRequest: GetProfileRequest
-  ): Promise<ProfileEntity> {
+  ): Promise<ProfileEntity | null> {
+    if (!getProfileRequest.id) {
+      logger.log("No username is provided");
+      return null;
+    }
     logger.log(`Fetching profile for ${getProfileRequest.id}`);
     const user = await this.prismaService.GetProfile(getProfileRequest);
     const profile = {
