@@ -21,4 +21,4 @@ build
 generate.sh
 
 # Prisma Migrations
-prisma/migrations
+app/backend/prisma/migrations/
