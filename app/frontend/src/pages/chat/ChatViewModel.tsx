@@ -74,10 +74,15 @@ export const ChatViewModelProvider = ({ children }) => {
     currentRoomMessages,
     setCurrentRoomMessages,
     contextMenuPosition,
+    contextMenuUsersPosition,
     contextMenuData,
+    contextMenuUsersData,
     handleContextMenu,
-    contextMenuVisible,
-    setContextMenuVisible,
+    handleContextMenuUsers,
+    contextMenuRoomsVisible,
+    contextMenuUsersVisible,
+    setContextMenuRoomsVisible,
+    setContextMenuUsersVisible,
     showCreateRoomModal,
     setShowCreateRoomModal,
     showJoinRoomModal,
@@ -262,7 +267,7 @@ export const ChatViewModelProvider = ({ children }) => {
         delete newRooms[roomName];
         return newRooms;
       });
-      setContextMenuVisible(false);
+      setContextMenuRoomsVisible(false);
       resolve(true);
     });
   };
@@ -440,10 +445,15 @@ export const ChatViewModelProvider = ({ children }) => {
         showJoinRoomModal,
         setShowJoinRoomModal,
         contextMenuData,
+        contextMenuUsersData,
         contextMenuPosition,
+        contextMenuUsersPosition,
         handleContextMenu,
-        contextMenuVisible,
-        setContextMenuVisible,
+        handleContextMenuUsers,
+        contextMenuRoomsVisible,
+        contextMenuUsersVisible,
+        setContextMenuRoomsVisible,
+        setContextMenuUsersVisible,
         unreadMessages,
         setUnreadMessages,
         truncateText,

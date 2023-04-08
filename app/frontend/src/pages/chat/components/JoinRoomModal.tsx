@@ -121,7 +121,7 @@ export const JoinRoomModal: React.FC<JoinRoomModalProps> = ({
           onClick={handleSubmit}
           content="Join Room"
           width="50%"
-        ></ButtonFunky>
+        />
       </DialogActions>
     </Dialog>
   );

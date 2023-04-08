@@ -13,7 +13,7 @@ import { ConfigModule } from "@nestjs/config";
 import { AuthModule } from "./auth/auth.module";
 import { ScheduleModule } from "@nestjs/schedule";
 import { UserConnectionsService } from "./user-connections.service";
-import { UserlistModule } from "./userlist/userlist.module";
+
 
 @Module({
   imports: [
@@ -27,7 +27,6 @@ import { UserlistModule } from "./userlist/userlist.module";
     LoginModule,
     PrismaModule,
     AuthModule,
-    UserlistModule,
     ConfigModule.forRoot({
       envFilePath: "../.env",
       // validationSchema: configValidationSchema,
