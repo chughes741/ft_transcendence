@@ -8,6 +8,7 @@ import { MessageType } from "./components/Message";
 import { ChatViewModelContext } from "./contexts/ChatViewModelContext";
 
 export type ChatRoomStatus = "PUBLIC" | "PRIVATE" | "PASSWORD";
+export type ChatMemberRank = "USER" | "ADMIN" | "OWNER";
 
 export type MessagePayload = {
   username: string;
@@ -19,6 +20,7 @@ export type MessagePayload = {
 export interface ChatRoomPayload {
   name: string;
   status: ChatRoomStatus;
+  queryingUserRank: ChatMemberRank;
   latestMessage?: MessagePayload;
   lastActivity: Date;
   avatars?: string[];
@@ -27,7 +29,9 @@ export interface ChatRoomPayload {
 export type RoomType = {
   name: string;
   status: ChatRoomStatus;
-  latestMessage?: MessagePayload;
+  rank: ChatMemberRank;
+  messages: MessageType[];
+  latestMessage?: MessageType;
   lastActivity: Date;
   hasUnreadMessages: boolean;
   avatars?: string[];
@@ -107,43 +111,17 @@ export const ChatViewModelProvider = ({ children }) => {
       return;
     }
     if (!rooms[roomName]) {
-      setRooms((prevRooms) => {
-        const newRooms = { ...prevRooms };
-        newRooms[roomName] = [];
-        return newRooms;
-      });
+      return;
     }
+    console.log(`selectRoom: Room ${roomName} selected! `, rooms[roomName]);
     setCurrentRoomName(roomName);
-    setCurrentRoomMessages(rooms[roomName]);
+    setCurrentRoomMessages(rooms[roomName].messages);
     setPageState(PageState.Chat);
   };
 
   /**********************/
-  /*   Room Functions   */
+  /*   Util Functions   */
   /**********************/
-
-  // FIXME: move to model?
-  const addMessageToRoom = (roomName: string, message: MessageType) => {
-    setRooms((prevRooms) => {
-      const newRooms = { ...prevRooms };
-      if (!newRooms[roomName]) {
-        newRooms[roomName] = [];
-      }
-      newRooms[roomName].push(message);
-      return newRooms;
-    });
-  };
-
-  const addMessagesToRoom = (roomName: string, messages: MessageType[]) => {
-    setRooms((prevRooms) => {
-      const newRooms = { ...prevRooms };
-      if (!newRooms[roomName]) {
-        newRooms[roomName] = [];
-      }
-      newRooms[roomName].push(...messages);
-      return newRooms;
-    });
-  };
 
   const convertMessagePayloadToMessageType = (
     messagePayload: MessagePayload
@@ -168,6 +146,74 @@ export const ChatViewModelProvider = ({ children }) => {
     };
   };
 
+  /**********************/
+  /*   Room Functions   */
+  /**********************/
+
+  // Adds a new room to the rooms state variable
+  const addChatRoom = async (
+    chatRoomPayload: ChatRoomPayload
+  ): Promise<RoomType> => {
+    return new Promise<RoomType>((resolve) => {
+      const {
+        name,
+        status,
+        queryingUserRank,
+        latestMessage,
+        lastActivity,
+        avatars
+      } = chatRoomPayload;
+      const convertedLatestMessage = latestMessage
+        ? convertMessagePayloadToMessageType(latestMessage)
+        : undefined;
+
+      const newRoom = {
+        name: name,
+        status: status,
+        rank: queryingUserRank,
+        latestMessage: convertedLatestMessage,
+        messages: convertedLatestMessage ? [convertedLatestMessage] : [],
+        lastActivity,
+        hasUnreadMessages: false,
+        avatars
+      };
+
+      setRooms((prevRooms) => {
+        const newRooms = { ...prevRooms };
+
+        if (!newRooms[name]) {
+          newRooms[name] = newRoom;
+        }
+
+        console.log("Added room to rooms: ", newRooms);
+
+        resolve(newRoom);
+        return newRooms;
+      });
+    });
+  };
+
+  // FIXME: move to model?
+  const addMessageToRoom = (roomName: string, message: MessageType) => {
+    setRooms((prevRooms) => {
+      const newRooms = { ...prevRooms };
+      if (!newRooms[roomName]) {
+        console.log("addMessageToRoom: Room does not exist");
+      } else newRooms[roomName].messages.push(message);
+      return newRooms;
+    });
+  };
+
+  const addMessagesToRoom = (roomName: string, messages: MessageType[]) => {
+    setRooms((prevRooms) => {
+      const newRooms = { ...prevRooms };
+      if (!newRooms[roomName]) {
+        console.log("addMessageSSSSSSSToRoom: Room does not exist");
+      } else newRooms[roomName].messages.push(...messages);
+      return newRooms;
+    });
+  };
+
   // Create a new room
   const createNewRoom = async (
     roomName: string,
@@ -181,28 +227,26 @@ export const ChatViewModelProvider = ({ children }) => {
         password: roomPassword,
         owner: tempUsername
       };
-
+      let room: RoomType;
       console.log("ChatPage: Creating new room", { ...roomRequest });
       socket.emit(
         "createRoom",
         roomRequest,
-        (res: DevError | ChatRoomPayload) => {
+        async (res: DevError | ChatRoomPayload) => {
           if ((res as DevError).error !== undefined) {
             console.log(
               "Error response from join room: ",
               (res as DevError).error
             );
+            resolve(false);
           } else {
             // res is ChatRoomPayload
             console.log("Response from join room: ", res);
+            room = await addChatRoom(res as ChatRoomPayload);
+            resolve(true);
           }
         }
       );
-
-      // Will only reach this line if the socket callback is successful
-      selectRoom(roomName);
-      // setCurrentRoomMessages(rooms[roomName]);
-      resolve(true);
     });
   };
 
@@ -212,43 +256,56 @@ export const ChatViewModelProvider = ({ children }) => {
     password: string
   ): Promise<boolean> => {
     return new Promise<boolean>((resolve) => {
-      socket.emit(
-        "joinRoom",
-        { roomName, password, user: tempUsername },
-        // Socket callback
-        (res: DevError | ChatRoomPayload) => {
-          if ((res as DevError).error !== undefined) {
-            console.log(
-              "Error response from join room: ",
-              (res as DevError).error
-            );
-          } else {
-            // res is ChatRoomPayload
-            console.log("Response from join room: ", res);
-          }
-        }
-      );
-      socket.emit(
-        "getRoomMessagesPage",
-        { roomName, date: new Date(), pageSize: 50 },
-        (res: DevError | MessagePayload[]) => {
-          if (res instanceof Array) {
-            console.log("getRoomMessagesPage response: ", res);
-            // Convert all the messages to MessageType, and add them to the room
-            const messages = res.map((message) =>
-              convertMessagePayloadToMessageType(message)
-            );
-            console.log("Converted messages: ", messages);
-            addMessagesToRoom(roomName, messages);
-            console.log("Added messages to room: ", roomName);
-          } else {
-            console.log("Error response from get room messages: ", res.error);
-          }
+      let room: RoomType;
+      const joinRoomRes = new Promise<DevError | ChatRoomPayload>(
+        (joinRoomResolve) => {
+          socket.emit(
+            "joinRoom",
+            { roomName, password, user: tempUsername },
+            (res: DevError | ChatRoomPayload) => {
+              joinRoomResolve(res);
+            }
+          );
         }
       );
 
-      selectRoom(roomName);
-      resolve(true);
+      joinRoomRes.then(async (joinRoomRes) => {
+        if ((joinRoomRes as DevError).error !== undefined) {
+          console.log(
+            "Error response from join room: ",
+            (joinRoomRes as DevError).error
+          );
+          resolve(false);
+        } else {
+          console.log("Response from join room: ", joinRoomRes);
+          room = await addChatRoom(joinRoomRes as ChatRoomPayload);
+          selectRoom(room.name);
+
+          socket.emit(
+            "getRoomMessagesPage",
+            { roomName, date: new Date(), pageSize: 50 },
+            (res: DevError | MessagePayload[]) => {
+              if (res instanceof Array) {
+                console.log("getRoomMessagesPage response: ", res);
+                const messages = res.map((message) =>
+                  convertMessagePayloadToMessageType(message)
+                );
+                console.log("Converted messages: ", messages);
+                addMessagesToRoom(roomName, messages);
+                setCurrentRoomName(roomName);
+                console.log("Added messages to room: ", roomName);
+                resolve(true);
+              } else {
+                console.log(
+                  "Error response from get room messages: ",
+                  res.error
+                );
+                resolve(false);
+              }
+            }
+          );
+        }
+      });
     });
   };
 
@@ -329,22 +386,23 @@ export const ChatViewModelProvider = ({ children }) => {
   /**********************/
 
   const userLogin = async (username: string): Promise<boolean> => {
-    let success = false;
-    socket.emit("userLogin", username, (response: DevError | string) => {
-      if (typeof response === "object") {
-        console.log("Error response from user login: ", response.error);
-      } else {
-        console.log(`Logged in user ${username} successfully!`);
-        console.log("Success response from user login: ");
-        console.log(response);
-        setTempUsername(username);
-        joinRoom("PublicRoom", "");
-        joinRoom("PrivateRoom", "");
-        joinRoom("PasswordProtectedRoom", "secret");
-        success = true;
-      }
+    return new Promise<boolean>((resolve) => {
+      socket.emit("userLogin", username, (response: DevError | string) => {
+        if (typeof response === "object") {
+          console.log("Error response from user login: ", response.error);
+          resolve(false);
+        } else {
+          console.log(`Logged in user ${username} successfully!`);
+          console.log("Success response from user login: ");
+          console.log(response);
+          setTempUsername(username);
+          joinRoom("PublicRoom", "");
+          joinRoom("PrivateRoom", "");
+          joinRoom("PasswordProtectedRoom", "secret");
+          resolve(true);
+        }
+      });
     });
-    return success;
   };
 
   const createUser = async (username: string): Promise<boolean> => {
@@ -393,6 +451,10 @@ export const ChatViewModelProvider = ({ children }) => {
     };
   }, [socket, tempUsername]);
 
+  /******************/
+  /*   useEffects   */
+  /******************/
+
   // FIXME: temporary addition for dev build to test user creation
   // TODO: remove this when user creation is implemented
   useEffect(() => {
@@ -400,6 +462,19 @@ export const ChatViewModelProvider = ({ children }) => {
       setTempUsername("temp_user");
     }
   }, [socket, ""]);
+
+  // Select the current room only once the room is ready
+  useEffect(() => {
+    if (currentRoomName && rooms[currentRoomName]) {
+      console.log(
+        `selectRoom: Room ${currentRoomName} selected!: `,
+        rooms[currentRoomName]
+      );
+      setCurrentRoomName(currentRoomName);
+      setCurrentRoomMessages(rooms[currentRoomName].messages);
+      setPageState(PageState.Chat);
+    }
+  }, [currentRoomName, rooms]);
 
   useEffect(() => {
     // Try to create a temporary user
@@ -421,13 +496,6 @@ export const ChatViewModelProvider = ({ children }) => {
       createTempUser(tempUsername);
     }
   }, [tempUsername, ""]);
-
-  // Attempt at focusing the room messages when a new room is selected
-  useEffect(() => {
-    if (currentRoomMessages && rooms[currentRoomName]) {
-      setCurrentRoomMessages(rooms[currentRoomName]);
-    }
-  }, [currentRoomMessages, ""]);
 
   return (
     <ChatViewModelContext.Provider

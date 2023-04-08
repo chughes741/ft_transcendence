@@ -1,11 +1,11 @@
 import React from "react";
 import "../styles/RoomList.css";
-import ButtonFunky from "../../../components/ButtonFunky";
 import ContextMenu from "../../../components/ContextMenu";
 import { JoinRoomModal } from "./JoinRoomModal";
 import { CreateRoomModal } from "./CreateRoomModal";
 import {
   Avatar,
+  AvatarGroup,
   Box,
   List,
   ListItem,
@@ -14,6 +14,9 @@ import {
   ListItemText
 } from "@mui/material";
 import { useChatViewModelContext } from "../contexts/ChatViewModelContext";
+import { FaCrown, FaGlobe, FaLock, FaUserLock } from "react-icons/fa";
+
+import { ChatRoomStatus } from "../ChatViewModel";
 
 const RoomList: React.FC = () => {
   const {
@@ -36,33 +39,64 @@ const RoomList: React.FC = () => {
     selectRoom
   } = useChatViewModelContext();
 
+  const isOwner = true;
+
+  const getStatusIcon = (status: ChatRoomStatus) => {
+    switch (status) {
+      case "PASSWORD":
+        return <FaLock />;
+      case "PUBLIC":
+        return <FaGlobe />;
+      case "PRIVATE":
+        return <FaUserLock />;
+      default:
+        return null;
+    }
+  };
+
   return (
     <div className="room-list">
       <Box sx={{ overflow: "auto" }}>
         <List>
-          {Object.entries(rooms).map(([roomId, messages]) => (
+          {Object.entries(rooms).map(([roomName, room]) => (
             <ListItem
-              key={roomId}
-              onClick={() => selectRoom(roomId)}
-              onContextMenu={(e) => handleContextMenu(e, { name: roomId })}
+              key={roomName}
+              onClick={() => selectRoom(roomName)}
+              onContextMenu={(e) => handleContextMenu(e, room)}
             >
-              <ListItemButton selected={currentRoomName === roomId}>
+              <ListItemButton selected={currentRoomName === roomName}>
+                <span style={{ marginRight: "auto", marginLeft: "8px" }}>
+                  {room.rank === "OWNER" && <FaCrown />}
+                </span>
                 <ListItemIcon>
-                  <Avatar
-                    // className="room-list-avatar"
-                    src={`https://i.pravatar.cc/150?u=${roomId}`}
-                    alt="Profile"
-                  />
+                  <AvatarGroup
+                    max={4}
+                    spacing="small"
+                  >
+                    {room.avatars?.map((avatar, index) => (
+                      <Avatar
+                        key={index}
+                        src={avatar}
+                        alt={`Profile ${index}`}
+                      />
+                    ))}
+                  </AvatarGroup>
                 </ListItemIcon>
                 <ListItemText
                   style={{ overflowX: "hidden" }}
-                  primary={roomId}
+                  primary={roomName}
                   secondary={
-                    messages.length > 0
-                      ? truncateText(messages[messages.length - 1].content, 42)
+                    room.messages.length > 0
+                      ? truncateText(
+                          room.messages[room.messages.length - 1].content,
+                          42
+                        )
                       : ""
                   }
                 />
+                <span style={{ marginLeft: "auto", marginRight: "16px" }}>
+                  {getStatusIcon(room.status)}
+                </span>
               </ListItemButton>
             </ListItem>
           ))}
@@ -87,35 +121,39 @@ const RoomList: React.FC = () => {
             label: "Leave Room",
             onClick: leaveRoom
           },
-          {
-            label: "Change Room Status",
-            submenu: [
-              {
-                label: "Private",
-                onClick: () => {
-                  if (contextMenuData) {
-                    changeRoomStatus(contextMenuData.name, "PRIVATE");
-                  }
+          ...(contextMenuData && contextMenuData.rank === "OWNER"
+            ? [
+                {
+                  label: "Change Room Status",
+                  submenu: [
+                    {
+                      label: "Private",
+                      onClick: () => {
+                        if (contextMenuData) {
+                          changeRoomStatus(contextMenuData.name, "PRIVATE");
+                        }
+                      }
+                    },
+                    {
+                      label: "Public",
+                      onClick: () => {
+                        if (contextMenuData) {
+                          changeRoomStatus(contextMenuData.name, "PUBLIC");
+                        }
+                      }
+                    },
+                    {
+                      label: "Password Protected",
+                      onClick: () => {
+                        if (contextMenuData) {
+                          changeRoomStatus(contextMenuData.name, "PASSWORD");
+                        }
+                      }
+                    }
+                  ]
                 }
-              },
-              {
-                label: "Public",
-                onClick: () => {
-                  if (contextMenuData) {
-                    changeRoomStatus(contextMenuData.name, "PUBLIC");
-                  }
-                }
-              },
-              {
-                label: "Password Protected",
-                onClick: () => {
-                  if (contextMenuData) {
-                    changeRoomStatus(contextMenuData.name, "PASSWORD");
-                  }
-                }
-              }
-            ]
-          }
+              ]
+            : [])
         ]}
       />
     </div>

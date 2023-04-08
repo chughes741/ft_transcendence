@@ -1,5 +1,5 @@
 // ChatModel.tsx
-import { useState } from "react";
+import { useReducer, useState } from "react";
 import { RoomType } from "./ChatViewModel";
 import { MessageType } from "./components/Message";
 
@@ -8,10 +8,10 @@ export interface ChatModelType {
   setTempUsername: (username: string) => void;
   currentRoomName: string;
   setCurrentRoomName: (roomName: string) => void;
-  rooms: { [key: string]: Array<MessageType> };
+  rooms: { [key: string]: RoomType };
   setRooms: (
-    callback: (prevRooms: { [key: string]: Array<MessageType> }) => {
-      [key: string]: Array<MessageType>;
+    callback: (prevRooms: { [key: string]: RoomType }) => {
+      [key: string]: RoomType;
     }
   ) => void;
   currentRoomMessages: Array<MessageType>;
@@ -40,7 +40,21 @@ export interface ChatModelType {
 export const useChatModel = (): ChatModelType => {
   const [tempUsername, setTempUsername] = useState("");
   const [currentRoomName, setCurrentRoomName] = useState("");
-  const [rooms, setRooms] = useState({});
+
+  const roomsReducer = (
+    state: { [key: string]: RoomType },
+    action: { type: string; payload: any }
+  ): { [key: string]: RoomType } => {
+    switch (action.type) {
+      case "UPDATE_ROOMS":
+        return action.payload(state);
+      default:
+        return state;
+    }
+  };
+
+  const [rooms, dispatchRooms] = useReducer(roomsReducer, {});
+
   const [currentRoomMessages, setCurrentRoomMessages] = useState([]);
   const [showCreateRoomModal, setShowCreateRoomModal] = useState(false);
   const [showJoinRoomModal, setShowJoinRoomModal] = useState(false);
@@ -60,7 +74,7 @@ export const useChatModel = (): ChatModelType => {
   });
 
 
-  const handleContextMenu = (e, roomData) => {
+  const handleContextMenu = (e, roomData: RoomType) => {
     e.preventDefault();
     setContextMenuRoomsVisible(true);
     setContextMenuPosition({ x: e.clientX, y: e.clientY });
@@ -79,6 +93,14 @@ export const useChatModel = (): ChatModelType => {
       return text;
     }
     return text.substring(0, maxLength - 1) + "…";
+  };
+
+  const setRooms = (
+    callback: (prevRooms: { [key: string]: RoomType }) => {
+      [key: string]: RoomType;
+    }
+  ) => {
+    dispatchRooms({ type: "UPDATE_ROOMS", payload: callback });
   };
 
   return {

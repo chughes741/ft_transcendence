@@ -56,6 +56,7 @@ export class ChatService {
       console.log(room);
       return {
         name: room.name,
+        queryingUserRank: ChatMemberRank.OWNER,
         status: room.status,
         latestMessage: null,
         lastActivity: room.createdAt
@@ -106,11 +107,11 @@ export class ChatService {
     // Add the user as a chat member if they are not already a member
     const userId = await this.prismaService.getUserIdByNick(user);
     // This should really be a findUnique, but I can't figure out how to make it work
-    const chatMember = await this.prismaService.chatMember.findFirst({
+    let chatMember = await this.prismaService.chatMember.findFirst({
       where: { memberId: userId, roomId: room.id }
     });
     if (!chatMember) {
-      await this.prismaService.addChatMember(
+      chatMember = await this.prismaService.addChatMember(
         userId,
         room.id,
         ChatMemberRank.USER
@@ -123,13 +124,14 @@ export class ChatService {
       : room.createdAt;
     const roomMembers = await this.prismaService.getRoomMembers(room.name);
     const avatars = roomMembers.map((member) =>
-      member.member.avatar
-        ? member.member.avatar
-        : `https://i.pravatar.cc/150?u=${member.member.username}`
+      member.member.avatar === "default_avatar.png"
+        ? `https://i.pravatar.cc/150?u=${member.member.username}`
+        : member.member.avatar
     );
 
     return {
       name: room.name,
+      queryingUserRank: chatMember.rank,
       status: room.status,
       latestMessage: latestMessage ? new MessageEntity(latestMessage) : null,
       lastActivity: lastActivity,
