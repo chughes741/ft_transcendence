@@ -11,7 +11,9 @@ import {
 import { CreateChatDto } from "./dto/create-chat.dto";
 import { MessageEntity } from "./entities/message.entity";
 import { kickMemberDto, updateChatMemberStatusDto } from "./dto/userlist.dto";
-import { ChatMemberPrismaType, ChatMemberEntity } from "./chat.gateway";
+import { ChatMemberPrismaType } from "./chat.gateway";
+import { ChatMemberEntity } from "./entities/message.entity";
+import { conj } from "mathjs";
 
 const logger = new Logger("ChatService");
 
@@ -58,7 +60,8 @@ export class ChatService {
         queryingUserRank: ChatMemberRank.OWNER,
         status: room.status,
         latestMessage: null,
-        lastActivity: room.createdAt
+        lastActivity: room.createdAt,
+        members: []
       };
     } catch (e) {
       logger.error(e);
@@ -134,7 +137,8 @@ export class ChatService {
       status: room.status,
       latestMessage: latestMessage ? new MessageEntity(latestMessage) : null,
       lastActivity: lastActivity,
-      avatars
+      avatars,
+      members: roomMembers.map((member) => new ChatMemberEntity(member))
     };
   }
 
@@ -274,19 +278,9 @@ export class ChatService {
     //get all users that are members of a specific Chat Room (with string name)
     const userMembers: ChatMemberPrismaType[] =
       await this.prismaService.getRoomMembers(chatRoomName);
-    const CMEntities: ChatMemberEntity[] = userMembers.map((chatMembers) => {
-      return {
-        username: chatMembers.member.username,
-        id: chatMembers.id,
-        chatMemberstatus: chatMembers.status,
-        userStatus: chatMembers.member.status,
-        rank: chatMembers.rank,
-        endOfBan: chatMembers.endOfBan,
-        endOfMute: chatMembers.endOfMute,
-        email: chatMembers.member.email,
-        avatar: chatMembers.member.avatar
-      };
-    });
+    const CMEntities: ChatMemberEntity[] = userMembers.map(
+      (chatMember) => new ChatMemberEntity(chatMember)
+    );
     if (userMembers.length > 0) {
       return CMEntities;
     }

@@ -84,63 +84,25 @@ export class PrismaService extends PrismaClient {
    * @param limit - number of members to return
    * @returns - list of members
    */
-
-  //GET ROOM MEMBERS : Only function to exists now , returns ChatMemberPrismaType
-  async getRoomMembers(roomName: string): Promise<ChatMemberPrismaType[]> {
-    const chatRoom = await this.chatRoom.findUnique({
-      where: {
-        name: roomName
-      }
-    });
-
-    if (!chatRoom) {
-      throw new Error(`Chat room with name "${roomName}" not found`);
-    }
-
+  async getRoomMembers(
+    roomName: string,
+    limit = 100
+  ): Promise<ChatMemberPrismaType[]> {
     const members = await this.chatMember.findMany({
-      where: {
-        room: {
-          name: roomName
+      where: { room: { name: roomName } },
+      include: {
+        member: {
+          select: {
+            avatar: true,
+            username: true,
+            status: true
+          }
         }
       },
-      include: {
-        member: true
-      }
+      take: limit
     });
-
-    const chatMembersWithUserInfo: ChatMemberPrismaType[] = members.map(
-      (member) => {
-        const { id, memberId, roomId, status, rank, endOfBan, endOfMute } =
-          member;
-        const {
-          id: Userid2,
-          username,
-          email,
-          avatar,
-          status: status2
-        } = member.member;
-
-        return {
-          id,
-          memberId,
-          roomId,
-          status,
-          rank,
-          endOfBan,
-          endOfMute,
-          member: {
-            id: Userid2,
-            username,
-            email,
-            avatar,
-            status: status2
-          }
-        };
-      }
-    );
-    return chatMembersWithUserInfo;
+    return members;
   }
-  // End
 
   async addUser(dto: UserDto) {
     const data: Prisma.UserCreateInput = {

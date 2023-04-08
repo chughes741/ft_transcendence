@@ -5,10 +5,14 @@ import ChatAreaView from "./components/ChatArea.view";
 import { useChatViewModelContext } from "./contexts/ChatViewModelContext";
 import UserListView from "./components/Userlist.view";
 
-
 export const ChatView: React.FC = () => {
-  const { currentRoomName, tempUsername, setTempUsername } =
-    useChatViewModelContext();
+  const {
+    currentRoomName,
+    tempUsername,
+    setTempUsername,
+    rooms,
+    handleContextMenuUsers
+  } = useChatViewModelContext();
 
   return (
     <Box
@@ -42,7 +46,10 @@ export const ChatView: React.FC = () => {
           >
             <ChatAreaView key={currentRoomName} />
           </Box>
-          <UserListView />
+          <UserListView
+            handleClick={handleContextMenuUsers}
+            userList={rooms[currentRoomName].users}
+          />
         </Box>
       </Box>
     </Box>

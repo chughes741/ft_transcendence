@@ -1,20 +1,19 @@
 import "./ListTab.tsx.css";
-import { Box, Typography, AppBar, Avatar } from "@mui/material";
+import { Box, Avatar } from "@mui/material";
 import {
   List,
-  ListItem,
   ListItemIcon,
   ListItemText,
   ListItemButton
 } from "@mui/material";
-import { MouseEvent, useState, useEffect } from "react";
-import { myUsers } from "./UserList";
+import { useState } from "react";
 import GroupIcon from "@mui/icons-material/Group";
 import { useChatViewModelContext } from "../../pages/chat/contexts/ChatViewModelContext";
 import ContextMenuUsers from "../ContextMenuUsers";
+import { UserListItem } from "../../pages/chat/components/Userlist.model";
 
 interface Props {
-  users: myUsers[];
+  users: UserListItem[];
 }
 
 function ListTabulation({ users }: Props) {
@@ -78,16 +77,13 @@ function ListTabulation({ users }: Props) {
           >
             {users.length === 0 && <Box>No one in chat </Box>}
 
-            <List
-              onContextMenu={(e) => handleContextMenuUsers(e, { name: "FUCK" })}
-            >
+            <List>
               {users.map((users, index) => (
                 <ListItemButton
                   selected={SelectedIndex === index ? true : false}
                   key={users.username} //don't forget to add user.id unique key
                   onClick={() => {
                     setSelectedIndex(index);
-
                   }}
                 >
                   <ListItemIcon>

@@ -67,25 +67,25 @@ export default function UserListView(userListProps: UserListProps) {
             {userListProps.userList.length === 0 && <Box>No one in chat </Box>}
 
             <List>
-              {userListProps.userList.map((users, index) => (
+              {userListProps.userList.map((user, index) => (
                 <ListItemButton
-                  onContextMenu={(e) => userListProps.handleClick(users[index])}
+                  onContextMenu={(e) => userListProps.handleClick(e, user)}
                   selected={SelectedIndex === index}
                   //TODO don't forget to add user.id unique key
-                  key={users.username}
-                  onClick={() => {
+                  key={user.username}
+                  onClick={(e) => {
                     setSelectedIndex(index);
-                    userListProps.handleClick(users[index]);
+                    userListProps.handleClick(e, user);
                   }}
                 >
                   <ListItemIcon>
                     <Avatar
-                      src={`https://i.pravatar.cc/150?u=${users.username}`}
+                      src={`https://i.pravatar.cc/150?u=${user.username}`}
                     />
                   </ListItemIcon>
                   <ListItemText
-                    primary={users.username}
-                    secondary={users.userStatus}
+                    primary={user.username}
+                    secondary={user.userStatus}
                   />
                 </ListItemButton>
               ))}

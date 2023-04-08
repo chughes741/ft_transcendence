@@ -16,7 +16,7 @@ import { ChatService } from "./chat.service";
 // Trickaroo to add fields to the Prisma Message type
 import { Message } from "@prisma/client";
 import { ChatMember } from "@prisma/client";
-import { MessageEntity } from "./entities/message.entity";
+import { ChatMemberEntity, MessageEntity } from "./entities/message.entity";
 import { ChatMemberStatus, UserStatus } from "@prisma/client";
 import { kickMemberDto, updateChatMemberStatusDto } from "./dto/userlist.dto";
 
@@ -41,22 +41,18 @@ export interface ChatMemberPrismaType extends ChatMember {
   member: {
     avatar: string;
     username: string;
-    email: string;
     status: UserStatus;
-    id: string;
   };
 }
 
-export interface ChatMemberEntity {
+export interface IChatMemberEntity {
   username: string;
   avatar: string;
-  id: number;
   chatMemberstatus: ChatMemberStatus;
   userStatus: UserStatus;
-  email: string;
   rank: ChatMemberRank;
-  endOfBan: Date;
-  endOfMute: Date;
+  endOfBan?: Date;
+  endOfMute?: Date;
 }
 
 export interface IMessageEntity {
@@ -70,6 +66,7 @@ export interface ChatRoomEntity {
   name: string;
   queryingUserRank: ChatMemberRank; // FIXME: This should be embedded in the ChatMember type
   status: ChatRoomStatus;
+  members: ChatMemberEntity[];
   latestMessage?: IMessageEntity;
   lastActivity: Date;
   avatars?: string[];

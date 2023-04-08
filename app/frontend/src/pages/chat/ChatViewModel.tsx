@@ -1,12 +1,12 @@
 // ChatViewModel.tsx
-import {useEffect, useState} from "react";
+import { useEffect } from "react";
 import { usePageStateContext } from "../../contexts/PageStateContext";
 import { socket } from "../../contexts/WebSocketContext";
 import { PageState } from "../../views/root.model";
 import { ChatModelType, useChatModel } from "./ChatModel";
 import { MessageType } from "./components/Message";
 import { ChatViewModelContext } from "./contexts/ChatViewModelContext";
-import {UserListItem} from "./components/Userlist.model";
+import { UserListItem } from "./components/Userlist.model";
 
 export type ChatRoomStatus = "PUBLIC" | "PRIVATE" | "PASSWORD";
 export type ChatMemberRank = "USER" | "ADMIN" | "OWNER";
@@ -36,6 +36,7 @@ export type RoomType = {
   lastActivity: Date;
   hasUnreadMessages: boolean;
   avatars?: string[];
+  users: UserListItem[];
 };
 
 export type DevError = {
@@ -174,7 +175,8 @@ export const ChatViewModelProvider = ({ children }) => {
         messages: convertedLatestMessage ? [convertedLatestMessage] : [],
         lastActivity,
         hasUnreadMessages: false,
-        avatars
+        avatars,
+        users: []
       };
 
       setRooms((prevRooms) => {
