@@ -88,8 +88,11 @@ export class PrismaService extends PrismaClient {
     roomName: string,
     limit = 100
   ): Promise<ChatMemberPrismaType[]> {
+    if (!roomName) {
+      throw new Error("Room name is required");
+    }
     const members = await this.chatMember.findMany({
-      where: { room: { name: roomName } },
+      where: { room: { name: { equals: roomName } } },
       include: {
         member: {
           select: {
@@ -97,10 +100,12 @@ export class PrismaService extends PrismaClient {
             username: true,
             status: true
           }
-        }
+        },
+        room: { select: { name: true } }
       },
       take: limit
     });
+    logger.log(`There are ${members.length} members in the room ${roomName}`);
     return members;
   }
 
