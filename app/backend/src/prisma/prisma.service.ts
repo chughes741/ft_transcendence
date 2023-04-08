@@ -358,9 +358,7 @@ export class PrismaService extends PrismaClient {
    * @async
    * @returns {Promise<User>}
    */
-  async GetProfile(
-    getProfileRequest: GetProfileRequest
-  ): Promise<User> {
+  async GetProfile(getProfileRequest: GetProfileRequest): Promise<User> {
     return await this.user.findUnique({
       where: { id: getProfileRequest.id }
     });
