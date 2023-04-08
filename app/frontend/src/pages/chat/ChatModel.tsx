@@ -1,5 +1,5 @@
 // ChatModel.tsx
-import React, { useState } from "react";
+import { useState } from "react";
 import { RoomType } from "./ChatViewModel";
 import { MessageType } from "./components/Message";
 import { UserListItem } from "./components/Userlist";

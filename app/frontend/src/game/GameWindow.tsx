@@ -1,15 +1,9 @@
-import React, { useRef, useContext } from "react";
-import { Canvas, useFrame, ThreeElements } from "@react-three/fiber";
-import { WebSocketContext } from "src/contexts/WebSocketContext";
+import { useRef } from "react";
+import { Canvas, useFrame } from "@react-three/fiber";
 import { socket } from "src/contexts/WebSocketContext";
 //Local includes
-import { GameStateDto, ClientGameStateUpdate } from "./game.types";
-import {
-  BallConfig,
-  GameColours,
-  GameConfig,
-  PaddleConfig
-} from "./game.config";
+import { GameStateDto } from "./game.types";
+import { BallConfig, GameColours, PaddleConfig } from "./game.config";
 
 //Create ball object
 function Ball(gameState: GameStateDto) {

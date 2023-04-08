@@ -1,7 +1,6 @@
 import { forwardRef } from "react";
 import { Tooltip, Typography, Divider, Avatar, Fade } from "@mui/material";
 import "../styles/Message.css";
-import { Box } from "@mui/system";
 
 export type MessageType = {
   user: string;

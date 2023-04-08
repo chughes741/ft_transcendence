@@ -249,7 +249,6 @@ export const ChatViewModelProvider = ({ children }) => {
         password: roomPassword,
         owner: tempUsername
       };
-      let room: RoomType;
       console.log("ChatPage: Creating new room", { ...roomRequest });
       socket.emit(
         "createRoom",
@@ -264,7 +263,7 @@ export const ChatViewModelProvider = ({ children }) => {
           } else {
             // res is ChatRoomPayload
             console.log("Response from join room: ", res);
-            room = await addChatRoom(res as ChatRoomPayload);
+            const room = await addChatRoom(res as ChatRoomPayload);
             resolve(true);
           }
         }
@@ -428,7 +427,7 @@ export const ChatViewModelProvider = ({ children }) => {
   };
 
   const createUser = async (username: string): Promise<boolean> => {
-    return new Promise<boolean>((resolve, reject) => {
+    return new Promise<boolean>((resolve) => {
       socket.emit("userCreation", username, (response: DevError | string) => {
         if (typeof response === "object") {
           console.log("Error response from user creation: ", response.error);
