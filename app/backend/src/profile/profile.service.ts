@@ -82,12 +82,12 @@ export class ProfileService {
     logger.log(`Fetching friends for ${getFriendsRequest.username}`);
     // const friends = await this.prismaService.getFriends(getFriendsRequest);
     // const friendProfiles = friends.map((friend) => {
-      // return {
-        // username: friend.username,
-        // avatar: friend.avatar,
-        // status: UserStatus.ONLINE,
-        // createdAt: friend.createdAt.toLocaleTimeString()
-      // };
+    // return {
+    // username: friend.username,
+    // avatar: friend.avatar,
+    // status: UserStatus.ONLINE,
+    // createdAt: friend.createdAt.toLocaleTimeString()
+    // };
     // });
 
     // return friendProfiles;

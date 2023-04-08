@@ -77,7 +77,7 @@ export const ProfileViewModelProvider = ({ children }) => {
 
   /**
    * Sends a getFriends request to the server
-   * 
+   *
    * @todo Change message name to enum once kingpong-lib is updated
    */
   const getFriends = async (): Promise<void> => {

@@ -49,7 +49,7 @@ export class ProfileGateway {
 
   /**
    * Returns profile information of users friends
-   * 
+   *
    * @todo update SubscribeMessage once kingpong-lib is updated
    * @param {GetFriendsRequest} getFriendsRequest
    * @async
