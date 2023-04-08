@@ -68,7 +68,7 @@ function TopBar({ setPageState }) {
 
         <Box sx={{ flexGrow: 1 }}>
           <ButtonUnstyled
-            onClick={() => setPageState(0)}
+            onClick={() => setPageState(PageState.Home)}
             style={{
               border: "none",
               backgroundColor: "transparent",
