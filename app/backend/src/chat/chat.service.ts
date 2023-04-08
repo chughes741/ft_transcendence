@@ -12,7 +12,6 @@ import { CreateChatDto } from "./dto/create-chat.dto";
 import { MessageEntity } from "./entities/message.entity";
 import { kickMemberDto, updateChatMemberStatusDto } from "./dto/userlist.dto";
 import { ChatMemberPrismaType, ChatMemberEntity } from "./chat.gateway";
-import { error } from "console";
 
 const logger = new Logger("ChatService");
 

@@ -2,8 +2,7 @@ import { Injectable, Logger, UsePipes, ValidationPipe } from "@nestjs/common";
 import { PrismaService } from "../prisma/prisma.service";
 import { LoginDto } from "./dto/login.dto";
 import * as argon from "argon2";
-import { MessageBody, WebSocketServer, WsException } from "@nestjs/websockets";
-import { PrismaClientKnownRequestError } from "@prisma/client/runtime";
+import { WsException } from "@nestjs/websockets";
 
 @Injectable()
 export class LoginService {

@@ -1,4 +1,4 @@
-import { Module, forwardRef } from "@nestjs/common";
+import { Module } from "@nestjs/common";
 import { ChatService } from "./chat.service";
 import { ChatGateway } from "./chat.gateway";
 import { PrismaModule } from "../prisma/prisma.module";

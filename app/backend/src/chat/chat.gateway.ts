@@ -19,12 +19,18 @@ import { ChatMember } from "@prisma/client";
 import { MessageEntity } from "./entities/message.entity";
 import { ChatMemberStatus, UserStatus } from "@prisma/client";
 import { kickMemberDto, updateChatMemberStatusDto } from "./dto/userlist.dto";
-import { RESPONSE_PASSTHROUGH_METADATA } from "@nestjs/common/constants";
 
 // FIXME: temporary error type until we can share btw back and frontend
 export type DevError = {
   error: string;
 };
+
+/******************/
+/*    Requests    */
+/******************/
+export interface ListUsersRequest {
+  chatRoomName: string;
+}
 
 export interface MessagePrismaType extends Message {
   sender: { username: string };
@@ -36,8 +42,8 @@ export interface ChatMemberPrismaType extends ChatMember {
     avatar: string;
     username: string;
     email: string;
-    status: any;
-    id: any;
+    status: UserStatus;
+    id: string;
   };
 }
 
@@ -49,8 +55,8 @@ export interface ChatMemberEntity {
   userStatus: UserStatus;
   email: string;
   rank: ChatMemberRank;
-  endOfBan: any;
-  endOfMute: any;
+  endOfBan: Date;
+  endOfMute: Date;
 }
 
 export interface IMessageEntity {
@@ -331,7 +337,10 @@ export class ChatGateway
   */
 
   @SubscribeMessage("listUsers")
-  async listUsers(client: any, payload: any): Promise<any> {
+  async listUsers(
+    client: Socket,
+    payload: ListUsersRequest
+  ): Promise<{ event: string; data: ChatMemberEntity[] }> {
     const list: ChatMemberEntity[] = await this.chatService.getUserList(
       payload.chatRoomName
     );
