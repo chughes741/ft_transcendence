@@ -98,7 +98,7 @@ export const ChatViewModelProvider = ({ children }) => {
     truncateText
   } = useChatModel();
 
-  const { setPageState } = usePageStateContext();
+  const { pageState, setPageState } = usePageStateContext();
 
   /*******************************/
   /*   Wrapper State Functions   */
@@ -107,7 +107,7 @@ export const ChatViewModelProvider = ({ children }) => {
   // This function will be called when a room focus is changed.
   // If the previous room is the same as the current one, toggle the page state to PageState.Home
   const selectRoom = (roomName: string) => {
-    if (currentRoomName === roomName) {
+    if (currentRoomName === roomName && pageState === PageState.Chat) {
       setCurrentRoomName("");
       setPageState(PageState.Home);
       return;
@@ -187,7 +187,7 @@ export const ChatViewModelProvider = ({ children }) => {
         status: status,
         rank: queryingUserRank,
         latestMessage: convertedLatestMessage,
-        messages: convertedLatestMessage ? [convertedLatestMessage] : [],
+        messages: [],
         lastActivity,
         hasUnreadMessages: false,
         avatars,
@@ -215,7 +215,10 @@ export const ChatViewModelProvider = ({ children }) => {
       const newRooms = { ...prevRooms };
       if (!newRooms[roomName]) {
         console.log("addMessageToRoom: Room does not exist");
-      } else newRooms[roomName].messages.push(message);
+      } else {
+        newRooms[roomName].messages.push(message);
+        newRooms[roomName].latestMessage = message;
+      }
       return newRooms;
     });
   };
@@ -225,7 +228,10 @@ export const ChatViewModelProvider = ({ children }) => {
       const newRooms = { ...prevRooms };
       if (!newRooms[roomName]) {
         console.log("addMessageSSSSSSSToRoom: Room does not exist");
-      } else newRooms[roomName].messages.push(...messages);
+      } else {
+        newRooms[roomName].messages.push(...messages);
+        newRooms[roomName].latestMessage = messages[messages.length - 1];
+      }
       return newRooms;
     });
   };
