@@ -414,7 +414,7 @@ export class PrismaService extends PrismaClient {
       }
 
       //STATUS to UPDATE to:
-      let newStatus: ChatMemberStatus = updateDto.changeStatusTo;
+      const newStatus: ChatMemberStatus = updateDto.changeStatusTo;
       //Return RESULT of status update
       let chatMember: ChatMember;
 
@@ -432,13 +432,6 @@ export class PrismaService extends PrismaClient {
               endOfBan: null,
               endOfMute: null
             }
-          });
-          break;
-        case ChatMemberStatus.BLOCKED:
-          console.log("User is blocked");
-          chatMember = await this.chatMember.update({
-            where: { id: member.id },
-            data: { status: newStatus }
           });
           break;
         case ChatMemberStatus.MUTED:

@@ -300,8 +300,6 @@ export class ChatService {
       //MANAGES INVALID INPUTS:
       if (updateDto.memberRequestRank === ChatMemberRank.USER)
         throw new Error("Wrong rank: Can't request operation");
-      if (updateDto.memberRequestRank === ChatMemberRank.DISCONNECTED)
-        throw new Error("You are disconnected: Can't request operation");
       if (updateDto.memberToUpdateRANK === ChatMemberRank.OWNER)
         throw new Error(
           "ALARM: Trying to modify the owner's status, this activity will be reported !"
@@ -326,7 +324,6 @@ export class ChatService {
 
     if (
       kickDto.memberRequestingRank === ChatMemberRank.USER ||
-      kickDto.memberRequestingRank === ChatMemberRank.DISCONNECTED ||
       kickDto.memberToKickStatus === ChatMemberRank.OWNER
     )
       throw new Error("Wrong rank: Can't request operation");

@@ -17,7 +17,7 @@ import { ChatService } from "./chat.service";
 import { Message } from "@prisma/client";
 import { ChatMember } from "@prisma/client";
 import { MessageEntity } from "./entities/message.entity";
-import { ChatMemberStatus, UserStatus, ChatMemberRank } from "@prisma/client";
+import { ChatMemberStatus, UserStatus } from "@prisma/client";
 import { kickMemberDto, updateChatMemberStatusDto } from "./dto/userlist.dto";
 import { RESPONSE_PASSTHROUGH_METADATA } from "@nestjs/common/constants";
 
