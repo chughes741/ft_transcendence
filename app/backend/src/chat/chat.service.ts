@@ -13,7 +13,6 @@ import { MessageEntity } from "./entities/message.entity";
 import { kickMemberDto, updateChatMemberStatusDto } from "./dto/userlist.dto";
 import { ChatMemberPrismaType } from "./chat.gateway";
 import { ChatMemberEntity } from "./entities/message.entity";
-import { conj } from "mathjs";
 
 const logger = new Logger("ChatService");
 
@@ -50,18 +49,20 @@ export class ChatService {
       logger.log(`RoomCreation error: Room ${createDto.name} already exists`);
       return Error("Room already exists");
     }
+
     // Add the room to the database
     try {
       const room = await this.prismaService.createChatRoom(createDto);
       logger.log(`Room ${createDto.name} successfully added to the database: `);
       console.log(room);
+      const members = await this.prismaService.getRoomMembers(room.name);
       return {
         name: room.name,
         queryingUserRank: ChatMemberRank.OWNER,
         status: room.status,
         latestMessage: null,
         lastActivity: room.createdAt,
-        members: []
+        members: members.map((member) => new ChatMemberEntity(member))
       };
     } catch (e) {
       logger.error(e);
@@ -273,7 +274,7 @@ export class ChatService {
     Takes a ChatmemberPrismaType array and transforms it into a ChatMemberEntity[], expected by the client
   */
   async getUserList(chatRoomName: string): Promise<ChatMemberEntity[]> {
-    console.log("Inside getUserList");
+    console.log("Inside getUserList, chatRoomName: ", chatRoomName);
 
     //get all users that are members of a specific Chat Room (with string name)
     const userMembers: ChatMemberPrismaType[] =

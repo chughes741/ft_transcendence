@@ -22,6 +22,7 @@ export class MessageEntity implements IMessageEntity {
 
 export class ChatMemberEntity implements IChatMemberEntity {
   username: string;
+  roomName: string;
   avatar: string;
   chatMemberstatus: ChatMemberStatus;
   userStatus: UserStatus;
@@ -31,6 +32,7 @@ export class ChatMemberEntity implements IChatMemberEntity {
 
   constructor(prismaMessage: ChatMemberPrismaType) {
     this.username = prismaMessage.member.username;
+    this.roomName = prismaMessage.room.name;
     this.avatar = prismaMessage.member.avatar;
     this.chatMemberstatus = prismaMessage.status;
     this.userStatus = prismaMessage.member.status;

@@ -43,10 +43,12 @@ export interface ChatMemberPrismaType extends ChatMember {
     username: string;
     status: UserStatus;
   };
+  room: { name: string };
 }
 
 export interface IChatMemberEntity {
   username: string;
+  roomName: string;
   avatar: string;
   chatMemberstatus: ChatMemberStatus;
   userStatus: UserStatus;
@@ -100,7 +102,6 @@ export class ChatGateway
   implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect
 {
   constructor(
-    private prismaService: PrismaService,
     private chatService: ChatService,
     private userConnectionsService: UserConnectionsService
   ) {}
@@ -337,13 +338,12 @@ export class ChatGateway
   async listUsers(
     client: Socket,
     payload: ListUsersRequest
-  ): Promise<{ event: string; data: ChatMemberEntity[] }> {
+  ): Promise<ChatMemberEntity[]> {
     const list: ChatMemberEntity[] = await this.chatService.getUserList(
       payload.chatRoomName
     );
-    console.log(payload.chatRoomName);
-    this.server.to(payload.chatRoomName).emit("userList", list);
-    return { event: "userList", data: list };
+    logger.log(`Received listUsers request from ${client.id}, sending list`);
+    return list;
   }
 
   @SubscribeMessage("updateChatMemberStatus")
