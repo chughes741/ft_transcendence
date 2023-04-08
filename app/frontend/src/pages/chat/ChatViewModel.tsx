@@ -91,8 +91,6 @@ export const ChatViewModelProvider = ({ children }) => {
     setShowCreateRoomModal,
     showJoinRoomModal,
     setShowJoinRoomModal,
-    unreadMessages,
-    setUnreadMessages,
     truncateText
   } = useChatModel();
 
@@ -522,8 +520,6 @@ export const ChatViewModelProvider = ({ children }) => {
         contextMenuUsersVisible,
         setContextMenuRoomsVisible,
         setContextMenuUsersVisible,
-        unreadMessages,
-        setUnreadMessages,
         truncateText,
         joinRoom,
         sendRoomMessage,

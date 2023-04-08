@@ -35,36 +35,19 @@ export interface ChatModelType {
   setShowCreateRoomModal: (visible: boolean) => void;
   showJoinRoomModal: boolean;
   setShowJoinRoomModal: (visible: boolean) => void;
-  unreadMessages: { [key: string]: number };
-  setUnreadMessages: (unread: { [key: string]: number }) => void;
   truncateText: (text: string, maxLength: number) => string;
 }
 
 export const useChatModel = (): ChatModelType => {
   const [tempUsername, setTempUsername] = useState("");
   const [currentRoomName, setCurrentRoomName] = useState("");
-
-  const roomsReducer = (
-    state: { [key: string]: RoomType },
-    action: { type: string; payload: any }
-  ): { [key: string]: RoomType } => {
-    switch (action.type) {
-      case "UPDATE_ROOMS":
-        return action.payload(state);
-      default:
-        return state;
-    }
-  };
-
-  const [rooms, dispatchRooms] = useReducer(roomsReducer, {});
-
+  const [rooms, setRooms] = useState({} as { [key: string]: RoomType });
   const [currentRoomMessages, setCurrentRoomMessages] = useState([]);
   const [showCreateRoomModal, setShowCreateRoomModal] = useState(false);
   const [showJoinRoomModal, setShowJoinRoomModal] = useState(false);
-  const [unreadMessages, setUnreadMessages] = useState({});
+
   const [contextMenuData, setContextMenuData] = useState(null);
   const [contextMenuUsersData, setContextMenuUsersData] = useState(null);
-
   const [contextMenuRoomsVisible, setContextMenuRoomsVisible] = useState(false);
   const [contextMenuUsersVisible, setContextMenuUsersVisible] = useState(false);
   const [contextMenuPosition, setContextMenuPosition] = useState({
@@ -97,14 +80,6 @@ export const useChatModel = (): ChatModelType => {
     return text.substring(0, maxLength - 1) + "…";
   };
 
-  const setRooms = (
-    callback: (prevRooms: { [key: string]: RoomType }) => {
-      [key: string]: RoomType;
-    }
-  ) => {
-    dispatchRooms({ type: "UPDATE_ROOMS", payload: callback });
-  };
-
   return {
     tempUsername,
     setTempUsername,
@@ -128,8 +103,6 @@ export const useChatModel = (): ChatModelType => {
     setShowCreateRoomModal,
     showJoinRoomModal,
     setShowJoinRoomModal,
-    unreadMessages,
-    setUnreadMessages,
     truncateText
   };
 };
