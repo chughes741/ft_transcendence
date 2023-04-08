@@ -3,7 +3,7 @@ import { Box } from "@mui/material";
 import DevLoginBanner from "../../components/DevLoginBanner";
 import ChatAreaView from "./components/ChatArea.view";
 import { useChatViewModelContext } from "./contexts/ChatViewModelContext";
-import UserListView from "./components/Userlist.view";
+import UserListView from "./components/Userlist";
 
 export const ChatView: React.FC = () => {
   const {
@@ -48,7 +48,13 @@ export const ChatView: React.FC = () => {
           </Box>
           <UserListView
             handleClick={handleContextMenuUsers}
-            userList={rooms[currentRoomName].users}
+            userList={
+              !!rooms &&
+              !!currentRoomName &&
+              !!rooms[currentRoomName] &&
+              !!rooms[currentRoomName].users &&
+              rooms[currentRoomName].users
+            }
           />
         </Box>
       </Box>

@@ -9,10 +9,31 @@ import {
 import GroupIcon from "@mui/icons-material/Group";
 import ContextMenuUsers from "../../../components/ContextMenuUsers";
 import "../../../components/chat/ListTab.tsx.css";
-import { UserListProps } from "./Userlist.model";
+import { UserStatus } from "kingpong-lib";
+import { ChatMemberRank } from "../ChatViewModel";
 
-export default function UserListView(userListProps: UserListProps) {
-  const [SelectedIndex, setSelectedIndex] = useState(-1);
+export enum ChatMemberStatus {
+  OK = "OK",
+  BANNED = "BANNED",
+  MUTED = "MUTED"
+}
+
+export interface UserListItem {
+  username: string;
+  avatar: string;
+  chatMemberstatus: ChatMemberStatus;
+  userStatus: UserStatus;
+  rank: ChatMemberRank;
+  endOfBan: Date;
+  endOfMute: Date;
+}
+
+export interface UserListProps {
+  userList: { [key: string]: UserListItem };
+  handleClick: (e: React.MouseEvent, userData: UserListItem) => void;
+}
+
+export default function UserListView({ userList, handleClick }: UserListProps) {
   return (
     <>
       <Box
@@ -64,31 +85,27 @@ export default function UserListView(userListProps: UserListProps) {
               overflowX: "hidden"
             }}
           >
-            {userListProps.userList.length === 0 && <Box>No one in chat </Box>}
+            {Object.keys(userList).length === 0 && <Box>No one in chat </Box>}
 
             <List>
-              {userListProps.userList.map((user, index) => (
-                <ListItemButton
-                  onContextMenu={(e) => userListProps.handleClick(e, user)}
-                  selected={SelectedIndex === index}
-                  //TODO don't forget to add user.id unique key
-                  key={user.username}
-                  onClick={(e) => {
-                    setSelectedIndex(index);
-                    userListProps.handleClick(e, user);
-                  }}
-                >
-                  <ListItemIcon>
-                    <Avatar
-                      src={`https://i.pravatar.cc/150?u=${user.username}`}
+              {userList &&
+                Object.entries(userList).map(([username, user]) => (
+                  <ListItemButton
+                    onContextMenu={(e) => handleClick(e, user)}
+                    key={user.username}
+                    onClick={(e) => {
+                      handleClick(e, user);
+                    }}
+                  >
+                    <ListItemIcon>
+                      <Avatar src={`https://i.pravatar.cc/150?u=${username}`} />
+                    </ListItemIcon>
+                    <ListItemText
+                      primary={username}
+                      secondary={user.userStatus}
                     />
-                  </ListItemIcon>
-                  <ListItemText
-                    primary={user.username}
-                    secondary={user.userStatus}
-                  />
-                </ListItemButton>
-              ))}
+                  </ListItemButton>
+                ))}
             </List>
           </Box>
         </Box>

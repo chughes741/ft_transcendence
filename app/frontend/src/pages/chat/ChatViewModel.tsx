@@ -6,7 +6,7 @@ import { PageState } from "../../views/root.model";
 import { ChatModelType, useChatModel } from "./ChatModel";
 import { MessageType } from "./components/Message";
 import { ChatViewModelContext } from "./contexts/ChatViewModelContext";
-import { UserListItem } from "./components/Userlist.model";
+import { UserListItem } from "./components/Userlist";
 
 export type ChatRoomStatus = "PUBLIC" | "PRIVATE" | "PASSWORD";
 export type ChatMemberRank = "USER" | "ADMIN" | "OWNER";
@@ -36,7 +36,7 @@ export type RoomType = {
   lastActivity: Date;
   hasUnreadMessages: boolean;
   avatars?: string[];
-  users: UserListItem[];
+  users: { [key: string]: UserListItem };
 };
 
 export type DevError = {
@@ -150,6 +150,19 @@ export const ChatViewModelProvider = ({ children }) => {
   /*   Room Functions   */
   /**********************/
 
+  // Add member to room
+  const addMemberToRoom = (roomName: string, member: UserListItem) => {
+    setRooms((prevRooms) => {
+      const newRooms = { ...prevRooms };
+      if (!newRooms[roomName]) {
+        console.log("In addMemberToRoom, room not found: ", roomName);
+        return newRooms;
+      }
+      newRooms[roomName].users[member.username] = member;
+      return newRooms;
+    });
+  };
+
   // Adds a new room to the rooms state variable
   const addChatRoom = async (
     chatRoomPayload: ChatRoomPayload
@@ -176,7 +189,7 @@ export const ChatViewModelProvider = ({ children }) => {
         lastActivity,
         hasUnreadMessages: false,
         avatars,
-        users: []
+        users: {}
       };
 
       setRooms((prevRooms) => {
@@ -476,6 +489,29 @@ export const ChatViewModelProvider = ({ children }) => {
       setPageState(PageState.Chat);
     }
   }, [currentRoomName, rooms]);
+
+  // Send "listUsers" event to server to get the user list
+  useEffect(() => {
+    if (
+      rooms &&
+      currentRoomName &&
+      rooms[currentRoomName] &&
+      rooms[currentRoomName].users &&
+      Object.keys(rooms[currentRoomName].users).length === 0
+    ) {
+      socket.emit(
+        "listUsers",
+        { chatRoomName: currentRoomName },
+        (users: UserListItem[]) => {
+          console.log(`Users in room ${currentRoomName}: `, users);
+          users.map((user) => {
+            console.log(`Adding user to room ${currentRoomName}: `, user);
+            addMemberToRoom(currentRoomName, user);
+          });
+        }
+      );
+    }
+  }, [socket, currentRoomName, rooms]);
 
   useEffect(() => {
     // Try to create a temporary user

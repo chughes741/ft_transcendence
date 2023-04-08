@@ -2,7 +2,7 @@
 import React, { useState } from "react";
 import { RoomType } from "./ChatViewModel";
 import { MessageType } from "./components/Message";
-import { UserListItem } from "./components/Userlist.model";
+import { UserListItem } from "./components/Userlist";
 
 export interface ChatModelType {
   tempUsername: string;
