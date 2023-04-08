@@ -97,25 +97,25 @@ function MatchHistory(): JSX.Element | null {
 
   return (
     <>
-      {matchHistory && matchHistory.length > 0 && (
-        <TableContainer
-          id="profile-match-history"
-          component={Paper}
-        >
-          <Table>
-            <TableHead>
-              <TableRow>
-                {cell_names.map((cell) => (
-                  <TableCell align="center">{cell}</TableCell>
-                ))}
-              </TableRow>
-            </TableHead>
+      <TableContainer
+        id="profile-match-history"
+        component={Paper}
+      >
+        <Table>
+          <TableHead>
+            <TableRow>
+              {cell_names.map((cell) => (
+                <TableCell align="center">{cell}</TableCell>
+              ))}
+            </TableRow>
+          </TableHead>
+          {matchHistory && matchHistory.length > 0 && (
             <TableBody>
               {matchHistory.map((row) => MatchHistoryRow(row))}
             </TableBody>
-          </Table>
-        </TableContainer>
-      )}
+          )}
+        </Table>
+      </TableContainer>
     </>
   );
 }
