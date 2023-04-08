@@ -77,13 +77,14 @@ export const ProfileViewModelProvider = ({ children }) => {
 
   /**
    * Sends a getFriends request to the server
+   * 
+   * @todo Change message name to enum once kingpong-lib is updated
    */
   const getFriends = async (): Promise<void> => {
-    console.log("getFriends", user);
-    /** @todo Create a GetFriends request in the backend */
+    console.log("getFriendsRequest", user);
     socket.emit(
-      ProfileEvents.GetMatchHistory,
-      { id: user },
+      "getFriendsRequest",
+      { username: user },
       (friends: ProfileEntity[]) => {
         setFriends(friends);
       }
