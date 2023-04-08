@@ -265,15 +265,19 @@ export class ChatGateway
     // Assign the user id to the dto instead of the socket id
     dto.user = userId;
     const ret = await this.chatService.joinRoom(dto);
+    // Find the user's ChatMember entity by finding the room name and the user id in the database
+    const chatMember = await this.prismaService.chatMember.findFirst({
+      where: {
+        AND: [{ room: { name: dto.roomName } }, { member: { id: userId } }]
+      }
+    });
     if (ret instanceof Error) {
       logger.error(ret);
       return { error: ret.message };
     } else {
       const roomInfo: ChatRoomEntity = ret;
       client.join(dto.roomName);
-      this.server
-        .to(dto.roomName)
-        .emit("addRoomMember", `User ${dto.user} joined room ${dto.roomName}`);
+      this.server.to(dto.roomName).emit("addChatMember", chatMember);
       logger.log(`User ${dto.user} joined room ${dto.roomName}`);
       return roomInfo;
     }
