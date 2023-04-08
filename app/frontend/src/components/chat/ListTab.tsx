@@ -87,7 +87,7 @@ function ListTabulation({ users }: Props) {
                   key={users.username} //don't forget to add user.id unique key
                   onClick={() => {
                     setSelectedIndex(index);
-                    onSelectItem(users);
+
                   }}
                 >
                   <ListItemIcon>
