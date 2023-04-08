@@ -14,8 +14,6 @@ import VideogameAssetIcon from "@mui/icons-material/VideogameAsset";
 import { PageState } from "src/views/root.model";
 import { useProfileViewModelContext } from "src/views/profile/profile.viewModel";
 
-const TopBarHeight = 85;
-
 const settings = ["Profile", "Settings", "Logout"];
 
 //Set css flexbox options for the toolbar component to create proper object positioning for child elements
@@ -25,7 +23,7 @@ const toolbarStyle = {
 };
 
 function TopBar({ setPageState }) {
-  const { user, setUser } = useProfileViewModelContext();
+  const { setUser } = useProfileViewModelContext();
 
   const [anchorElNav, setAnchorElNav] = React.useState<null | HTMLElement>(
     null
