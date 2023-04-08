@@ -126,10 +126,6 @@ function MatchHistory(): JSX.Element | null {
  * @returns {JSX.Element | null}
  */
 export default function ProfileView(): JSX.Element | null {
-  const { getMatchHistory, getProfile } = useProfileViewModelContext();
-  getMatchHistory();
-  getProfile();
-
   return (
     <>
       <Stack

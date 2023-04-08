@@ -1,4 +1,4 @@
-import React, { createContext, useContext } from "react";
+import React, { createContext, useContext, useEffect } from "react";
 
 /** Module Imports */
 import { Paper } from "@mui/material";
@@ -73,6 +73,12 @@ export const ProfileViewModelProvider = ({ children }) => {
       }
     );
   };
+
+  /** Update MatchHistory and Profile when user changes */
+  useEffect(() => {
+    getMatchHistory();
+    getProfile();
+  }, [user]);
 
   return (
     <ProfileViewModelContext.Provider
