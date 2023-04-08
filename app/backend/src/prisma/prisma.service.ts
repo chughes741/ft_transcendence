@@ -372,12 +372,12 @@ export class PrismaService extends PrismaClient {
         OR: [
           {
             player1: {
-              id: getMatchHistoryRequest.id
+              username: getMatchHistoryRequest.id
             }
           },
           {
             player2: {
-              id: getMatchHistoryRequest.id
+              username: getMatchHistoryRequest.id
             }
           }
         ]
@@ -394,7 +394,7 @@ export class PrismaService extends PrismaClient {
    */
   async GetProfile(getProfileRequest: GetProfileRequest): Promise<User> {
     return await this.user.findUnique({
-      where: { id: getProfileRequest.id }
+      where: { username: getProfileRequest.id }
     });
   }
 
