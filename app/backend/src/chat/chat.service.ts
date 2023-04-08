@@ -10,7 +10,7 @@ import {
 } from "./chat.gateway";
 import { CreateChatDto } from "./dto/create-chat.dto";
 import { MessageEntity } from "./entities/message.entity";
-import { kickMemberDto, updateChatMemberStatusDto } from "./dto/userlist.dto";
+import { kickMemberDto, updateChatMemberRankDto, updateChatMemberStatusDto } from "./dto/userlist.dto";
 import { ChatMemberPrismaType, ChatMemberEntity } from "./chat.gateway";
 import { error } from "console";
 
@@ -306,6 +306,26 @@ export class ChatService {
       
       //TRIES TO UPDATE STATUS with Prisma and returns if successful response
       const response = await this.prismaService.updateChatMemberStatus(updateDto);
+      return response;
+   
+    } catch (error) { //RETURNS ERROR from any Error message
+      console.error(error);
+      throw error;
+    }
+  }
+
+  async updateRank(updateDto: updateChatMemberRankDto) {
+    try {
+      //MANAGES INVALID INPUTS:
+      if (updateDto.memberRequestRank === ChatMemberRank.USER)
+        throw new Error("Wrong rank: Can't request operation");
+      if (updateDto.memberRequestRank === ChatMemberRank.DISCONNECTED)
+        throw new Error("You are disconnected: Can't request operation");
+      if (updateDto.memberToUpdateRANK === ChatMemberRank.OWNER)
+        throw new Error("ALARM: Trying to modify the owner's Rank, this activity will be reported !");
+      
+      //TRIES TO UPDATE STATUS with Prisma and returns if successful response
+      const response = await this.prismaService.updateChatMemberRank(updateDto);
       return response;
    
     } catch (error) { //RETURNS ERROR from any Error message

@@ -9,6 +9,14 @@ export class updateChatMemberStatusDto {
   Penitence?: Date;
 }
 
+export class updateChatMemberRankDto {
+  memberRequestRank: ChatMemberRank
+  memberToUpdateID: number;
+  memberToUpdateRANK: ChatMemberRank;
+  changeRankTo: ChatMemberRank;
+  forRoomName: string;
+}
+
 export class kickMemberDto {
   ChatMemberToKickId: number;
   ChatMemberToKickName: string;

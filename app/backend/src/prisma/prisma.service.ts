@@ -26,7 +26,7 @@ import {
   ProfileEntity,
   UserStatus
 } from "kingpong-lib";
-import { updateChatMemberStatusDto } from "src/chat/dto/userlist.dto";
+import { updateChatMemberRankDto, updateChatMemberStatusDto } from "src/chat/dto/userlist.dto";
 
 /*End of Mute and End of Ban:  */
 //Is added to the current date (now)
@@ -464,6 +464,40 @@ export class PrismaService extends PrismaClient {
         default:
           console.log("Unknown status");
       }
+      return chatMember;
+      //CATCH PRISMA ERROR
+    } catch (error) {
+      throw new Error(`Failed to member's status: ${error.message}`);
+    }
+  }
+
+  async updateChatMemberRank(updateDto: updateChatMemberRankDto) {
+    try {
+      const chatroom = await this.chatRoom.findUnique({
+        where: { name: updateDto.forRoomName },
+        include: { members: true },
+      });
+
+      const member = chatroom.members.find((member) => member.id === updateDto.memberToUpdateID);
+
+      if (!member) {
+        throw new Error('User is not a member of this chatroom');
+      }
+
+      //STATUS to UPDATE to:
+      let newRank: ChatMemberRank = updateDto.changeRankTo;
+      //Return RESULT of status update
+      let chatMember : ChatMember;
+
+      // A future Date limit is established
+      const futureDate = new Date(Date.now() + GLOBAL_T_IN_DAYS);
+      
+      //MODIFIER the ChatMember's rank
+      chatMember = await this.chatMember.update({
+        where: { id: member.id },
+        data: {  rank: newRank },
+      });
+
       return chatMember;
       //CATCH PRISMA ERROR
     } catch (error) {

@@ -18,7 +18,7 @@ import { Message as PrismaMessage } from "@prisma/client";
 import { ChatMember } from "@prisma/client";
 import { MessageEntity } from "./entities/message.entity";
 import { ChatMemberStatus, UserStatus, ChatMemberRank } from "@prisma/client";
-import { kickMemberDto, updateChatMemberStatusDto } from "./dto/userlist.dto";
+import { kickMemberDto, updateChatMemberRankDto, updateChatMemberStatusDto } from "./dto/userlist.dto";
 import { RESPONSE_PASSTHROUGH_METADATA } from "@nestjs/common/constants";
 
 // FIXME: temporary error type until we can share btw back and frontend
@@ -344,11 +344,30 @@ export class ChatGateway
       const chatMember = await this.chatService.updateStatus(data);
       //If Successful, Broadcast back the updated list
       if (chatMember)
-        await this.listUsers(client,{ chatRoomName: data.forRoomName })
-      
-        // (Might not be useful now that we broadcast the list) Broadcast the updated chat member information to all clients connected to the chat
+        return await this.listUsers(client, { chatRoomName: data.forRoomName })
+
+      // (Might not be useful now that we broadcast the list) Broadcast the updated chat member information to all clients connected to the chat
       //this.server.to(data.roomName).emit('chatMemberUpdated', chatMember);
-      
+
+      return "Chat Member's Status succesfully updated !"
+    } catch (error) {
+      return error.message
+    }
+  }
+
+  @SubscribeMessage('updateChatMemberRank')
+  async updateChatMemberRank(client: Socket, data: updateChatMemberRankDto): Promise<string> {
+
+    try {
+      //Try to update the satus
+      const chatMember = await this.chatService.updateRank(data);
+      //If Successful, Broadcast back the updated list
+      if (chatMember)
+        return await this.listUsers(client, { chatRoomName: data.forRoomName })
+
+      // (Might not be useful now that we broadcast the list) Broadcast the updated chat member information to all clients connected to the chat
+      //this.server.to(data.roomName).emit('chatMemberUpdated', chatMember);
+
       return "Chat Member's Status succesfully updated !"
     } catch (error) {
       return error.message
@@ -359,14 +378,14 @@ export class ChatGateway
   async kickChatMember(client: Socket, data: kickMemberDto): Promise<string> {
     try {
       const response = await this.chatService.kickMember(data);
-      if (response === "Chat Member " + data.ChatMemberToKickName + " kicked out successfully !") {
-        const list: ChatMemberEntity[] = await this.chatService.getUserList(data.roomName);
-        this.server.to(data.roomName).emit('userList', list);
-      }
-      return response ;
+      const list: ChatMemberEntity[] = await this.chatService.getUserList(data.roomName);
+      this.server.to(data.roomName).emit('userList', list);
+      return response;
     } catch (error) {
-        return (error.message)
-    }   
+      return (error.message)
+    }
   }
+
+
 
 }
