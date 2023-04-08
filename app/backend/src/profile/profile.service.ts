@@ -1,4 +1,4 @@
-import { Injectable } from "@nestjs/common";
+import { Injectable, Logger } from "@nestjs/common";
 import {
   GetMatchHistoryRequest,
   GetProfileRequest,
@@ -8,6 +8,8 @@ import {
   UserStatus
 } from "kingpong-lib";
 import { PrismaService } from "src/prisma/prisma.service";
+
+const logger = new Logger("ProfileService");
 
 @Injectable()
 export class ProfileService {
@@ -23,6 +25,7 @@ export class ProfileService {
   async getMatchHistory(
     getMatchHistoryRequest: GetMatchHistoryRequest
   ): Promise<MatchHistoryItem[]> {
+    logger.log(`Fetching match history for ${getMatchHistoryRequest.id}`);
     /** Fetch match history from prisma service */
     const matches = await this.prismaService.GetMatchHistory(
       getMatchHistoryRequest
@@ -52,6 +55,7 @@ export class ProfileService {
   async getProfile(
     getProfileRequest: GetProfileRequest
   ): Promise<ProfileEntity> {
+    logger.log(`Fetching profile for ${getProfileRequest.id}`);
     const user = await this.prismaService.GetProfile(getProfileRequest);
     const profile = {
       username: user.username,

@@ -50,9 +50,10 @@ export const ProfileViewModelProvider = ({ children }) => {
    * @todo Change MatchHistoryItem to MatchHistoryEntity once kingpong-lib is updated
    */
   const getMatchHistory = async (): Promise<void> => {
+    console.log("getMatchHistory", user);
     socket.emit(
       ProfileEvents.GetMatchHistory,
-      { user, number_of_items: 50 },
+      { id: user, number_of_items: 50 },
       (matchHistoryItems: MatchHistoryItem[]) => {
         setMatchHistory(matchHistoryItems);
       }
@@ -63,9 +64,10 @@ export const ProfileViewModelProvider = ({ children }) => {
    * Sends a getProfile request to the server
    */
   const getProfile = async (): Promise<void> => {
+    console.log("getProfile", user);
     socket.emit(
       ProfileEvents.GetProfile,
-      { user },
+      { id: user },
       (profileEntity: ProfileEntity) => {
         setProfile(profileEntity);
       }

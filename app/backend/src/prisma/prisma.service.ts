@@ -367,6 +367,7 @@ export class PrismaService extends PrismaClient {
   async GetMatchHistory(
     getMatchHistoryRequest: GetMatchHistoryRequest
   ): Promise<Match[]> {
+    logger.log(getMatchHistoryRequest.id);
     return await this.match.findMany({
       where: {
         OR: [
@@ -384,15 +385,16 @@ export class PrismaService extends PrismaClient {
       }
     });
   }
-
+  
   /**
    * Returns a profile from the database
    *
    * @param {GetProfileRequest} getProfileRequest
    * @async
    * @returns {Promise<User>}
-   */
+  */
   async GetProfile(getProfileRequest: GetProfileRequest): Promise<User> {
+    logger.log(getProfileRequest.id);
     return await this.user.findUnique({
       where: { username: getProfileRequest.id }
     });
