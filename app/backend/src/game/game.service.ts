@@ -118,6 +118,11 @@ export class GameService {
     this.server.to(newLobby.lobby_id).emit("lobbyCreated");
   }
 
+
+  // export class LobbyCreatedPayload {
+
+  // }
+
   /**
    * Start the game if both players are ready
    * @method gameStart
@@ -148,5 +153,13 @@ export class GameService {
       logger.log("Error creating gameUpdateInterval");
       this.gameLogic.createGame(this.gameState);
     }
+  }
+
+  /**
+   * 
+   */
+  async clientUpdate(payload: GameTypes.ClientGameStateUpdate) {
+    //Find the correct match using match_id and update paddle pos
+    this.gameModuleData.setPaddlePosition(payload);
   }
 }

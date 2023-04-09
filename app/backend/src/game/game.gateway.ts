@@ -15,6 +15,8 @@ import {
   PlayerReadyDto
 } from "./dto/game.dto";
 import { GameStartEntity } from "./entities/game.entity";
+import { ClientUpdateEvent } from "kingpong-lib";
+import { ClientGameStateUpdate } from "./game.types";
 
 /** Create logger for module */
 const logger = new Logger("gameGateway");
@@ -70,10 +72,15 @@ export class GameGateway {
    * @todo return GameStartEntity
    */
   @SubscribeMessage("playerReady")
-  async playerReady(
-    @MessageBody() playerReadyDto: PlayerReadyDto
-  ): Promise<GameStartEntity> {
+  async playerReady(@MessageBody() is_ready: Boolean) {
     this.gameService.gameStart();
-    return null;
+  }
+
+  /**
+   * Handle paddle position updates from players
+   */
+  @SubscribeMessage("clientGameStateUpdate")
+  async clientUpdate(@MessageBody() payload: ClientGameStateUpdate) {
+    this.gameService.clientUpdate(payload);
   }
 }

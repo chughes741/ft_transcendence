@@ -34,12 +34,26 @@ export class GameData {
 }
 
 export class GameStateDto {
+  constructor(
+    Match_Id: string,
+    Player_Side: string,
+    Ball_Pos_x: number,
+    Ball_Pos_y: number,
+    Paddle_Left_Pos: number,
+    Paddle_Right_Pos: number
+  ) {
+    this.match_id = Match_Id;
+    this.player_side = Player_Side;
+    this.ball_pos_x = Ball_Pos_x;
+    this.ball_pos_y = Ball_Pos_y;
+    this.paddle_left_pos = Paddle_Left_Pos;
+    this.paddle_right_pos = Paddle_Right_Pos;
+  }
+
   match_id: string;
   player_side: string;
-  ball_pos: {
-    x: number;
-    y: number;
-  };
+  ball_pos_x: number;
+  ball_pos_y: number;
   paddle_left_pos: number;
   paddle_right_pos: number;
 }
@@ -48,4 +62,10 @@ export class ClientGameStateUpdate {
   match_id: string;
   player_side: string;
   paddle_pos: number;
+}
+
+export class PlayerReady {
+  match_id: string;
+  client_id: string;
+  is_ready: boolean;
 }

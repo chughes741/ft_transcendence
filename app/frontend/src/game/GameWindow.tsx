@@ -1,19 +1,29 @@
-import { useRef } from "react";
-import { Canvas, useFrame } from "@react-three/fiber";
+import React, { useRef, useContext } from "react";
+import { Canvas, useFrame, ThreeElements, useThree } from "@react-three/fiber";
+import { WebSocketContext } from "src/contexts/WebSocketContext";
 import { socket } from "src/contexts/WebSocketContext";
 //Local includes
-import { GameStateDto } from "./game.types";
-import { BallConfig, GameColours, PaddleConfig } from "./game.config";
+import { GameStateDto, ClientGameStateUpdate } from "./game.types";
+import {
+  BallConfig,
+  GameColours,
+  GameConfig,
+  PaddleConfig
+} from "./game.config";
+import { BoxGeometry } from "three";
+import { Mesh } from "three";
 
-//Create ball object
+/**
+ *
+ * @param gameState
+ * @returns
+ */
 function Ball(gameState: GameStateDto) {
   const mesh = useRef<THREE.Mesh>();
 
   useFrame(() => {
-    mesh.current.position.x = 0;
-    mesh.current.position.y = 0;
-    // mesh.current.position.x = gameState.ball_pos.x;
-    // mesh.current.position.y = gameState.ball_pos.y;
+    mesh.current.position.x = gameState.ball_pos_x;
+    mesh.current.position.y = gameState.ball_pos_y;
     mesh.current.position.z = 0;
   });
 
@@ -25,27 +35,31 @@ function Ball(gameState: GameStateDto) {
   );
 }
 
-//Create paddle objetcs
+/**
+ *
+ * @param gameState
+ * @returns
+ */
 function PaddleLeft(gameState: GameStateDto) {
-  const mesh = useRef<THREE.Mesh>();
+  const ref = useRef<Mesh>(null!);
 
-  //Update paddle position based on mouse position
-  //state.pointer gives a value between -1 and 1, so need to multiply by the gameplayarea / 2 to get proper position
+  // Update paddle position based on mouse position
+  // state.pointer gives a value between -1 and 1, so need to multiply by the gameplayarea / 2 to get proper position
   useFrame((state) => {
     if (gameState.player_side === "left") {
-      mesh.current.position.y = state.pointer.y * 4;
+      ref.current.position.y = state.pointer.y * 4;
       socket.emit("clientGameStateUpdate", {
         match_id: gameState.match_id,
         player_side: gameState.player_side,
         paddle_pos: state.pointer.y
       });
     } else {
-      mesh.current.position.y = gameState.paddle_left_pos;
+      ref.current.position.y = gameState.paddle_left_pos;
     }
   });
   return (
     <mesh
-      ref={mesh}
+      ref={ref}
       position={[-7, 0, 0]}
     >
       <boxGeometry
@@ -56,22 +70,32 @@ function PaddleLeft(gameState: GameStateDto) {
   );
 }
 
+/**
+ *
+ * @param gameState
+ * @returns
+ */
 function PaddleRight(gameState: GameStateDto) {
-  const mesh = useRef<THREE.Mesh>();
-  useFrame((state) => {
+  const ref = useRef<Mesh>(null!);
+  const get = useThree((state) => state.get);
+
+  useFrame(() => {
     if (gameState.player_side === "right") {
-      mesh.current.position.y = state.pointer.y * 4;
+      ref.current.position.y = get().pointer.y * 4;
       socket.emit("clientGameStateUpdate", {
         match_id: gameState.match_id,
         player_side: gameState.player_side,
-        paddle_pos: state.pointer.y
+        paddle_pos: ref.current.position.y
       });
     } else {
-      mesh.current.position.y = gameState.paddle_right_pos;
+      ref.current.position.y = gameState.paddle_right_pos;
     }
   });
   return (
-    <mesh position={[7, 0, 0]}>
+    <mesh
+      ref={ref}
+      position={[7, 0, 0]}
+    >
       <boxGeometry
         args={[PaddleConfig.width, PaddleConfig.height, PaddleConfig.depth]}
       />
@@ -81,22 +105,77 @@ function PaddleRight(gameState: GameStateDto) {
 }
 
 //Create window border object
-function Border() {
+function Floor() {
   const mesh = useRef<THREE.Mesh>(null!);
   return (
     <mesh
       ref={mesh}
-      position={[0, 0, 0]}
+      position={[0, 0, -5]}
     >
-      <planeGeometry args={[16, 8]} />
+      <planeGeometry args={[50, 30]} />
       <meshStandardMaterial color={GameColours.background} />
     </mesh>
   );
 }
 
-//Main game frame
+function OuterFrameTop() {
+  const mesh = useRef<THREE.Mesh>(null!);
+  return (
+    <mesh
+      ref={mesh}
+      position={[0, 3.7, 0]}
+    >
+      <boxGeometry args={[18, 0.25, 0.5]} />
+      <meshPhongMaterial color={"red"} />
+    </mesh>
+  );
+}
+
+function OuterFrameBottom() {
+  const mesh = useRef<THREE.Mesh>(null!);
+  return (
+    <mesh
+      ref={mesh}
+      position={[0, -3.7, 0]}
+    >
+      <boxGeometry args={[18, 0.25, 0.5]} />
+      <meshPhongMaterial color={"red"} />
+    </mesh>
+  );
+}
+
+function OuterFrameLeft() {
+  const mesh = useRef<THREE.Mesh>(null!);
+  return (
+    <mesh
+      ref={mesh}
+      position={[-7.5, 0, 0]}
+    >
+      <boxGeometry args={[0.25, 18, 0.5]} />
+      <meshPhongMaterial color={"blue"} />
+    </mesh>
+  );
+}
+
+function OuterFrameRight() {
+  const mesh = useRef<THREE.Mesh>(null!);
+  return (
+    <mesh
+      ref={mesh}
+      position={[7.5, 0, 0]}
+    >
+      <boxGeometry args={[0.25, 18, 0.5]} />
+      <meshPhongMaterial color={"blue"} />
+    </mesh>
+  );
+}
+
+/**
+ * Render the game display object
+ * @returns
+ */
 export default function Game() {
-  let gameState: GameStateDto;
+  let gameState: GameStateDto = new GameStateDto("", "right", 0, 0, 0, 0);
 
   socket.on("serverUpdate", (GameState: GameStateDto) => {
     console.log(GameState);
@@ -104,10 +183,19 @@ export default function Game() {
   });
   return (
     <Canvas>
+      {/* Gameplay Objects */}
       <Ball {...gameState} />
-      <Border />
       <PaddleLeft {...gameState} />
       <PaddleRight {...gameState} />
+
+      {/* Scene Objects */}
+      <Floor />
+      <OuterFrameTop />
+      <OuterFrameBottom />
+      <OuterFrameLeft />
+      <OuterFrameRight />
+
+      {/* Lighting */}
       <ambientLight
         args={[0xffffff]}
         intensity={0.1}

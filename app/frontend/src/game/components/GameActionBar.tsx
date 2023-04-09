@@ -1,8 +1,16 @@
 //This will return a name and ready status for a single player
 import * as React from "react";
-import { Avatar, ToggleButton, Typography } from "@mui/material";
+import {
+  Avatar,
+  IconButton,
+  ToggleButton,
+  Typography,
+  useTheme
+} from "@mui/material";
 import Box from "@mui/material/Box";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
+import { ThemeProvider } from "@mui/material";
+import { socket } from "src/contexts/WebSocketContext";
 //If the player is the current user, it will have a toggleable button for ready status
 //If the player is the opposing user, it will have a badge that shows opponents ready status
 
@@ -16,7 +24,7 @@ export default function GameActionBar() {
         backgroundColor: "grey",
         display: "flex",
         flexDirection: "row",
-        alignItems: "center"
+        alignItems: "center",
       }}
     >
       {/* Avatar component */}
@@ -24,27 +32,37 @@ export default function GameActionBar() {
         <Avatar></Avatar>
       </Box>
 
-      {/* Scoreboard Component */}
       <Box sx={{ ml: 1 }}>
         <Typography>Joe Blow</Typography>
       </Box>
 
       {/* Readybutton component */}
       <Box sx={{ ml: 2 }}>
+      <Box sx={{ ml: 2 }}>
         <ToggleButton
           value="check"
           selected={selected}
           onChange={() => {
+            socket.emit("playerReady", !selected);
             setSelected(!selected);
           }}
         >
           <CheckCircleIcon />
         </ToggleButton>
-        {/* Score */}
+      </Box>
 
-        <Box sx={{ flexGrow: 0, alignItems: "space-around" }}>
-          <Typography>Score: 2 | 0</Typography>
-        </Box>
+      {/* Scoreboard Component */}
+      <Box sx={{ flexGrow: 0, alignItems: "space-around" }}>
+        <Typography>Score: 2 | 0</Typography>
+      </Box>
+
+      {/* Avatar component */}
+      <Box sx={{}}>
+        <Avatar></Avatar>
+      </Box>
+
+      <Box sx={{ ml: 1 }}>
+        <Typography>Joe Blow</Typography>
       </Box>
     </Box>
   );

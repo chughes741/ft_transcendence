@@ -8,8 +8,8 @@ export default function GameWindow() {
     <Box
       sx={{
         backgroundColor: "green",
-        mt: 10,
-        ml: 47,
+        mt: 5,
+        ml: 5,
         mr: 5,
         display: "flex",
         flexDirection: "column",
