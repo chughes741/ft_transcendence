@@ -273,7 +273,7 @@ export class ChatGateway
       client.join(dto.roomName);
       this.server
         .to(dto.roomName)
-        .emit("roomMessage", `User ${dto.user} joined room ${dto.roomName}`);
+        .emit("addRoomMember", `User ${dto.user} joined room ${dto.roomName}`);
       logger.log(`User ${dto.user} joined room ${dto.roomName}`);
       return roomInfo;
     }
@@ -300,11 +300,12 @@ export class ChatGateway
    */
   @SubscribeMessage("leaveRoom")
   async leaveRoom(client: Socket, room: string): Promise<DevError | string> {
+    const clientId = this.userConnectionsService.getUserBySocket(client.id);
+    const ret = await this.chatService.leaveRoom(room, clientId);
+    if (!ret) return { error: "User is not a member of the room" };
     client.leave(room);
     // TODO: add business logic to remove the user from the room in the database
-    this.server
-      .to(room)
-      .emit("roomMessage", `User ${client.id} left room ${room}`);
+    this.server.to(room).emit("removeRoomUser", clientId);
     logger.log(`User ${client.id} left room ${room}`);
     return room;
   }

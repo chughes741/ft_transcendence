@@ -144,6 +144,24 @@ export class ChatService {
     };
   }
 
+  async leaveRoom(roomName: string, user: string): Promise<boolean> {
+    const userId = await this.prismaService.getUserIdByNick(user);
+    const roomId = await this.prismaService.getChatRoomId(roomName);
+    if (!roomId) {
+      return false;
+    }
+    const chatMember = await this.prismaService.chatMember.findFirst({
+      where: { memberId: userId, roomId: roomId }
+    });
+    if (!chatMember) {
+      return false;
+    }
+    await this.prismaService.chatMember.delete({
+      where: { id: chatMember.id }
+    });
+    return true;
+  }
+
   /**
    * get a page of messages from a room
    * @param roomName - The name of the room
