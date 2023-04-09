@@ -9,14 +9,14 @@ import {
 } from "@nestjs/websockets";
 import { Socket, Server } from "socket.io";
 import { PrismaService } from "../prisma/prisma.service";
-import { ChatMemberRank, ChatRoomStatus } from "@prisma/client";
+import { ChatMemberRank, ChatRoomStatus, User } from "@prisma/client";
 import { UserConnectionsService } from "../user-connections.service";
 import { ChatService } from "./chat.service";
 
 // Trickaroo to add fields to the Prisma Message type
 import { Message } from "@prisma/client";
 import { ChatMember } from "@prisma/client";
-import { MessageEntity } from "./entities/message.entity";
+import { ChatMemberEntity, MessageEntity } from "./entities/message.entity";
 import { ChatMemberStatus, UserStatus } from "@prisma/client";
 import { kickMemberDto, updateChatMemberStatusDto } from "./dto/userlist.dto";
 
@@ -41,22 +41,20 @@ export interface ChatMemberPrismaType extends ChatMember {
   member: {
     avatar: string;
     username: string;
-    email: string;
     status: UserStatus;
-    id: string;
   };
+  room: { name: string };
 }
 
-export interface ChatMemberEntity {
+export interface IChatMemberEntity {
   username: string;
+  roomName: string;
   avatar: string;
-  id: number;
   chatMemberstatus: ChatMemberStatus;
   userStatus: UserStatus;
-  email: string;
   rank: ChatMemberRank;
-  endOfBan: Date;
-  endOfMute: Date;
+  endOfBan?: Date;
+  endOfMute?: Date;
 }
 
 export interface IMessageEntity {
@@ -70,6 +68,7 @@ export interface ChatRoomEntity {
   name: string;
   queryingUserRank: ChatMemberRank; // FIXME: This should be embedded in the ChatMember type
   status: ChatRoomStatus;
+  members: ChatMemberEntity[];
   latestMessage?: IMessageEntity;
   lastActivity: Date;
   avatars?: string[];
@@ -124,6 +123,23 @@ export class ChatGateway
     this.userConnectionsService.removeUserConnection(client.id, client.id);
 
     logger.log(`Client disconnected: ${client.id}`);
+  }
+
+  /**
+   * Temporary function to get all available users
+   */
+  @SubscribeMessage("listAvailableUsers")
+  async listAvailableUsers(client: Socket, roomName: string): Promise<User[]> {
+    const userId = this.userConnectionsService.getUserBySocket(client.id);
+    const roomId = await this.prismaService.getChatRoomId(roomName);
+    logger.log(
+      `Received listAvailableUsers request from ${client.id} for room ${roomName} (id: ${roomId})`
+    );
+    if (!userId || !roomId) {
+      return [];
+    }
+
+    return await this.prismaService.getAvailableUsers(userId, roomId);
   }
 
   /**
@@ -257,7 +273,7 @@ export class ChatGateway
       client.join(dto.roomName);
       this.server
         .to(dto.roomName)
-        .emit("roomMessage", `User ${dto.user} joined room ${dto.roomName}`);
+        .emit("addRoomMember", `User ${dto.user} joined room ${dto.roomName}`);
       logger.log(`User ${dto.user} joined room ${dto.roomName}`);
       return roomInfo;
     }
@@ -284,11 +300,12 @@ export class ChatGateway
    */
   @SubscribeMessage("leaveRoom")
   async leaveRoom(client: Socket, room: string): Promise<DevError | string> {
+    const clientId = this.userConnectionsService.getUserBySocket(client.id);
+    const ret = await this.chatService.leaveRoom(room, clientId);
+    if (!ret) return { error: "User is not a member of the room" };
     client.leave(room);
     // TODO: add business logic to remove the user from the room in the database
-    this.server
-      .to(room)
-      .emit("roomMessage", `User ${client.id} left room ${room}`);
+    this.server.to(room).emit("removeRoomUser", clientId);
     logger.log(`User ${client.id} left room ${room}`);
     return room;
   }
@@ -340,13 +357,12 @@ export class ChatGateway
   async listUsers(
     client: Socket,
     payload: ListUsersRequest
-  ): Promise<{ event: string; data: ChatMemberEntity[] }> {
+  ): Promise<ChatMemberEntity[]> {
     const list: ChatMemberEntity[] = await this.chatService.getUserList(
       payload.chatRoomName
     );
-    console.log(payload.chatRoomName);
-    this.server.to(payload.chatRoomName).emit("userList", list);
-    return { event: "userList", data: list };
+    logger.log(`Received listUsers request from ${client.id}, sending list`);
+    return list;
   }
 
   @SubscribeMessage("updateChatMemberStatus")

@@ -1,7 +1,8 @@
 // ChatModel.tsx
-import { useReducer, useState } from "react";
+import React, { useState } from "react";
 import { RoomType } from "./ChatViewModel";
 import { MessageType } from "./components/Message";
+import { UserListItem } from "./components/Userlist";
 
 export interface ChatModelType {
   tempUsername: string;
@@ -24,17 +25,16 @@ export interface ChatModelType {
   contextMenuUsersPosition: { x: number; y: number };
   contextMenuData: RoomType | null;
   //FIXER CETTE MERDE
-  contextMenuUsersData: string | null;
+  contextMenuUsersData: UserListItem | null;
 
   handleContextMenu: (e: React.MouseEvent, roomData: { name: string }) => void;
-  handleContextMenuUsers: (
-    e: React.MouseEvent,
-    roomData: { name: string }
-  ) => void;
+  handleContextMenuUsers: (e: React.MouseEvent, userData: UserListItem) => void;
   showCreateRoomModal: boolean;
   setShowCreateRoomModal: (visible: boolean) => void;
   showJoinRoomModal: boolean;
   setShowJoinRoomModal: (visible: boolean) => void;
+  showInviteUsersModal: boolean;
+  setShowInviteUsersModal: (visible: boolean) => void;
   truncateText: (text: string, maxLength: number) => string;
 }
 
@@ -45,6 +45,7 @@ export const useChatModel = (): ChatModelType => {
   const [currentRoomMessages, setCurrentRoomMessages] = useState([]);
   const [showCreateRoomModal, setShowCreateRoomModal] = useState(false);
   const [showJoinRoomModal, setShowJoinRoomModal] = useState(false);
+  const [showInviteUsersModal, setShowInviteUsersModal] = useState(false);
 
   const [contextMenuData, setContextMenuData] = useState(null);
   const [contextMenuUsersData, setContextMenuUsersData] = useState(null);
@@ -59,18 +60,21 @@ export const useChatModel = (): ChatModelType => {
     y: 0
   });
 
-  const handleContextMenu = (e, roomData: RoomType) => {
+  const handleContextMenu = (e: React.MouseEvent, roomData: RoomType) => {
     e.preventDefault();
     setContextMenuRoomsVisible(true);
     setContextMenuPosition({ x: e.clientX, y: e.clientY });
     setContextMenuData(roomData);
   };
 
-  const handleContextMenuUsers = (e, roomData) => {
+  const handleContextMenuUsers = (
+    e: React.MouseEvent,
+    userData: UserListItem
+  ) => {
     e.preventDefault();
     setContextMenuUsersVisible(true);
     setContextMenuUsersPosition({ x: e.clientX, y: e.clientY });
-    setContextMenuUsersData({ name: "ohoh" });
+    setContextMenuUsersData(userData);
   };
 
   const truncateText = (text: string, maxLength: number) => {
@@ -103,6 +107,8 @@ export const useChatModel = (): ChatModelType => {
     setShowCreateRoomModal,
     showJoinRoomModal,
     setShowJoinRoomModal,
+    showInviteUsersModal,
+    setShowInviteUsersModal,
     truncateText
   };
 };

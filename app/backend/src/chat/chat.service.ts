@@ -11,7 +11,8 @@ import {
 import { CreateChatDto } from "./dto/create-chat.dto";
 import { MessageEntity } from "./entities/message.entity";
 import { kickMemberDto, updateChatMemberStatusDto } from "./dto/userlist.dto";
-import { ChatMemberPrismaType, ChatMemberEntity } from "./chat.gateway";
+import { ChatMemberPrismaType } from "./chat.gateway";
+import { ChatMemberEntity } from "./entities/message.entity";
 
 const logger = new Logger("ChatService");
 
@@ -48,17 +49,21 @@ export class ChatService {
       logger.log(`RoomCreation error: Room ${createDto.name} already exists`);
       return Error("Room already exists");
     }
+
     // Add the room to the database
     try {
       const room = await this.prismaService.createChatRoom(createDto);
       logger.log(`Room ${createDto.name} successfully added to the database: `);
       console.log(room);
+      const members = await this.prismaService.getRoomMembers(room.name);
       return {
         name: room.name,
         queryingUserRank: ChatMemberRank.OWNER,
         status: room.status,
         latestMessage: null,
-        lastActivity: room.createdAt
+        lastActivity: room.createdAt,
+        members: members.map((member) => new ChatMemberEntity(member)),
+        avatars: [members[0].member.avatar]
       };
     } catch (e) {
       logger.error(e);
@@ -134,8 +139,27 @@ export class ChatService {
       status: room.status,
       latestMessage: latestMessage ? new MessageEntity(latestMessage) : null,
       lastActivity: lastActivity,
-      avatars
+      avatars,
+      members: roomMembers.map((member) => new ChatMemberEntity(member))
     };
+  }
+
+  async leaveRoom(roomName: string, user: string): Promise<boolean> {
+    const userId = await this.prismaService.getUserIdByNick(user);
+    const roomId = await this.prismaService.getChatRoomId(roomName);
+    if (!roomId) {
+      return false;
+    }
+    const chatMember = await this.prismaService.chatMember.findFirst({
+      where: { memberId: userId, roomId: roomId }
+    });
+    if (!chatMember) {
+      return false;
+    }
+    await this.prismaService.chatMember.delete({
+      where: { id: chatMember.id }
+    });
+    return true;
   }
 
   /**
@@ -269,24 +293,14 @@ export class ChatService {
     Takes a ChatmemberPrismaType array and transforms it into a ChatMemberEntity[], expected by the client
   */
   async getUserList(chatRoomName: string): Promise<ChatMemberEntity[]> {
-    console.log("Inside getUserList");
+    console.log("Inside getUserList, chatRoomName: ", chatRoomName);
 
     //get all users that are members of a specific Chat Room (with string name)
     const userMembers: ChatMemberPrismaType[] =
       await this.prismaService.getRoomMembers(chatRoomName);
-    const CMEntities: ChatMemberEntity[] = userMembers.map((chatMembers) => {
-      return {
-        username: chatMembers.member.username,
-        id: chatMembers.id,
-        chatMemberstatus: chatMembers.status,
-        userStatus: chatMembers.member.status,
-        rank: chatMembers.rank,
-        endOfBan: chatMembers.endOfBan,
-        endOfMute: chatMembers.endOfMute,
-        email: chatMembers.member.email,
-        avatar: chatMembers.member.avatar
-      };
-    });
+    const CMEntities: ChatMemberEntity[] = userMembers.map(
+      (chatMember) => new ChatMemberEntity(chatMember)
+    );
     if (userMembers.length > 0) {
       return CMEntities;
     }

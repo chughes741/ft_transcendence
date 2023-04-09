@@ -1,16 +1,18 @@
 import React from "react";
 import { Box } from "@mui/material";
-import { Helmet } from "react-helmet";
 import DevLoginBanner from "../../components/DevLoginBanner";
-import RoomList from "./components/RoomList";
 import ChatAreaView from "./components/ChatArea.view";
 import { useChatViewModelContext } from "./contexts/ChatViewModelContext";
-
-import UserList from "src/components/chat/UserList";
+import UserListView from "./components/Userlist";
 
 export const ChatView: React.FC = () => {
-  const { currentRoomName, tempUsername, setTempUsername } =
-    useChatViewModelContext();
+  const {
+    currentRoomName,
+    tempUsername,
+    setTempUsername,
+    rooms,
+    handleContextMenuUsers
+  } = useChatViewModelContext();
 
   return (
     <Box
@@ -44,7 +46,16 @@ export const ChatView: React.FC = () => {
           >
             <ChatAreaView key={currentRoomName} />
           </Box>
-          <UserList chatRoomName={currentRoomName} />
+          <UserListView
+            handleClick={handleContextMenuUsers}
+            userList={
+              !!rooms &&
+              !!currentRoomName &&
+              !!rooms[currentRoomName] &&
+              !!rooms[currentRoomName].users &&
+              rooms[currentRoomName].users
+            }
+          />
         </Box>
       </Box>
     </Box>

@@ -84,63 +84,30 @@ export class PrismaService extends PrismaClient {
    * @param limit - number of members to return
    * @returns - list of members
    */
-
-  //GET ROOM MEMBERS : Only function to exists now , returns ChatMemberPrismaType
-  async getRoomMembers(roomName: string): Promise<ChatMemberPrismaType[]> {
-    const chatRoom = await this.chatRoom.findUnique({
-      where: {
-        name: roomName
-      }
-    });
-
-    if (!chatRoom) {
-      throw new Error(`Chat room with name "${roomName}" not found`);
+  async getRoomMembers(
+    roomName: string,
+    limit = 100
+  ): Promise<ChatMemberPrismaType[]> {
+    if (!roomName) {
+      throw new Error("Room name is required");
     }
-
     const members = await this.chatMember.findMany({
-      where: {
-        room: {
-          name: roomName
-        }
-      },
+      where: { room: { name: { equals: roomName } } },
       include: {
-        member: true
-      }
-    });
-
-    const chatMembersWithUserInfo: ChatMemberPrismaType[] = members.map(
-      (member) => {
-        const { id, memberId, roomId, status, rank, endOfBan, endOfMute } =
-          member;
-        const {
-          id: Userid2,
-          username,
-          email,
-          avatar,
-          status: status2
-        } = member.member;
-
-        return {
-          id,
-          memberId,
-          roomId,
-          status,
-          rank,
-          endOfBan,
-          endOfMute,
-          member: {
-            id: Userid2,
-            username,
-            email,
-            avatar,
-            status: status2
+        member: {
+          select: {
+            avatar: true,
+            username: true,
+            status: true
           }
-        };
-      }
-    );
-    return chatMembersWithUserInfo;
+        },
+        room: { select: { name: true } }
+      },
+      take: limit
+    });
+    logger.log(`There are ${members.length} members in the room ${roomName}`);
+    return members;
   }
-  // End
 
   async addUser(dto: UserDto) {
     const data: Prisma.UserCreateInput = {
@@ -466,6 +433,50 @@ export class PrismaService extends PrismaClient {
         id: chatMemberId
       }
     });
+  }
+
+  // Get a list of all users in the server that have not been blocked by the querying user,
+  // and are not in the chat room passsed in the query
+  async getAvailableUsers(userId: string, roomId: number): Promise<User[]> {
+    // Get a list of users who blocked or have been blocked by the querying user
+    // const blockedUsers = await this.blockedUser.findMany({
+    //   where: {
+    //     OR: [
+    //       {
+    //         blockerId: userId
+    //       },
+    //       {
+    //         blockedUserId: userId
+    //       }
+    //     ]
+    //   }
+    // });
+    // const blockedIds = blockedUsers.map((user) =>
+    //   user.blockerId === userId ? user.blockedUserId : user.blockerId
+    // );
+
+    // Get a list of users who are not in the specified chat room
+    const usersNotInRoom = await this.chatMember.findMany({
+      where: {
+        roomId: roomId
+      },
+      select: {
+        memberId: true
+      }
+    });
+    const usersNotInRoomIds = usersNotInRoom.map((user) => user.memberId);
+
+    // Find users who are not in the blocked list and not in the specified room
+    const availableUsers = await this.user.findMany({
+      where: {
+        id: {
+          // notIn: [...blockedIds, ...usersNotInRoomIds, userId]
+          notIn: [...usersNotInRoomIds, userId]
+        }
+      }
+    });
+
+    return availableUsers;
   }
 
   async destroyChatMember(id: number): Promise<void> {

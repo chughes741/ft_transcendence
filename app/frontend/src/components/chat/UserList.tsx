@@ -1,10 +1,5 @@
-import { UserType } from "src/components/User";
-import ListTabulation from "src/components/chat/ListTab";
-import React, { useContext, useState, useEffect } from "react";
+import { useContext, useState, useEffect } from "react";
 import { WebSocketContext } from "src/contexts/WebSocketContext";
-import { SocketAddress } from "net";
-import { useChatViewModelContext } from "../../pages/chat/contexts/ChatViewModelContext";
-import ContextMenu from "../ContextMenu";
 import ContextMenuUsers from "../ContextMenuUsers";
 
 export interface myUsers {
@@ -54,11 +49,6 @@ export default function UserList({ chatRoomName }: UserListProps) {
 
   return (
     <>
-      <ListTabulation
-        users={userList}
-        heading={chatRoomName}
-        onSelectItem={handleSelectItem}
-      />
       <ContextMenuUsers />
     </>
   );
