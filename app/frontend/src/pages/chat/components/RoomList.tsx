@@ -58,6 +58,7 @@ const RoomList: React.FC = () => {
         console.log("Available users: ", users);
         console.log("Current room name: ", currentRoomName);
         setAvailableUsers(users);
+        setSelectedUsers([]);
       }
     );
   }, [currentRoomName]);
