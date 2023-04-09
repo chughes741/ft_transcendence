@@ -7,10 +7,15 @@ import {
   MenuItem,
   ListItemText,
   TextField,
-  Autocomplete
+  Autocomplete,
+  DialogContent,
+  DialogActions,
+  Button
 } from "@mui/material";
 // import Autocomplete from "@mui/lab/Autocomplete";
 import { UserStatus } from "kingpong-lib";
+import ButtonFunky from "../../../components/ButtonFunky";
+import { useChatViewModelContext } from "../contexts/ChatViewModelContext";
 
 export interface UserEntity {
   username: string;
@@ -33,9 +38,21 @@ export const InviteUsersModal: React.FC<InviteUsersToRoomProps> = ({
   selectedUsers,
   setSelectedUsers
 }) => {
+  const { currentRoomName } = useChatViewModelContext();
+
+  const handleInvite = () => {
+    if (selectedUsers.length <= 0) {
+      alert("Please select at least one user to invite.");
+      return;
+    }
+
+    closeModal();
+  };
+
   if (!showModal) {
     return null;
   }
+
   return (
     <Dialog
       open={showModal}
@@ -49,50 +66,67 @@ export const InviteUsersModal: React.FC<InviteUsersToRoomProps> = ({
         }
       }}
     >
-      <DialogTitle alignContent={"center"}>Invite Users</DialogTitle>
-      <Autocomplete
-        id="user-autocomplete"
-        options={availableUsers}
-        getOptionLabel={(option) => option.username}
-        multiple
-        value={selectedUsers}
-        renderOption={(props, option) => (
-          <MenuItem {...props}>
-            <Badge
-              color={
-                option.status === 0
-                  ? "primary"
-                  : option.status === 1
-                  ? "error"
-                  : "warning"
-              }
-              anchorOrigin={{
-                vertical: "bottom",
-                horizontal: "right"
-              }}
-              overlap="circular"
-              variant="dot"
-            >
-              <Avatar
-                alt={option.username}
-                src={`https://i.pravatar.cc/150?u=${option.username}`}
-                sx={{ width: 40, height: 40, marginRight: 1 }}
-              />
-            </Badge>
-            <ListItemText primary={option.username} />
-          </MenuItem>
-        )}
-        renderInput={(params) => (
-          <TextField
-            {...params}
-            label="Search Users"
-            variant="outlined"
-            margin="normal"
-            fullWidth
-          />
-        )}
-        onChange={(event, values) => setSelectedUsers(values)}
-      />
+      <DialogTitle alignContent={"center"}>
+        Invite Users to Room ${currentRoomName}
+      </DialogTitle>
+      <DialogContent>
+        <Autocomplete
+          id="user-autocomplete"
+          options={availableUsers}
+          getOptionLabel={(option) => option.username}
+          multiple
+          value={selectedUsers}
+          renderOption={(props, option) => (
+            <MenuItem {...props}>
+              <Badge
+                color={
+                  option.status === 0
+                    ? "primary"
+                    : option.status === 1
+                    ? "error"
+                    : "warning"
+                }
+                anchorOrigin={{
+                  vertical: "bottom",
+                  horizontal: "right"
+                }}
+                overlap="circular"
+                variant="dot"
+              >
+                <Avatar
+                  alt={option.username}
+                  src={`https://i.pravatar.cc/150?u=${option.username}`}
+                  sx={{ width: 40, height: 40, marginRight: 1 }}
+                />
+              </Badge>
+              <ListItemText primary={option.username} />
+            </MenuItem>
+          )}
+          renderInput={(params) => (
+            <TextField
+              {...params}
+              label="Search Users"
+              variant="outlined"
+              margin="normal"
+              fullWidth
+            />
+          )}
+          onChange={(event, values) => setSelectedUsers(values)}
+        />
+      </DialogContent>
+      <DialogActions>
+        <Button
+          onClick={closeModal}
+          color="primary"
+        >
+          Cancel
+        </Button>
+        <ButtonFunky
+          onClick={handleInvite}
+          content="Invite to Room"
+          width="50%"
+        />
+      </DialogActions>
     </Dialog>
   );
 };
