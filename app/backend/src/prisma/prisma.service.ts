@@ -22,10 +22,7 @@ import config from "../config";
 /** Here for profile */
 import {
   GetMatchHistoryRequest,
-  GetProfileRequest,
-  MatchHistoryEntity,
-  ProfileEntity,
-  UserStatus
+  GetProfileRequest
 } from "kingpong-lib";
 import { updateChatMemberStatusDto } from "src/chat/dto/userlist.dto";
 
@@ -34,6 +31,12 @@ import { updateChatMemberStatusDto } from "src/chat/dto/userlist.dto";
 const GLOBAL_T_IN_DAYS = 5 /*DAYS*/ * (24 * 60 * 60 * 1000); // One day in milliseconds
 
 const logger = new Logger("PrismaService");
+
+/** @todo needs to be in kingpong-lib */
+interface MatchPrismaType extends Match {
+  player1: User;
+  player2: User;
+}
 
 @Injectable()
 export class PrismaService extends PrismaClient {
@@ -329,27 +332,31 @@ export class PrismaService extends PrismaClient {
    *
    * @param {GetMatchHistoryRequest} getMatchHistoryRequest
    * @async
-   * @returns {Promise<Match[]>}
+   * @returns {Promise<MatchPrismaType[]>}
    */
   async GetMatchHistory(
     getMatchHistoryRequest: GetMatchHistoryRequest
-  ): Promise<Match[]> {
-    logger.log(getMatchHistoryRequest.id);
+  ): Promise<MatchPrismaType[]> {
+    logger.log(getMatchHistoryRequest.username);
     return await this.match.findMany({
       where: {
         OR: [
           {
             player1: {
-              username: getMatchHistoryRequest.id
+              username: getMatchHistoryRequest.username
             }
           },
           {
             player2: {
-              username: getMatchHistoryRequest.id
+              username: getMatchHistoryRequest.username
             }
           }
         ]
-      }
+      },
+      include: {
+        player1: true,
+        player2: true
+      },
     });
   }
 
@@ -361,9 +368,9 @@ export class PrismaService extends PrismaClient {
    * @returns {Promise<User>}
    */
   async GetProfile(getProfileRequest: GetProfileRequest): Promise<User> {
-    logger.log(getProfileRequest.id);
+    logger.log(getProfileRequest.username);
     return await this.user.findUnique({
-      where: { username: getProfileRequest.id }
+      where: { username: getProfileRequest.username }
     });
   }
 

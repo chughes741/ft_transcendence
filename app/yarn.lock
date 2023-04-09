@@ -8179,10 +8179,10 @@ kind-of@^6.0.2:
   resolved "https://registry.yarnpkg.com/kind-of/-/kind-of-6.0.3.tgz#07c05034a6c349fa06e24fa35aa76db4580ce4dd"
   integrity sha512-dcS1ul+9tmeD95T+x28/ehLgd9mENa3LsvDTtzm3vyBEO7RPptvAD+t44WVXaUjTBRcrpFeFlC8WCruUR456hw==
 
-kingpong-lib@1.1.3:
-  version "1.1.3"
-  resolved "https://registry.yarnpkg.com/kingpong-lib/-/kingpong-lib-1.1.3.tgz#35f29a3a62bdc6fe3990187920aa6d50210d940f"
-  integrity sha512-467bI1+FmLjIhSNGY0IbldPAm1IR/rU8YfBdJoEBPMZ2BVwGtgLeyOw64jR3fyWeAH0HiVtANgI3E9E+lrcz5A==
+kingpong-lib@1.1.4:
+  version "1.1.4"
+  resolved "https://registry.yarnpkg.com/kingpong-lib/-/kingpong-lib-1.1.4.tgz#6afb4f28b970211859fff90d7eddc3f1d74e5531"
+  integrity sha512-yj0ziRWZuB3V3fnntgIpYQTJN+piDrv4W2HxYIIHWEmNx9IV++bS4ZtzbOFUEcok6DNcryUT+G9cBnlUJmSFOw==
 
 kleur@^3.0.3:
   version "3.0.3"
