@@ -80,9 +80,9 @@ export const InviteUsersModal: React.FC<InviteUsersToRoomProps> = ({
             <MenuItem {...props}>
               <Badge
                 color={
-                  option.status === 0
-                    ? "primary"
-                    : option.status === 1
+                  option.status === "ONLINE"
+                    ? "success"
+                    : option.status === "OFFLINE"
                     ? "error"
                     : "warning"
                 }
@@ -95,7 +95,7 @@ export const InviteUsersModal: React.FC<InviteUsersToRoomProps> = ({
               >
                 <Avatar
                   alt={option.username}
-                  src={`https://i.pravatar.cc/150?u=${option.username}`}
+                  src={option.avatar}
                   sx={{ width: 40, height: 40, marginRight: 1 }}
                 />
               </Badge>
