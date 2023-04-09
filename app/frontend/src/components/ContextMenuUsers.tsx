@@ -3,6 +3,7 @@ import { useChatViewModelContext } from "../pages/chat/contexts/ChatViewModelCon
 import ContextMenu from "./ContextMenu";
 import { usePageStateContext } from "../contexts/PageStateContext";
 import { PageState } from "../views/root.model";
+import { Paper } from "@mui/material";
 
 export default function ContextMenuUsers() {
   const {
@@ -16,6 +17,7 @@ export default function ContextMenuUsers() {
 
   return (
     <>
+      <Paper />
       <ContextMenu
         setContextMenuVisible={setContextMenuUsersVisible}
         contextMenuVisible={contextMenuUsersVisible}

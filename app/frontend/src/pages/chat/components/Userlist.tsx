@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import { Box, Avatar } from "@mui/material";
 import {
   List,
@@ -8,7 +8,6 @@ import {
 } from "@mui/material";
 import GroupIcon from "@mui/icons-material/Group";
 import ContextMenuUsers from "../../../components/ContextMenuUsers";
-import "../../../components/chat/ListTab.tsx.css";
 import { UserStatus } from "kingpong-lib";
 import { ChatMemberRank } from "../ChatViewModel";
 
@@ -38,7 +37,7 @@ export default function UserListView({ userList, handleClick }: UserListProps) {
     <>
       <Box
         id="userlist-container"
-        style={{
+        sx={{
           height: "100%",
           position: "fixed",
           right: "0",
@@ -55,14 +54,14 @@ export default function UserListView({ userList, handleClick }: UserListProps) {
           }}
         >
           <Box
-            style={{
+            sx={{
               minHeight: "5vh",
               backgroundColor: "rgb(31,31,31)"
             }}
           >
             <Box
               className="list-title"
-              style={{
+              sx={{
                 fontSize: "1rem",
                 maxWidth: "16vw",
                 display: "flex",
