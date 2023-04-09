@@ -10,7 +10,7 @@ import { useState } from "react";
 import GroupIcon from "@mui/icons-material/Group";
 import { useChatViewModelContext } from "../../pages/chat/contexts/ChatViewModelContext";
 import ContextMenuUsers from "../ContextMenuUsers";
-import { UserListItem } from "../../pages/chat/components/Userlist.model";
+import { UserListItem } from "../../pages/chat/components/Userlist";
 
 interface Props {
   users: UserListItem[];

@@ -4,10 +4,10 @@ import { FaFacebookF } from "react-icons/fa";
 import Input from "../components/Input";
 import Button from "../components/Button";
 import Icon from "../components/Icon";
-import PopUpMenu from "../popups/PopUpMenu";
 import { useNavigate } from "react-router-dom";
 import React from "react";
 import "./LoginPage.tsx.css";
+import { Popover } from "@mui/material";
 
 type LoginCredentials = {
   email: string;
@@ -54,7 +54,7 @@ export default function LoginPage() {
 
   return (
     <>
-      <PopUpMenu />
+      <Popover />
       <div className="main-container">
         <p>welcome</p>
         <form
