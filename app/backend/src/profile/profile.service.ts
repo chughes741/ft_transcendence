@@ -69,7 +69,12 @@ export class ProfileService {
     const profile = {
       username: user.username,
       avatar: user.avatar,
-      status: UserStatus.ONLINE,
+      status:
+        user.status === "ONLINE"
+          ? UserStatus.ONLINE
+          : user.status === "OFFLINE"
+          ? UserStatus.OFFLINE
+          : UserStatus.AWAY,
       createdAt: user.createdAt.toLocaleTimeString()
     };
 
