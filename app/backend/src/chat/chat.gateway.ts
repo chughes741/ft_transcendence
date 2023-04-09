@@ -64,6 +64,11 @@ export interface IMessageEntity {
   timestamp: Date;
 }
 
+export type RoomMemberEntity = {
+  roomName: string;
+  user: ChatMemberEntity;
+};
+
 export interface ChatRoomEntity {
   name: string;
   queryingUserRank: ChatMemberRank; // FIXME: This should be embedded in the ChatMember type
@@ -253,32 +258,37 @@ export class ChatGateway
     client: Socket,
     dto: JoinRoomDto
   ): Promise<DevError | ChatRoomEntity> {
-    const userId: string = this.userConnectionsService.getUserBySocket(
+    const username: string = this.userConnectionsService.getUserBySocket(
       client.id
     );
     logger.log(
-      `Received joinRoom request from ${userId} for room ${dto.roomName} ${
+      `Received joinRoom request from ${username} for room ${dto.roomName} ${
         dto.password ? `: with password ${dto.password}` : ""
       }`
     );
 
     // TODO: move this to a "getChatRoomMessages" handler
     // Assign the user id to the dto instead of the socket id
-    dto.user = userId;
+    dto.user = username;
     const ret = await this.chatService.joinRoom(dto);
     // Find the user's ChatMember entity by finding the room name and the user id in the database
-    const chatMember = await this.prismaService.chatMember.findFirst({
-      where: {
-        AND: [{ room: { name: dto.roomName } }, { member: { id: userId } }]
-      }
-    });
+
+    // Find the chatMember in the returned ChatRoomEntity's ChatMemberEntity array
+    const chatMember = (ret as ChatRoomEntity).members.find(
+      (member) => member.username === username
+    );
+
     if (ret instanceof Error) {
       logger.error(ret);
       return { error: ret.message };
     } else {
       const roomInfo: ChatRoomEntity = ret;
       client.join(dto.roomName);
-      this.server.to(dto.roomName).emit("addChatMember", chatMember);
+      const newMember: RoomMemberEntity = {
+        roomName: dto.roomName,
+        user: chatMember
+      };
+      this.server.to(dto.roomName).emit("newChatRoomMember", newMember);
       logger.log(`User ${dto.user} joined room ${dto.roomName}`);
       return roomInfo;
     }
@@ -346,7 +356,7 @@ export class ChatGateway
     console.log(ret);
     // If nothing went wrong, send the message to the room
     this.server.to(sendDto.roomName).emit("roomMessage", ret);
-    this.server.emit("onMessage", ret); // FIXME: temporarily broadcast to all clients, for testing purposes
+    this.server.emit("newMessage", ret); // FIXME: temporarily broadcast to all clients, for testing purposes
     logger.log(
       `User ${sendDto.sender} sent message in room ${sendDto.roomName}: ${sendDto.content}`
     );

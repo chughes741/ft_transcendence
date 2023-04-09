@@ -11,6 +11,11 @@ import { UserListItem } from "./components/Userlist";
 export type ChatRoomStatus = "PUBLIC" | "PRIVATE" | "PASSWORD";
 export type ChatMemberRank = "USER" | "ADMIN" | "OWNER";
 
+export type RoomMemberEntity = {
+  roomName: string;
+  user: UserListItem;
+};
+
 export type MessagePayload = {
   username: string;
   roomName: string;
@@ -403,6 +408,30 @@ export const ChatViewModelProvider = ({ children }) => {
     });
   };
 
+  // Invite other users to a room
+  const inviteUsersToRoom = async (
+    roomName: string,
+    users: string[]
+  ): Promise<boolean> => {
+    return new Promise<boolean>((resolve) => {
+      console.log(`Inviting users to room ${roomName}`);
+      // Emit a socket event to invite users to a room
+      socket.emit(
+        "inviteUsersToRoom",
+        { roomName, users },
+        (success: boolean) => {
+          if (success) {
+            console.log("Successfully invited users to room");
+          } else {
+            console.log("Error inviting users to room");
+            resolve(false);
+          }
+        }
+      );
+      resolve(true);
+    });
+  };
+
   /**********************/
   /*   User Functions   */
   /**********************/
@@ -459,7 +488,7 @@ export const ChatViewModelProvider = ({ children }) => {
       console.log("Successfully connected to the server");
     });
 
-    socket.on("onMessage", (newMessage: MessagePayload): boolean => {
+    socket.on("newMessage", (newMessage: MessagePayload): boolean => {
       console.log("Ding ding, you've got mail:", newMessage);
 
       const messageData = convertMessagePayloadToMessageType(newMessage);
@@ -468,8 +497,23 @@ export const ChatViewModelProvider = ({ children }) => {
       return newMessage.roomName === currentRoomName ? true : false;
     });
 
+    // socket listener for when a user joins a room
+    socket.on("newChatRoomMember", (member: RoomMemberEntity) => {
+      console.log("New room member: ", member.user);
+      setRooms((prevRooms) => {
+        const newRooms = { ...prevRooms };
+        // Protection, cause I'm apparently too dumb to send a message to
+        // everyone except the sender from the backend...
+        if (!prevRooms || !prevRooms[member.roomName]) return newRooms;
+        newRooms[member.roomName] = prevRooms[member.roomName];
+        newRooms[member.roomName].users[member.user.username] = member.user;
+        return newRooms;
+      });
+    });
+
     return () => {
       socket.off("onMessage");
+      socket.off("newChatRoomMember");
     };
   }, [socket, tempUsername]);
 

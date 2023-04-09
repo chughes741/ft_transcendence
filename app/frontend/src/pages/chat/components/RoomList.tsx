@@ -116,7 +116,7 @@ const RoomList: React.FC = () => {
                     secondary={
                       room.messages.length > 0
                         ? truncateText(
-                            room.messages[room.messages.length - 1].content,
+                            room?.messages[room.messages.length - 1]?.content,
                             42
                           )
                         : ""
