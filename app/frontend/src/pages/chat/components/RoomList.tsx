@@ -22,7 +22,6 @@ import { InviteUsersModal } from "./InviteUsersModal";
 
 const RoomList: React.FC = () => {
   const {
-    tempUsername,
     rooms,
     currentRoomName,
     setShowCreateRoomModal,

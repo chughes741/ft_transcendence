@@ -1,7 +1,6 @@
-import React, { useCallback, useEffect } from "react";
+import React, { useCallback } from "react";
 import { FiEye, FiEyeOff } from "react-icons/fi";
 import {
-  Badge,
   Button,
   Dialog,
   DialogTitle,
@@ -9,18 +8,10 @@ import {
   DialogContentText,
   TextField,
   IconButton,
-  DialogActions,
-  InputLabel,
-  Select,
-  MenuItem,
-  ListItemText
+  DialogActions
 } from "@mui/material";
 import { useRoomModal } from "./useRoomModal";
 import ButtonFunky from "../../../components/ButtonFunky";
-import { socket } from "../../../contexts/WebSocketContext";
-import { useChatViewModelContext } from "../contexts/ChatViewModelContext";
-import { UserListItem } from "./Userlist";
-import { Avatar } from "@mui/material";
 import { UserStatus } from "kingpong-lib";
 
 interface JoinRoomModalProps {
