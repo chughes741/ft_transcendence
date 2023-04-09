@@ -130,7 +130,8 @@ export class ChatGateway
    */
   @SubscribeMessage("listAvailableUsers")
   async listAvailableUsers(client: Socket, roomName: string): Promise<User[]> {
-    const userId = this.userConnectionsService.getUserBySocket(client.id);
+    const username = this.userConnectionsService.getUserBySocket(client.id);
+    const userId = await this.prismaService.getUserIdByNick(username);
     const roomId = await this.prismaService.getChatRoomId(roomName);
     logger.log(
       `Received listAvailableUsers request from ${client.id} for room ${roomName} (id: ${roomId})`
