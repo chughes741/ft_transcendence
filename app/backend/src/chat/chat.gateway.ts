@@ -37,6 +37,11 @@ export interface MessagePrismaType extends Message {
   room: { name: string };
 }
 
+export interface InviteUsersToRoomRequest {
+  roomName: string;
+  usernames: string[];
+}
+
 export interface ChatMemberPrismaType extends ChatMember {
   member: {
     avatar: string;
@@ -378,6 +383,27 @@ export class ChatGateway
     );
     logger.log(`Received listUsers request from ${client.id}, sending list`);
     return list;
+  }
+
+  // Listener to hangle "inviteUsersToRoom" event, taking in a roomName and a list of usernames
+  @SubscribeMessage("inviteUsersToRoom")
+  async inviteUsersToRoom(
+    client: Socket,
+    payload: InviteUsersToRoomRequest
+  ): Promise<string> {
+    logger.log(`Received inviteUsersToRoom request from ${client.id}: `);
+    console.log(payload);
+    try {
+      // Try to invite the users
+      // const chatMembers = await this.chatService.inviteUsersToRoom(payload);
+      // // If successful, broadcast the updated list
+      // if (chatMembers)
+      //   await this.listUsers(client, { chatRoomName: payload.roomName });
+
+      return "Users succesfully invited !";
+    } catch (error) {
+      return error.message;
+    }
   }
 
   @SubscribeMessage("updateChatMemberStatus")
