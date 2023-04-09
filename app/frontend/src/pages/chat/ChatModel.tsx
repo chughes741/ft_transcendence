@@ -33,6 +33,8 @@ export interface ChatModelType {
   setShowCreateRoomModal: (visible: boolean) => void;
   showJoinRoomModal: boolean;
   setShowJoinRoomModal: (visible: boolean) => void;
+  showInviteUsersModal: boolean;
+  setShowInviteUsersModal: (visible: boolean) => void;
   truncateText: (text: string, maxLength: number) => string;
 }
 
@@ -43,6 +45,7 @@ export const useChatModel = (): ChatModelType => {
   const [currentRoomMessages, setCurrentRoomMessages] = useState([]);
   const [showCreateRoomModal, setShowCreateRoomModal] = useState(false);
   const [showJoinRoomModal, setShowJoinRoomModal] = useState(false);
+  const [showInviteUsersModal, setShowInviteUsersModal] = useState(false);
 
   const [contextMenuData, setContextMenuData] = useState(null);
   const [contextMenuUsersData, setContextMenuUsersData] = useState(null);
@@ -104,6 +107,8 @@ export const useChatModel = (): ChatModelType => {
     setShowCreateRoomModal,
     showJoinRoomModal,
     setShowJoinRoomModal,
+    showInviteUsersModal,
+    setShowInviteUsersModal,
     truncateText
   };
 };

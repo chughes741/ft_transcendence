@@ -1,7 +1,7 @@
-import React from "react";
+import React, { useEffect } from "react";
 import "../styles/RoomList.css";
 import ContextMenu from "../../../components/ContextMenu";
-import { JoinRoomModal } from "./JoinRoomModal";
+import { JoinRoomModal, UserEntity } from "./JoinRoomModal";
 import { CreateRoomModal } from "./CreateRoomModal";
 import {
   Avatar,
@@ -17,9 +17,12 @@ import { useChatViewModelContext } from "../contexts/ChatViewModelContext";
 import { FaCrown, FaGlobe, FaLock, FaUserLock } from "react-icons/fa";
 
 import { ChatRoomStatus } from "../ChatViewModel";
+import { socket } from "../../../contexts/WebSocketContext";
+import { InviteUsersModal } from "./InviteUsersModal";
 
 const RoomList: React.FC = () => {
   const {
+    tempUsername,
     rooms,
     currentRoomName,
     setShowCreateRoomModal,
@@ -35,11 +38,34 @@ const RoomList: React.FC = () => {
     changeRoomStatus,
     showCreateRoomModal,
     showJoinRoomModal,
+    showInviteUsersModal,
+    setShowInviteUsersModal,
     joinRoom,
     selectRoom
   } = useChatViewModelContext();
 
-  const isOwner = true;
+  const [selectedUsers, setSelectedUsers] = React.useState<UserEntity[]>([]);
+  const [availableUsers, setAvailableUsers] = React.useState<UserEntity[]>([]);
+
+  // Make a useEffect to emit a "listAvailableUsers" socket event when the roomName changes
+  useEffect(() => {
+    console.log("Room name changed: ", currentRoomName);
+
+    socket.emit(
+      "listAvailableUsers",
+      currentRoomName,
+      (users: UserEntity[]) => {
+        console.log("Available users: ", users);
+        console.log("Current room name: ", currentRoomName);
+        setAvailableUsers(users);
+      }
+    );
+  }, [currentRoomName]);
+
+  const invitePeopleToRoom = () => {
+    setContextMenuRoomsVisible(false);
+    setShowInviteUsersModal(true);
+  };
 
   const getStatusIcon = (status: ChatRoomStatus) => {
     switch (status) {
@@ -113,6 +139,13 @@ const RoomList: React.FC = () => {
         closeModal={() => setShowJoinRoomModal(false)}
         onJoinRoom={joinRoom}
       />
+      <InviteUsersModal
+        showModal={showInviteUsersModal}
+        closeModal={() => setShowInviteUsersModal(false)}
+        availableUsers={availableUsers}
+        selectedUsers={selectedUsers}
+        setSelectedUsers={setSelectedUsers}
+      />
       <ContextMenu
         contextMenuVisible={contextMenuRoomsVisible}
         setContextMenuVisible={setContextMenuRoomsVisible}
@@ -121,6 +154,10 @@ const RoomList: React.FC = () => {
           {
             label: "Leave Room",
             onClick: leaveRoom
+          },
+          {
+            label: "Invite Users to Room",
+            onClick: invitePeopleToRoom
           },
           ...(contextMenuData && contextMenuData.rank === "OWNER"
             ? [

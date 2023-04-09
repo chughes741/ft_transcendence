@@ -9,7 +9,7 @@ import {
 } from "@nestjs/websockets";
 import { Socket, Server } from "socket.io";
 import { PrismaService } from "../prisma/prisma.service";
-import { ChatMemberRank, ChatRoomStatus } from "@prisma/client";
+import { ChatMemberRank, ChatRoomStatus, User } from "@prisma/client";
 import { UserConnectionsService } from "../user-connections.service";
 import { ChatService } from "./chat.service";
 
@@ -102,6 +102,7 @@ export class ChatGateway
   implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect
 {
   constructor(
+    private prismaService: PrismaService,
     private chatService: ChatService,
     private userConnectionsService: UserConnectionsService
   ) {}
@@ -122,6 +123,23 @@ export class ChatGateway
     this.userConnectionsService.removeUserConnection(client.id, client.id);
 
     logger.log(`Client disconnected: ${client.id}`);
+  }
+
+  /**
+   * Temporary function to get all available users
+   */
+  @SubscribeMessage("listAvailableUsers")
+  async listAvailableUsers(client: Socket, roomName: string): Promise<User[]> {
+    const userId = this.userConnectionsService.getUserBySocket(client.id);
+    const roomId = await this.prismaService.getChatRoomId(roomName);
+    logger.log(
+      `Received listAvailableUsers request from ${client.id} for room ${roomName} (id: ${roomId})`
+    );
+    if (!userId || !roomId) {
+      return [];
+    }
+
+    return await this.prismaService.getAvailableUsers(userId, roomId);
   }
 
   /**

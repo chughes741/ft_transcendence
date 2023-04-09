@@ -433,6 +433,49 @@ export class PrismaService extends PrismaClient {
     });
   }
 
+  // Get a list of all users in the server that have not been blocked by the querying user,
+  // and are not in the chat room passsed in the query
+  async getAvailableUsers(userId: string, roomId: number): Promise<User[]> {
+    // Get a list of users who blocked or have been blocked by the querying user
+    const blockedUsers = await this.blockedUser.findMany({
+      where: {
+        OR: [
+          {
+            blockerId: userId
+          },
+          {
+            blockedUserId: userId
+          }
+        ]
+      }
+    });
+    const blockedIds = blockedUsers.map((user) =>
+      user.blockerId === userId ? user.blockedUserId : user.blockerId
+    );
+
+    // Get a list of users who are not in the specified chat room
+    const usersNotInRoom = await this.chatMember.findMany({
+      where: {
+        roomId: roomId
+      },
+      select: {
+        memberId: true
+      }
+    });
+    const usersNotInRoomIds = usersNotInRoom.map((user) => user.memberId);
+
+    // Find users who are not in the blocked list and not in the specified room
+    const availableUsers = await this.user.findMany({
+      where: {
+        id: {
+          notIn: [...blockedIds, ...usersNotInRoomIds, userId]
+        }
+      }
+    });
+
+    return availableUsers;
+  }
+
   async destroyChatMember(id: number): Promise<void> {
     await this.chatMember.delete({
       where: { id }

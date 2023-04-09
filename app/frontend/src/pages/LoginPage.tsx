@@ -44,7 +44,6 @@ export default function LoginPage() {
     };
     setNick("");
     setPass("");
-    // if (nick === "BigBoss" && pass === "Test123!") navigate("/welcome");
 
     console.log(loginCredentials);
     navigate("/welcome");

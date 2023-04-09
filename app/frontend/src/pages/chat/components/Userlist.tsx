@@ -21,11 +21,11 @@ export enum ChatMemberStatus {
 export interface UserListItem {
   username: string;
   avatar: string;
-  chatMemberstatus: ChatMemberStatus;
   userStatus: UserStatus;
-  rank: ChatMemberRank;
-  endOfBan: Date;
-  endOfMute: Date;
+  chatMemberstatus?: ChatMemberStatus;
+  rank?: ChatMemberRank;
+  endOfBan?: Date;
+  endOfMute?: Date; // NOTE: @oddtiming: Made all optional to reuse in other places
 }
 
 export interface UserListProps {
