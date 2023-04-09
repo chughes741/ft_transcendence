@@ -62,7 +62,8 @@ export class ChatService {
         status: room.status,
         latestMessage: null,
         lastActivity: room.createdAt,
-        members: members.map((member) => new ChatMemberEntity(member))
+        members: members.map((member) => new ChatMemberEntity(member)),
+        avatars: [members[0].member.avatar]
       };
     } catch (e) {
       logger.error(e);
