@@ -12,6 +12,7 @@ import {
   UpdateProfileRequest
 } from "kingpong-lib";
 import { ProfileService } from "./profile.service";
+import { GetFriendsRequest } from "./profile.dto";
 
 @WebSocketGateway()
 export class ProfileGateway {
@@ -42,8 +43,23 @@ export class ProfileGateway {
   @SubscribeMessage(ProfileEvents.GetProfile)
   async getProfile(
     @MessageBody() getProfileRequest: GetProfileRequest
-  ): Promise<ProfileEntity> {
+  ): Promise<ProfileEntity | null> {
     return await this.profileService.getProfile(getProfileRequest);
+  }
+
+  /**
+   * Returns profile information of users friends
+   *
+   * @todo update SubscribeMessage once kingpong-lib is updated
+   * @param {GetFriendsRequest} getFriendsRequest
+   * @async
+   * @returns {Promise<ProfileEntity[]>} - Requested users friends
+   */
+  @SubscribeMessage("getFriendsRequest")
+  async getFriends(
+    @MessageBody() getFriendsRequest: GetFriendsRequest
+  ): Promise<ProfileEntity[]> {
+    return await this.profileService.getFriends(getFriendsRequest);
   }
 
   /**

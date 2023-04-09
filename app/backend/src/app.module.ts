@@ -14,6 +14,9 @@ import { AuthModule } from "./auth/auth.module";
 import { ScheduleModule } from "@nestjs/schedule";
 import { UserConnectionsService } from "./user-connections.service";
 
+/** Used for src/... import paths */
+require('tsconfig-paths')
+
 @Module({
   imports: [
     ScheduleModule.forRoot(),

@@ -1,4 +1,4 @@
-import { Injectable } from "@nestjs/common";
+import { Injectable, Logger } from "@nestjs/common";
 import {
   GetMatchHistoryRequest,
   GetProfileRequest,
@@ -8,6 +8,9 @@ import {
   UserStatus
 } from "kingpong-lib";
 import { PrismaService } from "src/prisma/prisma.service";
+import { GetFriendsRequest } from "./profile.dto";
+
+const logger = new Logger("ProfileService");
 
 @Injectable()
 export class ProfileService {
@@ -23,6 +26,11 @@ export class ProfileService {
   async getMatchHistory(
     getMatchHistoryRequest: GetMatchHistoryRequest
   ): Promise<MatchHistoryItem[]> {
+    if (!getMatchHistoryRequest.id) {
+      logger.log("No username is provided");
+      return [];
+    }
+    logger.log(`Fetching match history for ${getMatchHistoryRequest.id}`);
     /** Fetch match history from prisma service */
     const matches = await this.prismaService.GetMatchHistory(
       getMatchHistoryRequest
@@ -51,7 +59,12 @@ export class ProfileService {
    */
   async getProfile(
     getProfileRequest: GetProfileRequest
-  ): Promise<ProfileEntity> {
+  ): Promise<ProfileEntity | null> {
+    if (!getProfileRequest.id) {
+      logger.log("No username is provided");
+      return null;
+    }
+    logger.log(`Fetching profile for ${getProfileRequest.id}`);
     const user = await this.prismaService.GetProfile(getProfileRequest);
     const profile = {
       username: user.username,
@@ -61,6 +74,33 @@ export class ProfileService {
     };
 
     return profile;
+  }
+
+  /**
+   * Get a list of all users friends
+   *
+   * @todo update once kingpong-lib is updated
+   * @param {GetFriendsRequest} getFriendsRequest
+   * @async
+   * @returns {Promise<ProfileEntity[]>}
+   */
+  async getFriends(
+    getFriendsRequest: GetFriendsRequest
+  ): Promise<ProfileEntity[]> {
+    logger.log(`Fetching friends for ${getFriendsRequest.username}`);
+    // const friends = await this.prismaService.getFriends(getFriendsRequest);
+    // const friendProfiles = friends.map((friend) => {
+    // return {
+    // username: friend.username,
+    // avatar: friend.avatar,
+    // status: UserStatus.ONLINE,
+    // createdAt: friend.createdAt.toLocaleTimeString()
+    // };
+    // });
+
+    // return friendProfiles;
+
+    return [];
   }
 
   /**

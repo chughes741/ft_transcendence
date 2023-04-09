@@ -334,17 +334,18 @@ export class PrismaService extends PrismaClient {
   async GetMatchHistory(
     getMatchHistoryRequest: GetMatchHistoryRequest
   ): Promise<Match[]> {
+    logger.log(getMatchHistoryRequest.id);
     return await this.match.findMany({
       where: {
         OR: [
           {
             player1: {
-              id: getMatchHistoryRequest.id
+              username: getMatchHistoryRequest.id
             }
           },
           {
             player2: {
-              id: getMatchHistoryRequest.id
+              username: getMatchHistoryRequest.id
             }
           }
         ]
@@ -360,8 +361,9 @@ export class PrismaService extends PrismaClient {
    * @returns {Promise<User>}
    */
   async GetProfile(getProfileRequest: GetProfileRequest): Promise<User> {
+    logger.log(getProfileRequest.id);
     return await this.user.findUnique({
-      where: { id: getProfileRequest.id }
+      where: { username: getProfileRequest.id }
     });
   }
 
