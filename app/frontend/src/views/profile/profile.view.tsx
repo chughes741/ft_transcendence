@@ -9,17 +9,39 @@ import {
   TableContainer,
   TableHead,
   TableRow,
-  Grid
+  Grid,
+  Badge,
+  styled
 } from "@mui/material";
 
 /** Shared Library */
 import { MatchHistoryItem, ProfileEntity, UserStatus } from "kingpong-lib";
 
 /** View Model */
-import {
-  Item,
-  useProfileViewModelContext
-} from "src/views/profile/profile.viewModel";
+import { useProfileViewModelContext } from "src/views/profile/profile.viewModel";
+
+type StyledBadgeProps = {
+  status: UserStatus;
+};
+
+const StyledBadge = styled(Badge)<StyledBadgeProps>(({ theme, status }) => ({
+  "& .MuiBadge-badge": {
+    backgroundColor:
+      status === UserStatus.ONLINE
+        ? "#44b700"
+        : status === UserStatus.OFFLINE
+        ? "#ff0000"
+        : "#ffa500",
+    color:
+      status === UserStatus.ONLINE
+        ? "#44b700"
+        : status === UserStatus.OFFLINE
+        ? "#ff0000"
+        : "#ffa500",
+    boxShadow: `0 0 0 4px ${theme.palette.background.paper}`,
+    width: "1rem"
+  }
+}));
 
 /**
  * Creates profile page header
@@ -32,20 +54,47 @@ function ProfileHeader(): JSX.Element | null {
   return (
     <>
       {profile && (
-        <Item id="profile-header">
-          <Avatar src={profile.avatar}></Avatar>
-          <Typography
-            variant="h5"
-            color="text.primary"
-            gutterBottom
+        <Paper>
+          <Grid
+            container
+            sx={{ padding: "1rem", alignItems: "center" }}
           >
-            {profile.username}
-          </Typography>
-          <Typography>
-            Status:{" "}
-            {profile.status === UserStatus.ONLINE ? "Online" : "Offline"}
-          </Typography>
-        </Item>
+            <Grid
+              item
+              xs={4}
+            >
+              <StyledBadge
+                overlap="circular"
+                anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
+                badgeContent=" "
+                status={profile.status}
+              >
+                <Avatar
+                  src={profile.avatar}
+                  sx={{ width: "4rem", height: "4rem" }}
+                ></Avatar>
+              </StyledBadge>
+            </Grid>
+            <Grid
+              container
+              item
+              xs={8}
+            >
+              <Grid
+                item
+                xs={12}
+              >
+                <Typography variant="h5">{profile.username}</Typography>
+              </Grid>
+              <Grid
+                item
+                xs={12}
+              >
+                <Typography>Joined: {profile.createdAt}</Typography>
+              </Grid>
+            </Grid>
+          </Grid>
+        </Paper>
       )}
     </>
   );
