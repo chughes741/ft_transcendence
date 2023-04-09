@@ -12,6 +12,7 @@ export type MessageType = {
   displayUser: boolean;
   displayTimestamp: boolean;
   displayDate: boolean;
+  avatar: string;
 };
 
 type MessageProps = {

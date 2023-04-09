@@ -144,7 +144,8 @@ export const ChatViewModelProvider = ({ children }) => {
       isOwn: messagePayload.username === tempUsername,
       displayUser: true,
       displayTimestamp: true,
-      displayDate: true
+      displayDate: true,
+      avatar: rooms[messagePayload.roomName]?.avatars[messagePayload.username]
     };
   };
 

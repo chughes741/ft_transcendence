@@ -250,7 +250,8 @@ export class ChatService {
       try {
         const prismaReturn = await this.prismaService.addUser({
           username,
-          password: "secret"
+          password: "secret",
+          avatar: `https://i.pravatar.cc/150?u=${username}`
         });
         logger.log(`User ${username} added to the database: `);
         console.log(prismaReturn);

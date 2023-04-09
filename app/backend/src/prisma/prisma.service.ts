@@ -114,7 +114,8 @@ export class PrismaService extends PrismaClient {
       username: dto.username,
       // firstName: dto.firstName,
       // lastName: dto.lastName,
-      hash: dto.password
+      hash: dto.password,
+      avatar: dto.avatar
     };
     return this.user.create({ data });
   }
