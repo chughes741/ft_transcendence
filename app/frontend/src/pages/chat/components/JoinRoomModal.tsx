@@ -1,6 +1,7 @@
-import React, { useCallback } from "react";
+import React, { useCallback, useEffect } from "react";
 import { FiEye, FiEyeOff } from "react-icons/fi";
 import {
+  Badge,
   Button,
   Dialog,
   DialogTitle,
@@ -8,15 +9,30 @@ import {
   DialogContentText,
   TextField,
   IconButton,
-  DialogActions
+  DialogActions,
+  InputLabel,
+  Select,
+  MenuItem,
+  ListItemText
 } from "@mui/material";
 import { useRoomModal } from "./useRoomModal";
 import ButtonFunky from "../../../components/ButtonFunky";
+import { socket } from "../../../contexts/WebSocketContext";
+import { useChatViewModelContext } from "../contexts/ChatViewModelContext";
+import { UserListItem } from "./Userlist";
+import { Avatar } from "@mui/material";
+import { UserStatus } from "kingpong-lib";
 
 interface JoinRoomModalProps {
   showModal: boolean;
   closeModal: () => void;
   onJoinRoom: (roomName: string, password: string) => void;
+}
+
+export interface UserEntity {
+  username: string;
+  avatar: string;
+  status: UserStatus;
 }
 
 export const JoinRoomModal: React.FC<JoinRoomModalProps> = ({
@@ -121,7 +137,7 @@ export const JoinRoomModal: React.FC<JoinRoomModalProps> = ({
           onClick={handleSubmit}
           content="Join Room"
           width="50%"
-        ></ButtonFunky>
+        />
       </DialogActions>
     </Dialog>
   );

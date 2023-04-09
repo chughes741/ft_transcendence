@@ -12,8 +12,7 @@ import { ButtonUnstyled } from "@mui/base";
 import { Button, Tooltip } from "@mui/material";
 import VideogameAssetIcon from "@mui/icons-material/VideogameAsset";
 import { PageState } from "src/views/root.model";
-
-const TopBarHeight = 85;
+import { useProfileViewModelContext } from "src/views/profile/profile.viewModel";
 
 const settings = ["Profile", "Settings", "Logout"];
 
@@ -23,7 +22,9 @@ const toolbarStyle = {
   justifyContent: "space-between"
 };
 
-function TopBar({setPageState}) {
+function TopBar({ setPageState }) {
+  const { setUser } = useProfileViewModelContext();
+
   const [anchorElNav, setAnchorElNav] = React.useState<null | HTMLElement>(
     null
   );
@@ -46,88 +47,89 @@ function TopBar({setPageState}) {
     setAnchorElUser(null);
   };
 
-  const onClickProfile = ()  => {
+  const onClickProfile = () => {
+    setUser("schlurp");
     setPageState(PageState.Profile);
     handleCloseUserMenu();
-  }
+  };
 
   return (
-    <AppBar 
+    <AppBar
       position="static"
       sx={{ zIndex: (theme) => theme.zIndex.drawer + 1, flexGrow: 0 }}
+    >
+      <Toolbar
+        disableGutters
+        style={toolbarStyle}
       >
-        <Toolbar
-          disableGutters
-          style={toolbarStyle}
-        >
-          {/* Logo wrapped in button to return to home */}
+        {/* Logo wrapped in button to return to home */}
 
-          <Box sx={{ flexGrow: 1 }}>
-            <ButtonUnstyled
-                onClick={() => setPageState(0)}
-                style={{
-                  border: "none",
-                  backgroundColor: "transparent",
-                  cursor: "pointer",
-                  paddingTop: "2vh",
-                  paddingLeft: "1vw"
-                }}
+        <Box sx={{ flexGrow: 1 }}>
+          <ButtonUnstyled
+            onClick={() => setPageState(PageState.Home)}
+            style={{
+              border: "none",
+              backgroundColor: "transparent",
+              cursor: "pointer",
+              paddingTop: "2vh",
+              paddingLeft: "1vw"
+            }}
+          >
+            <LogoSvg />
+          </ButtonUnstyled>
+        </Box>
+
+        <Box>
+          <Button
+            onClick={() => setPageState(PageState.Game)}
+            color="primary"
+            sx={{ mr: 5 }}
+            variant="outlined"
+            startIcon={<VideogameAssetIcon />}
+          >
+            Play A Game
+          </Button>
+        </Box>
+        {/* Button to be displayed instead of profile when use not logged in*/}
+        {/* <Button color="inherit">Login</Button> */}
+
+        {/* Profile picture with context menu */}
+        <Box>
+          <Tooltip title="Open settings">
+            <IconButton
+              onClick={handleOpenUserMenu}
+              sx={{ p: 0, pr: 2 }}
             >
-              <LogoSvg />
-            </ButtonUnstyled>
-          </Box>
-
-          <Box>
-            <Button
-              onClick={() => setPageState(PageState.Game)}
-              color="primary"
-              sx={{ mr: 5 }}
-              variant="outlined"
-              startIcon={<VideogameAssetIcon />}
-            >
-              Play A Game
-            </Button>
-          </Box>
-          {/* Button to be displayed instead of profile when use not logged in*/}
-          {/* <Button color="inherit">Login</Button> */}
-
-          {/* Profile picture with context menu */}
-          <Box>
-            <Tooltip title="Open settings">
-              <IconButton
-                onClick={handleOpenUserMenu}
-                sx={{ p: 0, pr: 2 }}
+              <Avatar alt="Remy" />
+            </IconButton>
+          </Tooltip>
+          <Menu
+            sx={{ mt: "45px" }}
+            id="menu-appbar"
+            anchorEl={anchorElUser}
+            anchorOrigin={{
+              vertical: "top",
+              horizontal: "right"
+            }}
+            keepMounted
+            transformOrigin={{
+              vertical: "top",
+              horizontal: "right"
+            }}
+            open={Boolean(anchorElUser)}
+            onClose={handleCloseUserMenu}
+          >
+            {settings.map((setting) => (
+              <MenuItem
+                key={setting}
+                onClick={onClickProfile}
               >
-                <Avatar alt="Remy" />
-              </IconButton>
-            </Tooltip>
-            <Menu
-              sx={{ mt: "45px" }}
-              id="menu-appbar"
-              anchorEl={anchorElUser}
-              anchorOrigin={{
-                vertical: "top",
-                horizontal: "right"
-              }}
-              keepMounted
-              transformOrigin={{
-                vertical: "top",
-                horizontal: "right"
-              }}
-              open={Boolean(anchorElUser)}
-              onClose={handleCloseUserMenu}
-            >
-              {settings.map((setting) => (
-                <MenuItem
-                  key={setting}
-                  onClick={onClickProfile}
-                >
-                  <Typography textAlign="center">{setting}</Typography>
-                </MenuItem>
-              ))}
-            </Menu>
-          </Box>
-        </Toolbar>
+                <Typography textAlign="center">{setting}</Typography>
+              </MenuItem>
+            ))}
+          </Menu>
+        </Box>
+      </Toolbar>
     </AppBar>
   );
 }

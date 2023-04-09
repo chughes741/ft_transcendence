@@ -1,46 +1,119 @@
-import { useEffect, useState } from "react";
-
-/** Module Imports */
-import { Avatar, Paper, Stack } from "@mui/material";
-import { deepOrange } from "@mui/material/colors";
-
-/** Table from MUI */
+/** MUI */
 import {
+  Avatar,
+  Paper,
+  Typography,
   Table,
   TableBody,
   TableCell,
   TableContainer,
   TableHead,
-  TableRow
+  TableRow,
+  Grid,
+  Badge,
+  styled
 } from "@mui/material";
 
-/** Mock data import */
-import { Item, FetchMatchHistory } from "src/views/profile/profile.viewModel";
-import { MatchHistoryItem } from "kingpong-lib";
+/** Shared Library */
+import { MatchHistoryItem, ProfileEntity, UserStatus } from "kingpong-lib";
+
+/** View Model */
+import { useProfileViewModelContext } from "src/views/profile/profile.viewModel";
+
+type StyledBadgeProps = {
+  status: UserStatus;
+};
+
+const StyledBadge = styled(Badge)<StyledBadgeProps>(({ theme, status }) => ({
+  "& .MuiBadge-badge": {
+    backgroundColor:
+      status === UserStatus.ONLINE
+        ? "#44b700"
+        : status === UserStatus.OFFLINE
+        ? "#ff0000"
+        : "#ffa500",
+    color:
+      status === UserStatus.ONLINE
+        ? "#44b700"
+        : status === UserStatus.OFFLINE
+        ? "#ff0000"
+        : "#ffa500",
+    boxShadow: `0 0 0 4px ${theme.palette.background.paper}`,
+    width: "1rem"
+  }
+}));
 
 /**
  * Creates profile page header
+ *
+ * @returns {JSX.Element | null}
  */
-export function ProfileHeader() {
+function ProfileHeader(): JSX.Element | null {
+  const { profile } = useProfileViewModelContext();
+
   return (
     <>
-      <Item>
-        <Avatar sx={{ bgcolor: deepOrange[500] }}>N</Avatar>
-      </Item>
+      {profile && (
+        <Paper>
+          <Grid
+            container
+            sx={{ padding: "1rem", alignItems: "center" }}
+          >
+            <Grid
+              item
+              xs={4}
+            >
+              <StyledBadge
+                overlap="circular"
+                anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
+                badgeContent=" "
+                status={profile.status}
+              >
+                <Avatar
+                  src={profile.avatar}
+                  sx={{ width: "4rem", height: "4rem" }}
+                ></Avatar>
+              </StyledBadge>
+            </Grid>
+            <Grid
+              container
+              item
+              xs={8}
+            >
+              <Grid
+                item
+                xs={12}
+              >
+                <Typography variant="h5">{profile.username}</Typography>
+              </Grid>
+              <Grid
+                item
+                xs={12}
+              >
+                <Typography>Joined: {profile.createdAt}</Typography>
+              </Grid>
+            </Grid>
+          </Grid>
+        </Paper>
+      )}
     </>
   );
 }
 
 /**
  * Creates a TableRow with a MatchHistoryItem
+ *
  * @param {MatchHistoryItem} row
+ * @returns {JSX.Element | null}
  */
-function MatchHistoryRow(row: MatchHistoryItem) {
+function MatchHistoryRow(row: MatchHistoryItem): JSX.Element | null {
   return (
     <>
       <TableRow
+        id="profile-match-history-row"
         sx={{
-          bgcolor: row.winner === true ? "info.dark" : "error.dark",
+          bgcolor:
+            row.score_player1 > row.score_player2 ? "info.dark" : "error.dark",
           "&:hover": {
             opacity: [0.9, 0.8, 0.7]
           }
@@ -51,10 +124,16 @@ function MatchHistoryRow(row: MatchHistoryItem) {
           component="th"
           scope="row"
         >
-          {row.match_type}
+          {row.game_type}
         </TableCell>
-        <TableCell align="center">{row.players}</TableCell>
-        <TableCell align="center">{row.results}</TableCell>
+        <TableCell align="center">
+          {row.player1}
+          <br />
+          {row.player2}
+        </TableCell>
+        <TableCell align="center">
+          {row.score_player1}-{row.score_player2}
+        </TableCell>
         <TableCell align="center">{row.date}</TableCell>
       </TableRow>
     </>
@@ -63,25 +142,21 @@ function MatchHistoryRow(row: MatchHistoryItem) {
 
 /**
  * Loads match history component
+ *
+ * @returns {JSX.Element | null}
  */
-function MatchHistory() {
-  const [matches, setMatches] = useState<MatchHistoryItem[]>([]);
-
-  /** Fetch players match history from server */
-  useEffect(() => {
-    async function fetchMatches() {
-      const history = await FetchMatchHistory();
-      setMatches(history);
-    }
-    fetchMatches();
-  }, []);
+function MatchHistory(): JSX.Element | null {
+  const { matchHistory } = useProfileViewModelContext();
 
   /** Data column names */
   const cell_names = ["Match type", "Players", "Results", "Date"];
 
   return (
     <>
-      <TableContainer component={Paper}>
+      <TableContainer
+        id="profile-match-history"
+        component={Paper}
+      >
         <Table>
           <TableHead>
             <TableRow>
@@ -90,7 +165,55 @@ function MatchHistory() {
               ))}
             </TableRow>
           </TableHead>
-          <TableBody>{matches.map((row) => MatchHistoryRow(row))}</TableBody>
+          {matchHistory && matchHistory.length > 0 && (
+            <TableBody>
+              {matchHistory.map((row) => MatchHistoryRow(row))}
+            </TableBody>
+          )}
+        </Table>
+      </TableContainer>
+    </>
+  );
+}
+
+/**
+ * Creates a TableRow with a ProfileEntity
+ *
+ * @param {ProfileEntity} friend
+ * @returns {JSX.Element | null}
+ */
+function FriendsListRow(friend: ProfileEntity): JSX.Element | null {
+  return (
+    <>
+      <TableRow id="profile-friends-list-row">
+        <TableCell align="center">{friend.username}</TableCell>
+      </TableRow>
+    </>
+  );
+}
+
+/**
+ * Loads friends list component
+ *
+ * @returns {JSX.Element | null}
+ */
+function FriendsList(): JSX.Element | null {
+  const { friends } = useProfileViewModelContext();
+
+  return (
+    <>
+      <TableContainer component={Paper}>
+        <Table>
+          <TableHead>
+            <TableRow>
+              <TableCell align="center">Friends</TableCell>
+            </TableRow>
+          </TableHead>
+          {friends && friends.length > 0 && (
+            <TableBody>
+              {friends.map((friend) => FriendsListRow(friend))}
+            </TableBody>
+          )}
         </Table>
       </TableContainer>
     </>
@@ -99,18 +222,37 @@ function MatchHistory() {
 
 /**
  * Loads profile page
+ *
+ * @returns {JSX.Element | null}
  */
-export default function ProfileView() {
+export default function ProfileView(): JSX.Element | null {
   return (
     <>
-      <Stack
-        id="profile-stack"
-        width={"80%"}
-        spacing={2}
+      <Grid
+        container
+        rowSpacing={2}
+        columnSpacing={1}
+        width="80%"
       >
-        <ProfileHeader />
-        <MatchHistory />
-      </Stack>
+        <Grid
+          item
+          xs={12}
+        >
+          <ProfileHeader />
+        </Grid>
+        <Grid
+          item
+          xs={8}
+        >
+          <MatchHistory />
+        </Grid>
+        <Grid
+          item
+          xs={4}
+        >
+          <FriendsList />
+        </Grid>
+      </Grid>
     </>
   );
 }

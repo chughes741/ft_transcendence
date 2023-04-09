@@ -5,6 +5,7 @@ import {
   ChatMemberRank,
   ChatMemberStatus,
   ChatRoom,
+  Match,
   Prisma,
   PrismaClient,
   User
@@ -18,7 +19,21 @@ import {
 import { ChatMemberPrismaType, MessagePrismaType } from "../chat/chat.gateway";
 import config from "../config";
 
+/** Here for profile */
+import { GetMatchHistoryRequest, GetProfileRequest } from "kingpong-lib";
+import { updateChatMemberStatusDto } from "src/chat/dto/userlist.dto";
+
+/*End of Mute and End of Ban:  */
+//Is added to the current date (now)
+const GLOBAL_T_IN_DAYS = 5 /*DAYS*/ * (24 * 60 * 60 * 1000); // One day in milliseconds
+
 const logger = new Logger("PrismaService");
+
+/** @todo needs to be in kingpong-lib */
+interface MatchPrismaType extends Match {
+  player1: User;
+  player2: User;
+}
 
 @Injectable()
 export class PrismaService extends PrismaClient {
@@ -48,14 +63,14 @@ export class PrismaService extends PrismaClient {
       this.user.deleteMany(),
       this.chatMember.deleteMany(),
       this.message.deleteMany(),
-      this.match.deleteMany(),
-      this.player.deleteMany()
+      this.match.deleteMany()
     ]);
   }
   async userExists(userId: string): Promise<boolean> {
     const user = await this.user.findUnique({ where: { id: userId } });
     return !!user;
   }
+
   async getUserIdByNick(nick: string): Promise<string> {
     const user = await this.user.findUnique({ where: { username: nick } });
 
@@ -70,34 +85,29 @@ export class PrismaService extends PrismaClient {
    * @returns - list of members
    */
   async getRoomMembers(
-    roomId: number,
-    limit: number
+    roomName: string,
+    limit = 100
   ): Promise<ChatMemberPrismaType[]> {
-    return this.chatMember.findMany({
-      where: { roomId },
-      orderBy: { member: { createdAt: "desc" } },
-      include: { member: { select: { avatar: true, username: true } } },
+    if (!roomName) {
+      throw new Error("Room name is required");
+    }
+    const members = await this.chatMember.findMany({
+      where: { room: { name: { equals: roomName } } },
+      include: {
+        member: {
+          select: {
+            avatar: true,
+            username: true,
+            status: true
+          }
+        },
+        room: { select: { name: true } }
+      },
       take: limit
     });
-  }
-
-  //GET ROOM MEMBERS
-  async getMembersByRoom(roomName: string): Promise<User[]> {
-    const chat = await this.chatRoom.findUnique({
-      where: { name: roomName },
-      include: { members: { select: { member: true } } }
-    });
-
-    if (chat === null || chat.members.length === 0) {
-      console.log("Prisma service returs NULL");
-      return [];
-    }
-    console.log("Prisma service returns something");
-
-    const members = chat?.members?.map((user) => user.member);
+    logger.log(`There are ${members.length} members in the room ${roomName}`);
     return members;
   }
-  // End
 
   async addUser(dto: UserDto) {
     const data: Prisma.UserCreateInput = {
@@ -311,6 +321,171 @@ export class PrismaService extends PrismaClient {
         sender: { select: { username: true } },
         room: { select: { name: true } }
       }
+    });
+  }
+
+  /**
+   * Fetches match history page from the database
+   *
+   * @param {GetMatchHistoryRequest} getMatchHistoryRequest
+   * @async
+   * @returns {Promise<MatchPrismaType[]>}
+   */
+  async GetMatchHistory(
+    getMatchHistoryRequest: GetMatchHistoryRequest
+  ): Promise<MatchPrismaType[]> {
+    logger.log(getMatchHistoryRequest.username);
+    return await this.match.findMany({
+      where: {
+        OR: [
+          {
+            player1: {
+              username: getMatchHistoryRequest.username
+            }
+          },
+          {
+            player2: {
+              username: getMatchHistoryRequest.username
+            }
+          }
+        ]
+      },
+      include: {
+        player1: true,
+        player2: true
+      }
+    });
+  }
+
+  /**
+   * Returns a profile from the database
+   *
+   * @param {GetProfileRequest} getProfileRequest
+   * @async
+   * @returns {Promise<User>}
+   */
+  async GetProfile(getProfileRequest: GetProfileRequest): Promise<User> {
+    logger.log(getProfileRequest.username);
+    return await this.user.findUnique({
+      where: { username: getProfileRequest.username }
+    });
+  }
+
+  async updateChatMemberStatus(updateDto: updateChatMemberStatusDto) {
+    try {
+      const chatroom = await this.chatRoom.findUnique({
+        where: { name: updateDto.forRoomName },
+        include: { members: true }
+      });
+
+      const member = chatroom.members.find(
+        (member) => member.id === updateDto.memberToUpdateID
+      );
+
+      if (!member) {
+        throw new Error("User is not a member of this chatroom");
+      }
+
+      //STATUS to UPDATE to:
+      const newStatus: ChatMemberStatus = updateDto.changeStatusTo;
+      //Return RESULT of status update
+      let chatMember: ChatMember;
+
+      // A future Date limit is established
+      const futureDate = new Date(Date.now() + GLOBAL_T_IN_DAYS);
+
+      //CASES : SWITCH BETWEEN STATUSES
+      switch (newStatus) {
+        case ChatMemberStatus.OK:
+          console.log("User is OK");
+          chatMember = await this.chatMember.update({
+            where: { id: member.id },
+            data: {
+              status: newStatus,
+              endOfBan: null,
+              endOfMute: null
+            }
+          });
+          break;
+        case ChatMemberStatus.MUTED:
+          console.log("User is muted");
+          chatMember = await this.chatMember.update({
+            where: { id: member.id },
+            data: { status: newStatus, endOfMute: futureDate }
+          });
+          break;
+        case ChatMemberStatus.BANNED:
+          console.log("User is banned");
+          chatMember = await this.chatMember.update({
+            where: { id: member.id },
+            data: { status: newStatus, endOfBan: futureDate }
+          });
+          break;
+        default:
+          console.log("Unknown status");
+      }
+      return chatMember;
+      //CATCH PRISMA ERROR
+    } catch (error) {
+      throw new Error(`Failed to member's status: ${error.message}`);
+    }
+  }
+
+  async getChatMember(chatMemberId: number) {
+    return await this.chatMember.findUnique({
+      where: {
+        id: chatMemberId
+      }
+    });
+  }
+
+  // Get a list of all users in the server that have not been blocked by the querying user,
+  // and are not in the chat room passsed in the query
+  async getAvailableUsers(userId: string, roomId: number): Promise<User[]> {
+    // Get a list of users who blocked or have been blocked by the querying user
+    // const blockedUsers = await this.blockedUser.findMany({
+    //   where: {
+    //     OR: [
+    //       {
+    //         blockerId: userId
+    //       },
+    //       {
+    //         blockedUserId: userId
+    //       }
+    //     ]
+    //   }
+    // });
+    // const blockedIds = blockedUsers.map((user) =>
+    //   user.blockerId === userId ? user.blockedUserId : user.blockerId
+    // );
+
+    // Get a list of users who are not in the specified chat room
+    const usersNotInRoom = await this.chatMember.findMany({
+      where: {
+        roomId: roomId
+      },
+      select: {
+        memberId: true
+      }
+    });
+    const usersNotInRoomIds = usersNotInRoom.map((user) => user.memberId);
+
+    // Find users who are not in the blocked list and not in the specified room
+    const availableUsers = await this.user.findMany({
+      where: {
+        id: {
+          // notIn: [...blockedIds, ...usersNotInRoomIds, userId]
+          notIn: [...usersNotInRoomIds, userId]
+        }
+      }
+    });
+
+    return availableUsers;
+  }
+
+  async destroyChatMember(id: number): Promise<void> {
+    await this.chatMember.delete({
+      where: { id }
     });
   }
 }

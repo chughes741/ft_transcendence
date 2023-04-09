@@ -1,4 +1,4 @@
-import { ScheduleModule, SchedulerRegistry } from "@nestjs/schedule";
+import { SchedulerRegistry } from "@nestjs/schedule";
 import { Test, TestingModule } from "@nestjs/testing";
 import { GameModuleData } from "./game.data";
 import { GameLogic } from "./game.logic";

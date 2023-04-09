@@ -3,13 +3,16 @@ import {
   SubscribeMessage,
   MessageBody
 } from "@nestjs/websockets";
-import { ProfileService } from "./profile.service";
 import {
-  CreateProfileEvent,
-  FetchMatchHistoryEvent,
-  FetchMatchHistoryReply,
-  UpdateProfileEvent
+  GetMatchHistoryRequest,
+  GetProfileRequest,
+  MatchHistoryItem,
+  ProfileEntity,
+  ProfileEvents,
+  UpdateProfileRequest
 } from "kingpong-lib";
+import { ProfileService } from "./profile.service";
+import { GetFriendsRequest } from "./profile.dto";
 
 @WebSocketGateway()
 export class ProfileGateway {
@@ -17,38 +20,58 @@ export class ProfileGateway {
 
   /**
    * Gateway for requesting a players match history
-   * @param {FetchMatchHistoryDto} fetchMatchHistoryDto -
-   * @returns {MatchHistory} - Array of MatchHistoryItem
+   *
+   * @todo update to return MatchHistoryEntity once kingpong-lib is updated
+   * @param {GetMatchHistoryRequest} getMatchHistoryRequest
+   * @async
+   * @returns {Promise<MatchHistoryEntity>} - MatchHistoryItem[]
    */
-  @SubscribeMessage("fetchMatchHistory")
-  fetchMatchHistory(
-    @MessageBody() fetchMatchHistoryDto: FetchMatchHistoryEvent
-  ): FetchMatchHistoryReply {
-    return this.profileService.fetchMatchHistory(fetchMatchHistoryDto);
+  @SubscribeMessage(ProfileEvents.GetMatchHistory)
+  async getMatchHistory(
+    @MessageBody() getMatchHistoryRequest: GetMatchHistoryRequest
+  ): Promise<MatchHistoryItem[]> {
+    return await this.profileService.getMatchHistory(getMatchHistoryRequest);
   }
 
-  @SubscribeMessage("createProfile")
-  create(@MessageBody() createProfileDto: CreateProfileEvent) {
-    return this.profileService.create(createProfileDto);
+  /**
+   * Returns profile information to display on a profile page
+   *
+   * @param {GetProfileRequest} getProfileRequest
+   * @async
+   * @return {ProfileEntity} - Requested users profile
+   */
+  @SubscribeMessage(ProfileEvents.GetProfile)
+  async getProfile(
+    @MessageBody() getProfileRequest: GetProfileRequest
+  ): Promise<ProfileEntity | null> {
+    return await this.profileService.getProfile(getProfileRequest);
   }
 
-  @SubscribeMessage("findAllProfile")
-  findAll() {
-    return this.profileService.findAll();
+  /**
+   * Returns profile information of users friends
+   *
+   * @todo update SubscribeMessage once kingpong-lib is updated
+   * @param {GetFriendsRequest} getFriendsRequest
+   * @async
+   * @returns {Promise<ProfileEntity[]>} - Requested users friends
+   */
+  @SubscribeMessage("getFriendsRequest")
+  async getFriends(
+    @MessageBody() getFriendsRequest: GetFriendsRequest
+  ): Promise<ProfileEntity[]> {
+    return await this.profileService.getFriends(getFriendsRequest);
   }
 
-  @SubscribeMessage("findOneProfile")
-  findOne(@MessageBody() id: number) {
-    return this.profileService.findOne(id);
-  }
-
-  @SubscribeMessage("updateProfile")
-  update(@MessageBody() updateProfileDto: UpdateProfileEvent) {
-    return this.profileService.update(updateProfileDto.id, updateProfileDto);
-  }
-
-  @SubscribeMessage("removeProfile")
-  remove(@MessageBody() id: number) {
-    return this.profileService.remove(id);
+  /**
+   * Updates users profile information
+   *
+   * @param {UpdateProfileRequest} updateProfileRequest
+   * @returns {boolean} - Update successful
+   */
+  @SubscribeMessage(ProfileEvents.UpdateProfile)
+  updateProfile(
+    @MessageBody() updateProfileRequest: UpdateProfileRequest
+  ): boolean {
+    return this.profileService.updateProfile(updateProfileRequest);
   }
 }

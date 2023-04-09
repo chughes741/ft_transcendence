@@ -1,11 +1,5 @@
-import GameSideBar from "src/components/GameSideBar";
 import Game from "src/game/GameWindow";
-import { useState } from "react";
-import Button from "@mui/material/Button";
 import Box from "@mui/material/Box";
-import IconButton from "@mui/material/IconButton";
-import CheckCircleIcon from "@mui/icons-material/CheckCircle";
-import { Container, CssBaseline, Typography } from "@mui/material";
 import GameActionBar from "./components/GameActionBar";
 
 export default function GameWindow() {
@@ -42,7 +36,6 @@ export default function GameWindow() {
     </Box>
   );
 }
-
 
 /*
 GameWindow Behaviours:

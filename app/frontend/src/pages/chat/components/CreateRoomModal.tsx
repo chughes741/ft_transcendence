@@ -121,6 +121,7 @@ export const CreateRoomModal: React.FC<CreateRoomModalProps> = ({
           value={roomName}
           onChange={(e) => setRoomName(e.target.value)}
           onKeyDown={handleKeyPress}
+          inputProps={{ maxLength: 25 }}
         />
         {roomStatus === "PASSWORD" && (
           <TextField

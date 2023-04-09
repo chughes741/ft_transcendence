@@ -5,7 +5,7 @@ import { GameConfig, PaddleConfig, BallConfig } from "./config/game.config";
 import { WebSocketServer, WebSocketGateway } from "@nestjs/websockets";
 import { Server } from "socket.io";
 import * as vec2 from "gl-vec2";
-import { GameData, BallData, PaddleData, Vec2 } from "./game.types";
+import { GameData, BallData } from "./game.types";
 import { degToRad } from "./game.utils";
 const logger = new Logger("gameLogic");
 

@@ -33,8 +33,9 @@ const ChatAreaView = () => {
             textAlign: "center",
             backgroundColor: "#1f1f1f",
             padding: "6px",
-            height: "5vh",
-            fontSize: "1.5rem"
+            height: "auto",
+            minHeight: "5vh",
+            fontSize: "1.3rem"
           }}
         >
           {currentRoomName}

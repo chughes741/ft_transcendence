@@ -38,6 +38,7 @@ export default function GameActionBar() {
 
       {/* Readybutton component */}
       <Box sx={{ ml: 2 }}>
+      <Box sx={{ ml: 2 }}>
         <ToggleButton
           value="check"
           selected={selected}

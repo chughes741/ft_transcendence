@@ -4,8 +4,6 @@ import Divider from "@mui/material/Divider";
 import SidebarChatOptions from "./sidebar.chatoptions";
 import RoomList from "../../pages/chat/components/RoomList";
 
-
-
 const drawerWidth = "20%";
 
 /**
@@ -29,7 +27,7 @@ export default function SideBar({ setPageState }) {
           }
         }}
       >
-        <Box sx={{ overflow: "hidden"}}>
+        <Box sx={{ overflow: "hidden" }}>
           <SidebarChatOptions setPageState={setPageState} />
           <Divider />
         </Box>
