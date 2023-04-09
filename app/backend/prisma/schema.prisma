@@ -30,10 +30,45 @@ model User {
   messages        Message[]
   chatOwnerships  ChatRoom[]
   chatMemberships ChatMember[]
-  player1           Match[] @relation("player1")
-  player2           Match[] @relation("player2")
+  player1         Match[]       @relation("player1")
+  player2         Match[]       @relation("player2")
+  friends         Friend[]      @relation("UserFriends")
+  friendsOf       Friend[]      @relation("FriendOfUser")
+  blockedUsers    BlockedUser[] @relation("BlockedUsers")
+  blockedBy       BlockedUser[] @relation("UserBlockedBy")
 
   @@map("users")
+}
+
+model Friend {
+  id Int @id @default(autoincrement())
+
+  userId String
+  user   User   @relation("UserFriends", fields: [userId], references: [id], onDelete: Cascade)
+
+  friendId String
+  friend   User   @relation("FriendOfUser", fields: [friendId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+
+  @@unique([userId, friendId])
+  @@map("friends")
+}
+
+model BlockedUser {
+  id Int @id @default(autoincrement())
+
+  blockerId String
+  blocker   User   @relation("BlockedUsers", fields: [blockerId], references: [id], onDelete: Cascade)
+
+  blockedUserId String
+  blocked       User   @relation("UserBlockedBy", fields: [blockedUserId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  userId    String?
+
+  @@unique([blockerId, blockedUserId])
+  @@map("blockedUsers")
 }
 
 enum UserStatus {
@@ -133,14 +168,15 @@ model Match {
   gameType GameType
 
   player1Id String
-  player1 User @relation(name: "player1", fields: [player1Id], references: [id], onDelete: Cascade)
+  player1   User   @relation(name: "player1", fields: [player1Id], references: [id], onDelete: Cascade)
   player2Id String
-  player2 User @relation(name: "player2", fields: [player2Id], references: [id], onDelete: Cascade)
+  player2   User   @relation(name: "player2", fields: [player2Id], references: [id], onDelete: Cascade)
 
   scorePlayer1 Int
   scorePlayer2 Int
 
-  timestamp DateTime 
+  timestamp DateTime
+
   @@map("matches")
 }
 

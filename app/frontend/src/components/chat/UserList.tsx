@@ -1,17 +1,25 @@
 import { useContext, useState, useEffect } from "react";
 import { WebSocketContext } from "src/contexts/WebSocketContext";
 import ContextMenuUsers from "../ContextMenuUsers";
+import { ChatMemberRank } from "../../pages/chat/ChatViewModel";
+import { UserStatus } from "kingpong-lib";
+
+export enum ChatMemberStatus {
+  OK = "OK",
+  BANNED = "BANNED",
+  MUTED = "MUTED"
+}
 
 export interface myUsers {
   username: string;
   avatar: string;
   id: number;
-  chatMemberstatus: any;
-  userStatus: any;
+  chatMemberstatus: ChatMemberStatus;
+  userStatus: UserStatus;
   email: string;
-  rank: any;
-  endOfBan: any;
-  endOfMute: any;
+  rank: ChatMemberRank;
+  endOfBan: Date;
+  endOfMute: Date;
 }
 
 interface UserListProps {
