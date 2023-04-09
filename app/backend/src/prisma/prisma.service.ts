@@ -20,10 +20,7 @@ import { ChatMemberPrismaType, MessagePrismaType } from "../chat/chat.gateway";
 import config from "../config";
 
 /** Here for profile */
-import {
-  GetMatchHistoryRequest,
-  GetProfileRequest
-} from "kingpong-lib";
+import { GetMatchHistoryRequest, GetProfileRequest } from "kingpong-lib";
 import { updateChatMemberStatusDto } from "src/chat/dto/userlist.dto";
 
 /*End of Mute and End of Ban:  */
@@ -356,7 +353,7 @@ export class PrismaService extends PrismaClient {
       include: {
         player1: true,
         player2: true
-      },
+      }
     });
   }
 
