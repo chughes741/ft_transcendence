@@ -450,6 +450,7 @@ export const ChatViewModelProvider = ({ children }) => {
           joinRoom("PublicRoom", "");
           joinRoom("PrivateRoom", "");
           joinRoom("PasswordProtectedRoom", "secret");
+          joinRoom("test", "secret");
           resolve(true);
         }
       });

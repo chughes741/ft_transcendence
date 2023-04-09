@@ -393,12 +393,17 @@ export class ChatGateway
   ): Promise<string> {
     logger.log(`Received inviteUsersToRoom request from ${client.id}: `);
     console.log(payload);
+    // Get the list of Database users to invite from the payload's usernames array
+
     try {
+      // For each user in the list, try to add them to the room.
+      // If the user is found, add them to the room, and broadcast their arrival to the room.
+
       // Try to invite the users
-      // const chatMembers = await this.chatService.inviteUsersToRoom(payload);
-      // // If successful, broadcast the updated list
-      // if (chatMembers)
-      //   await this.listUsers(client, { chatRoomName: payload.roomName });
+      const chatMembers = await this.chatService.inviteUsersToRoom(payload);
+      // If successful, broadcast the updated list
+      if (chatMembers)
+        await this.listUsers(client, { chatRoomName: payload.roomName });
 
       return "Users succesfully invited !";
     } catch (error) {

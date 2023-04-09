@@ -432,12 +432,46 @@ export class PrismaService extends PrismaClient {
     }
   }
 
-  async getChatMember(chatMemberId: number) {
-    return await this.chatMember.findUnique({
+  async getChatMemberByUsername(
+    roomName: string,
+    username: string
+  ): Promise<ChatMemberPrismaType> {
+    const chatMember = await this.chatMember.findFirst({
       where: {
-        id: chatMemberId
+        AND: [
+          {
+            room: {
+              name: { equals: roomName }
+            }
+          },
+          {
+            member: { username: { equals: username } }
+          }
+        ]
+      },
+      include: {
+        member: {
+          select: {
+            avatar: true,
+            username: true,
+            status: true
+          }
+        },
+        room: {
+          select: {
+            name: true
+          }
+        }
       }
     });
+
+    if (!chatMember) {
+      throw new Error(
+        `Chat member not found for room '${roomName}' and username '${username}'.`
+      );
+    }
+
+    return chatMember as ChatMemberPrismaType;
   }
 
   // Get a list of all users in the server that have not been blocked by the querying user,
