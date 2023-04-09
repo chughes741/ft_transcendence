@@ -24,7 +24,7 @@ export default function GameActionBar() {
         backgroundColor: "grey",
         display: "flex",
         flexDirection: "row",
-        alignItems: "center",
+        alignItems: "center"
       }}
     >
       {/* Avatar component */}
@@ -37,7 +37,6 @@ export default function GameActionBar() {
       </Box>
 
       {/* Readybutton component */}
-      <Box sx={{ ml: 2 }}>
       <Box sx={{ ml: 2 }}>
         <ToggleButton
           value="check"

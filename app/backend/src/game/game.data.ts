@@ -35,7 +35,7 @@ export class GameModuleData {
   }
 
   /**
-   * 
+   *
    * @method  getPairQueue
    * @returns {GameTypes.PlayerQueue[]}
    *

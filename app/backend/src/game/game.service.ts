@@ -118,7 +118,6 @@ export class GameService {
     this.server.to(newLobby.lobby_id).emit("lobbyCreated");
   }
 
-
   // export class LobbyCreatedPayload {
 
   // }
@@ -156,7 +155,7 @@ export class GameService {
   }
 
   /**
-   * 
+   *
    */
   async clientUpdate(payload: GameTypes.ClientGameStateUpdate) {
     //Find the correct match using match_id and update paddle pos

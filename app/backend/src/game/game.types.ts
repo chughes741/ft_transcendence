@@ -49,7 +49,6 @@ export class gameLobby {
   created_at: number;
 }
 
-
 export class ClientGameStateUpdate {
   match_id: string;
   player_side: string;
@@ -59,9 +58,9 @@ export class ClientGameStateUpdate {
 export class GameStateDto {
   match_id: string;
   player_side: string;
-  ball_pos:{
-    x: number,
-    y: number
+  ball_pos: {
+    x: number;
+    y: number;
   };
   paddle_left_pos: number;
   paddle_right_pos: number;
