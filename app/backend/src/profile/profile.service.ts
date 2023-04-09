@@ -26,11 +26,11 @@ export class ProfileService {
   async getMatchHistory(
     getMatchHistoryRequest: GetMatchHistoryRequest
   ): Promise<MatchHistoryItem[]> {
-    if (!getMatchHistoryRequest.id) {
+    if (!getMatchHistoryRequest.username) {
       logger.log("No username is provided");
       return [];
     }
-    logger.log(`Fetching match history for ${getMatchHistoryRequest.id}`);
+    logger.log(`Fetching match history for ${getMatchHistoryRequest.username}`);
     /** Fetch match history from prisma service */
     const matches = await this.prismaService.GetMatchHistory(
       getMatchHistoryRequest
@@ -39,11 +39,12 @@ export class ProfileService {
     /** Map the return of prisma service to a MatchHistoryEntity */
     const matchHistory = matches.map((match) => {
       return {
-        match_type: match.gameType,
-        players: match.player1Id + match.player2Id,
-        results: match.scorePlayer1.toString() + match.scorePlayer2.toString(),
-        date: match.timestamp.toLocaleTimeString(),
-        winner: true
+        game_type: match.gameType,
+        player1: match.player1.username,
+        player2: match.player2.username,
+        score_player1: match.scorePlayer1,
+        score_player2: match.scorePlayer2,
+        date: match.timestamp.toLocaleTimeString()
       };
     });
 
@@ -60,11 +61,11 @@ export class ProfileService {
   async getProfile(
     getProfileRequest: GetProfileRequest
   ): Promise<ProfileEntity | null> {
-    if (!getProfileRequest.id) {
+    if (!getProfileRequest.username) {
       logger.log("No username is provided");
       return null;
     }
-    logger.log(`Fetching profile for ${getProfileRequest.id}`);
+    logger.log(`Fetching profile for ${getProfileRequest.username}`);
     const user = await this.prismaService.GetProfile(getProfileRequest);
     const profile = {
       username: user.username,

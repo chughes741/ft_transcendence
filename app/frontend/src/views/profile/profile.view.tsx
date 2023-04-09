@@ -112,7 +112,8 @@ function MatchHistoryRow(row: MatchHistoryItem): JSX.Element | null {
       <TableRow
         id="profile-match-history-row"
         sx={{
-          bgcolor: row.winner === true ? "info.dark" : "error.dark",
+          bgcolor:
+            row.score_player1 > row.score_player2 ? "info.dark" : "error.dark",
           "&:hover": {
             opacity: [0.9, 0.8, 0.7]
           }
@@ -123,10 +124,16 @@ function MatchHistoryRow(row: MatchHistoryItem): JSX.Element | null {
           component="th"
           scope="row"
         >
-          {row.match_type}
+          {row.game_type}
         </TableCell>
-        <TableCell align="center">{row.players}</TableCell>
-        <TableCell align="center">{row.results}</TableCell>
+        <TableCell align="center">
+          {row.player1}
+          <br />
+          {row.player2}
+        </TableCell>
+        <TableCell align="center">
+          {row.score_player1}-{row.score_player2}
+        </TableCell>
         <TableCell align="center">{row.date}</TableCell>
       </TableRow>
     </>

@@ -57,7 +57,7 @@ export const ProfileViewModelProvider = ({ children }) => {
     }
     socket.emit(
       ProfileEvents.GetMatchHistory,
-      { id: user, number_of_items: 50 },
+      { username: user, number_of_items: 50 },
       (matchHistoryItems: MatchHistoryItem[]) => {
         setMatchHistory(matchHistoryItems);
       }
@@ -74,7 +74,7 @@ export const ProfileViewModelProvider = ({ children }) => {
     console.log("getProfile", user);
     socket.emit(
       ProfileEvents.GetProfile,
-      { id: user },
+      { username: user },
       (profileEntity: ProfileEntity) => {
         setProfile(profileEntity);
       }
@@ -92,7 +92,7 @@ export const ProfileViewModelProvider = ({ children }) => {
     }
     console.log("getFriendsRequest", user);
     socket.emit(
-      "getFriendsRequest",
+      ProfileEvents.GetFriends,
       { username: user },
       (friends: ProfileEntity[]) => {
         setFriends(friends);
