@@ -1,8 +1,8 @@
 import React from "react";
 import { Box } from "@mui/material";
-import DevLoginBanner from "../../components/DevLoginBanner";
-import ChatAreaView from "./components/ChatArea.view";
-import { useChatViewModelContext } from "./contexts/ChatViewModelContext";
+import DevLoginBanner from "../components/DevLoginBanner";
+import ChatAreaView from "./components/ChatArea";
+import { useChatContext } from "./Chat.context";
 import UserListView from "./components/Userlist";
 
 export const ChatView: React.FC = () => {
@@ -12,7 +12,7 @@ export const ChatView: React.FC = () => {
     setTempUsername,
     rooms,
     handleContextMenuUsers
-  } = useChatViewModelContext();
+  } = useChatContext();
 
   return (
     <Box

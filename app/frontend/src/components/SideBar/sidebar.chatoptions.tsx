@@ -4,13 +4,12 @@ import ListItemButton from "@mui/material/ListItemButton";
 import ListItemIcon from "@mui/material/ListItemIcon";
 import ListItemText from "@mui/material/ListItemText";
 import GroupAddIcon from "@mui/icons-material/GroupAdd";
-import { PageState } from "src/views/root.model";
+import { PageState } from "src/root.model";
 import ButtonFunky from "../ButtonFunky";
-import { useChatViewModelContext } from "../../pages/chat/contexts/ChatViewModelContext";
+import { useChatContext } from "../../Chat/Chat.context";
 
 export default function SidebarChatOptions({ setPageState }) {
-  const { setShowJoinRoomModal, setShowCreateRoomModal } =
-    useChatViewModelContext();
+  const { setShowJoinRoomModal, setShowCreateRoomModal } = useChatContext();
 
   return (
     <List

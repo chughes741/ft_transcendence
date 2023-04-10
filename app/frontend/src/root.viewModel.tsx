@@ -1,5 +1,5 @@
-import ProfileView from "src/views/profile/profile.view";
-import { ChatView } from "../pages/chat/ChatView";
+import ProfileView from "src/Profile/Profile.view";
+import { ChatView } from "src/Chat/Chat.view";
 import GameWindow from "src/game/game.master";
 
 /**

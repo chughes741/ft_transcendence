@@ -10,9 +10,9 @@ import MenuItem from "@mui/material/MenuItem";
 import { LogoSvg } from "./logoComponent";
 import { ButtonUnstyled } from "@mui/base";
 import { Tooltip } from "@mui/material";
-import { PageState } from "src/views/root.model";
-import { useProfileViewModelContext } from "src/views/profile/profile.viewModel";
-import ButtonFunky from "../ButtonFunky";
+import { PageState } from "src/root.model";
+import { useProfileViewModelContext } from "src/Profile/Profile.viewModel";
+import ButtonFunky from "src/components//ButtonFunky";
 
 const settings = ["Profile", "Settings", "Logout"];
 
@@ -68,7 +68,7 @@ function TopBar({ setPageState }) {
           </ButtonUnstyled>
         </Box>
 
-        <Box sx={{width: "20vw", maxHeight: "20vh"}}>
+        <Box sx={{ width: "20vw", maxHeight: "20vh" }}>
           <ButtonFunky
             content={"Play a game"}
             width={"100%"}
@@ -85,10 +85,11 @@ function TopBar({ setPageState }) {
               onClick={handleOpenUserMenu}
               sx={{ p: 0, mr: 2 }}
             >
-              {profile !== null
-              ? <Avatar src={profile.avatar}/>
-              : <Avatar alt=""/>
-              }
+              {profile !== null ? (
+                <Avatar src={profile.avatar} />
+              ) : (
+                <Avatar alt="" />
+              )}
             </IconButton>
           </Tooltip>
           <Menu

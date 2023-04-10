@@ -13,9 +13,9 @@ import {
   Button
 } from "@mui/material";
 import { UserStatus } from "kingpong-lib";
-import ButtonFunky from "../../../components/ButtonFunky";
-import { useChatViewModelContext } from "../contexts/ChatViewModelContext";
-import { socket } from "../../../contexts/WebSocketContext";
+import ButtonFunky from "../../components/ButtonFunky";
+import { useChatContext } from "../Chat.context";
+import { socket } from "../../contexts/WebSocket.context";
 
 export interface UserEntity {
   username: string;
@@ -43,7 +43,7 @@ export const InviteUsersModal: React.FC<InviteUsersToRoomProps> = ({
   selectedUsers,
   setSelectedUsers
 }) => {
-  const { currentRoomName } = useChatViewModelContext();
+  const { currentRoomName } = useChatContext();
 
   const handleInvite = () => {
     if (selectedUsers.length <= 0) {

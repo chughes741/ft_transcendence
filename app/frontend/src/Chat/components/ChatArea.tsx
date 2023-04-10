@@ -1,16 +1,16 @@
 /***************/
 /*     CSS     */
 /***************/
-import "../styles/ChatArea.css";
-import ChatMessagesContainerView from "./ChatMessagesContainer.view";
+import "src/styles/chat/ChatArea.css";
+import ChatMessagesContainerView from "./ChatMessagesContainer";
 
-import "../styles/ChatArea.css";
-import ChatInputContainerView from "./ChatInputContainer.view";
+import "src/styles/chat/ChatArea.css";
+import ChatInputContainerView from "./ChatInputContainer";
 import { Grid } from "@mui/material";
-import { useChatViewModelContext } from "../contexts/ChatViewModelContext";
+import { useChatContext } from "src/Chat/Chat.context";
 
 const ChatAreaView = () => {
-  const { currentRoomName } = useChatViewModelContext();
+  const { currentRoomName } = useChatContext();
 
   const GridStyle = {
     height: "100%",

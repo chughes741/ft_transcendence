@@ -3,7 +3,7 @@ import { Box, Container } from "@mui/material";
 import SideBar from "src/components/SideBar/SideBar";
 import TopBar from "src/components/TopBar/TopBar";
 import { RootViewModel } from "./root.viewModel";
-import { usePageStateContext } from "../contexts/PageStateContext";
+import { usePageStateContext } from "./contexts/PageState.context";
 
 /**
  * Helmet with dynamic page names

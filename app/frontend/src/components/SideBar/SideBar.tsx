@@ -2,7 +2,7 @@ import Box from "@mui/material/Box";
 import Drawer from "@mui/material/Drawer";
 import Divider from "@mui/material/Divider";
 import SidebarChatOptions from "./sidebar.chatoptions";
-import RoomList from "../../pages/chat/components/RoomList";
+import RoomList from "../../Chat/components/RoomList";
 
 const drawerWidth = "20%";
 

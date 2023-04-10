@@ -1,13 +1,9 @@
 import React, { useRef } from "react";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
-import { socket } from "src/contexts/WebSocketContext";
+import { socket } from "src/contexts/WebSocket.context";
 //Local includes
 import { GameStateDto } from "./game.types";
-import {
-  BallConfig,
-  GameColours,
-  PaddleConfig
-} from "./game.config";
+import { BallConfig, GameColours, PaddleConfig } from "./game.config";
 import { Mesh } from "three";
 
 /**
