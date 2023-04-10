@@ -542,15 +542,10 @@ export const ChatViewModelProvider = ({ children }) => {
       console.log(room);
       addChatRoom(room);
       setShowNewRoomSnackbar(true);
-
-      // TODO: Add a snackbar notification to inform the user that they have been added to a new room
-      // enqueueSnackbar(`You have been added to the room ${room.name}`, {
-      //   variant: "info"
-      // });
     });
 
     return () => {
-      socket.off("onMessage");
+      socket.off("newMessage");
       socket.off("newChatRoomMember");
       socket.off("addedToNewChatRoom");
       socket.off("chatRoomMemberLeft");

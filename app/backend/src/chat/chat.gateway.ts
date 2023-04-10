@@ -384,8 +384,7 @@ export class ChatGateway
     logger.log(`Message sent successfully: `);
     console.log(ret);
     // If nothing went wrong, send the message to the room
-    this.server.to(sendDto.roomName).emit("roomMessage", ret);
-    this.server.emit("newMessage", ret); // FIXME: temporarily broadcast to all clients, for testing purposes
+    this.server.to(sendDto.roomName).emit("newMessage", ret);
     logger.log(
       `User ${sendDto.sender} sent message in room ${sendDto.roomName}: ${sendDto.content}`
     );
