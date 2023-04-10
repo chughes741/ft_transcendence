@@ -44,6 +44,7 @@ export class AuthDto {
 export class UserDto {
   username?: string;
   password?: string;
+  avatar?: string;
 }
 
 export class ProfileDto {

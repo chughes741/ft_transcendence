@@ -24,8 +24,6 @@ export class LoginService {
 
     try {
       const hash = await argon.hash(dto.password);
-      Logger.log("dto.username: " + dto.username);
-      Logger.log("dto.hash: " + dto.password);
       const user = await this.prismaService.user.create({
         data: {
           username: dto.username,

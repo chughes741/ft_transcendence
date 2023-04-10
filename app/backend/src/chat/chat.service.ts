@@ -1,11 +1,20 @@
 import { Injectable, Logger } from "@nestjs/common";
-import { ChatMemberRank, ChatRoomStatus } from "@prisma/client";
+import {
+  ChatMember,
+  ChatMemberRank,
+  ChatMemberStatus,
+  ChatRoom,
+  ChatRoomStatus,
+  User
+} from "@prisma/client";
 import { PrismaService } from "../prisma/prisma.service";
 import { UserConnectionsService } from "../user-connections.service";
 import {
   ChatRoomEntity,
   CreateChatRoomDto,
+  InviteUsersToRoomRequest,
   JoinRoomDto,
+  LeaveRoomRequest,
   SendMessageDto
 } from "./chat.gateway";
 import { CreateChatDto } from "./dto/create-chat.dto";
@@ -23,9 +32,31 @@ export class ChatService {
     private userConnectionsService: UserConnectionsService
   ) {}
 
-  create(createChatDto: CreateChatDto) {
-    logger.log("Created a new chat");
-    return createChatDto;
+  async getChatRoomEntity(
+    room: ChatRoom,
+    queryingMemberRank: ChatMemberRank
+  ): Promise<ChatRoomEntity | Error> {
+    const latestMessage = await this.prismaService.getLatestMessage(room.id);
+    const lastActivity = latestMessage
+      ? latestMessage.createdAt
+      : room.createdAt;
+    const roomMembers = await this.prismaService.getRoomMembers(room.name);
+    // FIXME: remove avatars?
+    const avatars = roomMembers.map((member) =>
+      member.member.avatar === "default_avatar.png"
+        ? `https://i.pravatar.cc/150?u=${member.member.username}`
+        : member.member.avatar
+    );
+
+    return {
+      name: room.name,
+      queryingUserRank: queryingMemberRank,
+      status: room.status,
+      latestMessage: latestMessage ? new MessageEntity(latestMessage) : null,
+      lastActivity: lastActivity,
+      avatars,
+      members: roomMembers.map((member) => new ChatMemberEntity(member))
+    };
   }
 
   /**
@@ -122,44 +153,25 @@ export class ChatService {
       );
     }
 
-    const latestMessage = await this.prismaService.getLatestMessage(room.id);
-    const lastActivity = latestMessage
-      ? latestMessage.createdAt
-      : room.createdAt;
-    const roomMembers = await this.prismaService.getRoomMembers(room.name);
-    const avatars = roomMembers.map((member) =>
-      member.member.avatar === "default_avatar.png"
-        ? `https://i.pravatar.cc/150?u=${member.member.username}`
-        : member.member.avatar
-    );
-
-    return {
-      name: room.name,
-      queryingUserRank: chatMember.rank,
-      status: room.status,
-      latestMessage: latestMessage ? new MessageEntity(latestMessage) : null,
-      lastActivity: lastActivity,
-      avatars,
-      members: roomMembers.map((member) => new ChatMemberEntity(member))
-    };
+    return this.getChatRoomEntity(room, chatMember.rank);
   }
 
-  async leaveRoom(roomName: string, user: string): Promise<boolean> {
-    const userId = await this.prismaService.getUserIdByNick(user);
-    const roomId = await this.prismaService.getChatRoomId(roomName);
+  async leaveRoom(req: LeaveRoomRequest): Promise<ChatMember | Error> {
+    const userId = await this.prismaService.getUserIdByNick(req.username);
+    logger.log(`User ${req.username} is leaving room ${req.roomName}`);
+    const roomId = await this.prismaService.getChatRoomId(req.roomName);
     if (!roomId) {
-      return false;
+      return Error("Room not found");
     }
     const chatMember = await this.prismaService.chatMember.findFirst({
       where: { memberId: userId, roomId: roomId }
     });
     if (!chatMember) {
-      return false;
+      return Error("User is not a member of this room");
     }
-    await this.prismaService.chatMember.delete({
+    const deletedMember = await this.prismaService.chatMember.delete({
       where: { id: chatMember.id }
     });
-    return true;
   }
 
   /**
@@ -250,7 +262,8 @@ export class ChatService {
       try {
         const prismaReturn = await this.prismaService.addUser({
           username,
-          password: "secret"
+          password: "secret",
+          avatar: `https://i.pravatar.cc/150?u=${username}`
         });
         logger.log(`User ${username} added to the database: `);
         console.log(prismaReturn);
@@ -298,11 +311,11 @@ export class ChatService {
     //get all users that are members of a specific Chat Room (with string name)
     const userMembers: ChatMemberPrismaType[] =
       await this.prismaService.getRoomMembers(chatRoomName);
-    const CMEntities: ChatMemberEntity[] = userMembers.map(
+    const chatMembers: ChatMemberEntity[] = userMembers.map(
       (chatMember) => new ChatMemberEntity(chatMember)
     );
     if (userMembers.length > 0) {
-      return CMEntities;
+      return chatMembers;
     }
     console.log("There is no members in room");
     return [];
@@ -331,10 +344,6 @@ export class ChatService {
   }
 
   async kickMember(kickDto: kickMemberDto): Promise<string> {
-    const ChatMember = await this.prismaService.getChatMember(
-      kickDto.ChatMemberToKickId
-    );
-
     if (
       kickDto.memberRequestingRank === ChatMemberRank.USER ||
       kickDto.memberToKickStatus === ChatMemberRank.OWNER
@@ -351,5 +360,42 @@ export class ChatService {
       kickDto.ChatMemberToKickName +
       " kicked out successfully !"
     );
+  }
+
+  // inviteUsersToRoom takes in a InviteUsersToRoomRequest and returns a ChatMemberEntity[] if successful
+  async inviteUsersToRoom(
+    req: InviteUsersToRoomRequest
+  ): Promise<ChatMemberEntity[] | Error> {
+    // Do this in a try/catch block to catch Prisma errors
+    const roomId = await this.prismaService.getChatRoomId(req.roomName);
+    const invitedUsers: User[] = [];
+    for (const username of req.usernames) {
+      try {
+        const invitedUser = await this.prismaService.user.findUnique({
+          where: { username }
+        });
+        // Add the user to the database as a ChatMember
+        this.prismaService.addChatMember(
+          invitedUser.id,
+          roomId,
+          ChatMemberRank.USER
+        );
+        invitedUsers.push(invitedUser);
+      } catch (e) {
+        logger.log(`Error adding user ${username}`, e);
+      }
+    }
+    logger.log("After the try/catch, Invited users:");
+    console.log(invitedUsers);
+    return invitedUsers.map((user) => {
+      return {
+        username: user.username,
+        roomName: req.roomName,
+        avatar: user.avatar,
+        chatMemberstatus: ChatMemberStatus.OK,
+        userStatus: user.status,
+        rank: ChatMemberRank.USER
+      };
+    });
   }
 }

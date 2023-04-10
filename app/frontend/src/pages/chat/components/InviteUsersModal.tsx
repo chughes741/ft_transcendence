@@ -15,11 +15,17 @@ import {
 import { UserStatus } from "kingpong-lib";
 import ButtonFunky from "../../../components/ButtonFunky";
 import { useChatViewModelContext } from "../contexts/ChatViewModelContext";
+import { socket } from "../../../contexts/WebSocketContext";
 
 export interface UserEntity {
   username: string;
   avatar: string;
   status: UserStatus;
+}
+
+export interface InviteUsersToRoomRequest {
+  roomName: string;
+  usernames: string[];
 }
 
 interface InviteUsersToRoomProps {
@@ -44,6 +50,15 @@ export const InviteUsersModal: React.FC<InviteUsersToRoomProps> = ({
       alert("Please select at least one user to invite.");
       return;
     }
+
+    const req: InviteUsersToRoomRequest = {
+      roomName: currentRoomName,
+      usernames: selectedUsers.map((user) => user.username)
+    };
+    socket.emit("inviteUsersToRoom", req, (res: any) => {
+      // TODO: implement user notification behavior based on the response
+      console.log("Invite users response: ", res);
+    });
 
     closeModal();
   };
@@ -79,9 +94,9 @@ export const InviteUsersModal: React.FC<InviteUsersToRoomProps> = ({
             <MenuItem {...props}>
               <Badge
                 color={
-                  option.status === 0
-                    ? "primary"
-                    : option.status === 1
+                  option.status === UserStatus.ONLINE
+                    ? "success"
+                    : option.status === UserStatus.OFFLINE
                     ? "error"
                     : "warning"
                 }
@@ -94,7 +109,7 @@ export const InviteUsersModal: React.FC<InviteUsersToRoomProps> = ({
               >
                 <Avatar
                   alt={option.username}
-                  src={`https://i.pravatar.cc/150?u=${option.username}`}
+                  src={option.avatar}
                   sx={{ width: 40, height: 40, marginRight: 1 }}
                 />
               </Badge>

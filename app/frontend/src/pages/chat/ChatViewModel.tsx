@@ -10,6 +10,11 @@ import { UserListItem } from "./components/Userlist";
 export type ChatRoomStatus = "PUBLIC" | "PRIVATE" | "PASSWORD";
 export type ChatMemberRank = "USER" | "ADMIN" | "OWNER";
 
+export type RoomMemberEntity = {
+  roomName: string;
+  user: UserListItem;
+};
+
 export type MessagePayload = {
   username: string;
   roomName: string;
@@ -42,12 +47,17 @@ export type DevError = {
   error: string;
 };
 
-export type CreateRoomType = {
+export type CreateRoomRequest = {
   name: string;
   status: "PUBLIC" | "PRIVATE" | "PASSWORD";
   password: string;
   owner: string;
 };
+
+export class LeaveRoomRequest {
+  roomName: string;
+  username: string;
+}
 
 export interface ChatViewModelType extends ChatModelType {
   joinRoom: (roomName: string, password: string) => Promise<boolean>;
@@ -69,33 +79,19 @@ export const ChatViewModelProvider = ({ children }) => {
   /***********************/
   /*   State Variables   */
   /***********************/
+  const chatModel = useChatModel();
   const {
     tempUsername,
     setTempUsername,
     currentRoomName,
     setCurrentRoomName,
+    setShowNewRoomSnackbar,
     rooms,
     setRooms,
-    currentRoomMessages,
     setCurrentRoomMessages,
     contextMenuData,
-    contextMenuUsersData,
-    contextMenuPosition,
-    contextMenuUsersPosition,
-    handleContextMenu,
-    handleContextMenuUsers,
-    contextMenuRoomsVisible,
-    contextMenuUsersVisible,
-    setContextMenuRoomsVisible,
-    setContextMenuUsersVisible,
-    showCreateRoomModal,
-    setShowCreateRoomModal,
-    showJoinRoomModal,
-    setShowJoinRoomModal,
-    showInviteUsersModal,
-    setShowInviteUsersModal,
-    truncateText
-  } = useChatModel();
+    setContextMenuRoomsVisible
+  } = chatModel;
 
   const { pageState, setPageState } = usePageStateContext();
 
@@ -143,7 +139,8 @@ export const ChatViewModelProvider = ({ children }) => {
       isOwn: messagePayload.username === tempUsername,
       displayUser: true,
       displayTimestamp: true,
-      displayDate: true
+      displayDate: true,
+      avatar: rooms[messagePayload.roomName]?.avatars[messagePayload.username]
     };
   };
 
@@ -164,10 +161,37 @@ export const ChatViewModelProvider = ({ children }) => {
     });
   };
 
+  const getChatRoomMembers = async (roomName: string) => {
+    return new Promise<{ [key: string]: UserListItem }>((resolve) => {
+      socket.emit(
+        "listUsers",
+        { chatRoomName: roomName },
+        (users: UserListItem[]) => {
+          const usersObj = users.reduce<{ [key: string]: UserListItem }>(
+            (acc, user) => {
+              acc[user.username] = user;
+              return acc;
+            },
+            {}
+          );
+          resolve(usersObj);
+        }
+      );
+    });
+  };
+
   // Adds a new room to the rooms state variable
   const addChatRoom = async (
     chatRoomPayload: ChatRoomPayload
   ): Promise<RoomType> => {
+    const userList = await getChatRoomMembers(chatRoomPayload.name);
+
+    // Validate the payload
+    if (!chatRoomPayload.name) {
+      console.log("In addChatRoom, invalid payload: ", chatRoomPayload);
+      return;
+    }
+
     return new Promise<RoomType>((resolve) => {
       const {
         name,
@@ -190,7 +214,7 @@ export const ChatViewModelProvider = ({ children }) => {
         lastActivity,
         hasUnreadMessages: false,
         avatars,
-        users: {}
+        users: userList
       };
 
       setRooms((prevRooms) => {
@@ -242,7 +266,7 @@ export const ChatViewModelProvider = ({ children }) => {
     roomPassword: string
   ): Promise<boolean> => {
     return new Promise<boolean>((resolve) => {
-      const roomRequest: CreateRoomType = {
+      const roomRequest: CreateRoomRequest = {
         name: roomName,
         status: roomStatus,
         password: roomPassword,
@@ -333,18 +357,27 @@ export const ChatViewModelProvider = ({ children }) => {
     return new Promise<boolean>((resolve) => {
       if (!contextMenuData) return;
       const roomName = contextMenuData.name;
-      socket.emit("leaveRoom", { roomName }, (response: DevError | string) => {
-        if (typeof response === "object" && response.error) {
-          console.log("Error response from leave room: ", response.error);
-          resolve(false);
+      socket.emit(
+        "leaveRoom",
+        { roomName, username: tempUsername },
+        (response: DevError | string) => {
+          if (typeof response === "object" && response.error) {
+            console.log("Error response from leave room: ", response.error);
+            resolve(false);
+          }
         }
-      });
+      );
       setRooms((prevRooms) => {
         const newRooms = { ...prevRooms };
         delete newRooms[roomName];
         return newRooms;
       });
       setContextMenuRoomsVisible(false);
+      if (currentRoomName === roomName) {
+        setCurrentRoomMessages([]);
+        setCurrentRoomName("");
+        setPageState(PageState.Home);
+      }
       resolve(true);
     });
   };
@@ -419,6 +452,7 @@ export const ChatViewModelProvider = ({ children }) => {
           joinRoom("PublicRoom", "");
           joinRoom("PrivateRoom", "");
           joinRoom("PasswordProtectedRoom", "secret");
+          joinRoom("test", "secret");
           resolve(true);
         }
       });
@@ -457,7 +491,7 @@ export const ChatViewModelProvider = ({ children }) => {
       console.log("Successfully connected to the server");
     });
 
-    socket.on("onMessage", (newMessage: MessagePayload): boolean => {
+    socket.on("newMessage", (newMessage: MessagePayload): boolean => {
       console.log("Ding ding, you've got mail:", newMessage);
 
       const messageData = convertMessagePayloadToMessageType(newMessage);
@@ -466,8 +500,55 @@ export const ChatViewModelProvider = ({ children }) => {
       return newMessage.roomName === currentRoomName;
     });
 
+    socket.on("newChatRoomMember", (member: RoomMemberEntity) => {
+      console.log("New room member: ", member.user);
+      setRooms((prevRooms) => {
+        const newRooms = { ...prevRooms };
+        // Protection, cause I'm apparently too dumb to send a message to
+        // everyone except the sender from the backend...
+        if (!prevRooms || !prevRooms[member.roomName]) return newRooms;
+        newRooms[member.roomName] = prevRooms[member.roomName];
+        newRooms[member.roomName].users[member.user.username] = member.user;
+        return newRooms;
+      });
+    });
+
+    socket.on(
+      "chatRoomMemberLeft",
+      ({ roomName, username }: LeaveRoomRequest) => {
+        console.log(`User ${username} left room ${roomName}`);
+        setRooms((prevRooms) => {
+          const newRooms = { ...prevRooms };
+          delete newRooms[roomName].users[username];
+          return newRooms;
+        });
+      }
+    );
+
+    socket.on("chatRoomMemberKicked", (member: RoomMemberEntity) => {
+      console.log("Room member kicked: ", member.user);
+      setRooms((prevRooms) => {
+        const newRooms = { ...prevRooms };
+        delete newRooms[member.roomName].users[member.user.username];
+        return newRooms;
+      });
+    });
+
+    socket.on("addedToNewChatRoom", (room) => {
+      console.log(
+        "You have been added to a new chat room, adding it to the list"
+      );
+      console.log(room);
+      addChatRoom(room);
+      setShowNewRoomSnackbar(true);
+    });
+
     return () => {
-      socket.off("onMessage");
+      socket.off("newMessage");
+      socket.off("newChatRoomMember");
+      socket.off("addedToNewChatRoom");
+      socket.off("chatRoomMemberLeft");
+      socket.off("chatRoomMemberKicked");
     };
   }, [socket, tempUsername]);
 
@@ -483,6 +564,29 @@ export const ChatViewModelProvider = ({ children }) => {
     }
   }, [socket, ""]);
 
+  // FIXME: temporary addition for dev build to test user creation
+  // If no user is logged in, try to create a temporary user
+  useEffect(() => {
+    // Try to create a temporary user
+    if (tempUsername) {
+      setRooms(() => {
+        return {};
+      });
+      const createTempUser = async (username: string): Promise<void> => {
+        const userCreated = await createUser(username);
+        if (!userCreated) {
+          // Try to login instead
+          const userLogged = await userLogin(username);
+          if (!userLogged) {
+            console.log("Failed to create or login to user", username);
+          }
+        }
+      };
+
+      createTempUser(tempUsername);
+    }
+  }, [tempUsername, ""]);
+
   // Select the current room only once the room is ready
   useEffect(() => {
     if (currentRoomName && rooms && rooms[currentRoomName]) {
@@ -496,7 +600,7 @@ export const ChatViewModelProvider = ({ children }) => {
     }
   }, [currentRoomName, rooms]);
 
-  // Send "listUsers" event to server to get the user list
+  // Get the list of users in the current room
   useEffect(() => {
     if (
       rooms &&
@@ -519,55 +623,10 @@ export const ChatViewModelProvider = ({ children }) => {
     }
   }, [socket, currentRoomName, rooms]);
 
-  useEffect(() => {
-    // Try to create a temporary user
-    if (tempUsername) {
-      setRooms(() => {
-        return {};
-      });
-      const createTempUser = async (username: string): Promise<void> => {
-        const userCreated = await createUser(username);
-        if (!userCreated) {
-          // Try to log in instead
-          const userLogged = await userLogin(username);
-          if (!userLogged) {
-            console.log("Failed to create or login to user", username);
-          }
-        }
-      };
-
-      createTempUser(tempUsername).then();
-    }
-  }, [tempUsername, ""]);
-
   return (
     <ChatViewModelContext.Provider
       value={{
-        tempUsername,
-        setTempUsername,
-        currentRoomName,
-        setCurrentRoomName,
-        rooms,
-        setRooms,
-        currentRoomMessages,
-        setCurrentRoomMessages,
-        contextMenuData,
-        contextMenuUsersData,
-        contextMenuPosition,
-        contextMenuUsersPosition,
-        handleContextMenu,
-        handleContextMenuUsers,
-        contextMenuRoomsVisible,
-        contextMenuUsersVisible,
-        setContextMenuRoomsVisible,
-        setContextMenuUsersVisible,
-        showCreateRoomModal,
-        setShowCreateRoomModal,
-        showJoinRoomModal,
-        setShowJoinRoomModal,
-        showInviteUsersModal,
-        setShowInviteUsersModal,
-        truncateText,
+        ...chatModel,
         joinRoom,
         sendRoomMessage,
         createNewRoom,

@@ -8,7 +8,7 @@ import {
   DialogContentText,
   TextField,
   IconButton,
-  DialogActions,
+  DialogActions
 } from "@mui/material";
 import { useRoomModal } from "./useRoomModal";
 import ButtonFunky from "../../../components/ButtonFunky";
