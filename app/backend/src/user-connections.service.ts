@@ -8,6 +8,11 @@ const logger = new Logger("UserConnectionsService");
 export class UserConnectionsService {
   private userConnections: Map<string, string[]> = new Map();
 
+  // Returns all of the socketIds for a given user
+  getUserSockets(username: string): string[] {
+    return this.userConnections.get(username);
+  }
+
   getUserBySocket(socketId: string): string {
     const userArray = Array.from(this.userConnections.entries()).find(
       ([, connections]) => connections.includes(socketId)

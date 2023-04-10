@@ -1,7 +1,9 @@
 import { Injectable, Logger } from "@nestjs/common";
 import {
+  ChatMember,
   ChatMemberRank,
   ChatMemberStatus,
+  ChatRoom,
   ChatRoomStatus,
   User
 } from "@prisma/client";
@@ -29,9 +31,31 @@ export class ChatService {
     private userConnectionsService: UserConnectionsService
   ) {}
 
-  create(createChatDto: CreateChatDto) {
-    logger.log("Created a new chat");
-    return createChatDto;
+  async getChatRoomEntity(
+    room: ChatRoom,
+    queryingMemberRank: ChatMemberRank
+  ): Promise<ChatRoomEntity | Error> {
+    const latestMessage = await this.prismaService.getLatestMessage(room.id);
+    const lastActivity = latestMessage
+      ? latestMessage.createdAt
+      : room.createdAt;
+    const roomMembers = await this.prismaService.getRoomMembers(room.name);
+    // FIXME: remove avatars?
+    const avatars = roomMembers.map((member) =>
+      member.member.avatar === "default_avatar.png"
+        ? `https://i.pravatar.cc/150?u=${member.member.username}`
+        : member.member.avatar
+    );
+
+    return {
+      name: room.name,
+      queryingUserRank: queryingMemberRank,
+      status: room.status,
+      latestMessage: latestMessage ? new MessageEntity(latestMessage) : null,
+      lastActivity: lastActivity,
+      avatars,
+      members: roomMembers.map((member) => new ChatMemberEntity(member))
+    };
   }
 
   /**
@@ -128,26 +152,7 @@ export class ChatService {
       );
     }
 
-    const latestMessage = await this.prismaService.getLatestMessage(room.id);
-    const lastActivity = latestMessage
-      ? latestMessage.createdAt
-      : room.createdAt;
-    const roomMembers = await this.prismaService.getRoomMembers(room.name);
-    const avatars = roomMembers.map((member) =>
-      member.member.avatar === "default_avatar.png"
-        ? `https://i.pravatar.cc/150?u=${member.member.username}`
-        : member.member.avatar
-    );
-
-    return {
-      name: room.name,
-      queryingUserRank: chatMember.rank,
-      status: room.status,
-      latestMessage: latestMessage ? new MessageEntity(latestMessage) : null,
-      lastActivity: lastActivity,
-      avatars,
-      members: roomMembers.map((member) => new ChatMemberEntity(member))
-    };
+    return this.getChatRoomEntity(room, chatMember.rank);
   }
 
   async leaveRoom(roomName: string, user: string): Promise<boolean> {

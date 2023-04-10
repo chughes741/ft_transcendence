@@ -46,7 +46,6 @@ export class PrismaService extends PrismaClient {
         }
       }
     });
-    Logger.log(configService.get("DATABASE_URL"));
   }
 
   /**

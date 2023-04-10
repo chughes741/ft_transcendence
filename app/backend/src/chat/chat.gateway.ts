@@ -134,6 +134,19 @@ export class ChatGateway
 
     logger.log(`Client disconnected: ${client.id}`);
   }
+  // Create a sendEventToAllUserSockets(member.username, "newChatRoomMember", newMember) function
+  async sendEventToAllUserSockets(username: string, event: string, data: any) {
+    logger.log(`Sending event ${event} to user ${username}`);
+    const userSockets = this.userConnectionsService.getUserSockets(username);
+    if (!userSockets) {
+      logger.error(`User ${username} has no sockets`);
+      return;
+    }
+    console.log(data);
+    userSockets.forEach((socketId) => {
+      this.server.to(socketId).emit(event, data);
+    });
+  }
 
   /**
    * Temporary function to get all available users
@@ -397,14 +410,32 @@ export class ChatGateway
 
     const chatMembers = await this.chatService.inviteUsersToRoom(req);
     if (chatMembers instanceof Error) return false;
-    chatMembers.forEach((member) => {
-      const newMember: RoomMemberEntity = {
+    const room = await this.prismaService.chatRoom.findUnique({
+      where: { name: req.roomName }
+    });
+
+    chatMembers.forEach(async (member) => {
+      const newMemberEntity: RoomMemberEntity = {
         roomName: req.roomName,
         user: member
       };
-      this.server.to(req.roomName).emit("newChatRoomMember", newMember);
-      // sendEventToAllUserSockets(member.username, "newChatRoomMember", newMember);
+      this.server.to(req.roomName).emit("newChatRoomMember", newMemberEntity);
+
+      const roomInfo = await this.chatService.getChatRoomEntity(
+        room,
+        member.rank
+      );
+
+      logger.log(`roomInfo: `);
+      console.log(roomInfo);
+
+      this.sendEventToAllUserSockets(
+        member.username,
+        "addedToNewChatRoom",
+        roomInfo
+      );
     });
+    return chatMembers.map((member) => member.username);
   }
 
   @SubscribeMessage("updateChatMemberStatus")

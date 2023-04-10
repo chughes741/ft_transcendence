@@ -200,6 +200,12 @@ export const ChatViewModelProvider = ({ children }) => {
   ): Promise<RoomType> => {
     const userList = await getChatRoomMembers(chatRoomPayload.name);
 
+    // Validate the payload
+    if (!chatRoomPayload.name) {
+      console.log("In addChatRoom, invalid payload: ", chatRoomPayload);
+      return;
+    }
+
     return new Promise<RoomType>((resolve) => {
       const {
         name,
@@ -537,9 +543,23 @@ export const ChatViewModelProvider = ({ children }) => {
       });
     });
 
+    // Socket listener for "addedToNewChatRoom", when you are added to a room
+    socket.on("addedToNewChatRoom", (room) => {
+      console.log(
+        "***************************************************Added to new room: "
+      );
+      console.log(room);
+      addChatRoom(room);
+      // TODO: Add a snackbar notification to inform the user that they have been added to a new room
+      // enqueueSnackbar(`You have been added to the room ${room.name}`, {
+      //   variant: "info"
+      // });
+    });
+
     return () => {
       socket.off("onMessage");
       socket.off("newChatRoomMember");
+      socket.off("addedToNewChatRoom");
     };
   }, [socket, tempUsername]);
 
