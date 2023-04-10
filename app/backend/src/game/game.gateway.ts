@@ -72,7 +72,7 @@ export class GameGateway {
    * @todo return GameStartEntity
    */
   @SubscribeMessage("playerReady")
-  async playerReady(@MessageBody() is_ready: Boolean) {
+  async playerReady(@MessageBody() is_ready: boolean) {
     this.gameService.gameStart();
   }
 

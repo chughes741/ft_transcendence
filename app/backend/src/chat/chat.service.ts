@@ -368,7 +368,7 @@ export class ChatService {
   ): Promise<ChatMemberEntity[] | Error> {
     // Do this in a try/catch block to catch Prisma errors
     const roomId = await this.prismaService.getChatRoomId(req.roomName);
-    let invitedUsers: User[] = [];
+    const invitedUsers: User[] = [];
     for (const username of req.usernames) {
       try {
         const invitedUser = await this.prismaService.user.findUnique({

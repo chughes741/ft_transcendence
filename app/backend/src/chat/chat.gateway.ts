@@ -139,6 +139,7 @@ export class ChatGateway
 
     logger.log(`Client disconnected: ${client.id}`);
   }
+
   // Create a sendEventToAllUserSockets(member.username, "newChatRoomMember", newMember) function
   async sendEventToAllUserSockets(username: string, event: string, data: any) {
     logger.log(`Sending event ${event} to user ${username}`);
@@ -150,6 +151,17 @@ export class ChatGateway
     console.log(data);
     userSockets.forEach((socketId) => {
       this.server.to(socketId).emit(event, data);
+    });
+  }
+
+  async bindAllUserSocketsToRoom(username: string, roomName: string) {
+    const userSockets = this.userConnectionsService.getUserSockets(username);
+    if (!userSockets) {
+      logger.error(`User ${username} has no sockets`);
+      return;
+    }
+    userSockets.forEach((socketId) => {
+      this.server.sockets.sockets.get(socketId).join(roomName);
     });
   }
 
@@ -444,6 +456,8 @@ export class ChatGateway
         "addedToNewChatRoom",
         roomInfo
       );
+      // FIXME: Find a way to get the invited client's socket from the socket ID...
+      this.bindAllUserSocketsToRoom(member.username, req.roomName);
     });
     return chatMembers.map((member) => member.username);
   }
