@@ -2,10 +2,10 @@ import { useEffect } from "react";
 import { usePageStateContext } from "src/contexts/PageState.context";
 import { socket } from "src/contexts/WebSocket.context";
 import { PageState } from "src/root.model";
-import { ChatModelType, useChatModel } from "./Chat.model";
-import { MessageType } from "src/Chat/components/Message";
-import { ChatContext } from "src/Chat/Chat.context";
-import { UserListItem } from "src/Chat/components/Userlist";
+import { ChatModelType, useChatModel } from "./chat.model";
+import { MessageType } from "src/chat/components/Message";
+import { ChatContext } from "src/chat/chat.context";
+import { UserListItem } from "src/chat/components/Userlist";
 
 export type ChatRoomStatus = "PUBLIC" | "PRIVATE" | "PASSWORD";
 export type ChatMemberRank = "USER" | "ADMIN" | "OWNER";

@@ -14,7 +14,7 @@ import {
 } from "@mui/material";
 import { UserStatus } from "kingpong-lib";
 import ButtonFunky from "../../components/ButtonFunky";
-import { useChatContext } from "../Chat.context";
+import { useChatContext } from "../chat.context";
 import { socket } from "../../contexts/WebSocket.context";
 
 export interface UserEntity {

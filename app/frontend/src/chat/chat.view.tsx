@@ -2,7 +2,7 @@ import React from "react";
 import { Box } from "@mui/material";
 import DevLoginBanner from "../components/DevLoginBanner";
 import ChatAreaView from "./components/ChatArea";
-import { useChatContext } from "./Chat.context";
+import { useChatContext } from "./chat.context";
 import UserListView from "./components/Userlist";
 
 export const ChatView: React.FC = () => {

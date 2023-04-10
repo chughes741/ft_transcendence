@@ -6,7 +6,7 @@ import ListItemText from "@mui/material/ListItemText";
 import GroupAddIcon from "@mui/icons-material/GroupAdd";
 import { PageState } from "src/root.model";
 import ButtonFunky from "../ButtonFunky";
-import { useChatContext } from "../../Chat/Chat.context";
+import { useChatContext } from "../../chat/chat.context";
 
 export default function SidebarChatOptions({ setPageState }) {
   const { setShowJoinRoomModal, setShowCreateRoomModal } = useChatContext();

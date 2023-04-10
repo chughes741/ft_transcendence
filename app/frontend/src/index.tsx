@@ -6,8 +6,8 @@ import "./index.css";
 import { socket, WebSocketProvider } from "src/contexts/WebSocket.context";
 import { CssBaseline, ThemeProvider } from "@mui/material";
 import { PageStateProvider } from "./contexts/PageState.context";
-import { ChatViewModelProvider } from "src/Chat/Chat.viewModel";
-import { ProfileViewModelProvider } from "./Profile/Profile.viewModel";
+import { ChatViewModelProvider } from "src/chat/chat.viewModel";
+import { ProfileViewModelProvider } from "./profile/profile.viewModel";
 
 import customTheme from "src/theme";
 import { RootView } from "./root.view";

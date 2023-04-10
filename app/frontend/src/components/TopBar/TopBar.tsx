@@ -11,8 +11,8 @@ import { LogoSvg } from "./logoComponent";
 import { ButtonUnstyled } from "@mui/base";
 import { Tooltip } from "@mui/material";
 import { PageState } from "src/root.model";
-import { useProfileViewModelContext } from "src/Profile/Profile.viewModel";
-import ButtonFunky from "src/components//ButtonFunky";
+import { useProfileViewModelContext } from "src/profile/profile.viewModel";
+import ButtonFunky from "src/components/ButtonFunky";
 
 const settings = ["Profile", "Settings", "Logout"];
 

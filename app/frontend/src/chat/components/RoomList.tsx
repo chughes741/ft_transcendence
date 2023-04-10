@@ -13,13 +13,13 @@ import {
   ListItemIcon,
   ListItemText
 } from "@mui/material";
-import { useChatContext } from "../Chat.context";
+import { useChatContext } from "../chat.context";
 import { FaCrown, FaGlobe, FaLock, FaUserLock } from "react-icons/fa";
 
 import { Snackbar } from "@mui/material";
 import Alert from "@mui/material/Alert";
 
-import { ChatRoomStatus } from "../Chat.viewModel";
+import { ChatRoomStatus } from "../chat.viewModel";
 import { socket } from "../../contexts/WebSocket.context";
 import { InviteUsersModal } from "./InviteUsersModal";
 

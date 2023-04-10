@@ -1,5 +1,5 @@
 import React from "react";
-import { useChatContext } from "../Chat/Chat.context";
+import { useChatContext } from "../chat/chat.context";
 import ContextMenu from "./ContextMenu";
 import { usePageStateContext } from "../contexts/PageState.context";
 import { PageState } from "src/root.model";

@@ -9,7 +9,7 @@ import {
 import GroupIcon from "@mui/icons-material/Group";
 import ContextMenuUsers from "../../components/ContextMenuUsers";
 import { UserStatus } from "kingpong-lib";
-import { ChatMemberRank } from "../Chat.viewModel";
+import { ChatMemberRank } from "../chat.viewModel";
 
 export enum ChatMemberStatus {
   OK = "OK",

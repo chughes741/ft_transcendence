@@ -1,5 +1,5 @@
 import { createContext, useContext } from "react";
-import { ChatViewModelType } from "./Chat.viewModel";
+import { ChatViewModelType } from "./chat.viewModel";
 
 export const ChatContext = createContext<ChatViewModelType | null>(null);
 
