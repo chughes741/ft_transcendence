@@ -4,7 +4,7 @@ import { useState, useContext } from 'react';
 import { WebSocketContext } from 'src/contexts/WebSocketContext';
 import { json } from 'stream/consumers';
 
-async function ImgUpload() {
+function ImgUpload() {
   const [file, setFile] = useState(null);
   const [ImgUrl, setImgUrl] = useState('');
 
@@ -21,8 +21,9 @@ async function ImgUpload() {
       //setImgUrl(URL.createObjectURL(file));
       const formData = new FormData();
       formData.append('file', file);
-  
-      const response = await fetch('/upload', {
+      console.log("Before fetch");
+
+      fetch('upload', {
         method: 'POST',
         body: formData
       });
@@ -37,7 +38,7 @@ async function ImgUpload() {
           <input type="file" accept='image/*' onChange={handleFileChange} />
           <button type='submit' onClick={handleUpload}>Choose File</button>
           <Box className='profileImage'>
-            {{ ImgUrl } && <img src={ImgUrl} alt='uploaded image' />}
+            {{ ImgUrl } && <img src={file} alt='uploaded image' />}
           </Box>
 
         </Box>

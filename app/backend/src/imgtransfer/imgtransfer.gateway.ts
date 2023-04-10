@@ -6,6 +6,7 @@ import { Express } from "express";
 import { FileInterceptor } from "@nestjs/platform-express";
 import { UseInterceptors } from "@nestjs/common";
 
+
 @Injectable()
 export class ImgTransferGateway {
 
@@ -13,5 +14,6 @@ export class ImgTransferGateway {
     @UseInterceptors(FileInterceptor('file'))
     async handleUpload(@UploadedFile() file: Express.Multer.File) {
         console.log(file)
+        console.log("received ?");
     }
 }

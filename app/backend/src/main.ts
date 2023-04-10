@@ -3,6 +3,10 @@ import { HttpAdapterHost, NestFactory } from "@nestjs/core";
 import { DocumentBuilder, SwaggerModule } from "@nestjs/swagger";
 import { IoAdapter } from "@nestjs/platform-socket.io";
 import { AppModule } from "./app.module";
+import { NestApplication } from "@nestjs/core";
+import { join } from "path";
+
+import { ServeStaticModule } from "@nestjs/serve-static";
 
 import * as session from "express-session";
 import * as passport from "passport";
@@ -47,30 +51,11 @@ async function bootstrap() {
   // Use the HTTP adapter
   const { httpAdapter } = app.get(HttpAdapterHost);
 
-  //UPLOAD IMAGE STUFF
-  const cors = require('cors')
-  const multer = require('multer')
-  const path = require('path')
-
-  const storage = multer.diskStorage({
-    destination: (req, file, cb) => {
-      cb(null, 'images/')
-    },
-    filename: (req, file, cb) => {
-      cb(null, Date.now() + path(file.originalname))
-    },
-  })
-
-  const upload = multer({ storage: storage })
-
-
-
-
-
-
   // Register the PrismaClientExceptionFilter as a HTTP filter
   app.useGlobalFilters(new PrismaClientExceptionFilterHttp(httpAdapter));
 
+  
+  
   await app.listen(config.port);
   Logger.log("Application listening on port " + config.port);
 }
