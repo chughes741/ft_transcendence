@@ -1,4 +1,3 @@
-// ChatViewModel.tsx
 import { useEffect } from "react";
 import { usePageStateContext } from "../../contexts/PageStateContext";
 import { socket } from "../../contexts/WebSocketContext";

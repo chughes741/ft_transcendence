@@ -1,8 +1,6 @@
 import React, { createContext, useContext, useEffect } from "react";
 
 /** Module Imports */
-import { Paper } from "@mui/material";
-import { styled } from "@mui/material/styles";
 import { socket } from "src/contexts/WebSocketContext";
 
 /** Temporary data type import */
@@ -102,9 +100,9 @@ export const ProfileViewModelProvider = ({ children }) => {
 
   /** Update MatchHistory and Profile when user changes */
   useEffect(() => {
-    getMatchHistory();
-    getProfile();
-    getFriends();
+    getMatchHistory().then();
+    getProfile().then();
+    getFriends().then();
   }, [user]);
 
   return (
@@ -142,12 +140,3 @@ export const useProfileViewModelContext = (): ProfileViewModelType => {
   }
   return context;
 };
-
-/** Styling for Profile header */
-export const Item = styled(Paper)(({ theme }) => ({
-  backgroundColor: theme.palette.mode === "dark" ? "#1A2027" : "#fff",
-  ...theme.typography.body2,
-  padding: theme.spacing(1),
-  textAlign: "center",
-  color: theme.palette.text.secondary
-}));

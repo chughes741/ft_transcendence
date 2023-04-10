@@ -21,10 +21,10 @@ export interface UserListItem {
   username: string;
   avatar: string;
   userStatus: UserStatus;
-  chatMemberstatus?: ChatMemberStatus;
+  chatMemberStatus?: ChatMemberStatus;
   rank?: ChatMemberRank;
   endOfBan?: Date;
-  endOfMute?: Date; // NOTE: @oddtiming: Made all optional to reuse in other places
+  endOfMute?: Date;
 }
 
 export interface UserListProps {
