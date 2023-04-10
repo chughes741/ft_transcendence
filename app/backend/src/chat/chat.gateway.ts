@@ -105,6 +105,11 @@ export class JoinRoomDto {
   user: string;
 }
 
+export class LeaveRoomRequest {
+  roomName: string;
+  username: string;
+}
+
 // FIXME: uncomment the following line to enable authentication
 // @UseGuards(JwtWsAuthGuard)
 @WebSocketGateway()
@@ -332,15 +337,21 @@ export class ChatGateway
    * @param room name of the room to leave
    */
   @SubscribeMessage("leaveRoom")
-  async leaveRoom(client: Socket, room: string): Promise<DevError | string> {
+  async leaveRoom(
+    client: Socket,
+    req: LeaveRoomRequest
+  ): Promise<DevError | string> {
     const clientId = this.userConnectionsService.getUserBySocket(client.id);
-    const ret = await this.chatService.leaveRoom(room, clientId);
-    if (!ret) return { error: "User is not a member of the room" };
-    client.leave(room);
-    // TODO: add business logic to remove the user from the room in the database
-    this.server.to(room).emit("removeRoomUser", clientId);
-    logger.log(`User ${client.id} left room ${room}`);
-    return room;
+    const user = await this.prismaService.user.findUnique({
+      where: { username: clientId }
+    });
+    req.username = user.username;
+    const ret = await this.chatService.leaveRoom(req);
+    if (ret instanceof Error) return { error: ret.message };
+    client.leave(req.roomName);
+    this.server.to(req.roomName).emit("chatRoomMemberLeft", req);
+    logger.log(`User ${client.id} left room ${req.roomName}`);
+    return req.roomName;
   }
 
   /**

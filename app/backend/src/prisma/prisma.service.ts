@@ -247,8 +247,10 @@ export class PrismaService extends PrismaClient {
   }
 
   // Get a chat room by ID
-  async getChatRoomId(name: string): Promise<number | null> {
-    const room = await this.chatRoom.findUnique({ where: { name } });
+  async getChatRoomId(roomName: string): Promise<number | null> {
+    const room = await this.chatRoom.findUnique({
+      where: { name: roomName }
+    });
     return room ? room.id : null;
   }
 

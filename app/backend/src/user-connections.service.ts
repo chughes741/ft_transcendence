@@ -1,5 +1,3 @@
-// [app/backend/src/chat/user-connections.service.ts]
-
 import { Injectable, Logger } from "@nestjs/common";
 
 const logger = new Logger("UserConnectionsService");

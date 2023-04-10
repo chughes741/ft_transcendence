@@ -14,6 +14,7 @@ import {
   CreateChatRoomDto,
   InviteUsersToRoomRequest,
   JoinRoomDto,
+  LeaveRoomRequest,
   SendMessageDto
 } from "./chat.gateway";
 import { CreateChatDto } from "./dto/create-chat.dto";
@@ -155,22 +156,22 @@ export class ChatService {
     return this.getChatRoomEntity(room, chatMember.rank);
   }
 
-  async leaveRoom(roomName: string, user: string): Promise<boolean> {
-    const userId = await this.prismaService.getUserIdByNick(user);
-    const roomId = await this.prismaService.getChatRoomId(roomName);
+  async leaveRoom(req: LeaveRoomRequest): Promise<ChatMember | Error> {
+    const userId = await this.prismaService.getUserIdByNick(req.username);
+    logger.log(`User ${req.username} is leaving room ${req.roomName}`);
+    const roomId = await this.prismaService.getChatRoomId(req.roomName);
     if (!roomId) {
-      return false;
+      return Error("Room not found");
     }
     const chatMember = await this.prismaService.chatMember.findFirst({
       where: { memberId: userId, roomId: roomId }
     });
     if (!chatMember) {
-      return false;
+      return Error("User is not a member of this room");
     }
-    await this.prismaService.chatMember.delete({
+    const deletedMember = await this.prismaService.chatMember.delete({
       where: { id: chatMember.id }
     });
-    return true;
   }
 
   /**

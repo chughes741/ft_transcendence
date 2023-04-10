@@ -48,12 +48,17 @@ export type DevError = {
   error: string;
 };
 
-export type CreateRoomType = {
+export type CreateRoomRequest = {
   name: string;
   status: "PUBLIC" | "PRIVATE" | "PASSWORD";
   password: string;
   owner: string;
 };
+
+export class LeaveRoomRequest {
+  roomName: string;
+  username: string;
+}
 
 export interface ChatViewModelType extends ChatModelType {
   joinRoom: (roomName: string, password: string) => Promise<boolean>;
@@ -262,7 +267,7 @@ export const ChatViewModelProvider = ({ children }) => {
     roomPassword: string
   ): Promise<boolean> => {
     return new Promise<boolean>((resolve) => {
-      const roomRequest: CreateRoomType = {
+      const roomRequest: CreateRoomRequest = {
         name: roomName,
         status: roomStatus,
         password: roomPassword,
@@ -353,18 +358,27 @@ export const ChatViewModelProvider = ({ children }) => {
     return new Promise<boolean>((resolve) => {
       if (!contextMenuData) return;
       const roomName = contextMenuData.name;
-      socket.emit("leaveRoom", { roomName }, (response: DevError | string) => {
-        if (typeof response === "object" && response.error) {
-          console.log("Error response from leave room: ", response.error);
-          resolve(false);
+      socket.emit(
+        "leaveRoom",
+        { roomName, username: tempUsername },
+        (response: DevError | string) => {
+          if (typeof response === "object" && response.error) {
+            console.log("Error response from leave room: ", response.error);
+            resolve(false);
+          }
         }
-      });
+      );
       setRooms((prevRooms) => {
         const newRooms = { ...prevRooms };
         delete newRooms[roomName];
         return newRooms;
       });
       setContextMenuRoomsVisible(false);
+      if (currentRoomName === roomName) {
+        setCurrentRoomMessages([]);
+        setCurrentRoomName("");
+        setPageState(PageState.Home);
+      }
       resolve(true);
     });
   };
@@ -500,14 +514,17 @@ export const ChatViewModelProvider = ({ children }) => {
       });
     });
 
-    socket.on("chatRoomMemberLeft", (member: RoomMemberEntity) => {
-      console.log("Room member left: ", member.user);
-      setRooms((prevRooms) => {
-        const newRooms = { ...prevRooms };
-        delete newRooms[member.roomName].users[member.user.username];
-        return newRooms;
-      });
-    });
+    socket.on(
+      "chatRoomMemberLeft",
+      ({ roomName, username }: LeaveRoomRequest) => {
+        console.log(`User ${username} left room ${roomName}`);
+        setRooms((prevRooms) => {
+          const newRooms = { ...prevRooms };
+          delete newRooms[roomName].users[username];
+          return newRooms;
+        });
+      }
+    );
 
     socket.on("chatRoomMemberKicked", (member: RoomMemberEntity) => {
       console.log("Room member kicked: ", member.user);
