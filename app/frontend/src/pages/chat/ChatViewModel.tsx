@@ -1,4 +1,3 @@
-// ChatViewModel.tsx
 import { useEffect } from "react";
 import { usePageStateContext } from "../../contexts/PageStateContext";
 import { socket } from "../../contexts/WebSocketContext";
@@ -287,7 +286,7 @@ export const ChatViewModelProvider = ({ children }) => {
           } else {
             // res is ChatRoomPayload
             console.log("Response from join room: ", res);
-            const room = await addChatRoom(res as ChatRoomPayload);
+            await addChatRoom(res as ChatRoomPayload);
             resolve(true);
           }
         }
@@ -498,7 +497,7 @@ export const ChatViewModelProvider = ({ children }) => {
       const messageData = convertMessagePayloadToMessageType(newMessage);
       addMessageToRoom(newMessage.roomName, messageData);
       // TODO: Implement a callback in the backend to check if user has read the message
-      return newMessage.roomName === currentRoomName ? true : false;
+      return newMessage.roomName === currentRoomName;
     });
 
     socket.on("newChatRoomMember", (member: RoomMemberEntity) => {

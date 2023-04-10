@@ -1,5 +1,5 @@
 // ChatModel.tsx
-import { useState } from "react";
+import { useState, MouseEvent } from "react";
 import { RoomType } from "./ChatViewModel";
 import { MessageType } from "./components/Message";
 import { UserListItem } from "./components/Userlist";
@@ -26,14 +26,14 @@ export interface ChatModelType {
   contextMenuPosition: { x: number; y: number };
   contextMenuRoomsVisible: boolean;
   setContextMenuRoomsVisible: (arg: boolean) => void;
-  handleContextMenu: (e: React.MouseEvent, roomData: { name: string }) => void;
+  handleContextMenu: (e: MouseEvent, roomData: { name: string }) => void;
 
   /* UserList Context Menu */
   contextMenuUsersData: UserListItem | null;
   contextMenuUsersPosition: { x: number; y: number };
   contextMenuUsersVisible: boolean;
   setContextMenuUsersVisible: (arg: boolean) => void;
-  handleContextMenuUsers: (e: React.MouseEvent, userData: UserListItem) => void;
+  handleContextMenuUsers: (e: MouseEvent, userData: UserListItem) => void;
 
   /* Modals */
   showCreateRoomModal: boolean;
@@ -76,7 +76,7 @@ export const useChatModel = (): ChatModelType => {
     y: 0
   });
 
-  const handleContextMenu = (e: React.MouseEvent, roomData: RoomType) => {
+  const handleContextMenu = (e: MouseEvent, roomData: RoomType) => {
     e.preventDefault();
     setContextMenuRoomsVisible(true);
     setContextMenuPosition({ x: e.clientX, y: e.clientY });
@@ -91,10 +91,7 @@ export const useChatModel = (): ChatModelType => {
     y: 0
   });
 
-  const handleContextMenuUsers = (
-    e: React.MouseEvent,
-    userData: UserListItem
-  ) => {
+  const handleContextMenuUsers = (e: MouseEvent, userData: UserListItem) => {
     e.preventDefault();
     setContextMenuUsersVisible(true);
     setContextMenuUsersPosition({ x: e.clientX, y: e.clientY });

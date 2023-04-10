@@ -31,7 +31,7 @@ interface CreateRoomModalProps {
   closeModal: () => void;
   onCreateRoom: (
     roomName: string,
-    roomStatus: "PUBLIC" | "PRIVATE" | "PASSWORD", // This is gonna need an enum :cry:
+    roomStatus: "PUBLIC" | "PRIVATE" | "PASSWORD", // This will need an enum :cry:
     password: string
   ) => Promise<boolean>;
 }

@@ -12,7 +12,6 @@ import {
   DialogActions,
   Button
 } from "@mui/material";
-// import Autocomplete from "@mui/lab/Autocomplete";
 import { UserStatus } from "kingpong-lib";
 import ButtonFunky from "../../../components/ButtonFunky";
 import { useChatViewModelContext } from "../contexts/ChatViewModelContext";
