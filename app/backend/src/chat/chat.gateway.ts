@@ -389,26 +389,22 @@ export class ChatGateway
   @SubscribeMessage("inviteUsersToRoom")
   async inviteUsersToRoom(
     client: Socket,
-    payload: InviteUsersToRoomRequest
-  ): Promise<string> {
+    req: InviteUsersToRoomRequest
+  ): Promise<string[] | false> {
     logger.log(`Received inviteUsersToRoom request from ${client.id}: `);
-    console.log(payload);
-    // Get the list of Database users to invite from the payload's usernames array
+    console.log(req);
+    // Get the list of Database users to invite from the req's usernames array
 
-    try {
-      // For each user in the list, try to add them to the room.
-      // If the user is found, add them to the room, and broadcast their arrival to the room.
-
-      // Try to invite the users
-      const chatMembers = await this.chatService.inviteUsersToRoom(payload);
-      // If successful, broadcast the updated list
-      if (chatMembers)
-        await this.listUsers(client, { chatRoomName: payload.roomName });
-
-      return "Users succesfully invited !";
-    } catch (error) {
-      return error.message;
-    }
+    const chatMembers = await this.chatService.inviteUsersToRoom(req);
+    if (chatMembers instanceof Error) return false;
+    chatMembers.forEach((member) => {
+      const newMember: RoomMemberEntity = {
+        roomName: req.roomName,
+        user: member
+      };
+      this.server.to(req.roomName).emit("newChatRoomMember", newMember);
+      // sendEventToAllUserSockets(member.username, "newChatRoomMember", newMember);
+    });
   }
 
   @SubscribeMessage("updateChatMemberStatus")
