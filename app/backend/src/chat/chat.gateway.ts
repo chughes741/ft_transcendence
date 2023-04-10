@@ -161,7 +161,8 @@ export class ChatGateway
       return;
     }
     userSockets.forEach((socketId) => {
-      this.server.sockets.sockets.get(socketId).join(roomName);
+      const invitedUserSocket = this.server.sockets.sockets.get(socketId);
+      invitedUserSocket?.join(roomName);
     });
   }
 

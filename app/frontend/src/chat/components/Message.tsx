@@ -1,6 +1,6 @@
 import { forwardRef } from "react";
 import { Tooltip, Typography, Divider, Avatar, Fade } from "@mui/material";
-import "../styles/Message.css";
+import "src/styles/chat/Message.css";
 
 export type MessageType = {
   user: string;

@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
-import "../styles/RoomList.css";
-import ContextMenu from "../../../components/ContextMenu";
+import "src/styles/chat/RoomList.css";
+import ContextMenu from "../../components/ContextMenu";
 import { JoinRoomModal, UserEntity } from "./JoinRoomModal";
 import { CreateRoomModal } from "./CreateRoomModal";
 import {
@@ -13,14 +13,14 @@ import {
   ListItemIcon,
   ListItemText
 } from "@mui/material";
-import { useChatViewModelContext } from "../contexts/ChatViewModelContext";
+import { useChatContext } from "../chat.context";
 import { FaCrown, FaGlobe, FaLock, FaUserLock } from "react-icons/fa";
 
 import { Snackbar } from "@mui/material";
 import Alert from "@mui/material/Alert";
 
-import { ChatRoomStatus } from "../ChatViewModel";
-import { socket } from "../../../contexts/WebSocketContext";
+import { ChatRoomStatus } from "../chat.viewModel";
+import { socket } from "../../contexts/WebSocket.context";
 import { InviteUsersModal } from "./InviteUsersModal";
 
 const RoomList: React.FC = () => {
@@ -46,7 +46,7 @@ const RoomList: React.FC = () => {
     selectRoom,
     showNewRoomSnackbar,
     setShowNewRoomSnackbar
-  } = useChatViewModelContext();
+  } = useChatContext();
 
   const [selectedUsers, setSelectedUsers] = React.useState<UserEntity[]>([]);
   const [availableUsers, setAvailableUsers] = React.useState<UserEntity[]>([]);
@@ -203,7 +203,10 @@ const RoomList: React.FC = () => {
                       label: "Private",
                       onClick: () => {
                         if (contextMenuData) {
-                          changeRoomStatus(contextMenuData.name, "PRIVATE").then();
+                          changeRoomStatus(
+                            contextMenuData.name,
+                            "PRIVATE"
+                          ).then();
                         }
                       }
                     },
@@ -211,7 +214,10 @@ const RoomList: React.FC = () => {
                       label: "Public",
                       onClick: () => {
                         if (contextMenuData) {
-                          changeRoomStatus(contextMenuData.name, "PUBLIC").then();
+                          changeRoomStatus(
+                            contextMenuData.name,
+                            "PUBLIC"
+                          ).then();
                         }
                       }
                     },
@@ -219,7 +225,10 @@ const RoomList: React.FC = () => {
                       label: "Password Protected",
                       onClick: () => {
                         if (contextMenuData) {
-                          changeRoomStatus(contextMenuData.name, "PASSWORD").then();
+                          changeRoomStatus(
+                            contextMenuData.name,
+                            "PASSWORD"
+                          ).then();
                         }
                       }
                     }

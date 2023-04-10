@@ -11,7 +11,7 @@ import {
   DialogActions
 } from "@mui/material";
 import { useRoomModal } from "./useRoomModal";
-import ButtonFunky from "../../../components/ButtonFunky";
+import ButtonFunky from "../../components/ButtonFunky";
 import { UserStatus } from "kingpong-lib";
 
 interface JoinRoomModalProps {

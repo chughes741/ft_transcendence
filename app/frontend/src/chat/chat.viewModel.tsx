@@ -1,11 +1,11 @@
 import { useEffect } from "react";
-import { usePageStateContext } from "../../contexts/PageStateContext";
-import { socket } from "../../contexts/WebSocketContext";
-import { PageState } from "../../views/root.model";
-import { ChatModelType, useChatModel } from "./ChatModel";
-import { MessageType } from "./components/Message";
-import { ChatViewModelContext } from "./contexts/ChatViewModelContext";
-import { UserListItem } from "./components/Userlist";
+import { usePageStateContext } from "src/contexts/PageState.context";
+import { socket } from "src/contexts/WebSocket.context";
+import { PageState } from "src/root.model";
+import { ChatModelType, useChatModel } from "./chat.model";
+import { MessageType } from "src/chat/components/Message";
+import { ChatContext } from "src/chat/chat.context";
+import { UserListItem } from "src/chat/components/Userlist";
 
 export type ChatRoomStatus = "PUBLIC" | "PRIVATE" | "PASSWORD";
 export type ChatMemberRank = "USER" | "ADMIN" | "OWNER";
@@ -624,7 +624,7 @@ export const ChatViewModelProvider = ({ children }) => {
   }, [socket, currentRoomName, rooms]);
 
   return (
-    <ChatViewModelContext.Provider
+    <ChatContext.Provider
       value={{
         ...chatModel,
         joinRoom,
@@ -636,6 +636,6 @@ export const ChatViewModelProvider = ({ children }) => {
       }}
     >
       {children}
-    </ChatViewModelContext.Provider>
+    </ChatContext.Provider>
   );
 };

@@ -1,11 +1,11 @@
 import React, { useState, useRef, useEffect } from "react";
 import { Box, TextareaAutosize, IconButton } from "@mui/material";
 import SendIcon from "@mui/icons-material/Send";
-import { useChatViewModelContext } from "../contexts/ChatViewModelContext";
+import { useChatContext } from "../chat.context";
 
 const ChatInputContainerView = () => {
   const [textValue, setTextValue] = useState("");
-  const { currentRoomName, sendRoomMessage } = useChatViewModelContext();
+  const { currentRoomName, sendRoomMessage } = useChatContext();
   const messageInputRef = useRef<HTMLTextAreaElement>(null);
 
   useEffect(() => {

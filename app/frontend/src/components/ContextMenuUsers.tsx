@@ -1,8 +1,8 @@
 import React from "react";
-import { useChatViewModelContext } from "../pages/chat/contexts/ChatViewModelContext";
+import { useChatContext } from "../chat/chat.context";
 import ContextMenu from "./ContextMenu";
-import { usePageStateContext } from "../contexts/PageStateContext";
-import { PageState } from "../views/root.model";
+import { usePageStateContext } from "../contexts/PageState.context";
+import { PageState } from "src/root.model";
 import { Paper } from "@mui/material";
 
 export default function ContextMenuUsers() {
@@ -10,7 +10,7 @@ export default function ContextMenuUsers() {
     contextMenuUsersPosition,
     contextMenuUsersVisible,
     setContextMenuUsersVisible
-  } = useChatViewModelContext();
+  } = useChatContext();
 
   const { setPageState } = usePageStateContext();
   const isOwner = false;

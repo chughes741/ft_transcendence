@@ -3,9 +3,10 @@ import {
   useContext,
   Dispatch,
   SetStateAction,
-  useState, ReactNode
+  useState,
+  ReactNode
 } from "react";
-import { PageState } from "../views/root.model";
+import { PageState } from "src/root.model";
 
 interface PageStateContextType {
   pageState: PageState;

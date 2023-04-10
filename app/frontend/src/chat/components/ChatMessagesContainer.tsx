@@ -2,7 +2,7 @@ import { useEffect, useRef } from "react";
 import { MessageType } from "./Message";
 import Message from "./Message";
 import { Box } from "@mui/material";
-import { useChatViewModelContext } from "../contexts/ChatViewModelContext";
+import { useChatContext } from "../chat.context";
 
 const isSameDate = (date1: Date, date2: Date): boolean => {
   if (!(date1 instanceof Date) || !(date2 instanceof Date)) {
@@ -58,7 +58,7 @@ const ChatMessagesContainerView = () => {
     currentRoomName,
     rooms,
     setCurrentRoomMessages
-  } = useChatViewModelContext();
+  } = useChatContext();
   useEffect(() => {
     if (rooms[currentRoomName]) {
       setCurrentRoomMessages(rooms[currentRoomName].messages);
