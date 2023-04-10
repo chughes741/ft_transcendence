@@ -22,7 +22,6 @@ import { InviteUsersModal } from "./InviteUsersModal";
 
 const RoomList: React.FC = () => {
   const {
-    tempUsername,
     rooms,
     currentRoomName,
     setShowCreateRoomModal,
@@ -169,7 +168,7 @@ const RoomList: React.FC = () => {
                       label: "Private",
                       onClick: () => {
                         if (contextMenuData) {
-                          changeRoomStatus(contextMenuData.name, "PRIVATE");
+                          changeRoomStatus(contextMenuData.name, "PRIVATE").then();
                         }
                       }
                     },
@@ -177,7 +176,7 @@ const RoomList: React.FC = () => {
                       label: "Public",
                       onClick: () => {
                         if (contextMenuData) {
-                          changeRoomStatus(contextMenuData.name, "PUBLIC");
+                          changeRoomStatus(contextMenuData.name, "PUBLIC").then();
                         }
                       }
                     },
@@ -185,7 +184,7 @@ const RoomList: React.FC = () => {
                       label: "Password Protected",
                       onClick: () => {
                         if (contextMenuData) {
-                          changeRoomStatus(contextMenuData.name, "PASSWORD");
+                          changeRoomStatus(contextMenuData.name, "PASSWORD").then();
                         }
                       }
                     }

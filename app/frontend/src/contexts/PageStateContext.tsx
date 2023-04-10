@@ -3,7 +3,7 @@ import {
   useContext,
   Dispatch,
   SetStateAction,
-  useState
+  useState, ReactNode
 } from "react";
 import { PageState } from "../views/root.model";
 
@@ -29,7 +29,7 @@ export function usePageStateContext(): PageStateContextType {
 export function PageStateProvider({
   children
 }: {
-  children: React.ReactNode;
+  children: ReactNode;
 }): JSX.Element {
   const [pageState, setPageState] = useState<PageState>(PageState.Home);
 

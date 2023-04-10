@@ -1,15 +1,11 @@
 .button-funky {
-/********Variables********/
-  /* --border: rgb(3, 169, 244); */
-  /* --g1: rgb(98, 0, 234);
-  --g2: rgb(236, 64, 122);
-  --g3: rgb(253, 216, 53); */
-
+  /********Variables********/
   /* Color scheme to fit the theme: */
   --g1: rgb(34, 186, 187);
   --g2: rgb(250, 127, 8);
   --g3: rgb(242, 68, 4);
-/*************************/
+  /*************************/
+
   border-radius: 2rem;
   cursor: pointer;
   color: white;
@@ -20,17 +16,18 @@
   justify-content: center;
   align-items: center;
   align-self: center;
-  translate: 5% 0%;
+  translate: 5% 0;
 }
 
 .button-funky:before {
   background: linear-gradient(
-          130deg,
-          transparent 0% 33%,
-          var(--g1) 66%,
-          var(--g2) 83.5%,
-          var(--g3) 100%
-  ) 66% 66%;
+      130deg,
+      transparent 0% 33%,
+      var(--g1) 66%,
+      var(--g2) 83.5%,
+      var(--g3) 100%
+    )
+    66% 66%;
   background-size: 300% 300%;
   border-radius: 2rem;
   content: "";
@@ -63,8 +60,7 @@
 }
 
 .button-funky-bg {
-
-    background-image: radial-gradient(
+  background-image: radial-gradient(
     rgba(255, 255, 255, 0.2) 8%,
     transparent 8%
   );

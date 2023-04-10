@@ -1,4 +1,3 @@
-// ChatViewModel.tsx
 import { useEffect } from "react";
 import { usePageStateContext } from "../../contexts/PageStateContext";
 import { socket } from "../../contexts/WebSocketContext";
@@ -263,7 +262,7 @@ export const ChatViewModelProvider = ({ children }) => {
           } else {
             // res is ChatRoomPayload
             console.log("Response from join room: ", res);
-            const room = await addChatRoom(res as ChatRoomPayload);
+            await addChatRoom(res as ChatRoomPayload);
             resolve(true);
           }
         }
@@ -464,7 +463,7 @@ export const ChatViewModelProvider = ({ children }) => {
       const messageData = convertMessagePayloadToMessageType(newMessage);
       addMessageToRoom(newMessage.roomName, messageData);
       // TODO: Implement a callback in the backend to check if user has read the message
-      return newMessage.roomName === currentRoomName ? true : false;
+      return newMessage.roomName === currentRoomName;
     });
 
     return () => {
@@ -529,7 +528,7 @@ export const ChatViewModelProvider = ({ children }) => {
       const createTempUser = async (username: string): Promise<void> => {
         const userCreated = await createUser(username);
         if (!userCreated) {
-          // Try to login instead
+          // Try to log in instead
           const userLogged = await userLogin(username);
           if (!userLogged) {
             console.log("Failed to create or login to user", username);
@@ -537,7 +536,7 @@ export const ChatViewModelProvider = ({ children }) => {
         }
       };
 
-      createTempUser(tempUsername);
+      createTempUser(tempUsername).then();
     }
   }, [tempUsername, ""]);
 

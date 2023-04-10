@@ -48,7 +48,7 @@ Outgoing events:
 "paddleUpdate", {
   match_id: string;
   pos: number, //x-value of player paddle
-  playerside: string //"left" or "right"
+  playerSide: string //"left" or "right"
 }
 
 "playerReady", {

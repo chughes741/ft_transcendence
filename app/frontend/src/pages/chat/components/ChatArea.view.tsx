@@ -10,7 +10,7 @@ import { Grid } from "@mui/material";
 import { useChatViewModelContext } from "../contexts/ChatViewModelContext";
 
 const ChatAreaView = () => {
-  const { currentRoomName, currentRoomMessages } = useChatViewModelContext();
+  const { currentRoomName } = useChatViewModelContext();
 
   const GridStyle = {
     height: "100%",
@@ -44,7 +44,7 @@ const ChatAreaView = () => {
           item
           sx={{ flexGrow: 1, overflowY: "auto", overflowX: "hidden" }}
         >
-          <ChatMessagesContainerView messages={currentRoomMessages} />
+          <ChatMessagesContainerView />
         </Grid>
         <Grid
           item

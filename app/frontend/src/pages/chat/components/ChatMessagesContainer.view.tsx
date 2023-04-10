@@ -4,10 +4,6 @@ import Message from "./Message";
 import { Box } from "@mui/material";
 import { useChatViewModelContext } from "../contexts/ChatViewModelContext";
 
-type ChatMessagesContainerProps = {
-  messages: Array<MessageType>;
-};
-
 const isSameDate = (date1: Date, date2: Date): boolean => {
   if (!(date1 instanceof Date) || !(date2 instanceof Date)) {
     console.error(
@@ -54,10 +50,7 @@ const groupMessages = (
   return groupedMessages;
 };
 
-const ChatMessagesContainerView = ({
-  messages
-}: ChatMessagesContainerProps) => {
-  const groupedMessagesFromProps = groupMessages(messages);
+const ChatMessagesContainerView = () => {
   const lastMessageRef = useRef<HTMLDivElement>(null);
 
   const {
