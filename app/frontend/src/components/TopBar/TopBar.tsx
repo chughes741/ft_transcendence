@@ -9,10 +9,10 @@ import Avatar from "@mui/material/Avatar";
 import MenuItem from "@mui/material/MenuItem";
 import { LogoSvg } from "./logoComponent";
 import { ButtonUnstyled } from "@mui/base";
-import { Button, Tooltip } from "@mui/material";
-import VideogameAssetIcon from "@mui/icons-material/VideogameAsset";
+import { Tooltip } from "@mui/material";
 import { PageState } from "src/views/root.model";
 import { useProfileViewModelContext } from "src/views/profile/profile.viewModel";
+import ButtonFunky from "../ButtonFunky";
 
 const settings = ["Profile", "Settings", "Logout"];
 
@@ -68,16 +68,12 @@ function TopBar({ setPageState }) {
           </ButtonUnstyled>
         </Box>
 
-        <Box>
-          <Button
+        <Box sx={{width: "20vw", maxHeight: "20vh"}}>
+          <ButtonFunky
+            content={"Play a game"}
+            width={"100%"}
             onClick={() => setPageState(PageState.Game)}
-            color="primary"
-            sx={{ mr: 5 }}
-            variant="outlined"
-            startIcon={<VideogameAssetIcon />}
-          >
-            Play A Game
-          </Button>
+          />
         </Box>
         {/* Button to be displayed instead of profile when use not logged in*/}
         {/* <Button color="inherit">Login</Button> */}

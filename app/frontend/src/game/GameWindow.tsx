@@ -1,16 +1,13 @@
-import React, { useRef, useContext } from "react";
-import { Canvas, useFrame, ThreeElements, useThree } from "@react-three/fiber";
-import { WebSocketContext } from "src/contexts/WebSocketContext";
+import React, { useRef } from "react";
+import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import { socket } from "src/contexts/WebSocketContext";
 //Local includes
-import { GameStateDto, ClientGameStateUpdate } from "./game.types";
+import { GameStateDto } from "./game.types";
 import {
   BallConfig,
   GameColours,
-  GameConfig,
   PaddleConfig
 } from "./game.config";
-import { BoxGeometry } from "three";
 import { Mesh } from "three";
 
 /**
@@ -19,7 +16,7 @@ import { Mesh } from "three";
  * @returns
  */
 function Ball(gameState: GameStateDto) {
-  const mesh = useRef<THREE.Mesh>();
+  const mesh = useRef<Mesh>();
 
   useFrame(() => {
     mesh.current.position.x = gameState.ball_pos_x;
@@ -44,7 +41,7 @@ function PaddleLeft(gameState: GameStateDto) {
   const ref = useRef<Mesh>(null!);
 
   // Update paddle position based on mouse position
-  // state.pointer gives a value between -1 and 1, so need to multiply by the gameplayarea / 2 to get proper position
+  // state.pointer gives a value between -1 and 1, so need to multiply by the gamePlayArea / 2 to get proper position
   useFrame((state) => {
     if (gameState.player_side === "left") {
       ref.current.position.y = state.pointer.y * 4;
@@ -106,7 +103,7 @@ function PaddleRight(gameState: GameStateDto) {
 
 //Create window border object
 function Floor() {
-  const mesh = useRef<THREE.Mesh>(null!);
+  const mesh = useRef<Mesh>(null!);
   return (
     <mesh
       ref={mesh}
@@ -119,7 +116,7 @@ function Floor() {
 }
 
 function OuterFrameTop() {
-  const mesh = useRef<THREE.Mesh>(null!);
+  const mesh = useRef<Mesh>(null!);
   return (
     <mesh
       ref={mesh}
@@ -132,7 +129,7 @@ function OuterFrameTop() {
 }
 
 function OuterFrameBottom() {
-  const mesh = useRef<THREE.Mesh>(null!);
+  const mesh = useRef<Mesh>(null!);
   return (
     <mesh
       ref={mesh}
@@ -145,7 +142,7 @@ function OuterFrameBottom() {
 }
 
 function OuterFrameLeft() {
-  const mesh = useRef<THREE.Mesh>(null!);
+  const mesh = useRef<Mesh>(null!);
   return (
     <mesh
       ref={mesh}
@@ -158,7 +155,7 @@ function OuterFrameLeft() {
 }
 
 function OuterFrameRight() {
-  const mesh = useRef<THREE.Mesh>(null!);
+  const mesh = useRef<Mesh>(null!);
   return (
     <mesh
       ref={mesh}

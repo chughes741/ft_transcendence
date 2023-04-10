@@ -1,5 +1,3 @@
-import { Vector3 } from "three";
-
 export class PaddleConfig {
   static readonly height: number = 2;
   static readonly width: number = 0.25;
