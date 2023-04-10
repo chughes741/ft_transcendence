@@ -23,7 +23,7 @@ const toolbarStyle = {
 };
 
 function TopBar({ setPageState }) {
-  const { setUser } = useProfileViewModelContext();
+  const { profile, setUser } = useProfileViewModelContext();
   const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(
     null
   );
@@ -83,9 +83,12 @@ function TopBar({ setPageState }) {
           <Tooltip title="Open settings">
             <IconButton
               onClick={handleOpenUserMenu}
-              sx={{ p: 0, pr: 2 }}
+              sx={{ p: 0, mr: 2 }}
             >
-              <Avatar alt="Remy" />
+              {profile !== null
+              ? <Avatar src={profile.avatar}/>
+              : <Avatar alt=""/>
+              }
             </IconButton>
           </Tooltip>
           <Menu
