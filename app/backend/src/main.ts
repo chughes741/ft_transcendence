@@ -12,6 +12,7 @@ import {
   PrismaClientExceptionFilterHttp,
   PrismaClientExceptionFilterWs
 } from "./prisma-client-exception.filter";
+import path from "path";
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -45,6 +46,27 @@ async function bootstrap() {
 
   // Use the HTTP adapter
   const { httpAdapter } = app.get(HttpAdapterHost);
+
+  //UPLOAD IMAGE STUFF
+  const cors = require('cors')
+  const multer = require('multer')
+  const path = require('path')
+
+  const storage = multer.diskStorage({
+    destination: (req, file, cb) => {
+      cb(null, 'images/')
+    },
+    filename: (req, file, cb) => {
+      cb(null, Date.now() + path(file.originalname))
+    },
+  })
+
+  const upload = multer({ storage: storage })
+
+
+
+
+
 
   // Register the PrismaClientExceptionFilter as a HTTP filter
   app.useGlobalFilters(new PrismaClientExceptionFilterHttp(httpAdapter));
