@@ -154,10 +154,6 @@ export const ChatViewModelProvider = ({ children }) => {
     };
   };
 
-  /**************************/
-  /*    Socket Functions    */
-  /**************************/
-
   /**********************/
   /*   Room Functions   */
   /**********************/
@@ -439,30 +435,6 @@ export const ChatViewModelProvider = ({ children }) => {
     });
   };
 
-  // Invite other users to a room
-  const inviteUsersToRoom = async (
-    roomName: string,
-    users: string[]
-  ): Promise<boolean> => {
-    return new Promise<boolean>((resolve) => {
-      console.log(`Inviting users to room ${roomName}`);
-      // Emit a socket event to invite users to a room
-      socket.emit(
-        "inviteUsersToRoom",
-        { roomName, users },
-        (success: boolean) => {
-          if (success) {
-            console.log("Successfully invited users to room");
-          } else {
-            console.log("Error inviting users to room");
-            resolve(false);
-          }
-        }
-      );
-      resolve(true);
-    });
-  };
-
   /**********************/
   /*   User Functions   */
   /**********************/
@@ -529,7 +501,6 @@ export const ChatViewModelProvider = ({ children }) => {
       return newMessage.roomName === currentRoomName ? true : false;
     });
 
-    // socket listener for when a user joins a room
     socket.on("newChatRoomMember", (member: RoomMemberEntity) => {
       console.log("New room member: ", member.user);
       setRooms((prevRooms) => {
@@ -543,7 +514,24 @@ export const ChatViewModelProvider = ({ children }) => {
       });
     });
 
-    // Socket listener for "addedToNewChatRoom", when you are added to a room
+    socket.on("chatRoomMemberLeft", (member: RoomMemberEntity) => {
+      console.log("Room member left: ", member.user);
+      setRooms((prevRooms) => {
+        const newRooms = { ...prevRooms };
+        delete newRooms[member.roomName].users[member.user.username];
+        return newRooms;
+      });
+    });
+
+    socket.on("chatRoomMemberKicked", (member: RoomMemberEntity) => {
+      console.log("Room member kicked: ", member.user);
+      setRooms((prevRooms) => {
+        const newRooms = { ...prevRooms };
+        delete newRooms[member.roomName].users[member.user.username];
+        return newRooms;
+      });
+    });
+
     socket.on("addedToNewChatRoom", (room) => {
       console.log(
         "***************************************************Added to new room: "
@@ -560,6 +548,8 @@ export const ChatViewModelProvider = ({ children }) => {
       socket.off("onMessage");
       socket.off("newChatRoomMember");
       socket.off("addedToNewChatRoom");
+      socket.off("chatRoomMemberLeft");
+      socket.off("chatRoomMemberKicked");
     };
   }, [socket, tempUsername]);
 
@@ -575,6 +565,29 @@ export const ChatViewModelProvider = ({ children }) => {
     }
   }, [socket, ""]);
 
+  // FIXME: temporary addition for dev build to test user creation
+  // If no user is logged in, try to create a temporary user
+  useEffect(() => {
+    // Try to create a temporary user
+    if (tempUsername) {
+      setRooms(() => {
+        return {};
+      });
+      const createTempUser = async (username: string): Promise<void> => {
+        const userCreated = await createUser(username);
+        if (!userCreated) {
+          // Try to login instead
+          const userLogged = await userLogin(username);
+          if (!userLogged) {
+            console.log("Failed to create or login to user", username);
+          }
+        }
+      };
+
+      createTempUser(tempUsername);
+    }
+  }, [tempUsername, ""]);
+
   // Select the current room only once the room is ready
   useEffect(() => {
     if (currentRoomName && rooms && rooms[currentRoomName]) {
@@ -588,7 +601,7 @@ export const ChatViewModelProvider = ({ children }) => {
     }
   }, [currentRoomName, rooms]);
 
-  // Send "listUsers" event to server to get the user list
+  // Get the list of users in the current room
   useEffect(() => {
     if (
       rooms &&
@@ -610,27 +623,6 @@ export const ChatViewModelProvider = ({ children }) => {
       );
     }
   }, [socket, currentRoomName, rooms]);
-
-  useEffect(() => {
-    // Try to create a temporary user
-    if (tempUsername) {
-      setRooms(() => {
-        return {};
-      });
-      const createTempUser = async (username: string): Promise<void> => {
-        const userCreated = await createUser(username);
-        if (!userCreated) {
-          // Try to login instead
-          const userLogged = await userLogin(username);
-          if (!userLogged) {
-            console.log("Failed to create or login to user", username);
-          }
-        }
-      };
-
-      createTempUser(tempUsername);
-    }
-  }, [tempUsername, ""]);
 
   return (
     <ChatViewModelContext.Provider
