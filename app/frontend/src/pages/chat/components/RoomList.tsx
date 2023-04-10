@@ -100,13 +100,14 @@ const RoomList: React.FC = () => {
                       max={4}
                       spacing="small"
                     >
-                      {room.avatars?.map((avatar, index) => (
-                        <Avatar
-                          key={index}
-                          src={avatar}
-                          alt={`Profile ${index}`}
-                        />
-                      ))}
+                      {room.users &&
+                        Object.values(room.users).map((user) => (
+                          <Avatar
+                            key={user.username}
+                            src={user.avatar}
+                            alt={`Profile ${user.username}`}
+                          />
+                        ))}
                     </AvatarGroup>
                   </ListItemIcon>
                   <ListItemText
