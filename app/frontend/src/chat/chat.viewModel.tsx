@@ -103,8 +103,9 @@ export const ChatViewModelProvider = ({ children }) => {
   // If the previous room is the same as the current one, toggle the page state to PageState.Home
   const selectRoom = (roomName: string) => {
     if (currentRoomName === roomName && pageState === PageState.Chat) {
+      console.log("selectRoom: Room is already selected. Toggling to Home.");
       setCurrentRoomName("");
-      setPageState(PageState.Home);
+      setPageState(PageState.Home, "chatViewModel");
       return;
     }
     if (!rooms[roomName]) {
@@ -113,7 +114,7 @@ export const ChatViewModelProvider = ({ children }) => {
     console.log(`selectRoom: Room ${roomName} selected! `, rooms[roomName]);
     setCurrentRoomName(roomName);
     setCurrentRoomMessages(rooms[roomName].messages);
-    setPageState(PageState.Chat);
+    setPageState(PageState.Chat, "chatViewModel");
   };
 
   /**********************/
@@ -376,7 +377,7 @@ export const ChatViewModelProvider = ({ children }) => {
       if (currentRoomName === roomName) {
         setCurrentRoomMessages([]);
         setCurrentRoomName("");
-        setPageState(PageState.Home);
+        setPageState(PageState.Home, "chatViewModel");
       }
       resolve(true);
     });
@@ -596,7 +597,7 @@ export const ChatViewModelProvider = ({ children }) => {
       );
       setCurrentRoomName(currentRoomName);
       setCurrentRoomMessages(rooms[currentRoomName].messages);
-      setPageState(PageState.Chat);
+      setPageState(PageState.Chat, "chatViewModel");
     }
   }, [currentRoomName, rooms]);
 

@@ -6,5 +6,8 @@ export enum PageState {
   Home,
   Game,
   Chat,
-  Profile
+  Profile,
+  FullScreenGame,
+  FullScreenChat,
+  FullScreenProfile
 }

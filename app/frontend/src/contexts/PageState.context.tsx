@@ -10,7 +10,8 @@ import { PageState } from "src/root.model";
 
 interface PageStateContextType {
   pageState: PageState;
-  setPageState: Dispatch<SetStateAction<PageState>>;
+  setPageState: (newPageState: PageState, caller: string) => void;
+  setPageStateValue: Dispatch<SetStateAction<PageState>>;
 }
 
 const PageStateContext = createContext<PageStateContextType | undefined>(
@@ -32,10 +33,17 @@ export function PageStateProvider({
 }: {
   children: ReactNode;
 }): JSX.Element {
-  const [pageState, setPageState] = useState<PageState>(PageState.Home);
+  const [pageState, setPageStateValue] = useState<PageState>(PageState.Home);
+
+  const setPageState = (newPageState: PageState, caller: string) => {
+    console.log(`Setting page state to ${newPageState} from ${caller}`);
+    setPageStateValue(newPageState);
+  };
 
   return (
-    <PageStateContext.Provider value={{ pageState, setPageState }}>
+    <PageStateContext.Provider
+      value={{ pageState, setPageState, setPageStateValue }}
+    >
       {children}
     </PageStateContext.Provider>
   );

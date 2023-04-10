@@ -23,7 +23,9 @@ export default function SidebarChatOptions({ setPageState }) {
       }}
       component="nav"
     >
-      <ListItemButton onClick={() => setPageState(PageState.Chat)}>
+      <ListItemButton
+        onClick={() => setPageState(PageState.Chat, "Sidebar chatoptions")}
+      >
         <ListItemIcon>
           <GroupAddIcon />
         </ListItemIcon>

@@ -27,14 +27,14 @@ export default function ContextMenuUsers() {
             label: "View profile",
             onClick: () => {
               console.log("View Profile");
-              setPageState(PageState.Profile);
+              setPageState(PageState.Profile, "contextmenuusers");
             }
           },
           {
             label: "Invite to game",
             onClick: () => {
               console.log("Invite to game");
-              setPageState(PageState.Game);
+              setPageState(PageState.Game, "contextmenuusers");
             }
           },
           {
