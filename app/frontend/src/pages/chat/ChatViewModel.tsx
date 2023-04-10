@@ -154,6 +154,10 @@ export const ChatViewModelProvider = ({ children }) => {
     };
   };
 
+  /**************************/
+  /*    Socket Functions    */
+  /**************************/
+
   /**********************/
   /*   Room Functions   */
   /**********************/
@@ -171,10 +175,31 @@ export const ChatViewModelProvider = ({ children }) => {
     });
   };
 
+  const getChatRoomMembers = async (roomName: string) => {
+    return new Promise<{ [key: string]: UserListItem }>((resolve) => {
+      socket.emit(
+        "listUsers",
+        { chatRoomName: roomName },
+        (users: UserListItem[]) => {
+          const usersObj = users.reduce<{ [key: string]: UserListItem }>(
+            (acc, user) => {
+              acc[user.username] = user;
+              return acc;
+            },
+            {}
+          );
+          resolve(usersObj);
+        }
+      );
+    });
+  };
+
   // Adds a new room to the rooms state variable
   const addChatRoom = async (
     chatRoomPayload: ChatRoomPayload
   ): Promise<RoomType> => {
+    const userList = await getChatRoomMembers(chatRoomPayload.name);
+
     return new Promise<RoomType>((resolve) => {
       const {
         name,
@@ -197,7 +222,7 @@ export const ChatViewModelProvider = ({ children }) => {
         lastActivity,
         hasUnreadMessages: false,
         avatars,
-        users: {}
+        users: userList
       };
 
       setRooms((prevRooms) => {

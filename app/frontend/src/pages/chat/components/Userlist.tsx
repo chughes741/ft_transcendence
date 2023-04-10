@@ -20,6 +20,7 @@ export enum ChatMemberStatus {
 
 export interface UserListItem {
   username: string;
+  roomName?: string;
   avatar: string;
   userStatus: UserStatus;
   chatMemberstatus?: ChatMemberStatus;

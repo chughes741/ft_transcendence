@@ -101,6 +101,7 @@ const RoomList: React.FC = () => {
                       spacing="small"
                     >
                       {room.users &&
+                        Object.keys(room.users).length > 0 &&
                         Object.values(room.users).map((user) => (
                           <Avatar
                             key={user.username}
