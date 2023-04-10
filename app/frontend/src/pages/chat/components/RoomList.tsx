@@ -16,6 +16,9 @@ import {
 import { useChatViewModelContext } from "../contexts/ChatViewModelContext";
 import { FaCrown, FaGlobe, FaLock, FaUserLock } from "react-icons/fa";
 
+import { Snackbar } from "@mui/material";
+import Alert from "@mui/material/Alert";
+
 import { ChatRoomStatus } from "../ChatViewModel";
 import { socket } from "../../../contexts/WebSocketContext";
 import { InviteUsersModal } from "./InviteUsersModal";
@@ -40,7 +43,9 @@ const RoomList: React.FC = () => {
     showInviteUsersModal,
     setShowInviteUsersModal,
     joinRoom,
-    selectRoom
+    selectRoom,
+    showNewRoomSnackbar,
+    setShowNewRoomSnackbar
   } = useChatViewModelContext();
 
   const [selectedUsers, setSelectedUsers] = React.useState<UserEntity[]>([]);
@@ -62,11 +67,14 @@ const RoomList: React.FC = () => {
     );
   }, [currentRoomName]);
 
-  const invitePeopleToRoom = () => {
+  const handleInvitePeopleToRoom = () => {
     setContextMenuRoomsVisible(false);
     setShowInviteUsersModal(true);
   };
 
+  /******************/
+  /*   Room Icons   */
+  /******************/
   const getStatusIcon = (status: ChatRoomStatus) => {
     switch (status) {
       case "PASSWORD":
@@ -78,6 +86,31 @@ const RoomList: React.FC = () => {
       default:
         return null;
     }
+  };
+
+  /****************/
+  /*   Snackbar   */
+  /****************/
+  const [addedRoomName, setAddedRoomName] = React.useState("");
+
+  useEffect(() => {
+    socket.on("addedToNewChatRoom", (room) => {
+      console.log(
+        "*****************************************in RoomList, new room added: "
+      );
+      console.log(room);
+      setAddedRoomName(room.name);
+    });
+  }, [socket]);
+
+  const handleSnackbarClose = (
+    event?: React.SyntheticEvent,
+    reason?: string
+  ) => {
+    if (reason === "clickaway") {
+      return;
+    }
+    setShowNewRoomSnackbar(false);
   };
 
   return (
@@ -159,7 +192,7 @@ const RoomList: React.FC = () => {
           },
           {
             label: "Invite Users to Room",
-            onClick: invitePeopleToRoom
+            onClick: handleInvitePeopleToRoom
           },
           ...(contextMenuData && contextMenuData.rank === "OWNER"
             ? [
@@ -196,6 +229,20 @@ const RoomList: React.FC = () => {
             : [])
         ]}
       />
+      <Snackbar
+        open={showNewRoomSnackbar}
+        autoHideDuration={5000}
+        onClose={handleSnackbarClose}
+        anchorOrigin={{ vertical: "bottom", horizontal: "left" }}
+      >
+        <Alert
+          onClose={handleSnackbarClose}
+          severity="info"
+          sx={{ width: "100%" }}
+        >
+          You have been added to the room {addedRoomName}
+        </Alert>
+      </Snackbar>
     </div>
   );
 };

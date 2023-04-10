@@ -95,9 +95,9 @@ export const InviteUsersModal: React.FC<InviteUsersToRoomProps> = ({
             <MenuItem {...props}>
               <Badge
                 color={
-                  option.status === "ONLINE"
+                  option.status === UserStatus.ONLINE
                     ? "success"
-                    : option.status === "OFFLINE"
+                    : option.status === UserStatus.OFFLINE
                     ? "error"
                     : "warning"
                 }

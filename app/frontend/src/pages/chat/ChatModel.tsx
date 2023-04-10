@@ -5,8 +5,11 @@ import { MessageType } from "./components/Message";
 import { UserListItem } from "./components/Userlist";
 
 export interface ChatModelType {
+  /* User */
   tempUsername: string;
   setTempUsername: (username: string) => void;
+
+  /* Room List Information */
   currentRoomName: string;
   setCurrentRoomName: (roomName: string) => void;
   rooms: { [key: string]: RoomType };
@@ -17,45 +20,58 @@ export interface ChatModelType {
   ) => void;
   currentRoomMessages: Array<MessageType>;
   setCurrentRoomMessages: (messages: Array<MessageType>) => void;
-  contextMenuRoomsVisible: boolean;
-  contextMenuUsersVisible: boolean;
-  setContextMenuRoomsVisible: (arg: boolean) => void;
-  setContextMenuUsersVisible: (arg: boolean) => void;
-  contextMenuPosition: { x: number; y: number };
-  contextMenuUsersPosition: { x: number; y: number };
-  contextMenuData: RoomType | null;
-  //FIXER CETTE MERDE
-  contextMenuUsersData: UserListItem | null;
 
+  /* Room Context Menu */
+  contextMenuData: RoomType | null;
+  contextMenuPosition: { x: number; y: number };
+  contextMenuRoomsVisible: boolean;
+  setContextMenuRoomsVisible: (arg: boolean) => void;
   handleContextMenu: (e: React.MouseEvent, roomData: { name: string }) => void;
+
+  /* UserList Context Menu */
+  contextMenuUsersData: UserListItem | null;
+  contextMenuUsersPosition: { x: number; y: number };
+  contextMenuUsersVisible: boolean;
+  setContextMenuUsersVisible: (arg: boolean) => void;
   handleContextMenuUsers: (e: React.MouseEvent, userData: UserListItem) => void;
+
+  /* Modals */
   showCreateRoomModal: boolean;
   setShowCreateRoomModal: (visible: boolean) => void;
   showJoinRoomModal: boolean;
   setShowJoinRoomModal: (visible: boolean) => void;
   showInviteUsersModal: boolean;
   setShowInviteUsersModal: (visible: boolean) => void;
+
+  /* Snackbars */
+  showNewRoomSnackbar: boolean;
+  setShowNewRoomSnackbar: (visible: boolean) => void;
+
+  /* Helper Functions */
   truncateText: (text: string, maxLength: number) => string;
 }
 
 export const useChatModel = (): ChatModelType => {
+  /* User */
   const [tempUsername, setTempUsername] = useState("");
+
+  /* Room List Information */
   const [currentRoomName, setCurrentRoomName] = useState("");
   const [rooms, setRooms] = useState({});
   const [currentRoomMessages, setCurrentRoomMessages] = useState([]);
+
+  /* Modals */
   const [showCreateRoomModal, setShowCreateRoomModal] = useState(false);
   const [showJoinRoomModal, setShowJoinRoomModal] = useState(false);
   const [showInviteUsersModal, setShowInviteUsersModal] = useState(false);
 
+  /* Snackbars */
+  const [showNewRoomSnackbar, setShowNewRoomSnackbar] = useState(false);
+
+  /* Room Context Menu */
   const [contextMenuData, setContextMenuData] = useState(null);
-  const [contextMenuUsersData, setContextMenuUsersData] = useState(null);
   const [contextMenuRoomsVisible, setContextMenuRoomsVisible] = useState(false);
-  const [contextMenuUsersVisible, setContextMenuUsersVisible] = useState(false);
   const [contextMenuPosition, setContextMenuPosition] = useState({
-    x: 0,
-    y: 0
-  });
-  const [contextMenuUsersPosition, setContextMenuUsersPosition] = useState({
     x: 0,
     y: 0
   });
@@ -67,6 +83,14 @@ export const useChatModel = (): ChatModelType => {
     setContextMenuData(roomData);
   };
 
+  /* UserList Context Menu */
+  const [contextMenuUsersData, setContextMenuUsersData] = useState(null);
+  const [contextMenuUsersVisible, setContextMenuUsersVisible] = useState(false);
+  const [contextMenuUsersPosition, setContextMenuUsersPosition] = useState({
+    x: 0,
+    y: 0
+  });
+
   const handleContextMenuUsers = (
     e: React.MouseEvent,
     userData: UserListItem
@@ -77,6 +101,7 @@ export const useChatModel = (): ChatModelType => {
     setContextMenuUsersData(userData);
   };
 
+  /* Helper Functions */
   const truncateText = (text: string, maxLength: number) => {
     if (text.length <= maxLength) {
       return text;
@@ -109,6 +134,8 @@ export const useChatModel = (): ChatModelType => {
     setShowJoinRoomModal,
     showInviteUsersModal,
     setShowInviteUsersModal,
+    showNewRoomSnackbar,
+    setShowNewRoomSnackbar,
     truncateText
   };
 };

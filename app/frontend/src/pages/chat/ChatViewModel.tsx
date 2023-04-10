@@ -75,33 +75,19 @@ export const ChatViewModelProvider = ({ children }) => {
   /***********************/
   /*   State Variables   */
   /***********************/
+  const chatModel = useChatModel();
   const {
     tempUsername,
     setTempUsername,
     currentRoomName,
     setCurrentRoomName,
+    setShowNewRoomSnackbar,
     rooms,
     setRooms,
-    currentRoomMessages,
     setCurrentRoomMessages,
     contextMenuData,
-    contextMenuUsersData,
-    contextMenuPosition,
-    contextMenuUsersPosition,
-    handleContextMenu,
-    handleContextMenuUsers,
-    contextMenuRoomsVisible,
-    contextMenuUsersVisible,
-    setContextMenuRoomsVisible,
-    setContextMenuUsersVisible,
-    showCreateRoomModal,
-    setShowCreateRoomModal,
-    showJoinRoomModal,
-    setShowJoinRoomModal,
-    showInviteUsersModal,
-    setShowInviteUsersModal,
-    truncateText
-  } = useChatModel();
+    setContextMenuRoomsVisible
+  } = chatModel;
 
   const { pageState, setPageState } = usePageStateContext();
 
@@ -534,10 +520,12 @@ export const ChatViewModelProvider = ({ children }) => {
 
     socket.on("addedToNewChatRoom", (room) => {
       console.log(
-        "***************************************************Added to new room: "
+        "You have been added to a new chat room, adding it to the list"
       );
       console.log(room);
       addChatRoom(room);
+      setShowNewRoomSnackbar(true);
+
       // TODO: Add a snackbar notification to inform the user that they have been added to a new room
       // enqueueSnackbar(`You have been added to the room ${room.name}`, {
       //   variant: "info"
@@ -627,31 +615,7 @@ export const ChatViewModelProvider = ({ children }) => {
   return (
     <ChatViewModelContext.Provider
       value={{
-        tempUsername,
-        setTempUsername,
-        currentRoomName,
-        setCurrentRoomName,
-        rooms,
-        setRooms,
-        currentRoomMessages,
-        setCurrentRoomMessages,
-        contextMenuData,
-        contextMenuUsersData,
-        contextMenuPosition,
-        contextMenuUsersPosition,
-        handleContextMenu,
-        handleContextMenuUsers,
-        contextMenuRoomsVisible,
-        contextMenuUsersVisible,
-        setContextMenuRoomsVisible,
-        setContextMenuUsersVisible,
-        showCreateRoomModal,
-        setShowCreateRoomModal,
-        showJoinRoomModal,
-        setShowJoinRoomModal,
-        showInviteUsersModal,
-        setShowInviteUsersModal,
-        truncateText,
+        ...chatModel,
         joinRoom,
         sendRoomMessage,
         createNewRoom,
