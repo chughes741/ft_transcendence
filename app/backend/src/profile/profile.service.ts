@@ -18,7 +18,6 @@ export class ProfileService {
   /**
    * Fetches match history of requested player
    *
-   * @todo update to return MatchHistoryEntity once kingpong-lib is updated
    * @param {GetMatchHistoryRequest} getMatchHistoryRequest
    * @async
    * @returns {Promise<MatchHistoryItem[]>}
@@ -85,33 +84,40 @@ export class ProfileService {
   /**
    * Get a list of all users friends
    *
-   * @todo update once kingpong-lib is updated
    * @param {GetFriendsRequest} getFriendsRequest
    * @async
-   * @returns {Promise<ProfileEntity[]>}
+   * @returns {Promise<ProfileEntity[] | null>}
    */
   async getFriends(
     getFriendsRequest: GetFriendsRequest
-  ): Promise<ProfileEntity[]> {
+  ): Promise<ProfileEntity[] | null> {
+    if (!getFriendsRequest.username) {
+      logger.log("No username is provided");
+      return null;
+    }
     logger.log(`Fetching friends for ${getFriendsRequest.username}`);
-    // const friends = await this.prismaService.getFriends(getFriendsRequest);
-    // const friendProfiles = friends.map((friend) => {
-    // return {
-    // username: friend.username,
-    // avatar: friend.avatar,
-    // status: UserStatus.ONLINE,
-    // createdAt: friend.createdAt.toLocaleTimeString()
-    // };
-    // });
+    const friends = await this.prismaService.getFriends(getFriendsRequest);
+    const friendProfiles = friends.map((friend) => {
+      return {
+        username: friend.user.username,
+        avatar: friend.user.avatar,
+        status: 
+          friend.user.status === "ONLINE"
+            ? UserStatus.ONLINE
+            : friend.user.status === "OFFLINE"
+            ? UserStatus.OFFLINE
+            : UserStatus.AWAY,
+        createdAt: friend.createdAt.toLocaleTimeString()
+      };
+    });
 
-    // return friendProfiles;
-
-    return [];
+    return friendProfiles;
   }
 
   /**
    * Makes an update request to the database for a users profile
    *
+   * @todo Implement
    * @param {UpdateProfileRequest} updateProfileRequest
    * @returns {boolean} - Update successful
    */
