@@ -5,6 +5,7 @@ import {
   ChatMemberRank,
   ChatMemberStatus,
   ChatRoom,
+  Friend,
   Match,
   Prisma,
   PrismaClient,
@@ -20,7 +21,11 @@ import { ChatMemberPrismaType, MessagePrismaType } from "../chat/chat.gateway";
 import config from "../config";
 
 /** Here for profile */
-import { GetMatchHistoryRequest, GetProfileRequest } from "kingpong-lib";
+import {
+  GetFriendsRequest,
+  GetMatchHistoryRequest,
+  GetProfileRequest
+} from "kingpong-lib";
 import { updateChatMemberStatusDto } from "src/chat/dto/userlist.dto";
 
 /*End of Mute and End of Ban:  */
@@ -373,6 +378,29 @@ export class PrismaService extends PrismaClient {
     });
   }
 
+  /**
+   * Returns a users friends from the database
+   *
+   * @param {GetFriendsRequest} getFriendsRequest
+   * @async
+   * @returns {Promise<Friend[]>}
+   */
+  async getFriends(getFriendsRequest: GetFriendsRequest): Promise<Friend[]> {
+    logger.log(getFriendsRequest.username);
+    const user = await this.user.findUnique({
+      where: { username: getFriendsRequest.username },
+      include: {
+        friends: true
+      }
+    });
+    return user.friends;
+  }
+
+  /**
+   *
+   * @param {updateChatMemberStatusDto} updateDto
+   * @returns
+   */
   async updateChatMemberStatus(updateDto: updateChatMemberStatusDto) {
     try {
       const chatroom = await this.chatRoom.findUnique({
