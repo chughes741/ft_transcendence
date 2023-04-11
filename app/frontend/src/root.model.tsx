@@ -3,14 +3,14 @@ import { ProfileEntity } from "kingpong-lib";
 
 /**
  * Each page view is a value
- * 
+ *
  * @enum {number}
  */
 export enum PageState {
-  Home,
-  Game,
-  Chat,
-  Profile
+  Home = "Home",
+  Game = "Game",
+  Chat = "Chat",
+  Profile = "Profile"
 }
 
 /**

@@ -1,34 +1,5 @@
-import ProfileView from "src/profile/profile.view";
-import { ChatView } from "src/chat/chat.view";
-import GameWindow from "src/game/game.master";
 import { RootModelType, useRootModel } from "./root.model";
-import { RootViewModelContext, useRootViewModelContext } from "./root.context";
-
-/**
- * Root view model
- *
- */
-export function RootViewModel() {
-  const { pageState } = useRootViewModelContext();
-  
-  switch (pageState) {
-    case 0: {
-      return <div></div>;
-    }
-    case 1: {
-      return <GameWindow />;
-    }
-    case 2: {
-      return <ChatView />;
-    }
-    case 3: {
-      return <ProfileView />;
-    }
-    default: {
-      return <div></div>;
-    }
-  }
-}
+import { RootViewModelContext } from "./root.context";
 
 /**
  * Root view model type
@@ -42,7 +13,7 @@ export interface RootViewModelType extends RootModelType {
 
 /**
  * Root view model provider
- * 
+ *
  * @param children - Children
  * @returns - Root view model provider
  */

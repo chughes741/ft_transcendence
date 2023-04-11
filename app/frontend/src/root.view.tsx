@@ -2,8 +2,11 @@ import { Helmet } from "react-helmet";
 import { Box, Container } from "@mui/material";
 import SideBar from "src/components/SideBar/SideBar";
 import TopBar from "src/components/TopBar/TopBar";
-import { RootViewModel } from "./root.viewModel";
 import { useRootViewModelContext } from "./root.context";
+import { PageState } from "./root.model";
+import GameWindow from "./game/game.master";
+import { ChatView } from "./chat/chat.view";
+import ProfileView from "./profile/profile.view";
 
 /**
  * Helmet with dynamic page names
@@ -13,15 +16,41 @@ import { useRootViewModelContext } from "./root.context";
  */
 function HelmetView(): JSX.Element {
   const { pageState } = useRootViewModelContext();
-  const page_name = ["Home", "Game", "Chat", "Profile"];
 
   return (
     <>
       <Helmet>
-        <title>King Pong | {page_name[pageState]}</title>
+        <title>King Pong | {pageState}</title>
       </Helmet>
     </>
   );
+}
+
+/**
+ * Root view content
+ * 
+ * @returns {JSX.Element} - Root view content
+ */
+function RootViewContent(): JSX.Element {
+  const { pageState } = useRootViewModelContext();
+  
+  switch (pageState) {
+    case PageState.Home: {
+      return <div></div>;
+    }
+    case PageState.Game: {
+      return <GameWindow />;
+    }
+    case PageState.Chat: {
+      return <ChatView />;
+    }
+    case PageState.Profile: {
+      return <ProfileView />;
+    }
+    default: {
+      return <div></div>;
+    }
+  }
 }
 
 /**
@@ -57,7 +86,7 @@ export function RootView(): JSX.Element {
                   overflow: "hidden"
                 }}
               >
-                <RootViewModel />
+                <RootViewContent />
               </Box>
             </Box>
           </>
