@@ -16,7 +16,7 @@ export interface ProfileViewModelType extends ProfileModelType {
   getMatchHistory: () => Promise<void>;
   getProfile: () => Promise<void>;
   getFriends: () => Promise<void>;
-  addFriend: (friendName: string) => Promise<void>;
+  addFriend: (username: string, friend: string) => Promise<void>;
 }
 
 /**
