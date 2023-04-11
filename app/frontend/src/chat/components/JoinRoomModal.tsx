@@ -1,4 +1,5 @@
-import React, { useCallback } from "react";
+import { AvatarGroup, ListItemText } from "@mui/material";
+import React, { useCallback, useEffect, useState } from "react";
 import { FiEye, FiEyeOff } from "react-icons/fi";
 import {
   Button,
@@ -8,11 +9,19 @@ import {
   DialogContentText,
   TextField,
   IconButton,
-  DialogActions
+  DialogActions,
+  /* Rooms dropdown */
+  Autocomplete,
+  MenuItem,
+  Avatar,
+  Badge
 } from "@mui/material";
 import { useRoomModal } from "./useRoomModal";
 import ButtonFunky from "../../components/ButtonFunky";
 import { UserStatus } from "kingpong-lib";
+import { FaGlobe, FaLock } from "react-icons/fa";
+import { socket } from "../../contexts/WebSocket.context";
+import { useChatContext } from "../chat.context";
 
 interface JoinRoomModalProps {
   showModal: boolean;
@@ -26,11 +35,20 @@ export interface UserEntity {
   status: UserStatus;
 }
 
+export interface AvailableRoomEntity {
+  roomName: string;
+  nbMembers: number;
+  status: "PASSWORD" | "PUBLIC";
+  owner: UserEntity;
+}
+
 export const JoinRoomModal: React.FC<JoinRoomModalProps> = ({
   showModal,
   closeModal,
   onJoinRoom
 }) => {
+  const { tempUsername } = useChatContext();
+
   const {
     roomName,
     setRoomName,
@@ -39,18 +57,24 @@ export const JoinRoomModal: React.FC<JoinRoomModalProps> = ({
     showPassword,
     togglePasswordVisibility
   } = useRoomModal(showModal, closeModal);
+  const [availableRooms, setAvailableRooms] = useState<AvailableRoomEntity[]>(
+    []
+  );
+  const [selectedRoom, setSelectedRoom] = useState<AvailableRoomEntity | null>(
+    null
+  );
 
   const handleSubmit = useCallback(() => {
-    if (roomName.trim().length <= 0) {
-      alert("Please enter a room name.");
+    if (!selectedRoom) {
+      alert("Please select a room.");
       return;
     }
-    console.log("Joining room modal: ", roomName, password);
-    onJoinRoom(roomName, password);
-    setRoomName("");
+    console.log("Joining room modal: ", selectedRoom.roomName, password);
+    onJoinRoom(selectedRoom.roomName, password);
+    setSelectedRoom(null);
     setPassword("");
     closeModal();
-  }, [roomName, password, closeModal, onJoinRoom]);
+  }, [selectedRoom, password, closeModal, onJoinRoom]);
 
   const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter") {
@@ -61,10 +85,21 @@ export const JoinRoomModal: React.FC<JoinRoomModalProps> = ({
     }
   };
 
+  useEffect(() => {
+    // Send a socket event to get the list of available rooms
+    socket.emit(
+      "listAvailableChatRooms",
+      tempUsername,
+      (rooms: AvailableRoomEntity[]) => {
+        console.log("Received available rooms: ", rooms);
+        setAvailableRooms(rooms);
+      }
+    );
+  }, [tempUsername, showModal]);
+
   if (!showModal) {
     return null;
   }
-
   return (
     <Dialog
       open={showModal}
@@ -87,35 +122,66 @@ export const JoinRoomModal: React.FC<JoinRoomModalProps> = ({
         }}
       >
         <DialogContentText>Enter room details:</DialogContentText>
-        <TextField
-          autoFocus
-          margin="dense"
-          label="Room Name"
-          type="text"
-          fullWidth
-          value={roomName}
-          onChange={(e) => setRoomName(e.target.value)}
-          onKeyDown={handleKeyPress}
-        />
-        <TextField
-          margin="dense"
-          label="Password"
-          type={showPassword ? "text" : "password"}
-          fullWidth
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          onKeyDown={handleKeyPress}
-          InputProps={{
-            endAdornment: (
-              <IconButton
-                edge="end"
-                onClick={togglePasswordVisibility}
+        <Autocomplete
+          id="room-autocomplete"
+          options={availableRooms}
+          getOptionLabel={(option) => option.roomName}
+          value={selectedRoom}
+          renderOption={(props, option) => (
+            <MenuItem {...props}>
+              <Badge
+                badgeContent={option.nbMembers}
+                color="primary"
+                sx={{ marginRight: 1 }}
               >
-                {showPassword ? <FiEye /> : <FiEyeOff />}
-              </IconButton>
-            )
-          }}
+                <AvatarGroup total={option.nbMembers + 1}>
+                  <Avatar
+                    src={option.owner.avatar}
+                    alt={option.owner.username}
+                  />
+                </AvatarGroup>
+              </Badge>
+              <ListItemText
+                primary={option.roomName}
+                sx={{ alignItems: "center" }}
+              />
+              <span style={{ marginLeft: "auto", marginRight: "16px" }}>
+                {option.status === "PASSWORD" ? <FaLock /> : <FaGlobe />}
+              </span>
+            </MenuItem>
+          )}
+          renderInput={(params) => (
+            <TextField
+              {...params}
+              label="Select Room"
+              variant="outlined"
+              margin="normal"
+              fullWidth
+            />
+          )}
+          onChange={(event, value) => setSelectedRoom(value)}
         />
+        {selectedRoom && selectedRoom.status === "PASSWORD" && (
+          <TextField
+            margin="dense"
+            label="Password"
+            type={showPassword ? "text" : "password"}
+            fullWidth
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            onKeyDown={handleKeyPress}
+            InputProps={{
+              endAdornment: (
+                <IconButton
+                  edge="end"
+                  onClick={togglePasswordVisibility}
+                >
+                  {showPassword ? <FiEye /> : <FiEyeOff />}
+                </IconButton>
+              )
+            }}
+          />
+        )}
       </DialogContent>
       <DialogActions>
         <Button

@@ -319,6 +319,8 @@ export const ChatViewModelProvider = ({ children }) => {
             "Error response from join room: ",
             (joinRoomRes as DevError).error
           );
+          // FIXME: handle errors more gracefully
+          alert((joinRoomRes as DevError).error);
           resolve(false);
         } else {
           console.log("Response from join room: ", joinRoomRes);
@@ -439,6 +441,8 @@ export const ChatViewModelProvider = ({ children }) => {
   /**********************/
 
   const userLogin = async (username: string): Promise<boolean> => {
+    if (username === "" || username === undefined)
+      return Promise.resolve(false);
     return new Promise<boolean>((resolve) => {
       socket.emit("userLogin", username, (response: DevError | string) => {
         if (typeof response === "object") {
@@ -460,6 +464,8 @@ export const ChatViewModelProvider = ({ children }) => {
   };
 
   const createUser = async (username: string): Promise<boolean> => {
+    if (username === "" || username === undefined)
+      return Promise.resolve(false);
     return new Promise<boolean>((resolve) => {
       socket.emit("userCreation", username, (response: DevError | string) => {
         if (typeof response === "object") {
