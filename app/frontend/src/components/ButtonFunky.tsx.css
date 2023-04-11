@@ -20,14 +20,11 @@
 }
 
 .button-funky:before {
-  background: linear-gradient(
-      130deg,
+  background: linear-gradient(130deg,
       transparent 0% 33%,
       var(--g1) 66%,
       var(--g2) 83.5%,
-      var(--g3) 100%
-    )
-    66% 66%;
+      var(--g3) 100%) 66% 66%;
   background-size: 300% 300%;
   border-radius: 2rem;
   content: "";
@@ -60,10 +57,8 @@
 }
 
 .button-funky-bg {
-  background-image: radial-gradient(
-    rgba(255, 255, 255, 0.2) 8%,
-    transparent 8%
-  );
+  background-image: radial-gradient(rgba(255, 255, 255, 0.2) 8%,
+      transparent 8%);
 
   background-position: 0;
   background-size: 2vmin 2vmin;

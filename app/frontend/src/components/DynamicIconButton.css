@@ -83,6 +83,13 @@
     font-weight: 400;
     margin: 0;
     transition: 350ms ease;
+    align-content: center;
+    align-items: center;
+    align-self: center;
+    justify-content: center;
+    justify-items: center;
+    justify-self: center;
+    text-align: center;
     text-align: center;
     z-index: 3;
     padding: 8px 20px;
