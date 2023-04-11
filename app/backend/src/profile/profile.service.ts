@@ -123,6 +123,7 @@ export class ProfileService {
    * @returns {boolean} - Update successful
    */
   updateProfile(updateProfileRequest: UpdateProfileRequest): boolean {
+    logger.log(`Updating profile for ${updateProfileRequest.username}`);
     return true;
   }
 
@@ -134,6 +135,7 @@ export class ProfileService {
    * @returns {boolean} - Add successful
    */
   addFriend(addFriendRequest: AddFriendRequest): boolean {
+    logger.log(`Adding friend ${addFriendRequest.friend} to ${addFriendRequest.username}`);
     return true;
   }
 }
