@@ -23,10 +23,25 @@ function ImgUpload() {
       formData.append('file', file);
       console.log("Before fetch");
 
-      fetch('upload', {
-        method: 'POST',
+      fetch("/imgtransfer/upload", {
+        method: "POST",
         body: formData
-      });
+      })
+        .then((response) => {
+          if (response.ok) {
+            console.log("Avatar uploaded successfully");
+            response.text().then((text) => {
+              console.log("File upload worked! Should be uploaded at: ", text);
+            });
+          } else {
+            response.text().then((text) => {
+              console.error("Error uploading avatar in response:", text);
+            });
+          }
+        })
+        .catch((error) => {
+          console.error("Caught error uploading avatar:", error);
+        });
     }
   }
 

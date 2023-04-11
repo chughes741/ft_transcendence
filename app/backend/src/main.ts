@@ -17,9 +17,10 @@ import {
   PrismaClientExceptionFilterWs
 } from "./prisma-client-exception.filter";
 import path from "path";
+import { NestExpressApplication } from "@nestjs/platform-express";
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.create<NestExpressApplication>(AppModule);
 
   app.useGlobalPipes(
     new ValidationPipe({
@@ -54,7 +55,11 @@ async function bootstrap() {
   // Register the PrismaClientExceptionFilter as a HTTP filter
   app.useGlobalFilters(new PrismaClientExceptionFilterHttp(httpAdapter));
 
-  
+    //Cochonnerie
+  app.useStaticAssets(join(__dirname, "..", "uploads"), {
+    prefix: "/uploads"
+  });
+
   
   await app.listen(config.port);
   Logger.log("Application listening on port " + config.port);

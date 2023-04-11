@@ -1,12 +1,15 @@
 import { Module } from "@nestjs/common";
-import { PrismaModule } from "src/prisma/prisma.module";
 import { MulterModule } from "@nestjs/platform-express";
-import { ImgTransferGateway } from "./imgtransfer.gateway";
+
 import { ImgTransferService } from "./imgtransfer.service";
+import { ImgTransferController } from "./imgtransfer.controller";
 
 @Module({
-    imports : [PrismaModule, MulterModule],
-    providers : [ImgTransferService, ImgTransferGateway]
+    imports : [MulterModule.register({
+        dest: '../images',
+    })],
+    controllers: [ImgTransferController],
+    providers : [ImgTransferService]
 
 })
 
