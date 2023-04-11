@@ -166,7 +166,9 @@ const RoomList: React.FC = () => {
               >
                 <ListItemButton selected={currentRoomName === roomName}>
                   <span style={{ marginRight: "auto", marginLeft: "8px" }}>
-                    {room.rank === "OWNER" && <FaCrown />}
+                    {room.status !== "DIALOGUE" && room.rank === "OWNER" && (
+                      <FaCrown />
+                    )}
                   </span>
                   <ListItemIcon>{renderAvatarGroup(room)}</ListItemIcon>
                   <ListItemText

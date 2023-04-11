@@ -61,18 +61,22 @@ const Message = forwardRef<HTMLDivElement, MessageProps>(({ message }, ref) => {
       )}
       {message.displayUser && (
         <>
-          <Tooltip
-            title={message.isOwn ? "Me" : message.username}
-            TransitionComponent={Fade}
-            placement={message.isOwn ? "left-end" : "right-end"}
-            enterDelay={100}
-          >
-            <Avatar
-              alt={message.username}
-              src={`https://i.pravatar.cc/150?u=${message.username}`}
-            />
-          </Tooltip>
-          <Typography className={`sender`}>{message.username}</Typography>
+          {!message.isOwn && (
+            <Tooltip
+              title={message.username}
+              TransitionComponent={Fade}
+              placement={message.isOwn ? "left-end" : "right-end"}
+              enterDelay={100}
+            >
+              <Avatar
+                alt={message.username}
+                src={`https://i.pravatar.cc/150?u=${message.username}`}
+              />
+            </Tooltip>
+          )}
+          <Typography className={`sender`}>
+            {message.isOwn ? "Me" : message.username}
+          </Typography>
         </>
       )}
       <Tooltip
