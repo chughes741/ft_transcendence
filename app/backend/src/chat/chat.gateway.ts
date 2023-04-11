@@ -212,7 +212,7 @@ export class ChatGateway
         status: room.status,
         nbMembers: room.members.length,
         owner: {
-          username: room.owner.username,
+          username: room.owner?.username,
           avatar: room.owner?.avatar,
           status: room.owner?.status
         }
