@@ -74,6 +74,7 @@ function TopBar({ setPageState }) {
             icon={
               <SportsEsports style={{ fontSize: "2rem", color: "white" }} />
             } // Adjust the size accordingly
+            onClick={() => setPageState(PageState.Game)}
           />
         </Box>
 
