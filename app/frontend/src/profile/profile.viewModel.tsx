@@ -102,8 +102,8 @@ export const ProfileViewModelProvider = ({ children }) => {
   /**
    * Adds a friend to friends list
    *
-   * @param {string} username
-   * @param {string} friend
+   * @param {string} username - Username of the user
+   * @param {string} friend - Username of the friend
    * @returns {Promise<void>}
    */
   const addFriend = async (username: string, friend: string): Promise<void> => {
