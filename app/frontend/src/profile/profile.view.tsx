@@ -1,6 +1,8 @@
 /** MUI */
 import {
   Avatar,
+  MenuItem,
+  ListItemText,
   Paper,
   Typography,
   Table,
@@ -183,11 +185,38 @@ function MatchHistory(): JSX.Element | null {
  * @returns {JSX.Element | null}
  */
 function FriendsListRow(friend: ProfileEntity): JSX.Element | null {
+  const { setUser } = useProfileViewModelContext();
+  const handleClick = () => {
+    console.log("Clicked on friend: " + friend.username);
+    setUser(friend.username);
+  };
+
   return (
     <>
-      <TableRow id="profile-friends-list-row">
-        <TableCell align="center">{friend.username}</TableCell>
-      </TableRow>
+      <MenuItem onClick={() => handleClick()}>
+        <Badge
+          color={
+            friend.status === UserStatus.ONLINE
+              ? "success"
+              : friend.status === UserStatus.OFFLINE
+              ? "error"
+              : "warning"
+          }
+          anchorOrigin={{
+            vertical: "bottom",
+            horizontal: "right"
+          }}
+          overlap="circular"
+          variant="dot"
+        >
+          <Avatar
+            alt={friend.username}
+            src={friend.avatar}
+            sx={{ width: 40, height: 40, marginRight: 1 }}
+          />
+        </Badge>
+        <ListItemText primary={friend.username} />
+      </MenuItem>
     </>
   );
 }
