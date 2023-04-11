@@ -1,31 +1,34 @@
-import { Box } from '@mui/material';
-import { read } from 'fs';
+import { Box, Input, Button, InputAdornment } from '@mui/material';
+import { IconButton } from '@mui/material';
+import { PhotoCamera } from '@mui/icons-material';
 import { useState, useContext } from 'react';
 import { WebSocketContext } from 'src/contexts/WebSocket.context';
-import { json } from 'stream/consumers';
 
 function ImgUpload() {
   const [file, setFile] = useState(null);
   const [ImgUrl, setImgUrl] = useState('');
 
   const socket = useContext(WebSocketContext);
-
   const handleFileChange = (event) => {
     setFile(event.target.files[0]);
   };
 
   const handleUpload = async () => {
     console.log("handUpload Clicked", file);
-    
+
     if (file) {
-      //setImgUrl(URL.createObjectURL(file));
+      //  
+      //     REPLACE WITH CONTEXT USERNAME HERE
+      const newdata = { username: 'schlurp', }
+
+      //--------------------- End of Username
       const formData = new FormData();
       formData.append('file', file);
-      console.log("Before fetch");
+      formData.append('newData', JSON.stringify(newdata));
 
       fetch("/imgtransfer/upload", {
         method: "POST",
-        body: formData
+        body: formData,
       })
         .then((response) => {
           if (response.ok) {
@@ -45,20 +48,22 @@ function ImgUpload() {
     }
   }
 
-    //<form onSubmit={handleUpload}> </form> 
-    return (
-      <>
-        <Box className='ImgComponent'>
+  //<form onSubmit={handleUpload}> </form> 
+  return (
+    <>
+      <Box className='ImgComponent'>
+        <Input type="file" inputProps={{ accept: 'image/*', 'aria-label': 'Choose image', placeholder: 'No image' }}
+          onChange={handleFileChange} endAdornment={
+            <InputAdornment position="end">
+              <IconButton>
+                <PhotoCamera />
+              </IconButton>
+            </InputAdornment>
+          } />
+        <Button type='submit' onClick={handleUpload}>Submit File</Button>
+      </Box>
+    </>
+  );
+}
 
-          <input type="file" accept='image/*' onChange={handleFileChange} />
-          <button type='submit' onClick={handleUpload}>Click to Submit File</button>
-          <Box className='profileImage'>
-            {{ ImgUrl } && <img src={file} alt='uploaded image' />}
-          </Box>
-
-        </Box>
-      </>
-    );
-  }
-
-  export default ImgUpload;
+export default ImgUpload;

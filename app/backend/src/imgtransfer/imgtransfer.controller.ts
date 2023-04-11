@@ -1,5 +1,4 @@
 import { Body, Controller, Get, Injectable, UploadedFile } from "@nestjs/common";
-import { ConnectedSocket } from "@nestjs/websockets";
 import { Post } from "@nestjs/common";
 import { Socket } from "dgram";
 import { Express } from "express";
@@ -9,12 +8,12 @@ import { diskStorage } from "multer";
 import { HttpException, HttpStatus } from '@nestjs/common';
 import * as path from 'path';
 import { ImgTransferService } from "./imgtransfer.service";
-import { findIndex } from "rxjs";
+import { imgTransferDTO } from "./dto/imgtransfer.dto";
 
 const imageFileFilter = (req, file, cb) => {
-    
+
     const extname = path.extname(file.originalname);
-    
+
     if (extname.match(/\.(jpg|jpeg|png|gif)$/)) {
         cb(null, true);
     } else {
@@ -25,7 +24,7 @@ const imageFileFilter = (req, file, cb) => {
 @Injectable()
 @Controller('imgtransfer')
 export class ImgTransferController {
-    constructor(private imgtransferService : ImgTransferService) {}
+    constructor(private imgtransferService: ImgTransferService) { }
 
     @Post('upload')
     @UseInterceptors(FileInterceptor('file', {
@@ -37,19 +36,21 @@ export class ImgTransferController {
         }),
         fileFilter: imageFileFilter,
     }))
-    public async uploadUserImage(@UploadedFile() file: Express.Multer.File) {
-        const baseUrl = process.env.SITE_URL + 'img/';
-        const url = require('url');
-        const imageUrl = url.resolve(baseUrl, file.filename);
-        console.log(baseUrl);
-        const data = {
-            Name: file.originalname,
-            fileName: file.filename,
-            URL : imageUrl,
+    public async uploadUserImage(@UploadedFile() file: Express.Multer.File, @Body() Data: any) {
+        try {
+            const user = JSON.parse(Data.newData).username
+            const baseUrl = process.env.SITE_URL + 'img/';
+            const newImgUrl = new URL(file.filename, baseUrl).href;
+            const data = {
+                Name: file.originalname,
+                fileName: file.filename,
+                URL: newImgUrl,
+            }
+            this.imgtransferService.updateProfilePic(user, data);
+            return (newImgUrl)
+        } catch (error) {
+            return 'Failed to upload'
         }
-        this.imgtransferService.updateProfilePic('schlurp', data);
-        console.log(data)
-        return (imageUrl)
     }
 
 }
