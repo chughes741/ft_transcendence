@@ -50,14 +50,20 @@ async function bootstrap() {
   app.useGlobalFilters(new PrismaClientExceptionFilterWs());
 
   // Use the HTTP adapter
+    app.enableCors();
   const { httpAdapter } = app.get(HttpAdapterHost);
+
+  httpAdapter.get('/img/*', (req, res) => {
+    const imagePath = join(__dirname, '..', 'img', req.params[0]).replace('/dist', '');
+    res.sendFile(imagePath);
+  });
 
   // Register the PrismaClientExceptionFilter as a HTTP filter
   app.useGlobalFilters(new PrismaClientExceptionFilterHttp(httpAdapter));
 
     //Cochonnerie
-  app.useStaticAssets(join(__dirname, "..", "uploads"), {
-    prefix: "/uploads"
+  app.useStaticAssets(join(__dirname, "..", "img"), {
+    prefix: "/img"
   });
 
   

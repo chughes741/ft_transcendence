@@ -1,7 +1,7 @@
 import { Box } from '@mui/material';
 import { read } from 'fs';
 import { useState, useContext } from 'react';
-import { WebSocketContext } from 'src/contexts/WebSocketContext';
+import { WebSocketContext } from 'src/contexts/WebSocket.context';
 import { json } from 'stream/consumers';
 
 function ImgUpload() {
@@ -51,7 +51,7 @@ function ImgUpload() {
         <Box className='ImgComponent'>
 
           <input type="file" accept='image/*' onChange={handleFileChange} />
-          <button type='submit' onClick={handleUpload}>Choose File</button>
+          <button type='submit' onClick={handleUpload}>Click to Submit File</button>
           <Box className='profileImage'>
             {{ ImgUrl } && <img src={file} alt='uploaded image' />}
           </Box>

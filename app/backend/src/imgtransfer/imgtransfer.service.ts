@@ -21,14 +21,9 @@ export class ImgTransferService {
         console.log('URL: ' + imageUrl)
         if (isUrlValid(imageUrl)) {
             const filename = path.basename(imageUrl)
-            console.log("FILENAME : " + filename)
-            const imagePath = ('../images/' + filename)
-            console.log('IMAGE PATH: ' + imagePath)
-            //const imgPth = path.join(__dirname, '../images', filename);
-            const imgPth = path.join(__dirname, 'src/images', path.basename(imageUrl)).replace('/dist/src/imgtransfer', '');
-            console.log(imgPth)
+            const imagePath = ('../../img/' + filename)
+            const imgPth = path.join(__dirname, '/img', path.basename(imageUrl)).replace('/dist/src/imgtransfer', '');
             const relativePath = imagePath.replace(/.*\/dist\//, '');
-            console.log("relative path " + relativePath)
             fs.unlinkSync(imgPth);
         }
         this.prismaService.updateAvatar(userName, data.URL)

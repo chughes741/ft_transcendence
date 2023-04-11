@@ -1,4 +1,4 @@
-import { Body, Controller, Injectable, UploadedFile } from "@nestjs/common";
+import { Body, Controller, Get, Injectable, UploadedFile } from "@nestjs/common";
 import { ConnectedSocket } from "@nestjs/websockets";
 import { Post } from "@nestjs/common";
 import { Socket } from "dgram";
@@ -9,6 +9,7 @@ import { diskStorage } from "multer";
 import { HttpException, HttpStatus } from '@nestjs/common';
 import * as path from 'path';
 import { ImgTransferService } from "./imgtransfer.service";
+import { findIndex } from "rxjs";
 
 const imageFileFilter = (req, file, cb) => {
     
@@ -29,7 +30,7 @@ export class ImgTransferController {
     @Post('upload')
     @UseInterceptors(FileInterceptor('file', {
         storage: diskStorage({
-            destination: 'src/images',
+            destination: 'img',
             filename: (req, file, cb) => {
                 cb(null, Date.now() + path.extname(file.originalname));
             },
@@ -37,10 +38,10 @@ export class ImgTransferController {
         fileFilter: imageFileFilter,
     }))
     public async uploadUserImage(@UploadedFile() file: Express.Multer.File) {
-        const baseUrl = 'http://localhost:3000/src/images/';
+        const baseUrl = process.env.SITE_URL + 'img/';
         const url = require('url');
         const imageUrl = url.resolve(baseUrl, file.filename);
-        
+        console.log(baseUrl);
         const data = {
             Name: file.originalname,
             fileName: file.filename,

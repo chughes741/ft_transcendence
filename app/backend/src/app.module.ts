@@ -25,8 +25,8 @@ require("tsconfig-paths");
   imports: [
     ScheduleModule.forRoot(),
     ServeStaticModule.forRoot({
-      rootPath: join(__dirname, "..", "..", "..", "frontend", "build")
-    }),
+      rootPath: join(__dirname, "..", "..", "..", "frontend", "build"),
+      }),
     ChatModule,
     GameModule,
     ImgTransferModule,
