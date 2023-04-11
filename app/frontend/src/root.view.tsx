@@ -7,6 +7,7 @@ import { PageState } from "./root.model";
 import GameWindow from "./game/game.master";
 import { ChatView } from "./chat/chat.view";
 import ProfileView from "./profile/profile.view";
+import { useEffect } from "react";
 
 /**
  * Helmet with dynamic page names
@@ -59,6 +60,24 @@ function RootViewContent(): JSX.Element {
  * @returns {JSX.Element} - View model with dynamic content
  */
 export function RootView(): JSX.Element {
+  const { fullscreen, setFullscreen } = useRootViewModelContext();
+  const handleKeyDown = (event: KeyboardEvent) => {
+    if (event.key === "Escape" && fullscreen) {
+      console.log(`it worked! esc was pressed and fullscreen is ${fullscreen}`);
+      setFullscreen(false);
+    }
+  };
+
+  /** Add event listener for keydown event */
+  useEffect(() => {
+    window.addEventListener("keydown", handleKeyDown);
+
+    /** Cleanup event listener on unmount */
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [fullscreen]);
+
   return (
     <>
       <HelmetView />
@@ -70,26 +89,28 @@ export function RootView(): JSX.Element {
           id="page-box"
           sx={{ display: "flex", flexDirection: "column" }}
         >
-          <>
-            <TopBar />
-            <Box
-              id="sidebar-container"
-              sx={{ display: "flex" }}
-            >
-              <SideBar />
+          {(fullscreen && <RootViewContent />) || (
+            <>
+              <TopBar />
               <Box
-                component={"main"}
-                sx={{
-                  width: "100%",
-                  display: "flex",
-                  justifyContent: "center",
-                  overflow: "hidden"
-                }}
+                id="sidebar-container"
+                sx={{ display: "flex" }}
               >
-                <RootViewContent />
+                <SideBar />
+                <Box
+                  component={"main"}
+                  sx={{
+                    width: "100%",
+                    display: "flex",
+                    justifyContent: "center",
+                    overflow: "hidden"
+                  }}
+                >
+                  <RootViewContent />
+                </Box>
               </Box>
-            </Box>
-          </>
+            </>
+          )}
         </Box>
       </Container>
     </>

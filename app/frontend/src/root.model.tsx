@@ -23,6 +23,8 @@ export interface RootModelType {
   setSelf: (self: ProfileEntity) => void;
   pageState: PageState;
   setPageState: (pageState: PageState) => void;
+  fullscreen: boolean;
+  setFullscreen: (fullscreen: boolean) => void;
 }
 
 /**
@@ -39,11 +41,14 @@ export const useRootModel = (): RootModelType => {
     createdAt: new Date().toDateString()
   });
   const [pageState, setPageState] = useState<PageState>(PageState.Home);
+  const [fullscreen, setFullscreen] = useState<boolean>(false);
 
   return {
     self,
     setSelf,
     pageState,
-    setPageState
+    setPageState,
+    fullscreen,
+    setFullscreen
   };
 };
