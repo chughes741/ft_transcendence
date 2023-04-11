@@ -222,10 +222,14 @@ const RoomList: React.FC = () => {
             label: "Leave Room",
             onClick: leaveRoom
           },
-          {
-            label: "Invite Users to Room",
-            onClick: handleInvitePeopleToRoom
-          },
+          ...(contextMenuData && contextMenuData.status !== "DIALOGUE"
+            ? [
+                {
+                  label: "Invite Users to Room",
+                  onClick: handleInvitePeopleToRoom
+                }
+              ]
+            : []),
           ...(contextMenuData && contextMenuData.rank === "OWNER"
             ? [
                 {
@@ -234,34 +238,26 @@ const RoomList: React.FC = () => {
                     {
                       label: "Private",
                       onClick: () => {
-                        if (contextMenuData) {
-                          changeRoomStatus(
-                            contextMenuData.name,
-                            "PRIVATE"
-                          ).then();
-                        }
+                        changeRoomStatus(
+                          contextMenuData.name,
+                          "PRIVATE"
+                        ).then();
                       }
                     },
                     {
                       label: "Public",
                       onClick: () => {
-                        if (contextMenuData) {
-                          changeRoomStatus(
-                            contextMenuData.name,
-                            "PUBLIC"
-                          ).then();
-                        }
+                        changeRoomStatus(contextMenuData.name, "PUBLIC").then();
                       }
                     },
                     {
+                      // TODO: add dialog to enter and confirm new password
                       label: "Password Protected",
                       onClick: () => {
-                        if (contextMenuData) {
-                          changeRoomStatus(
-                            contextMenuData.name,
-                            "PASSWORD"
-                          ).then();
-                        }
+                        changeRoomStatus(
+                          contextMenuData.name,
+                          "PASSWORD"
+                        ).then();
                       }
                     }
                   ]

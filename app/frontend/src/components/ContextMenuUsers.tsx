@@ -1,4 +1,3 @@
-import React from "react";
 import { useChatContext } from "../chat/chat.context";
 import ContextMenu from "./ContextMenu";
 import { PageState } from "src/root.model";
@@ -42,7 +41,7 @@ export default function ContextMenuUsers() {
             }
           },
           {
-            label: "Dm",
+            label: "Send Direct Message",
             onClick: () => {
               console.log("Send a dm");
             }
