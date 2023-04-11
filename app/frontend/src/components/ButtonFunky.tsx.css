@@ -33,7 +33,7 @@
   pointer-events: none;
   position: absolute;
   top: 0;
-  transition: background-position 350ms ease, transform 350ms ease;
+  transition: background-position 600ms ease, transform 600ms ease;
   width: 90%;
   z-index: 1;
 }
@@ -64,7 +64,7 @@
   background-size: 2vmin 2vmin;
   border-radius: 2rem;
   position: absolute;
-  transition: background-position 350ms ease;
+  transition: background-position 600ms ease;
   z-index: 2;
   top: 0;
   left: 0;
@@ -79,7 +79,7 @@
   color: white;
   font-weight: 400;
   margin: 0;
-  transition: 350ms ease;
+  transition: 600ms ease;
   text-align: center;
   z-index: 3;
   padding: 8px 20px;

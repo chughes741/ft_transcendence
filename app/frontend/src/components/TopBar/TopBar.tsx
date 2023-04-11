@@ -78,13 +78,16 @@ function TopBar({ setPageState }) {
           />
         </Box>
 
-        <Box sx={{ width: "20vw", maxHeight: "20vh" }}>
-          <ButtonFunky
-            content={"Play a game"}
-            width={"100%"}
-            onClick={() => setPageState(PageState.Game)}
-          />
-        </Box>
+        {/* FIXME: If I remove this, the colors are fucked */}
+        {false && (
+          <Box sx={{ width: "20vw", maxHeight: "20vh" }}>
+            <ButtonFunky
+              content={"Play a game"}
+              width={"100%"}
+              onClick={() => setPageState(PageState.Game)}
+            />
+          </Box>
+        )}
         {/* Button to be displayed instead of profile when use not logged in*/}
         {/* <Button color="inherit">Login</Button> */}
 
