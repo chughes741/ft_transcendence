@@ -17,7 +17,6 @@ import {
   LeaveRoomRequest,
   SendMessageDto
 } from "./chat.gateway";
-import { CreateChatDto } from "./dto/create-chat.dto";
 import { MessageEntity } from "./entities/message.entity";
 import { kickMemberDto, updateChatMemberStatusDto } from "./dto/userlist.dto";
 import { ChatMemberPrismaType } from "./chat.gateway";
@@ -169,7 +168,7 @@ export class ChatService {
     if (!chatMember) {
       return Error("User is not a member of this room");
     }
-    const deletedMember = await this.prismaService.chatMember.delete({
+    return this.prismaService.chatMember.delete({
       where: { id: chatMember.id }
     });
   }

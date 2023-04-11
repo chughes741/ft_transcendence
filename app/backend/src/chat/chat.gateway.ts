@@ -83,6 +83,18 @@ export interface ChatRoomEntity {
   lastActivity: Date;
   avatars?: string[];
 }
+export interface UserEntity {
+  username: string;
+  avatar: string;
+  status: UserStatus;
+}
+
+export interface AvailableRoomEntity {
+  roomName: string;
+  nbMembers: number;
+  status: "PASSWORD" | "PUBLIC";
+  owner: UserEntity;
+}
 
 const logger = new Logger("ChatGateway");
 
@@ -141,6 +153,7 @@ export class ChatGateway
   }
 
   // Create a sendEventToAllUserSockets(member.username, "newChatRoomMember", newMember) function
+  /* eslint-disable-next-line -- This function is not responsible for payload validation*/
   async sendEventToAllUserSockets(username: string, event: string, data: any) {
     logger.log(`Sending event ${event} to user ${username}`);
     const userSockets = this.userConnectionsService.getUserSockets(username);
@@ -167,7 +180,50 @@ export class ChatGateway
   }
 
   /**
-   * Temporary function to get all available users
+   * Get all available chat rooms from the server, and send them to the client,
+   * excluding the ones the user is already in.
+   * Info sent back to the client:
+   *  - room name
+   *  - room status
+   *  - room owner
+   *  - amount of room members
+   * @param client socket client
+   * @param username username of the user requesting the list
+   * @returns list of chat rooms
+   */
+  @SubscribeMessage("listAvailableChatRooms")
+  async listAvailableChatRooms(
+    client: Socket,
+    username: string
+  ): Promise<AvailableRoomEntity[]> {
+    const userId = await this.prismaService.getUserIdByNick(username);
+    logger.log(
+      `Received listAvailableChatRooms request from ${userId}, name ${username}`
+    );
+    if (!userId) {
+      return [];
+    }
+    const availableRooms = await this.prismaService.getAvailableChatRooms(
+      userId
+    );
+    const rooms: AvailableRoomEntity[] = availableRooms?.map((room) => {
+      return {
+        roomName: room.name,
+        status: room.status,
+        nbMembers: room.members.length,
+        owner: {
+          username: room.owner?.username,
+          avatar: room.owner?.avatar,
+          status: room.owner?.status
+        }
+      };
+    });
+
+    return rooms;
+  }
+
+  /**
+   * Get all available users
    */
   @SubscribeMessage("listAvailableUsers")
   async listAvailableUsers(client: Socket, roomName: string): Promise<User[]> {
@@ -310,14 +366,14 @@ export class ChatGateway
     // Find the user's ChatMember entity by finding the room name and the user id in the database
 
     // Find the chatMember in the returned ChatRoomEntity's ChatMemberEntity array
-    const chatMember = (ret as ChatRoomEntity).members.find(
-      (member) => member.username === username
-    );
 
     if (ret instanceof Error) {
       logger.error(ret);
       return { error: ret.message };
-    } else {
+    } else if (ret) {
+      const chatMember = ret.members?.find(
+        (member) => member.username === username
+      );
       const roomInfo: ChatRoomEntity = ret;
       client.join(dto.roomName);
       const newMember: RoomMemberEntity = {
@@ -355,6 +411,10 @@ export class ChatGateway
     req: LeaveRoomRequest
   ): Promise<DevError | string> {
     const clientId = this.userConnectionsService.getUserBySocket(client.id);
+    if (!clientId) {
+      logger.error(`User ${client.id} not found`);
+      return { error: "User not found" };
+    }
     const user = await this.prismaService.user.findUnique({
       where: { username: clientId }
     });

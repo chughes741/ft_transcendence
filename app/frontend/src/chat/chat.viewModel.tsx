@@ -7,7 +7,7 @@ import { MessageType } from "src/chat/components/Message";
 import { ChatContext } from "src/chat/chat.context";
 import { UserListItem } from "src/chat/components/Userlist";
 
-export type ChatRoomStatus = "PUBLIC" | "PRIVATE" | "PASSWORD";
+export type ChatRoomStatus = "PUBLIC" | "PRIVATE" | "PASSWORD" | "DIALOGUE";
 export type ChatMemberRank = "USER" | "ADMIN" | "OWNER";
 
 export type RoomMemberEntity = {
@@ -103,6 +103,7 @@ export const ChatViewModelProvider = ({ children }) => {
   // If the previous room is the same as the current one, toggle the page state to PageState.Home
   const selectRoom = (roomName: string) => {
     if (currentRoomName === roomName && pageState === PageState.Chat) {
+      console.log("selectRoom: Room is already selected. Toggling to Home.");
       setCurrentRoomName("");
       setPageState(PageState.Home);
       return;
@@ -131,7 +132,7 @@ export const ChatViewModelProvider = ({ children }) => {
     });
 
     return {
-      user: messagePayload.username,
+      username: messagePayload.username,
       roomId: messagePayload.roomName,
       content: messagePayload.content,
       timestamp_readable,
@@ -319,6 +320,8 @@ export const ChatViewModelProvider = ({ children }) => {
             "Error response from join room: ",
             (joinRoomRes as DevError).error
           );
+          // FIXME: handle errors more gracefully
+          alert((joinRoomRes as DevError).error);
           resolve(false);
         } else {
           console.log("Response from join room: ", joinRoomRes);
@@ -439,6 +442,8 @@ export const ChatViewModelProvider = ({ children }) => {
   /**********************/
 
   const userLogin = async (username: string): Promise<boolean> => {
+    if (username === "" || username === undefined)
+      return Promise.resolve(false);
     return new Promise<boolean>((resolve) => {
       socket.emit("userLogin", username, (response: DevError | string) => {
         if (typeof response === "object") {
@@ -460,6 +465,8 @@ export const ChatViewModelProvider = ({ children }) => {
   };
 
   const createUser = async (username: string): Promise<boolean> => {
+    if (username === "" || username === undefined)
+      return Promise.resolve(false);
     return new Promise<boolean>((resolve) => {
       socket.emit("userCreation", username, (response: DevError | string) => {
         if (typeof response === "object") {

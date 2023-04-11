@@ -131,7 +131,7 @@ export class GameService {
   async gameStart() {
     logger.log("gameStart() called");
 
-    if (this.gameState.player_left_ready && this.gameState.player_right_ready)
+    if (this.gameState?.player_left_ready && this.gameState?.player_right_ready)
       this.startNewGame();
 
     //Emit gameStart event to clients so they can render the game window

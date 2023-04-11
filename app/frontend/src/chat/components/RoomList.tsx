@@ -14,17 +14,20 @@ import {
   ListItemText
 } from "@mui/material";
 import { useChatContext } from "../chat.context";
-import { FaCrown, FaGlobe, FaLock, FaUserLock } from "react-icons/fa";
+import { FaCrown } from "react-icons/fa";
 
 import { Snackbar } from "@mui/material";
 import Alert from "@mui/material/Alert";
 
-import { ChatRoomStatus } from "../chat.viewModel";
+import { ChatRoomStatus, RoomType } from "../chat.viewModel";
 import { socket } from "../../contexts/WebSocket.context";
 import { InviteUsersModal } from "./InviteUsersModal";
+import { Public, VisibilityOff, VpnKey } from "@mui/icons-material";
+import { DirectMessageModal } from "./DirectMessageModal";
 
 const RoomList: React.FC = () => {
   const {
+    tempUsername,
     rooms,
     currentRoomName,
     setShowCreateRoomModal,
@@ -38,8 +41,12 @@ const RoomList: React.FC = () => {
     createNewRoom,
     leaveRoom,
     changeRoomStatus,
+    /* Direct message */
+    showDirectMessageModal,
+    setShowDirectMessageModal,
     showCreateRoomModal,
     showJoinRoomModal,
+    /* Invite users */
     showInviteUsersModal,
     setShowInviteUsersModal,
     joinRoom,
@@ -51,7 +58,7 @@ const RoomList: React.FC = () => {
   const [selectedUsers, setSelectedUsers] = React.useState<UserEntity[]>([]);
   const [availableUsers, setAvailableUsers] = React.useState<UserEntity[]>([]);
 
-  // Make a useEffect to emit a "listAvailableUsers" socket event when the roomName changes
+  // Emit a "listAvailableUsers" socket event when the roomName changes
   useEffect(() => {
     console.log("Room name changed: ", currentRoomName);
 
@@ -78,11 +85,13 @@ const RoomList: React.FC = () => {
   const getStatusIcon = (status: ChatRoomStatus) => {
     switch (status) {
       case "PASSWORD":
-        return <FaLock />;
+        return <VpnKey />;
       case "PUBLIC":
-        return <FaGlobe />;
+        return <Public />;
       case "PRIVATE":
-        return <FaUserLock />;
+        return <VisibilityOff />;
+      case "DIALOGUE":
+        return <></>;
       default:
         return null;
     }
@@ -113,6 +122,37 @@ const RoomList: React.FC = () => {
     setShowNewRoomSnackbar(false);
   };
 
+  const renderAvatarGroup = (room: RoomType) => {
+    if (room.status === "DIALOGUE") {
+      const otherUser = Object.values(room.users)?.find(
+        (user) => user.username !== tempUsername
+      );
+      return (
+        <Avatar
+          src={otherUser.avatar}
+          alt={`Profile ${otherUser.username}`}
+        />
+      );
+    } else {
+      return (
+        <AvatarGroup
+          max={1}
+          spacing="small"
+        >
+          {room.users &&
+            Object.keys(room.users).length > 0 &&
+            Object.values(room.users).map((user) => (
+              <Avatar
+                key={user.username}
+                src={user.avatar}
+                alt={`Profile ${user.username}`}
+              />
+            ))}
+        </AvatarGroup>
+      );
+    }
+  };
+
   return (
     <div className="room-list">
       <Box sx={{ overflow: "auto" }}>
@@ -126,24 +166,11 @@ const RoomList: React.FC = () => {
               >
                 <ListItemButton selected={currentRoomName === roomName}>
                   <span style={{ marginRight: "auto", marginLeft: "8px" }}>
-                    {room.rank === "OWNER" && <FaCrown />}
+                    {room.status !== "DIALOGUE" && room.rank === "OWNER" && (
+                      <FaCrown />
+                    )}
                   </span>
-                  <ListItemIcon>
-                    <AvatarGroup
-                      max={4}
-                      spacing="small"
-                    >
-                      {room.users &&
-                        Object.keys(room.users).length > 0 &&
-                        Object.values(room.users).map((user) => (
-                          <Avatar
-                            key={user.username}
-                            src={user.avatar}
-                            alt={`Profile ${user.username}`}
-                          />
-                        ))}
-                    </AvatarGroup>
-                  </ListItemIcon>
+                  <ListItemIcon>{renderAvatarGroup(room)}</ListItemIcon>
                   <ListItemText
                     style={{ overflowX: "hidden" }}
                     primary={roomName}
@@ -164,6 +191,11 @@ const RoomList: React.FC = () => {
             ))}
         </List>
       </Box>
+      <DirectMessageModal
+        showModal={showDirectMessageModal}
+        closeModal={() => setShowDirectMessageModal(false)}
+        // onCreateRoom={() => setShowDirectMessageModal(false)}
+      />
       <CreateRoomModal
         showModal={showCreateRoomModal}
         closeModal={() => setShowCreateRoomModal(false)}

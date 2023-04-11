@@ -7,6 +7,8 @@ import { JwtService } from "@nestjs/jwt";
 import { ConfigService } from "@nestjs/config";
 import { WsException } from "@nestjs/websockets";
 
+const logger = new Logger("AuthService");
+
 @Injectable()
 export class AuthService {
   constructor(
@@ -58,6 +60,10 @@ export class AuthService {
 
   async signin(dto: AuthDto) {
     // Find the user by username
+    if (!dto.username) {
+      logger.error("signin: username is required");
+      return null;
+    }
     const user = await this.prisma.user.findUnique({
       where: {
         username: dto.username

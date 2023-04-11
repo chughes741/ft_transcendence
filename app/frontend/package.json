@@ -16,6 +16,7 @@
     "@mui/base": "^5.0.0-alpha.124",
     "@mui/icons-material": "5.11.16",
     "@mui/material": "5.11.16",
+    "@mui/styles": "^5.11.16",
     "@mui/system": "5.11.16",
     "@react-three/fiber": "^8.11.9",
     "kingpong-lib": "1.1.4",
