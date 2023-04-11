@@ -3,13 +3,17 @@ import { MulterModule } from "@nestjs/platform-express";
 
 import { ImgTransferService } from "./imgtransfer.service";
 import { ImgTransferController } from "./imgtransfer.controller";
+import { PrismaModule } from "src/prisma/prisma.module";
+import { PrismaService } from "src/prisma/prisma.service";
 
 @Module({
     imports : [MulterModule.register({
-        dest: '../images',
-    })],
+        dest: 'src/images',
+    }),
+    PrismaModule
+    ],
     controllers: [ImgTransferController],
-    providers : [ImgTransferService]
+    providers : [ImgTransferService, PrismaService]
 
 })
 

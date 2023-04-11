@@ -15,6 +15,7 @@ import { ScheduleModule } from "@nestjs/schedule";
 import { UserConnectionsService } from "./user-connections.service";
 import { ImgTransferModule } from "./imgtransfer/imgtransfer.module";
 import { ImgTransferController } from "./imgtransfer/imgtransfer.controller";
+import { ImgTransferService } from "./imgtransfer/imgtransfer.service";
 
 
 /** Used for src/... import paths */
@@ -40,6 +41,6 @@ require("tsconfig-paths");
     }) // Loads env vars. Uses dotenv library under the hood
   ],
   controllers: [ImgTransferController],
-  providers: [AppService, PrismaService, UserConnectionsService]
+  providers: [AppService, PrismaService, UserConnectionsService, ImgTransferService]
 })
 export class AppModule {}
