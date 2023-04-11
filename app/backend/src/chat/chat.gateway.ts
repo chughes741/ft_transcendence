@@ -205,15 +205,15 @@ export class ChatGateway
     const availableRooms = await this.prismaService.getAvailableChatRooms(
       userId
     );
-    const rooms: AvailableRoomEntity[] = availableRooms.map((room) => {
+    const rooms: AvailableRoomEntity[] = availableRooms?.map((room) => {
       return {
         roomName: room.name,
         status: room.status,
         nbMembers: room.members.length,
         owner: {
-          username: room.owner,
-          avatar: room.owner.avatar,
-          status: room.owner.status
+          username: room.owner.username,
+          avatar: room.owner?.avatar,
+          status: room.owner?.status
         }
       };
     });

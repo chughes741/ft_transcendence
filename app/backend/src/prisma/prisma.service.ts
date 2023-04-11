@@ -211,7 +211,9 @@ export class PrismaService extends PrismaClient {
     return this.chatRoom.findMany({
       where: {
         AND: [
-          { status: { not: ChatRoomStatus.PRIVATE } },
+          {
+            status: { not: ChatRoomStatus.PRIVATE || ChatRoomStatus.DIALOGUE }
+          },
           { members: { every: { member: { id: { not: userId } } } } },
           { createdAt: { lt: dateOldest } }
         ]
