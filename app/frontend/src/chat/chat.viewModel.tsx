@@ -103,6 +103,7 @@ export const ChatViewModelProvider = ({ children }) => {
   // If the previous room is the same as the current one, toggle the page state to PageState.Home
   const selectRoom = (roomName: string) => {
     if (currentRoomName === roomName && pageState === PageState.Chat) {
+      console.log("selectRoom: Room is already selected. Toggling to Home.");
       setCurrentRoomName("");
       setPageState(PageState.Home);
       return;
