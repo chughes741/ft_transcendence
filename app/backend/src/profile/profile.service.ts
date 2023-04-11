@@ -78,7 +78,7 @@ export class ProfileService {
           : UserStatus.AWAY,
       createdAt: user.createdAt.toLocaleTimeString()
     };
-
+    logger.log("PROFILE AVATAR :" + profile.avatar);
     return profile;
   }
 

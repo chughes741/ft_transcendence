@@ -3,6 +3,10 @@ import { HttpAdapterHost, NestFactory } from "@nestjs/core";
 import { DocumentBuilder, SwaggerModule } from "@nestjs/swagger";
 import { IoAdapter } from "@nestjs/platform-socket.io";
 import { AppModule } from "./app.module";
+import { NestApplication } from "@nestjs/core";
+import { join } from "path";
+
+import { ServeStaticModule } from "@nestjs/serve-static";
 
 import * as session from "express-session";
 import * as passport from "passport";
@@ -12,9 +16,11 @@ import {
   PrismaClientExceptionFilterHttp,
   PrismaClientExceptionFilterWs
 } from "./prisma-client-exception.filter";
+import path from "path";
+import { NestExpressApplication } from "@nestjs/platform-express";
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.create<NestExpressApplication>(AppModule);
 
   app.useGlobalPipes(
     new ValidationPipe({
@@ -44,11 +50,23 @@ async function bootstrap() {
   app.useGlobalFilters(new PrismaClientExceptionFilterWs());
 
   // Use the HTTP adapter
+    app.enableCors();
   const { httpAdapter } = app.get(HttpAdapterHost);
+
+  httpAdapter.get('/img/*', (req, res) => {
+    const imagePath = join(__dirname, '..', 'img', req.params[0]).replace('/dist', '');
+    res.sendFile(imagePath);
+  });
 
   // Register the PrismaClientExceptionFilter as a HTTP filter
   app.useGlobalFilters(new PrismaClientExceptionFilterHttp(httpAdapter));
 
+    //Cochonnerie
+  app.useStaticAssets(join(__dirname, "..", "img"), {
+    prefix: "/img"
+  });
+
+  
   await app.listen(config.port);
   Logger.log("Application listening on port " + config.port);
 }

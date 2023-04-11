@@ -13,6 +13,10 @@ import { ConfigModule } from "@nestjs/config";
 import { AuthModule } from "./auth/auth.module";
 import { ScheduleModule } from "@nestjs/schedule";
 import { UserConnectionsService } from "./user-connections.service";
+import { ImgTransferModule } from "./imgtransfer/imgtransfer.module";
+import { ImgTransferController } from "./imgtransfer/imgtransfer.controller";
+import { ImgTransferService } from "./imgtransfer/imgtransfer.service";
+
 
 /** Used for src/... import paths */
 require("tsconfig-paths");
@@ -21,10 +25,11 @@ require("tsconfig-paths");
   imports: [
     ScheduleModule.forRoot(),
     ServeStaticModule.forRoot({
-      rootPath: join(__dirname, "..", "..", "..", "frontend", "build")
-    }),
+      rootPath: join(__dirname, "..", "..", "..", "frontend", "build"),
+      }),
     ChatModule,
     GameModule,
+    ImgTransferModule,
     ProfileModule,
     LoginModule,
     PrismaModule,
@@ -35,7 +40,7 @@ require("tsconfig-paths");
       isGlobal: true // Expose the module globally
     }) // Loads env vars. Uses dotenv library under the hood
   ],
-  controllers: [],
-  providers: [AppService, PrismaService, UserConnectionsService]
+  controllers: [ImgTransferController],
+  providers: [AppService, PrismaService, UserConnectionsService, ImgTransferService]
 })
 export class AppModule {}

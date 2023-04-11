@@ -669,4 +669,17 @@ export class PrismaService extends PrismaClient {
       where: { id }
     });
   }
+
+  async updateAvatar(userName : string, URL : string) {
+    const userToUpdate = await this.user.update({
+      where: {
+        username : userName
+      },
+      data: {
+        avatar : URL
+      }
+    })
+    return userToUpdate
+  }
+
 }
