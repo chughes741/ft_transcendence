@@ -21,17 +21,7 @@ Your work has to comply with the following rules:
 - [ ] The user should encounter no unhandled errors and no warnings when browsing the website.
 - [ ] Everything has to be launched by a single call to: `docker-compose up --build`
 
-```
-When your computers in clusters run under Linux, you will use Docker
-in rootless mode for security reasons. This comes with 2 sideways:
-1) your Docker runtime files must be located in /goinfre or
-/sgoinfre. 2) you can’t use so called “bind-mount volumes” between
-the host and the container if non-root UIDs are used in the
-container. Depending on the project, your situation and the context,
-several fallbacks exist: Docker in a VM, rebuild you container
-after your changes, craft your own docker image with root as unique
-UID.
-```
+> When your computers in clusters run under Linux, you will use Docker in rootless mode for security reasons. This comes with 2 sideways: 1) your Docker runtime files must be located in /goinfre or /sgoinfre. 2) you can’t use so called “bind-mount volumes” between the host and the container if non-root UIDs are used in the container. Depending on the project, your situation and the context, several fallbacks exist: Docker in a VM, rebuild you container after your changes, craft your own docker image with root as unique UID.
 
 ## II.2 Security concerns
 In order to create a fully functional website, here are a few security concerns that you
@@ -40,16 +30,9 @@ have to tackle:
 - [ ] Your website must be protected against `SQL injections`.
 - [ ] You must implement some kind of server-side validation for forms and any user input.
 
-```
-Please make sure you use a strong password hashing algorithm
-```
+> Please make sure you use a strong password hashing algorithm
 
-```
-For obvious security reasons, any credentials, API keys, env
-variables etc... must be saved locally in a .env file and ignored by
-git. Publicly stored credentials will lead you directly to a failure
-of the project.
-```
+> For obvious security reasons, any credentials, API keys, env variables etc... must be saved locally in a .env file and ignored by git. Publicly stored credentials will lead you directly to a failure of the project.
 
 ## II.3 User Account
 - [ ] The user must login using the `OAuth` system of 42 intranet.
@@ -84,7 +67,4 @@ The main purpose of this website is to play Pong versus other players and show e
 - [x] The game must be **responsive**!
 - [ ] The user should be able to watch a live play between other users without interfering with it.
 
-```
-Think about network issues, like unexpected disconnection or lag.
-You have to offer the best user experience possible.
-```
+> Think about network issues, like unexpected disconnection or lag. You have to offer the best user experience possible.
