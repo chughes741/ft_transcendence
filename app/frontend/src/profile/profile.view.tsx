@@ -41,7 +41,6 @@ const StyledBadge = styled(Badge)<StyledBadgeProps>(({ theme, status }) => ({
         ? "#ff0000"
         : "#ffa500",
     boxShadow: `0 0 0 4px ${theme.palette.background.paper}`,
-    width: "1rem"
   }
 }));
 
