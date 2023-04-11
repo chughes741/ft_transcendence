@@ -15,6 +15,7 @@ import ButtonFunky from "src/components/ButtonFunky";
 import { SportsEsports } from "@mui/icons-material";
 import DynamicIconButton from "../DynamicIconButton";
 import { useChatContext } from "src/chat/chat.context";
+import { useRootViewModelContext } from "src/root.context";
 const settings = ["Profile", "Settings", "Logout"];
 
 //Set css flexbox options for the toolbar component to create proper object positioning for child elements
@@ -23,7 +24,8 @@ const toolbarStyle = {
   justifyContent: "space-between"
 };
 
-function TopBar({ setPageState }) {
+function TopBar() {
+  const { setPageState } = useRootViewModelContext();
   const { profile, setUser } = useProfileViewModelContext();
   const { tempUsername } = useChatContext();
   const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(

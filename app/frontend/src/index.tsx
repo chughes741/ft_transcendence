@@ -13,10 +13,10 @@ import customTheme from "src/theme";
 import { RootView } from "./root.view";
 import { ErrorBoundary } from "react-error-boundary";
 import Fallback from "./components/error/error";
+import { RootViewModelProvider } from "./root.viewModel";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 const theme = customTheme();
-
 
 root.render(
   <ErrorBoundary FallbackComponent={Fallback}>
@@ -24,12 +24,14 @@ root.render(
       <WebSocketProvider value={socket}>
         <ThemeProvider theme={theme}>
           <PageStateProvider>
-            <ChatViewModelProvider>
-              <ProfileViewModelProvider>
-                <CssBaseline />
-                <RootView />
-              </ProfileViewModelProvider>
-            </ChatViewModelProvider>
+            <RootViewModelProvider>
+              <ChatViewModelProvider>
+                <ProfileViewModelProvider>
+                  <CssBaseline />
+                  <RootView />
+                </ProfileViewModelProvider>
+              </ChatViewModelProvider>
+            </RootViewModelProvider>
           </PageStateProvider>
         </ThemeProvider>
       </WebSocketProvider>

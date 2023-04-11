@@ -3,28 +3,26 @@ import { ProfileEntity } from "kingpong-lib";
 
 /**
  * Each page view is a value
- * @enum
+ * 
+ * @enum {number}
  */
 export enum PageState {
   Home,
   Game,
   Chat,
-  Profile,
-  FullScreenGame,
-  FullScreenChat,
-  FullScreenProfile
+  Profile
 }
 
 /**
  * Root model type
  *
  * @interface RootModelType
- * @property {ProfileEntity} self - Current user
- * @property {Function} setSelf - Set current user
  */
 export interface RootModelType {
   self: ProfileEntity;
   setSelf: (self: ProfileEntity) => void;
+  pageState: PageState;
+  setPageState: (pageState: PageState) => void;
 }
 
 /**
@@ -34,9 +32,12 @@ export interface RootModelType {
  */
 export const useRootModel = (): RootModelType => {
   const [self, setSelf] = useState<ProfileEntity>(null);
+  const [pageState, setPageState] = useState<PageState>(PageState.Home);
 
   return {
     self,
-    setSelf
+    setSelf,
+    pageState,
+    setPageState
   };
 };
