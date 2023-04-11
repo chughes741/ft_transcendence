@@ -14,7 +14,6 @@ import { useProfileViewModelContext } from "src/profile/profile.viewModel";
 import ButtonFunky from "src/components/ButtonFunky";
 import { SportsEsports } from "@mui/icons-material";
 import DynamicIconButton from "../DynamicIconButton";
-import { useChatContext } from "src/chat/chat.context";
 import { useRootViewModelContext } from "src/root.context";
 const settings = ["Profile", "Settings", "Logout"];
 
@@ -26,8 +25,8 @@ const toolbarStyle = {
 
 function TopBar() {
   const { setPageState } = useRootViewModelContext();
-  const { profile, setUser } = useProfileViewModelContext();
-  const { tempUsername } = useChatContext();
+  const { setUser } = useProfileViewModelContext();
+  const { self } = useRootViewModelContext();
   const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(
     null
   );
@@ -41,8 +40,7 @@ function TopBar() {
   };
 
   const onClickProfile = () => {
-    /** @todo set to global usn */
-    setUser(tempUsername);
+    setUser(self.username);
     setPageState(PageState.Profile);
     handleCloseUserMenu();
   };
@@ -103,11 +101,7 @@ function TopBar() {
               onClick={handleOpenUserMenu}
               sx={{ p: 0, mr: 2 }}
             >
-              {profile !== null ? (
-                <Avatar src={profile.avatar} />
-              ) : (
-                <Avatar alt="" />
-              )}
+              <Avatar src={self.avatar} />
             </IconButton>
           </Tooltip>
           <Menu

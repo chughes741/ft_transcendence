@@ -28,12 +28,12 @@ function HelmetView(): JSX.Element {
 
 /**
  * Root view content
- * 
+ *
  * @returns {JSX.Element} - Root view content
  */
 function RootViewContent(): JSX.Element {
   const { pageState } = useRootViewModelContext();
-  
+
   switch (pageState) {
     case PageState.Home: {
       return <div></div>;

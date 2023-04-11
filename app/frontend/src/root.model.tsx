@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { ProfileEntity } from "kingpong-lib";
+import { ProfileEntity, UserStatus } from "kingpong-lib";
 
 /**
  * Each page view is a value
@@ -31,7 +31,13 @@ export interface RootModelType {
  * @returns {RootModelType} - Root view model
  */
 export const useRootModel = (): RootModelType => {
-  const [self, setSelf] = useState<ProfileEntity>(null);
+  /** @todo null until logged in */
+  const [self, setSelf] = useState<ProfileEntity>({
+    username: "schlurp",
+    avatar: "https://i.pravatar.cc/150",
+    status: UserStatus.ONLINE,
+    createdAt: new Date().toDateString()
+  });
   const [pageState, setPageState] = useState<PageState>(PageState.Home);
 
   return {
