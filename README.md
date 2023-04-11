@@ -22,7 +22,15 @@ Your work has to comply with the following rules:
 - [ ] Everything has to be launched by a single call to: `docker-compose up --build`
 
 ```
-When your computers in clusters run under Linux, you will use Docker in rootless mode for security reasons. This comes with 2 sideways: 1) your Docker runtime files must be located in /goinfre or /sgoinfre. 2) you can’t use so called “bind-mount volumes” between the host and the container if non-root UIDs are used in the container. Depending on the project, your situation and the context, several fallbacks exist: Docker in a VM, rebuild you container after your changes, craft your own docker image with root as unique UID.
+When your computers in clusters run under Linux, you will use Docker
+in rootless mode for security reasons. This comes with 2 sideways:
+1) your Docker runtime files must be located in /goinfre or
+/sgoinfre. 2) you can’t use so called “bind-mount volumes” between
+the host and the container if non-root UIDs are used in the
+container. Depending on the project, your situation and the context,
+several fallbacks exist: Docker in a VM, rebuild you container
+after your changes, craft your own docker image with root as unique
+UID.
 ```
 
 ## II.2 Security concerns
