@@ -2,18 +2,19 @@ import * as React from "react";
 import AppBar from "@mui/material/AppBar";
 import Box from "@mui/material/Box";
 import Toolbar from "@mui/material/Toolbar";
-import IconButton from "@mui/material/IconButton";
 import Typography from "@mui/material/Typography";
 import Menu from "@mui/material/Menu";
 import Avatar from "@mui/material/Avatar";
 import MenuItem from "@mui/material/MenuItem";
 import { LogoSvg } from "./logoComponent";
 import { ButtonUnstyled } from "@mui/base";
-import { Tooltip } from "@mui/material";
+import { IconButton, Tooltip } from "@mui/material";
 import { PageState } from "src/root.model";
 import { useProfileViewModelContext } from "src/profile/profile.viewModel";
 import ButtonFunky from "src/components/ButtonFunky";
-
+import { Gamepad, Replay } from "@mui/icons-material";
+import DynamicIconButton from "../DynamicIconButton";
+import { GrGamepad } from "react-icons/gr";
 const settings = ["Profile", "Settings", "Logout"];
 
 //Set css flexbox options for the toolbar component to create proper object positioning for child elements
@@ -66,6 +67,13 @@ function TopBar({ setPageState }) {
           >
             <LogoSvg />
           </ButtonUnstyled>
+        </Box>
+
+        <Box>
+          <DynamicIconButton
+            text="New Game"
+            icon={<GrGamepad style={{ fontSize: "2rem", color: "white" }} />} // Adjust the size accordingly
+          />
         </Box>
 
         <Box sx={{ width: "20vw", maxHeight: "20vh" }}>
