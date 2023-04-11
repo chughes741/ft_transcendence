@@ -1,5 +1,6 @@
 import { Injectable, Logger } from "@nestjs/common";
 import {
+  AddFriendRequest,
   GetMatchHistoryRequest,
   GetProfileRequest,
   MatchHistoryItem,
@@ -101,7 +102,7 @@ export class ProfileService {
       return {
         username: friend.friend.username,
         avatar: friend.friend.avatar,
-        status: 
+        status:
           friend.friend.status === "ONLINE"
             ? UserStatus.ONLINE
             : friend.friend.status === "OFFLINE"
@@ -122,6 +123,17 @@ export class ProfileService {
    * @returns {boolean} - Update successful
    */
   updateProfile(updateProfileRequest: UpdateProfileRequest): boolean {
+    return true;
+  }
+
+  /**
+   * Adds a friend to a users friend list
+   *
+   * @todo Implement
+   * @param {AddFriendRequest} addFriendRequest
+   * @returns {boolean} - Add successful
+   */
+  addFriend(addFriendRequest: AddFriendRequest): boolean {
     return true;
   }
 }
