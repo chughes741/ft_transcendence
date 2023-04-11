@@ -22,6 +22,7 @@ import config from "../config";
 
 /** Here for profile */
 import {
+  AddFriendRequest,
   GetFriendsRequest,
   GetMatchHistoryRequest,
   GetProfileRequest
@@ -467,6 +468,51 @@ export class PrismaService extends PrismaClient {
       }
     });
     return user.friends;
+  }
+
+  /**
+   * Adds a friend to the database
+   *
+   * @param {AddFriendRequest} addFriendRequest
+   * @async
+   * @returns {Promise<Friend>}
+   */
+  async addFriend(addFriendRequest: AddFriendRequest): Promise<boolean> {
+    return await this.$transaction(async () => {
+      logger.log(addFriendRequest.username);
+
+      const userUpdated = await this.user.update({
+        where: { username: addFriendRequest.username },
+        data: {
+          friends: {
+            create: {
+              friend: {
+                connect: { username: addFriendRequest.friend }
+              }
+            }
+          }
+        }
+      });
+
+      const friendUpdated = await this.user.update({
+        where: { username: addFriendRequest.friend },
+        data: {
+          friends: {
+            create: {
+              friend: {
+                connect: { username: addFriendRequest.username }
+              }
+            }
+          }
+        }
+      });
+
+      if (userUpdated && friendUpdated) {
+        return true;
+      } else {
+        return false;
+      }
+    });
   }
 
   /**

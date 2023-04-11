@@ -14,7 +14,7 @@ export default function ContextMenuUsers() {
     setContextMenuUsersVisible
   } = useChatContext();
 
-  const { setUser } = useProfileViewModelContext();
+  const { user, setUser, addFriend } = useProfileViewModelContext();
   const { setPageState } = usePageStateContext();
   const isOwner = false;
 
@@ -45,6 +45,14 @@ export default function ContextMenuUsers() {
             label: "Dm",
             onClick: () => {
               console.log("Send a dm");
+            }
+          },
+          {
+            label: "Add friend",
+            onClick: () => {
+              console.log("Add friend");
+              /** @todo change user to current logged in user */
+              addFriend(user, contextMenuUsersData.username);
             }
           },
           ...(isOwner

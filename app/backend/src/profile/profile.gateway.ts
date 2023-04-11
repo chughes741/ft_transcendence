@@ -4,6 +4,7 @@ import {
   MessageBody
 } from "@nestjs/websockets";
 import {
+  AddFriendRequest,
   GetMatchHistoryRequest,
   GetProfileRequest,
   MatchHistoryItem,
@@ -71,5 +72,18 @@ export class ProfileGateway {
     @MessageBody() updateProfileRequest: UpdateProfileRequest
   ): boolean {
     return this.profileService.updateProfile(updateProfileRequest);
+  }
+
+  /**
+   * Add a friend to a users friend list
+   *
+   * @param {AddFriendRequest} addFriendRequest
+   * @returns {boolean} - Add friend successful
+   */
+  @SubscribeMessage(ProfileEvents.AddFriend)
+  addFriend(
+    @MessageBody() addFriendRequest: AddFriendRequest
+  ): Promise<boolean> {
+    return this.profileService.addFriend(addFriendRequest);
   }
 }
