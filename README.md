@@ -56,7 +56,7 @@ You also have to create a chat for your users:
   - [ ] The administrators of a channel can ban or mute users for a limited time.
 - [ ] The user should be able to invite other users to play a Pong game through the chat
 interface.
-- [ ] The user should be able to access other players profiles through the chat interface.
+- [X] The user should be able to access other players profiles through the chat interface.
 
 ## II.5 Game
 The main purpose of this website is to play Pong versus other players and show everyone how good you are!
