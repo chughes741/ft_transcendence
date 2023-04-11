@@ -17,13 +17,13 @@ import {
 } from "@mui/material";
 import React, { useState, useCallback } from "react";
 import { FiEye, FiEyeOff } from "react-icons/fi";
-import ButtonFunky from "../../../components/ButtonFunky";
+import ButtonFunky from "../../components/ButtonFunky";
 // import Button from "../../../components/Button";
 
 /***************/
 /*     CSS     */
 /***************/
-import "../styles/ChatPage.css";
+import "src/styles/chat/ChatPage.css";
 import { useRoomModal } from "./useRoomModal";
 
 interface CreateRoomModalProps {
@@ -97,7 +97,7 @@ export const CreateRoomModal: React.FC<CreateRoomModalProps> = ({
       fullWidth
       PaperProps={{
         sx: {
-          width: "30%",
+          width: "35%",
           overflowX: "hidden"
         }
       }}

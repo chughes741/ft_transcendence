@@ -1,52 +1,60 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import {
   Dialog,
   DialogTitle,
   Avatar,
   Badge,
   MenuItem,
-  ListItemText,
   TextField,
   Autocomplete,
   DialogContent,
   DialogActions,
-  Button
+  Button,
+  ListItemText
 } from "@mui/material";
+import { socket } from "../../contexts/WebSocket.context";
 import { UserStatus } from "kingpong-lib";
-import ButtonFunky from "../../../components/ButtonFunky";
-import { useChatViewModelContext } from "../contexts/ChatViewModelContext";
+import { useChatContext } from "../chat.context";
 
-export interface UserEntity {
+interface UserEntity {
   username: string;
   avatar: string;
   status: UserStatus;
 }
 
-interface InviteUsersToRoomProps {
+interface DirectMessageModalProps {
   showModal: boolean;
   closeModal: () => void;
-  availableUsers: UserEntity[];
-  selectedUsers: UserEntity[];
-  setSelectedUsers: (users: UserEntity[]) => void;
 }
 
-export const InviteUsersModal: React.FC<InviteUsersToRoomProps> = ({
+export const DirectMessageModal: React.FC<DirectMessageModalProps> = ({
   showModal,
-  closeModal,
-  availableUsers,
-  selectedUsers,
-  setSelectedUsers
+  closeModal
 }) => {
-  const { currentRoomName } = useChatViewModelContext();
+  const { tempUsername } = useChatContext();
+  const [availableUsers, setAvailableUsers] = useState<UserEntity[]>([]);
+  const [selectedUser, setSelectedUser] = useState<UserEntity | null>(null);
 
-  const handleInvite = () => {
-    if (selectedUsers.length <= 0) {
-      alert("Please select at least one user to invite.");
+  const handleSendDirectMessage = () => {
+    if (!selectedUser) {
+      alert("Please select a user.");
       return;
     }
+    // FIXME: implement direct message logic
+    console.log("Sending direct message to: ", selectedUser.username);
 
+    setSelectedUser(null);
     closeModal();
   };
+
+  useEffect(() => {
+    console.log("Fetching available users...");
+    socket.emit("listAvailableUsers", "", (users: UserEntity[]) => {
+      console.log("Available users: ", users);
+      setAvailableUsers(users);
+      setSelectedUser(null);
+    });
+  }, [tempUsername, showModal]);
 
   if (!showModal) {
     return null;
@@ -60,28 +68,25 @@ export const InviteUsersModal: React.FC<InviteUsersToRoomProps> = ({
       fullWidth
       PaperProps={{
         sx: {
-          width: "30%",
+          width: "35%",
           overflowX: "hidden"
         }
       }}
     >
-      <DialogTitle alignContent={"center"}>
-        Invite Users to Room ${currentRoomName}
-      </DialogTitle>
+      <DialogTitle alignContent={"center"}>Send Direct Message</DialogTitle>
       <DialogContent>
         <Autocomplete
           id="user-autocomplete"
           options={availableUsers}
           getOptionLabel={(option) => option.username}
-          multiple
-          value={selectedUsers}
+          value={selectedUser}
           renderOption={(props, option) => (
             <MenuItem {...props}>
               <Badge
                 color={
-                  option.status === 0
-                    ? "primary"
-                    : option.status === 1
+                  option.status === UserStatus.ONLINE
+                    ? "success"
+                    : option.status === UserStatus.OFFLINE
                     ? "error"
                     : "warning"
                 }
@@ -94,7 +99,7 @@ export const InviteUsersModal: React.FC<InviteUsersToRoomProps> = ({
               >
                 <Avatar
                   alt={option.username}
-                  src={`https://i.pravatar.cc/150?u=${option.username}`}
+                  src={option.avatar}
                   sx={{ width: 40, height: 40, marginRight: 1 }}
                 />
               </Badge>
@@ -110,7 +115,7 @@ export const InviteUsersModal: React.FC<InviteUsersToRoomProps> = ({
               fullWidth
             />
           )}
-          onChange={(event, values) => setSelectedUsers(values)}
+          onChange={(event, value) => setSelectedUser(value)}
         />
       </DialogContent>
       <DialogActions>
@@ -120,11 +125,12 @@ export const InviteUsersModal: React.FC<InviteUsersToRoomProps> = ({
         >
           Cancel
         </Button>
-        <ButtonFunky
-          onClick={handleInvite}
-          content="Invite to Room"
-          width="50%"
-        />
+        <Button
+          onClick={handleSendDirectMessage}
+          color="primary"
+        >
+          Send
+        </Button>
       </DialogActions>
     </Dialog>
   );

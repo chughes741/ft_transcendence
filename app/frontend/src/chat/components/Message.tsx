@@ -1,9 +1,9 @@
 import { forwardRef } from "react";
 import { Tooltip, Typography, Divider, Avatar, Fade } from "@mui/material";
-import "../styles/Message.css";
+import "src/styles/chat/Message.css";
 
 export type MessageType = {
-  user: string;
+  username: string;
   roomId: string;
   content: string;
   timestamp_readable: string;
@@ -12,6 +12,7 @@ export type MessageType = {
   displayUser: boolean;
   displayTimestamp: boolean;
   displayDate: boolean;
+  avatar?: string;
 };
 
 type MessageProps = {
@@ -59,17 +60,24 @@ const Message = forwardRef<HTMLDivElement, MessageProps>(({ message }, ref) => {
         </>
       )}
       {message.displayUser && (
-        <Tooltip
-          title={message.isOwn ? "Me" : message.user}
-          TransitionComponent={Fade}
-          placement={message.isOwn ? "left-end" : "right-end"}
-          enterDelay={100}
-        >
-          <Avatar
-            alt={message.user}
-            src={`https://i.pravatar.cc/150?u=${message.user}`}
-          />
-        </Tooltip>
+        <>
+          {!message.isOwn && (
+            <Tooltip
+              title={message.username}
+              TransitionComponent={Fade}
+              placement={message.isOwn ? "left-end" : "right-end"}
+              enterDelay={100}
+            >
+              <Avatar
+                alt={message.username}
+                src={`https://i.pravatar.cc/150?u=${message.username}`}
+              />
+            </Tooltip>
+          )}
+          <Typography className={`sender`}>
+            {message.isOwn ? "Me" : message.username}
+          </Typography>
+        </>
       )}
       <Tooltip
         title={tooltip_timestamp}

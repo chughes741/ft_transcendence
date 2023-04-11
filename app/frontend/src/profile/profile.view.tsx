@@ -1,6 +1,8 @@
 /** MUI */
 import {
   Avatar,
+  MenuItem,
+  ListItemText,
   Paper,
   Typography,
   Table,
@@ -19,7 +21,7 @@ import { MatchHistoryItem, ProfileEntity, UserStatus } from "kingpong-lib";
 import ImgUpload from "src/components/ImgUpload";
 
 /** View Model */
-import { useProfileViewModelContext } from "src/views/profile/profile.viewModel";
+import { useProfileViewModelContext } from "src/profile/profile.viewModel";
 
 type StyledBadgeProps = {
   status: UserStatus;
@@ -40,7 +42,6 @@ const StyledBadge = styled(Badge)<StyledBadgeProps>(({ theme, status }) => ({
         ? "#ff0000"
         : "#ffa500",
     boxShadow: `0 0 0 4px ${theme.palette.background.paper}`,
-    width: "1rem"
   }
 }));
 
@@ -185,11 +186,35 @@ function MatchHistory(): JSX.Element | null {
  * @returns {JSX.Element | null}
  */
 function FriendsListRow(friend: ProfileEntity): JSX.Element | null {
+  const { setUser } = useProfileViewModelContext();
+  const handleClick = () => {
+    console.log("Clicked on friend: " + friend.username);
+    setUser(friend.username);
+  };
+
   return (
     <>
-      <TableRow id="profile-friends-list-row">
-        <TableCell align="center">{friend.username}</TableCell>
-      </TableRow>
+      <MenuItem
+        onClick={() => handleClick()}
+        sx={{ padding: "0.5rem" }}
+      >
+        <StyledBadge
+          overlap="circular"
+          anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
+          variant="dot"
+          status={friend.status}
+        >
+          <Avatar
+            alt={friend.username}
+            src={friend.avatar}
+            sx={{ width: "2rem", height: "2rem" }}
+          />
+        </StyledBadge>
+        <ListItemText
+          sx={{ ml: "1rem" }}
+          primary={friend.username}
+        />
+      </MenuItem>
     </>
   );
 }

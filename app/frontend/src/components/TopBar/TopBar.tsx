@@ -2,18 +2,18 @@ import * as React from "react";
 import AppBar from "@mui/material/AppBar";
 import Box from "@mui/material/Box";
 import Toolbar from "@mui/material/Toolbar";
-import IconButton from "@mui/material/IconButton";
 import Typography from "@mui/material/Typography";
 import Menu from "@mui/material/Menu";
 import Avatar from "@mui/material/Avatar";
 import MenuItem from "@mui/material/MenuItem";
 import { LogoSvg } from "./logoComponent";
 import { ButtonUnstyled } from "@mui/base";
-import { Tooltip } from "@mui/material";
-import { PageState } from "src/views/root.model";
-import { useProfileViewModelContext } from "src/views/profile/profile.viewModel";
-import ButtonFunky from "../ButtonFunky";
-
+import { IconButton, Tooltip } from "@mui/material";
+import { PageState } from "src/root.model";
+import { useProfileViewModelContext } from "src/profile/profile.viewModel";
+import ButtonFunky from "src/components/ButtonFunky";
+import { SportsEsports } from "@mui/icons-material";
+import DynamicIconButton from "../DynamicIconButton";
 const settings = ["Profile", "Settings", "Logout"];
 
 //Set css flexbox options for the toolbar component to create proper object positioning for child elements
@@ -23,7 +23,7 @@ const toolbarStyle = {
 };
 
 function TopBar({ setPageState }) {
-  const { setUser } = useProfileViewModelContext();
+  const { profile, setUser } = useProfileViewModelContext();
   const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(
     null
   );
@@ -68,13 +68,26 @@ function TopBar({ setPageState }) {
           </ButtonUnstyled>
         </Box>
 
-        <Box sx={{width: "20vw", maxHeight: "20vh"}}>
-          <ButtonFunky
-            content={"Play a game"}
-            width={"100%"}
+        <Box>
+          <DynamicIconButton
+            text="New Game"
+            icon={
+              <SportsEsports style={{ fontSize: "2rem", color: "white" }} />
+            } // Adjust the size accordingly
             onClick={() => setPageState(PageState.Game)}
           />
         </Box>
+
+        {/* FIXME: If I remove this, the colors are fucked */}
+        {false && (
+          <Box sx={{ width: "20vw", maxHeight: "20vh" }}>
+            <ButtonFunky
+              content={"Play a game"}
+              width={"100%"}
+              onClick={() => setPageState(PageState.Game)}
+            />
+          </Box>
+        )}
         {/* Button to be displayed instead of profile when use not logged in*/}
         {/* <Button color="inherit">Login</Button> */}
 
@@ -83,9 +96,13 @@ function TopBar({ setPageState }) {
           <Tooltip title="Open settings">
             <IconButton
               onClick={handleOpenUserMenu}
-              sx={{ p: 0, pr: 2 }}
+              sx={{ p: 0, mr: 2 }}
             >
-              <Avatar alt="Remy" />
+              {profile !== null ? (
+                <Avatar src={profile.avatar} />
+              ) : (
+                <Avatar alt="" />
+              )}
             </IconButton>
           </Tooltip>
           <Menu

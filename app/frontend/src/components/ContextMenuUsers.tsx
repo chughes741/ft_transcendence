@@ -1,17 +1,20 @@
 import React from "react";
-import { useChatViewModelContext } from "../pages/chat/contexts/ChatViewModelContext";
+import { useChatContext } from "../chat/chat.context";
 import ContextMenu from "./ContextMenu";
-import { usePageStateContext } from "../contexts/PageStateContext";
-import { PageState } from "../views/root.model";
+import { usePageStateContext } from "../contexts/PageState.context";
+import { PageState } from "src/root.model";
 import { Paper } from "@mui/material";
+import { useProfileViewModelContext } from "src/profile/profile.viewModel";
 
 export default function ContextMenuUsers() {
   const {
     contextMenuUsersPosition,
     contextMenuUsersVisible,
+    contextMenuUsersData,
     setContextMenuUsersVisible
-  } = useChatViewModelContext();
+  } = useChatContext();
 
+  const { setUser } = useProfileViewModelContext();
   const { setPageState } = usePageStateContext();
   const isOwner = false;
 
@@ -27,6 +30,7 @@ export default function ContextMenuUsers() {
             label: "View profile",
             onClick: () => {
               console.log("View Profile");
+              setUser(contextMenuUsersData.username);
               setPageState(PageState.Profile);
             }
           },

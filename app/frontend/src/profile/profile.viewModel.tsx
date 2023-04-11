@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useEffect } from "react";
 
 /** Module Imports */
-import { socket } from "src/contexts/WebSocketContext";
+import { socket } from "src/contexts/WebSocket.context";
 
 /** Temporary data type import */
 import { MatchHistoryItem, ProfileEntity, ProfileEvents } from "kingpong-lib";
