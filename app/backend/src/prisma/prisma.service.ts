@@ -4,7 +4,6 @@ import {
   ChatMemberRank,
   ChatMemberStatus,
   ChatRoom,
-  Friend,
   ChatRoomStatus,
   Match,
   Prisma,

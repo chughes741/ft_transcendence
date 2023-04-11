@@ -13,8 +13,7 @@ import {
   TableRow,
   Grid,
   Badge,
-  styled,
-  Button
+  styled
 } from "@mui/material";
 
 /** Shared Library */
@@ -22,8 +21,6 @@ import { MatchHistoryItem, ProfileEntity, UserStatus } from "kingpong-lib";
 
 /** View Model */
 import { useProfileViewModelContext } from "src/profile/profile.viewModel";
-import { Simulate } from "react-dom/test-utils";
-import { useState } from "react";
 
 type StyledBadgeProps = {
   status: UserStatus;
