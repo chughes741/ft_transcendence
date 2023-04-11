@@ -81,7 +81,9 @@ export class ProfileGateway {
    * @returns {boolean} - Add friend successful
    */
   @SubscribeMessage(ProfileEvents.AddFriend)
-  addFriend(@MessageBody() addFriendRequest: AddFriendRequest): boolean {
+  addFriend(
+    @MessageBody() addFriendRequest: AddFriendRequest
+  ): Promise<boolean> {
     return this.profileService.addFriend(addFriendRequest);
   }
 }

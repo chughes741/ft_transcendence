@@ -134,8 +134,10 @@ export class ProfileService {
    * @param {AddFriendRequest} addFriendRequest
    * @returns {boolean} - Add successful
    */
-  addFriend(addFriendRequest: AddFriendRequest): boolean {
-    logger.log(`Adding friend ${addFriendRequest.friend} to ${addFriendRequest.username}`);
-    return true;
+  addFriend(addFriendRequest: AddFriendRequest): Promise<boolean> {
+    logger.log(
+      `Adding friend ${addFriendRequest.friend} to ${addFriendRequest.username}`
+    );
+    return this.prismaService.addFriend(addFriendRequest);
   }
 }
