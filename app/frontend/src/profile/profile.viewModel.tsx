@@ -102,16 +102,17 @@ export const ProfileViewModelProvider = ({ children }) => {
   /**
    * Adds a friend to friends list
    *
+   * @param {string} username
    * @param {string} friend
    * @returns {Promise<void>}
    */
-  const addFriend = async (friend: string): Promise<void> => {
-    if (user === null) {
+  const addFriend = async (username: string, friend: string): Promise<void> => {
+    if (username === null || friend === null) {
       return;
     }
-    console.log("addFriend", user, friend);
+    console.log("addFriend", username, friend);
     socket.emit(ProfileEvents.AddFriend, {
-      username: user,
+      username: username,
       friend: friend
     });
   };
