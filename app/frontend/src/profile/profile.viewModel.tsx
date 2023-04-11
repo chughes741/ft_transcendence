@@ -16,6 +16,7 @@ export interface ProfileViewModelType extends ProfileModelType {
   getMatchHistory: () => Promise<void>;
   getProfile: () => Promise<void>;
   getFriends: () => Promise<void>;
+  addFriend: (friendName: string) => Promise<void>;
 }
 
 /**
@@ -98,6 +99,23 @@ export const ProfileViewModelProvider = ({ children }) => {
     );
   };
 
+  /**
+   * Adds a friend to friends list
+   *
+   * @param {string} friend
+   * @returns {Promise<void>}
+   */
+  const addFriend = async (friend: string): Promise<void> => {
+    if (user === null) {
+      return;
+    }
+    console.log("addFriend", user, friend);
+    socket.emit(ProfileEvents.AddFriend, {
+      username: user,
+      friend: friend
+    });
+  };
+
   /** Update MatchHistory and Profile when user changes */
   useEffect(() => {
     getMatchHistory().then();
@@ -118,7 +136,8 @@ export const ProfileViewModelProvider = ({ children }) => {
         setFriends,
         getMatchHistory,
         getProfile,
-        getFriends
+        getFriends,
+        addFriend
       }}
     >
       {children}
