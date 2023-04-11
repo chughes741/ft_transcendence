@@ -14,6 +14,7 @@ import { useProfileViewModelContext } from "src/profile/profile.viewModel";
 import ButtonFunky from "src/components/ButtonFunky";
 import { SportsEsports } from "@mui/icons-material";
 import DynamicIconButton from "../DynamicIconButton";
+import { useChatContext } from "src/chat/chat.context";
 const settings = ["Profile", "Settings", "Logout"];
 
 //Set css flexbox options for the toolbar component to create proper object positioning for child elements
@@ -24,6 +25,7 @@ const toolbarStyle = {
 
 function TopBar({ setPageState }) {
   const { profile, setUser } = useProfileViewModelContext();
+  const { tempUsername } = useChatContext();
   const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(
     null
   );
@@ -37,7 +39,8 @@ function TopBar({ setPageState }) {
   };
 
   const onClickProfile = () => {
-    setUser("schlurp");
+    /** @todo set to global usn */
+    setUser(tempUsername);
     setPageState(PageState.Profile);
     handleCloseUserMenu();
   };
