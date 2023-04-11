@@ -381,16 +381,21 @@ export class PrismaService extends PrismaClient {
   /**
    * Returns a users friends from the database
    *
+   * @todo make a primsa type for return
    * @param {GetFriendsRequest} getFriendsRequest
    * @async
    * @returns {Promise<Friend[]>}
    */
-  async getFriends(getFriendsRequest: GetFriendsRequest): Promise<Friend[]> {
+  async getFriends(getFriendsRequest: GetFriendsRequest): Promise<any[]> {
     logger.log(getFriendsRequest.username);
     const user = await this.user.findUnique({
       where: { username: getFriendsRequest.username },
       include: {
-        friends: true
+        friends: {
+          include: {
+            friend: true
+          }
+        }
       }
     });
     return user.friends;

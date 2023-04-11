@@ -99,12 +99,12 @@ export class ProfileService {
     const friends = await this.prismaService.getFriends(getFriendsRequest);
     const friendProfiles = friends.map((friend) => {
       return {
-        username: friend.user.username,
-        avatar: friend.user.avatar,
+        username: friend.friend.username,
+        avatar: friend.friend.avatar,
         status: 
-          friend.user.status === "ONLINE"
+          friend.friend.status === "ONLINE"
             ? UserStatus.ONLINE
-            : friend.user.status === "OFFLINE"
+            : friend.friend.status === "OFFLINE"
             ? UserStatus.OFFLINE
             : UserStatus.AWAY,
         createdAt: friend.createdAt.toLocaleTimeString()
