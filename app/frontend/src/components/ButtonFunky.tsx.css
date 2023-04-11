@@ -20,14 +20,11 @@
 }
 
 .button-funky:before {
-  background: linear-gradient(
-      130deg,
+  background: linear-gradient(130deg,
       transparent 0% 33%,
       var(--g1) 66%,
       var(--g2) 83.5%,
-      var(--g3) 100%
-    )
-    66% 66%;
+      var(--g3) 100%) 66% 66%;
   background-size: 300% 300%;
   border-radius: 2rem;
   content: "";
@@ -36,7 +33,7 @@
   pointer-events: none;
   position: absolute;
   top: 0;
-  transition: background-position 350ms ease, transform 350ms ease;
+  transition: background-position 600ms ease, transform 600ms ease;
   width: 90%;
   z-index: 1;
 }
@@ -60,16 +57,14 @@
 }
 
 .button-funky-bg {
-  background-image: radial-gradient(
-    rgba(255, 255, 255, 0.2) 8%,
-    transparent 8%
-  );
+  background-image: radial-gradient(rgba(255, 255, 255, 0.2) 8%,
+      transparent 8%);
 
   background-position: 0;
   background-size: 2vmin 2vmin;
   border-radius: 2rem;
   position: absolute;
-  transition: background-position 350ms ease;
+  transition: background-position 600ms ease;
   z-index: 2;
   top: 0;
   left: 0;
@@ -84,7 +79,7 @@
   color: white;
   font-weight: 400;
   margin: 0;
-  transition: 350ms ease;
+  transition: 600ms ease;
   text-align: center;
   z-index: 3;
   padding: 8px 20px;

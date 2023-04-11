@@ -35,7 +35,7 @@ const groupMessages = (
 
     const displayTimestamp =
       !nextMessage || nextMessage.timestamp_readable !== msg.timestamp_readable;
-    const displayUser = !prevMessage || prevMessage.user !== msg.user;
+    const displayUser = !prevMessage || prevMessage.username !== msg.username;
     const displayDate =
       !prevMessage || !isSameDate(prevMessage.timestamp, msg.timestamp);
 

@@ -1,67 +1,60 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import {
   Dialog,
   DialogTitle,
   Avatar,
   Badge,
   MenuItem,
-  ListItemText,
   TextField,
   Autocomplete,
   DialogContent,
   DialogActions,
-  Button
+  Button,
+  ListItemText
 } from "@mui/material";
-import { UserStatus } from "kingpong-lib";
-import ButtonFunky from "../../components/ButtonFunky";
-import { useChatContext } from "../chat.context";
 import { socket } from "../../contexts/WebSocket.context";
+import { UserStatus } from "kingpong-lib";
+import { useChatContext } from "../chat.context";
 
-export interface UserEntity {
+interface UserEntity {
   username: string;
   avatar: string;
   status: UserStatus;
 }
 
-export interface InviteUsersToRoomRequest {
-  roomName: string;
-  usernames: string[];
-}
-
-interface InviteUsersToRoomProps {
+interface DirectMessageModalProps {
   showModal: boolean;
   closeModal: () => void;
-  availableUsers: UserEntity[];
-  selectedUsers: UserEntity[];
-  setSelectedUsers: (users: UserEntity[]) => void;
 }
 
-export const InviteUsersModal: React.FC<InviteUsersToRoomProps> = ({
+export const DirectMessageModal: React.FC<DirectMessageModalProps> = ({
   showModal,
-  closeModal,
-  availableUsers,
-  selectedUsers,
-  setSelectedUsers
+  closeModal
 }) => {
-  const { currentRoomName } = useChatContext();
+  const { tempUsername } = useChatContext();
+  const [availableUsers, setAvailableUsers] = useState<UserEntity[]>([]);
+  const [selectedUser, setSelectedUser] = useState<UserEntity | null>(null);
 
-  const handleInvite = () => {
-    if (selectedUsers.length <= 0) {
-      alert("Please select at least one user to invite.");
+  const handleSendDirectMessage = () => {
+    if (!selectedUser) {
+      alert("Please select a user.");
       return;
     }
+    // FIXME: implement direct message logic
+    console.log("Sending direct message to: ", selectedUser.username);
 
-    const req: InviteUsersToRoomRequest = {
-      roomName: currentRoomName,
-      usernames: selectedUsers.map((user) => user.username)
-    };
-    socket.emit("inviteUsersToRoom", req, (res: boolean | null) => {
-      // TODO: implement user notification behavior based on the response
-      console.log("Invite users response: ", res);
-    });
-
+    setSelectedUser(null);
     closeModal();
   };
+
+  useEffect(() => {
+    console.log("Fetching available users...");
+    socket.emit("listAvailableUsers", "", (users: UserEntity[]) => {
+      console.log("Available users: ", users);
+      setAvailableUsers(users);
+      setSelectedUser(null);
+    });
+  }, [tempUsername, showModal]);
 
   if (!showModal) {
     return null;
@@ -80,16 +73,13 @@ export const InviteUsersModal: React.FC<InviteUsersToRoomProps> = ({
         }
       }}
     >
-      <DialogTitle alignContent={"center"}>
-        Invite Users to Room ${currentRoomName}
-      </DialogTitle>
+      <DialogTitle alignContent={"center"}>Send Direct Message</DialogTitle>
       <DialogContent>
         <Autocomplete
           id="user-autocomplete"
           options={availableUsers}
           getOptionLabel={(option) => option.username}
-          multiple
-          value={selectedUsers}
+          value={selectedUser}
           renderOption={(props, option) => (
             <MenuItem {...props}>
               <Badge
@@ -125,7 +115,7 @@ export const InviteUsersModal: React.FC<InviteUsersToRoomProps> = ({
               fullWidth
             />
           )}
-          onChange={(event, values) => setSelectedUsers(values)}
+          onChange={(event, value) => setSelectedUser(value)}
         />
       </DialogContent>
       <DialogActions>
@@ -135,11 +125,12 @@ export const InviteUsersModal: React.FC<InviteUsersToRoomProps> = ({
         >
           Cancel
         </Button>
-        <ButtonFunky
-          onClick={handleInvite}
-          content="Invite to Room"
-          width="50%"
-        />
+        <Button
+          onClick={handleSendDirectMessage}
+          color="primary"
+        >
+          Send
+        </Button>
       </DialogActions>
     </Dialog>
   );

@@ -7,9 +7,15 @@ import GroupAddIcon from "@mui/icons-material/GroupAdd";
 import { PageState } from "src/root.model";
 import ButtonFunky from "../ButtonFunky";
 import { useChatContext } from "../../chat/chat.context";
+import { AddCircleOutline, Chat, MeetingRoom } from "@mui/icons-material";
+import DynamicIconButton from "../DynamicIconButton";
 
 export default function SidebarChatOptions({ setPageState }) {
-  const { setShowJoinRoomModal, setShowCreateRoomModal } = useChatContext();
+  const {
+    setShowJoinRoomModal,
+    setShowCreateRoomModal,
+    setShowDirectMessageModal
+  } = useChatContext();
 
   return (
     <List
@@ -30,16 +36,45 @@ export default function SidebarChatOptions({ setPageState }) {
         <ListItemText>Chat Page</ListItemText>
       </ListItemButton>
 
-      <ButtonFunky
-        content="Create a room"
-        width={"80%"}
+      <DynamicIconButton
+        text="Message a friend"
+        icon={<Chat style={{ fontSize: "2rem", color: "white" }} />}
+        onClick={() => setShowDirectMessageModal(true)}
+      />
+      <DynamicIconButton
+        text="Create a room"
+        icon={<AddCircleOutline style={{ fontSize: "2rem", color: "white" }} />}
         onClick={() => setShowCreateRoomModal(true)}
       />
-      <ButtonFunky
-        content="Join a room"
-        width={"80%"}
+      <DynamicIconButton
+        text="Join a room"
+        icon={<MeetingRoom style={{ fontSize: "2rem", color: "white" }} />}
         onClick={() => setShowJoinRoomModal(true)}
       />
+
+      {/* FIXME: If I remove this, the colors are fucked */}
+      {false && (
+        <>
+          <ButtonFunky
+            icon={<Chat />}
+            content="Message a friend"
+            width={"80%"}
+            onClick={() => setShowDirectMessageModal(true)}
+          />
+          <ButtonFunky
+            icon={<AddCircleOutline />}
+            content="Create a room"
+            width={"80%"}
+            onClick={() => setShowCreateRoomModal(true)}
+          />
+          <ButtonFunky
+            icon={<MeetingRoom />}
+            content="Join a room"
+            width={"80%"}
+            onClick={() => setShowJoinRoomModal(true)}
+          />
+        </>
+      )}
     </List>
   );
 }
