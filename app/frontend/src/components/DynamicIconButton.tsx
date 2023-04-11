@@ -1,6 +1,6 @@
 import React, { useState } from "react";
-import { Icon, IconButton as MuiIconButton } from "@mui/material";
-import { SxProps, Theme } from "@mui/system";
+import { IconButton as MuiIconButton } from "@mui/material";
+import { Box, SxProps, Theme } from "@mui/system";
 import { CSSProperties } from "@mui/styles";
 import "./DynamicIconButton.css";
 
@@ -42,12 +42,13 @@ export default function DynamicIconButton({
   };
 
   return (
-    <div
+    <Box
       className="button-funky"
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
       onClick={onClick}
-      style={{ width: width }}
+      // style={{ width: width }}
+      sx={{ ...sx, width }}
     >
       <div className="button-funky-bg"></div>
       <div className="button-funky-content">
@@ -55,11 +56,12 @@ export default function DynamicIconButton({
           size="large"
           disableRipple
           className="icon-button"
+          sx={iconStyle}
         >
           {icon}
         </MuiIconButton>
         {hovered && <span style={transitionStyles}>{text}</span>}
       </div>
-    </div>
+    </Box>
   );
 }

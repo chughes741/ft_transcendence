@@ -55,7 +55,7 @@ export const InviteUsersModal: React.FC<InviteUsersToRoomProps> = ({
       roomName: currentRoomName,
       usernames: selectedUsers.map((user) => user.username)
     };
-    socket.emit("inviteUsersToRoom", req, (res: any) => {
+    socket.emit("inviteUsersToRoom", req, (res: boolean | null) => {
       // TODO: implement user notification behavior based on the response
       console.log("Invite users response: ", res);
     });

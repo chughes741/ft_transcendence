@@ -1,5 +1,4 @@
 import { Injectable, Logger } from "@nestjs/common";
-import { ConfigService } from "@nestjs/config";
 import {
   ChatMember,
   ChatMemberRank,
@@ -38,7 +37,7 @@ interface MatchPrismaType extends Match {
 
 @Injectable()
 export class PrismaService extends PrismaClient {
-  constructor(configService: ConfigService) {
+  constructor() {
     // Will call the constructor of the extended class
     super({
       datasources: {
@@ -198,6 +197,7 @@ export class PrismaService extends PrismaClient {
     userId: string,
     dateOldest: Date = new Date(Date.now()),
     pageSize = 15
+    // TODO: define PrismaType for this
   ): Promise<any> {
     // Check if the user exists
     if (!userId) {

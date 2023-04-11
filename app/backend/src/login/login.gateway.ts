@@ -30,14 +30,4 @@ export class LoginGateway {
   login(@MessageBody() loginDto: LoginDto) {
     return this.loginService.login(loginDto);
   }
-
-  /**
-   * @param
-   * @signup Create a new user account
-   * @return Return success with JWT or failure
-   */
-  @SubscribeMessage(LoginEnum.signup)
-  signup(@MessageBody() loginDto: LoginDto) {
-    return this.loginService.signup(loginDto);
-  }
 }

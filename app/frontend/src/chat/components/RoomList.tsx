@@ -14,13 +14,7 @@ import {
   ListItemText
 } from "@mui/material";
 import { useChatContext } from "../chat.context";
-import {
-  FaCommentDots,
-  FaCrown,
-  FaGlobe,
-  FaLock,
-  FaUserLock
-} from "react-icons/fa";
+import { FaCrown } from "react-icons/fa";
 
 import { Snackbar } from "@mui/material";
 import Alert from "@mui/material/Alert";
@@ -28,7 +22,7 @@ import Alert from "@mui/material/Alert";
 import { ChatRoomStatus, RoomType } from "../chat.viewModel";
 import { socket } from "../../contexts/WebSocket.context";
 import { InviteUsersModal } from "./InviteUsersModal";
-import { Person, Public, VisibilityOff, VpnKey } from "@mui/icons-material";
+import { Public, VisibilityOff, VpnKey } from "@mui/icons-material";
 import { DirectMessageModal } from "./DirectMessageModal";
 
 const RoomList: React.FC = () => {

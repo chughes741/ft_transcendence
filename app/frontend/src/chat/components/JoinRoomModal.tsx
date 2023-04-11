@@ -1,4 +1,4 @@
-import { AvatarGroup, Box, ListItemText, Typography } from "@mui/material";
+import { AvatarGroup, Box, Typography } from "@mui/material";
 import React, { useCallback, useEffect, useState } from "react";
 import { FiEye, FiEyeOff } from "react-icons/fi";
 import {
@@ -19,7 +19,6 @@ import {
 import { useRoomModal } from "./useRoomModal";
 import ButtonFunky from "../../components/ButtonFunky";
 import { UserStatus } from "kingpong-lib";
-import { FaGlobe, FaLock } from "react-icons/fa";
 import { socket } from "../../contexts/WebSocket.context";
 import { useChatContext } from "../chat.context";
 import { Public, VpnKey } from "@mui/icons-material";
