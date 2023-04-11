@@ -4,7 +4,7 @@ import { ProfileEntity } from "kingpong-lib";
 /**
  * Each page view is a value
  *
- * @enum {number}
+ * @enum {string}
  */
 export enum PageState {
   Home = "Home",
