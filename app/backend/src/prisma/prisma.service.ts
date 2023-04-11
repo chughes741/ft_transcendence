@@ -5,6 +5,7 @@ import {
   ChatMemberRank,
   ChatMemberStatus,
   ChatRoom,
+  ChatRoomStatus,
   Match,
   Prisma,
   PrismaClient,
@@ -66,11 +67,21 @@ export class PrismaService extends PrismaClient {
     ]);
   }
   async userExists(userId: string): Promise<boolean> {
+    if (!userId) {
+      logger.error("userExists: userId is required");
+      return false;
+    }
+
     const user = await this.user.findUnique({ where: { id: userId } });
     return !!user;
   }
 
   async getUserIdByNick(nick: string): Promise<string> {
+    if (!nick) {
+      logger.error("getUserIdByNick: nick is required");
+      return null;
+    }
+
     const user = await this.user.findUnique({ where: { username: nick } });
 
     return user ? user.id : null;
@@ -109,6 +120,13 @@ export class PrismaService extends PrismaClient {
   }
 
   async addUser(dto: UserDto) {
+    if (!dto.username || !dto.password || !dto.avatar) {
+      throw new Error(
+        `Missing required fields: ${!!dto.avatar && "avatar, "} ${
+          !!dto.username && "username, "
+        } ${!!dto.password && "password "}`
+      );
+    }
     const data: Prisma.UserCreateInput = {
       username: dto.username,
       // firstName: dto.firstName,
@@ -170,6 +188,46 @@ export class PrismaService extends PrismaClient {
   /**
    * This method returns a page of chat rooms from the database of the specified size,
    * starting with the oldest chat room that is older than the date provided.
+   * It excludes the chat rooms that the querying user is already a member of.
+   * @param userId id of the user querying the chat rooms
+   * @param dateOldest date of the oldest chat room retrieved thus far
+   * @param pageSize number of chat rooms to return
+   * @async
+   */
+  async getAvailableChatRooms(
+    userId: string,
+    dateOldest: Date = new Date(Date.now()),
+    pageSize = 15
+  ): Promise<any> {
+    // Check if the user exists
+    if (!userId) {
+      logger.error("getAvailableChatRooms: userId is required");
+      return new Error("User ID is required");
+    }
+    const user = await this.user.findUnique({ where: { id: userId } });
+    if (!user) {
+      return new Error("Invalid user ID");
+    }
+    return this.chatRoom.findMany({
+      where: {
+        AND: [
+          { status: { not: ChatRoomStatus.PRIVATE } },
+          { members: { every: { member: { id: { not: userId } } } } },
+          { createdAt: { lt: dateOldest } }
+        ]
+      },
+      include: {
+        owner: true,
+        members: true
+      },
+      orderBy: { createdAt: "desc" },
+      take: pageSize
+    });
+  }
+
+  /**
+   * This method returns a page of chat rooms from the database of the specified size,
+   * starting with the oldest chat room that is older than the date provided.
    *
    * @param uuid
    * @param pageSize number of chat rooms to return
@@ -186,6 +244,10 @@ export class PrismaService extends PrismaClient {
     dateOldest: Date = new Date(Date.now())
   ): Promise<ChatRoomDto[] | Error> {
     // Check if the user exists
+    if (!uuid) {
+      logger.error("getUserChatRooms: uuid is required");
+      return Error("User ID is required");
+    }
     const user = await this.user.findUnique({ where: { id: uuid } });
     if (!user) {
       return Error("User does not exist");
@@ -368,6 +430,10 @@ export class PrismaService extends PrismaClient {
    */
   async GetProfile(getProfileRequest: GetProfileRequest): Promise<User> {
     logger.log(getProfileRequest.username);
+    if (getProfileRequest.username === undefined || null) {
+      logger.log("Username is undefined");
+      throw new Error("Username is undefined");
+    }
     return await this.user.findUnique({
       where: { username: getProfileRequest.username }
     });
