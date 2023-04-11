@@ -12,7 +12,7 @@ import { IconButton, Tooltip } from "@mui/material";
 import { PageState } from "src/root.model";
 import { useProfileViewModelContext } from "src/profile/profile.viewModel";
 import ButtonFunky from "src/components/ButtonFunky";
-import { Gamepad, Replay } from "@mui/icons-material";
+import { Gamepad, Replay, SportsEsports } from "@mui/icons-material";
 import DynamicIconButton from "../DynamicIconButton";
 import { GrGamepad } from "react-icons/gr";
 const settings = ["Profile", "Settings", "Logout"];
@@ -72,7 +72,9 @@ function TopBar({ setPageState }) {
         <Box>
           <DynamicIconButton
             text="New Game"
-            icon={<GrGamepad style={{ fontSize: "2rem", color: "white" }} />} // Adjust the size accordingly
+            icon={
+              <SportsEsports style={{ fontSize: "2rem", color: "white" }} />
+            } // Adjust the size accordingly
           />
         </Box>
 

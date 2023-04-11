@@ -28,6 +28,7 @@ import Alert from "@mui/material/Alert";
 import { ChatRoomStatus, RoomType } from "../chat.viewModel";
 import { socket } from "../../contexts/WebSocket.context";
 import { InviteUsersModal } from "./InviteUsersModal";
+import { Person, Public, VisibilityOff, VpnKey } from "@mui/icons-material";
 
 const RoomList: React.FC = () => {
   const {
@@ -85,13 +86,13 @@ const RoomList: React.FC = () => {
   const getStatusIcon = (status: ChatRoomStatus) => {
     switch (status) {
       case "PASSWORD":
-        return <FaLock />;
+        return <VpnKey />;
       case "PUBLIC":
-        return <FaGlobe />;
+        return <Public />;
       case "PRIVATE":
-        return <FaUserLock />;
+        return <VisibilityOff />;
       case "DIALOGUE":
-        return <FaCommentDots />;
+        return <Person />;
       default:
         return null;
     }
