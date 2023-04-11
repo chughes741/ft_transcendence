@@ -72,7 +72,8 @@ function TopBar({ setPageState }) {
           <ButtonFunky
             content={"Play a game"}
             width={"100%"}
-            onClick={() => setPageState(PageState.Game)}
+            onClick={() => setPageState(PageState.FullScreenGame)}
+            // onClick={() => setPageState(PageState.Game)}
           />
         </Box>
         {/* Button to be displayed instead of profile when use not logged in*/}
