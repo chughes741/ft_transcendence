@@ -29,6 +29,7 @@ import { ChatRoomStatus, RoomType } from "../chat.viewModel";
 import { socket } from "../../contexts/WebSocket.context";
 import { InviteUsersModal } from "./InviteUsersModal";
 import { Person, Public, VisibilityOff, VpnKey } from "@mui/icons-material";
+import { DirectMessageModal } from "./DirectMessageModal";
 
 const RoomList: React.FC = () => {
   const {
@@ -46,8 +47,12 @@ const RoomList: React.FC = () => {
     createNewRoom,
     leaveRoom,
     changeRoomStatus,
+    /* Direct message */
+    showDirectMessageModal,
+    setShowDirectMessageModal,
     showCreateRoomModal,
     showJoinRoomModal,
+    /* Invite users */
     showInviteUsersModal,
     setShowInviteUsersModal,
     joinRoom,
@@ -92,7 +97,7 @@ const RoomList: React.FC = () => {
       case "PRIVATE":
         return <VisibilityOff />;
       case "DIALOGUE":
-        return <Person />;
+        return <></>;
       default:
         return null;
     }
@@ -137,7 +142,7 @@ const RoomList: React.FC = () => {
     } else {
       return (
         <AvatarGroup
-          max={4}
+          max={1}
           spacing="small"
         >
           {room.users &&
@@ -192,6 +197,11 @@ const RoomList: React.FC = () => {
             ))}
         </List>
       </Box>
+      <DirectMessageModal
+        showModal={showDirectMessageModal}
+        closeModal={() => setShowCreateRoomModal(false)}
+        // onCreateRoom={() => setShowDirectMessageModal(false)}
+      />
       <CreateRoomModal
         showModal={showCreateRoomModal}
         closeModal={() => setShowCreateRoomModal(false)}

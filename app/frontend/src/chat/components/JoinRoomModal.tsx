@@ -22,6 +22,7 @@ import { UserStatus } from "kingpong-lib";
 import { FaGlobe, FaLock } from "react-icons/fa";
 import { socket } from "../../contexts/WebSocket.context";
 import { useChatContext } from "../chat.context";
+import { Public, VpnKey } from "@mui/icons-material";
 
 interface JoinRoomModalProps {
   showModal: boolean;
@@ -155,7 +156,7 @@ export const JoinRoomModal: React.FC<JoinRoomModalProps> = ({
               >
                 <Typography
                   sx={{
-                    // fontWeight: "bold", // Increase font weight
+                    fontWeight: "bold", // Increase font weight
                     fontSize: "1.1rem" // Increase font size
                   }}
                 >
@@ -163,7 +164,7 @@ export const JoinRoomModal: React.FC<JoinRoomModalProps> = ({
                 </Typography>
               </Box>
               <span style={{ marginLeft: "auto", marginRight: "16px" }}>
-                {option.status === "PASSWORD" ? <FaLock /> : <FaGlobe />}
+                {option.status === "PASSWORD" ? <VpnKey /> : <Public />}
               </span>
             </MenuItem>
           )}

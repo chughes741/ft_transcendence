@@ -36,6 +36,8 @@ export interface ChatModelType {
   handleContextMenuUsers: (e: MouseEvent, userData: UserListItem) => void;
 
   /* Modals */
+  showDirectMessageModal: boolean;
+  setShowDirectMessageModal: (visible: boolean) => void;
   showCreateRoomModal: boolean;
   setShowCreateRoomModal: (visible: boolean) => void;
   showJoinRoomModal: boolean;
@@ -61,6 +63,7 @@ export const useChatModel = (): ChatModelType => {
   const [currentRoomMessages, setCurrentRoomMessages] = useState([]);
 
   /* Modals */
+  const [showDirectMessageModal, setShowDirectMessageModal] = useState(false);
   const [showCreateRoomModal, setShowCreateRoomModal] = useState(false);
   const [showJoinRoomModal, setShowJoinRoomModal] = useState(false);
   const [showInviteUsersModal, setShowInviteUsersModal] = useState(false);
@@ -125,6 +128,8 @@ export const useChatModel = (): ChatModelType => {
     contextMenuUsersVisible,
     setContextMenuRoomsVisible,
     setContextMenuUsersVisible,
+    showDirectMessageModal,
+    setShowDirectMessageModal,
     showCreateRoomModal,
     setShowCreateRoomModal,
     showJoinRoomModal,
