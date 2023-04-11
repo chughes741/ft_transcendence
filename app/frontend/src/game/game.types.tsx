@@ -79,3 +79,13 @@ export class LobbyCreatedDto {
   // match_id: string;
   // rooom_entity: string; //FIXME: Change this later
 }
+
+export class GameStartedDto {
+  match_id: string;
+  player_side: string;
+}
+
+
+// export class Lobby {
+//   lobby_id: ;
+// }

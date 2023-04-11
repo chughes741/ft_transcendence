@@ -46,7 +46,7 @@ export default function GameActionBar(lobby: LobbyCreatedDto) {
         <ToggleButton
           value="check"
           selected={playerReady}
-          onChange={() =>  setPlayerState(!playerReady)}
+          onChange={() =>  setPlayerReadyState(!playerReady)}
         >
           <CheckCircleIcon />
         </ToggleButton>
