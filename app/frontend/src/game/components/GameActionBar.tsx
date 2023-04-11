@@ -11,13 +11,18 @@ import Box from "@mui/material/Box";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import { ThemeProvider } from "@mui/material";
 import { socket } from "src/contexts/WebSocketContext";
+import { LobbyCreatedDto } from "../game.types";
+import { useContext } from "react";
+import { GameContext } from "src/game/game.context";
+import * as GameTypes from "../game.types";
 //If the player is the current user, it will have a toggleable button for ready status
 //If the player is the opposing user, it will have a badge that shows opponents ready status
 
 //Need to know which side each player is on, so both ready buttons can be in the middle
 
-export default function GameActionBar() {
-  const [selected, setSelected] = React.useState(false);
+export default function GameActionBar(lobby: LobbyCreatedDto) {
+  const {playerReady, setPlayerState} = useContext(GameContext);
+  console.log(lobby);
   return (
     <Box
       sx={{
@@ -40,11 +45,8 @@ export default function GameActionBar() {
       <Box sx={{ ml: 2 }}>
         <ToggleButton
           value="check"
-          selected={selected}
-          onChange={() => {
-            socket.emit("playerReady", !selected);
-            setSelected(!selected);
-          }}
+          selected={playerReady}
+          onChange={() =>  setPlayerState(!playerReady)}
         >
           <CheckCircleIcon />
         </ToggleButton>

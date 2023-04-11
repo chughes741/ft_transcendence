@@ -1,6 +1,5 @@
-import React, { useRef, useContext } from "react";
+import React, { useRef, useContext, useEffect } from "react";
 import { Canvas, useFrame, ThreeElements, useThree } from "@react-three/fiber";
-import { WebSocketContext } from "src/contexts/WebSocketContext";
 import { socket } from "src/contexts/WebSocketContext";
 //Local includes
 import { GameStateDto, ClientGameStateUpdate } from "./game.types";
@@ -175,12 +174,28 @@ function OuterFrameRight() {
  * @returns
  */
 export default function Game() {
-  let gameState: GameStateDto = new GameStateDto("", "right", 0, 0, 0, 0);
+  let gameState: GameStateDto | null = new GameStateDto(
+    "",
+    "right",
+    0,
+    0,
+    0,
+    0
+  );
 
-  socket.on("serverUpdate", (GameState: GameStateDto) => {
-    console.log(GameState);
-    gameState = GameState;
-  });
+  useEffect(() => {
+    socket.on("serverUpdate", (GameState: GameStateDto) => {
+      console.log(GameState);
+      gameState = GameState;
+    });
+
+    return () => {
+      socket.off("serverUpdate");
+    }
+  }, [gameState]);
+
+  if (!gameState) return <div>Loading...</div>;
+
   return (
     <Canvas>
       {/* Gameplay Objects */}

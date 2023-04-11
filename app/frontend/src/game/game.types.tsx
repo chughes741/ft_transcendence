@@ -64,8 +64,18 @@ export class ClientGameStateUpdate {
   paddle_pos: number;
 }
 
-export class PlayerReady {
-  match_id: string;
-  client_id: string;
+export class PlayerReadyDto {
+  constructor(Lobby_ID: string, Is_Ready: boolean) {
+    this.lobby_id = Lobby_ID;
+    this.is_ready = Is_Ready;
+  }
+  lobby_id: string;
   is_ready: boolean;
+}
+
+export class LobbyCreatedDto {
+  constructor(Lobby_ID) {this.lobby_id = Lobby_ID}
+  lobby_id: string;
+  // match_id: string;
+  // rooom_entity: string; //FIXME: Change this later
 }
