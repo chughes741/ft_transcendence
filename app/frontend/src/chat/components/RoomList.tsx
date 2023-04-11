@@ -64,7 +64,7 @@ const RoomList: React.FC = () => {
   const [selectedUsers, setSelectedUsers] = React.useState<UserEntity[]>([]);
   const [availableUsers, setAvailableUsers] = React.useState<UserEntity[]>([]);
 
-  // Make a useEffect to emit a "listAvailableUsers" socket event when the roomName changes
+  // Emit a "listAvailableUsers" socket event when the roomName changes
   useEffect(() => {
     console.log("Room name changed: ", currentRoomName);
 
@@ -199,7 +199,7 @@ const RoomList: React.FC = () => {
       </Box>
       <DirectMessageModal
         showModal={showDirectMessageModal}
-        closeModal={() => setShowCreateRoomModal(false)}
+        closeModal={() => setShowDirectMessageModal(false)}
         // onCreateRoom={() => setShowDirectMessageModal(false)}
       />
       <CreateRoomModal

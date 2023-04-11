@@ -48,9 +48,11 @@ export const DirectMessageModal: React.FC<DirectMessageModalProps> = ({
   };
 
   useEffect(() => {
-    socket.emit("listAvailableUsers", tempUsername, (users: UserEntity[]) => {
-      console.log("Received available users: ", users);
+    console.log("Fetching available users...");
+    socket.emit("listAvailableUsers", "", (users: UserEntity[]) => {
+      console.log("Available users: ", users);
       setAvailableUsers(users);
+      setSelectedUser(null);
     });
   }, [tempUsername, showModal]);
 
