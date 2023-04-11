@@ -75,7 +75,7 @@ export const InviteUsersModal: React.FC<InviteUsersToRoomProps> = ({
       fullWidth
       PaperProps={{
         sx: {
-          width: "30%",
+          width: "35%",
           overflowX: "hidden"
         }
       }}

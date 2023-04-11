@@ -97,7 +97,7 @@ export const CreateRoomModal: React.FC<CreateRoomModalProps> = ({
       fullWidth
       PaperProps={{
         sx: {
-          width: "30%",
+          width: "35%",
           overflowX: "hidden"
         }
       }}

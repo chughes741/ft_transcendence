@@ -1,4 +1,4 @@
-import { AvatarGroup, ListItemText } from "@mui/material";
+import { AvatarGroup, Box, ListItemText, Typography } from "@mui/material";
 import React, { useCallback, useEffect, useState } from "react";
 import { FiEye, FiEyeOff } from "react-icons/fi";
 import {
@@ -49,14 +49,8 @@ export const JoinRoomModal: React.FC<JoinRoomModalProps> = ({
 }) => {
   const { tempUsername } = useChatContext();
 
-  const {
-    roomName,
-    setRoomName,
-    password,
-    setPassword,
-    showPassword,
-    togglePasswordVisibility
-  } = useRoomModal(showModal, closeModal);
+  const { password, setPassword, showPassword, togglePasswordVisibility } =
+    useRoomModal(showModal, closeModal);
   const [availableRooms, setAvailableRooms] = useState<AvailableRoomEntity[]>(
     []
   );
@@ -108,7 +102,7 @@ export const JoinRoomModal: React.FC<JoinRoomModalProps> = ({
       fullWidth
       PaperProps={{
         sx: {
-          width: "30%",
+          width: "35%",
           overflowX: "hidden"
         }
       }}
@@ -128,23 +122,46 @@ export const JoinRoomModal: React.FC<JoinRoomModalProps> = ({
           getOptionLabel={(option) => option.roomName}
           value={selectedRoom}
           renderOption={(props, option) => (
-            <MenuItem {...props}>
-              <Badge
-                badgeContent={option.nbMembers}
-                color="primary"
-                sx={{ marginRight: 1 }}
-              >
-                <AvatarGroup total={option.nbMembers + 1}>
+            <MenuItem
+              {...props}
+              sx={{ paddingTop: "16px" }}
+            >
+              <AvatarGroup total={option.nbMembers + 1}>
+                <Badge
+                  color={
+                    option.owner.status === UserStatus.ONLINE
+                      ? "success"
+                      : option.owner.status === UserStatus.OFFLINE
+                      ? "error"
+                      : "warning"
+                  }
+                  anchorOrigin={{
+                    vertical: "top",
+                    horizontal: "left"
+                  }}
+                  overlap="circular"
+                  variant="dot"
+                >
                   <Avatar
                     src={option.owner.avatar}
                     alt={option.owner.username}
                   />
-                </AvatarGroup>
-              </Badge>
-              <ListItemText
-                primary={option.roomName}
-                sx={{ alignItems: "center" }}
-              />
+                </Badge>
+              </AvatarGroup>
+              <Box
+                justifyContent="center"
+                display="flex"
+                flexGrow={1}
+              >
+                <Typography
+                  sx={{
+                    // fontWeight: "bold", // Increase font weight
+                    fontSize: "1.1rem" // Increase font size
+                  }}
+                >
+                  {option.roomName}
+                </Typography>
+              </Box>
               <span style={{ marginLeft: "auto", marginRight: "16px" }}>
                 {option.status === "PASSWORD" ? <FaLock /> : <FaGlobe />}
               </span>

@@ -131,7 +131,7 @@ export const ChatViewModelProvider = ({ children }) => {
     });
 
     return {
-      user: messagePayload.username,
+      username: messagePayload.username,
       roomId: messagePayload.roomName,
       content: messagePayload.content,
       timestamp_readable,
