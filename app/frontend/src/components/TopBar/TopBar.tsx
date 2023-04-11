@@ -55,7 +55,7 @@ function TopBar({ setPageState }) {
 
         <Box sx={{ flexGrow: 1 }}>
           <ButtonUnstyled
-            onClick={() => setPageState(PageState.Home, "TopBar")}
+            onClick={() => setPageState(PageState.Home)}
             style={{
               border: "none",
               backgroundColor: "transparent",
@@ -72,7 +72,7 @@ function TopBar({ setPageState }) {
           <ButtonFunky
             content={"Play a game"}
             width={"100%"}
-            onClick={() => setPageState(PageState.FullScreenGame, "TopBar")}
+            onClick={() => setPageState(PageState.FullScreenGame)}
             // onClick={() => setPageState(PageState.Game)}
           />
         </Box>

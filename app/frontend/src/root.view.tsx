@@ -44,7 +44,7 @@ export function RootView(): JSX.Element {
           pageState - diffFullScreen
         }`
       );
-      setPageState(pageState - diffFullScreen, "rootView"); //lol
+      setPageState(pageState - diffFullScreen); // lol
     }
   };
 
