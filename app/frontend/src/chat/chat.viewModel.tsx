@@ -69,7 +69,6 @@ export interface ChatViewModelType extends ChatModelType {
   ) => Promise<boolean>;
   leaveRoom: () => Promise<boolean>;
   changeRoomStatus: (
-    roomName: string,
     newStatus: "PRIVATE" | "PUBLIC" | "PASSWORD"
   ) => Promise<boolean>;
   selectRoom: (roomName: string) => void;
@@ -409,10 +408,10 @@ export const ChatViewModelProvider = ({ children }) => {
   };
 
   const changeRoomStatus = async (
-    roomName: string,
     newStatus: "PRIVATE" | "PUBLIC" | "PASSWORD"
   ): Promise<boolean> => {
     return new Promise<boolean>((resolve) => {
+      const roomName = contextMenuData.name;
       console.log(`Changing room status of ${roomName} to ${newStatus}`);
       // TODO: implement the backend handler for this socket event
       // TODO: instead of sendin only the status, send the whole room object

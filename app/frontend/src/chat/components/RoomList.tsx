@@ -235,31 +235,37 @@ const RoomList: React.FC = () => {
                 {
                   label: "Change Room Status",
                   submenu: [
-                    {
-                      label: "Private",
-                      onClick: () => {
-                        changeRoomStatus(
-                          contextMenuData.name,
-                          "PRIVATE"
-                        ).then();
-                      }
-                    },
-                    {
-                      label: "Public",
-                      onClick: () => {
-                        changeRoomStatus(contextMenuData.name, "PUBLIC").then();
-                      }
-                    },
-                    {
-                      // TODO: add dialog to enter and confirm new password
-                      label: "Password Protected",
-                      onClick: () => {
-                        changeRoomStatus(
-                          contextMenuData.name,
-                          "PASSWORD"
-                        ).then();
-                      }
-                    }
+                    ...(contextMenuData && contextMenuData.status !== "PRIVATE"
+                      ? [
+                          {
+                            label: "Private",
+                            onClick: () => {
+                              changeRoomStatus("PRIVATE").then();
+                            }
+                          }
+                        ]
+                      : []),
+                    ...(contextMenuData && contextMenuData.status !== "PRIVATE"
+                      ? [
+                          {
+                            label: "Public",
+                            onClick: () => {
+                              changeRoomStatus("PUBLIC").then();
+                            }
+                          }
+                        ]
+                      : []),
+                    ...(contextMenuData && contextMenuData.status !== "PRIVATE"
+                      ? [
+                          {
+                            // TODO: add dialog to enter and confirm new password
+                            label: "Password Protected",
+                            onClick: () => {
+                              changeRoomStatus("PASSWORD").then();
+                            }
+                          }
+                        ]
+                      : [])
                   ]
                 }
               ]
