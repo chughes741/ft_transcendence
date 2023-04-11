@@ -14,17 +14,24 @@ import {
   ListItemText
 } from "@mui/material";
 import { useChatContext } from "../chat.context";
-import { FaCrown, FaGlobe, FaLock, FaUserLock } from "react-icons/fa";
+import {
+  FaCommentDots,
+  FaCrown,
+  FaGlobe,
+  FaLock,
+  FaUserLock
+} from "react-icons/fa";
 
 import { Snackbar } from "@mui/material";
 import Alert from "@mui/material/Alert";
 
-import { ChatRoomStatus } from "../chat.viewModel";
+import { ChatRoomStatus, RoomType } from "../chat.viewModel";
 import { socket } from "../../contexts/WebSocket.context";
 import { InviteUsersModal } from "./InviteUsersModal";
 
 const RoomList: React.FC = () => {
   const {
+    tempUsername,
     rooms,
     currentRoomName,
     setShowCreateRoomModal,
@@ -83,6 +90,8 @@ const RoomList: React.FC = () => {
         return <FaGlobe />;
       case "PRIVATE":
         return <FaUserLock />;
+      case "DIALOGUE":
+        return <FaCommentDots />;
       default:
         return null;
     }
@@ -113,6 +122,37 @@ const RoomList: React.FC = () => {
     setShowNewRoomSnackbar(false);
   };
 
+  const renderAvatarGroup = (room: RoomType) => {
+    if (room.status === "DIALOGUE") {
+      const otherUser = Object.values(room.users)?.find(
+        (user) => user.username !== tempUsername
+      );
+      return (
+        <Avatar
+          src={otherUser.avatar}
+          alt={`Profile ${otherUser.username}`}
+        />
+      );
+    } else {
+      return (
+        <AvatarGroup
+          max={4}
+          spacing="small"
+        >
+          {room.users &&
+            Object.keys(room.users).length > 0 &&
+            Object.values(room.users).map((user) => (
+              <Avatar
+                key={user.username}
+                src={user.avatar}
+                alt={`Profile ${user.username}`}
+              />
+            ))}
+        </AvatarGroup>
+      );
+    }
+  };
+
   return (
     <div className="room-list">
       <Box sx={{ overflow: "auto" }}>
@@ -128,22 +168,7 @@ const RoomList: React.FC = () => {
                   <span style={{ marginRight: "auto", marginLeft: "8px" }}>
                     {room.rank === "OWNER" && <FaCrown />}
                   </span>
-                  <ListItemIcon>
-                    <AvatarGroup
-                      max={4}
-                      spacing="small"
-                    >
-                      {room.users &&
-                        Object.keys(room.users).length > 0 &&
-                        Object.values(room.users).map((user) => (
-                          <Avatar
-                            key={user.username}
-                            src={user.avatar}
-                            alt={`Profile ${user.username}`}
-                          />
-                        ))}
-                    </AvatarGroup>
-                  </ListItemIcon>
+                  <ListItemIcon>{renderAvatarGroup(room)}</ListItemIcon>
                   <ListItemText
                     style={{ overflowX: "hidden" }}
                     primary={roomName}

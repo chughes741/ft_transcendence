@@ -7,7 +7,7 @@ import { MessageType } from "src/chat/components/Message";
 import { ChatContext } from "src/chat/chat.context";
 import { UserListItem } from "src/chat/components/Userlist";
 
-export type ChatRoomStatus = "PUBLIC" | "PRIVATE" | "PASSWORD";
+export type ChatRoomStatus = "PUBLIC" | "PRIVATE" | "PASSWORD" | "DIALOGUE";
 export type ChatMemberRank = "USER" | "ADMIN" | "OWNER";
 
 export type RoomMemberEntity = {
