@@ -180,6 +180,45 @@ export class ChatGateway
   }
 
   /**
+   * @event "updateChatRoom"
+   * Update the status of a chat room member.
+   * @param client - socket client
+   * @param updateChatRoomRequest - updated room info
+   * @returns updated room info if successful, error otherwise
+   */
+  @SubscribeMessage("updateChatRoom")
+  async updateChatRoom(
+    client: Socket,
+    updateChatRoomRequest: CreateChatRoomDto
+  ): Promise<ChatRoomEntity | DevError> {
+    // const userId = await this.prismaService.getUserIdByNick(
+    //   updateChatRoomRequest.owner
+    // );
+    // logger.log(
+    //   `Received updateChatRoom request from ${userId}, name ${updateChatRoomRequest.owner}`
+    // );
+    // if (!userId) {
+    //   return { error: "User not found" };
+    // }
+    // const updatedRoom = await this.chatService.updateChatRoom(
+    //   updateChatRoomRequest
+    // );
+    // if (updatedRoom instanceof Error) {
+    //   return { error: updatedRoom.message };
+    // }
+    // const updatedRoomEntity = await this.chatService.getChatRoomEntity(
+    //   updatedRoom.name
+    // );
+    // if (!updatedRoomEntity) {
+    //   return { error: "Room not found" };
+    // }
+    // this.server.to(updatedRoom.name).emit("updateChatRoom", updatedRoomEntity);
+    // return updatedRoomEntity;
+    return { error: "Not implemented" };
+  }
+
+  /**
+   * @event "listAvailableChatRooms"
    * Get all available chat rooms from the server, and send them to the client,
    * excluding the ones the user is already in.
    * Info sent back to the client:

@@ -21,6 +21,7 @@ import { MessageEntity } from "./entities/message.entity";
 import { kickMemberDto, updateChatMemberStatusDto } from "./dto/userlist.dto";
 import { ChatMemberPrismaType } from "./chat.gateway";
 import { ChatMemberEntity } from "./entities/message.entity";
+import { ChatRoomDto } from "../auth/dto/prisma.dto";
 
 const logger = new Logger("ChatService");
 
@@ -171,6 +172,35 @@ export class ChatService {
     return this.prismaService.chatMember.delete({
       where: { id: chatMember.id }
     });
+  }
+
+  /**
+   * Update a Chat Room
+   * @param updateDto - The room name, password, and user
+   * @returns - The updated room, or an error
+   */
+  async updateRoom(updateDto: ChatRoomDto): Promise<ChatRoomEntity | Error> {
+    const { name, password, status, owner } = updateDto;
+    const userId = await this.prismaService.getUserIdByNick(owner);
+    const roomId = await this.prismaService.getChatRoomId(name);
+    if (!roomId) {
+      return Error("Room not found");
+    }
+    const chatMember = await this.prismaService.chatMember.findFirst({
+      where: { memberId: userId, roomId: roomId }
+    });
+    if (!chatMember) {
+      return Error("User is not a member of this room");
+    }
+    if (chatMember.rank !== ChatMemberRank.OWNER) {
+      return Error("User is not the owner of this room");
+    }
+    const room = await this.prismaService.updateChatRoom(roomId, {
+      name,
+      password,
+      status
+    });
+    return this.getChatRoomEntity(room, chatMember.rank);
   }
 
   /**

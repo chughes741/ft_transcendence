@@ -343,7 +343,7 @@ export class PrismaService extends PrismaClient {
   async updateChatRoom(
     id: number,
     dto: Partial<ChatRoomDto>
-  ): Promise<ChatRoomDto> {
+  ): Promise<ChatRoom> {
     const data: Prisma.ChatRoomCreateInput = {
       status: dto.status,
       name: dto.name,

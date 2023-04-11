@@ -414,17 +414,17 @@ export const ChatViewModelProvider = ({ children }) => {
   ): Promise<boolean> => {
     return new Promise<boolean>((resolve) => {
       console.log(`Changing room status of ${roomName} to ${newStatus}`);
-      // Emit a socket event to change the room status, and listen for the callback.
-      // If the callback is successful, update the room status in the state.
       // TODO: implement the backend handler for this socket event
+      // TODO: instead of sendin only the status, send the whole room object
+      // TODO: if status is password, open a modal to ask for the password
       socket.emit(
-        "changeRoomStatus",
+        "updateChatRoom",
         { roomName, newStatus },
         (success: boolean) => {
           if (success) {
             setRooms((prevRooms) => {
               const newRooms = { ...prevRooms };
-              newRooms[roomName] = prevRooms[roomName];
+              newRooms[roomName].status = newStatus;
               return newRooms;
             });
           } else {
