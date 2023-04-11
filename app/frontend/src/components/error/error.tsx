@@ -1,27 +1,29 @@
 import Box from "@mui/material/Box";
-import React from "react";
+import React, {ReactElement} from "react";
 import "./error.tsx.css";
+import DynamicIconButton from "../DynamicIconButton";
+import AlbumIcon from '@mui/icons-material/Album';
 
-export default function Fallback({ resetErrorBoundary }) {
+export default function Fallback({FallbackProps: resetErrorBoundary}) : ReactElement {
   function resetError() {
     resetErrorBoundary();
   }
 
   return (
     <Box className="error-page">
-      <Box className="error-top-bar">
         <Box className="error-title">
           <h1 data-text="error: something broke">
             <span>error :something broke</span>
           </h1>
         </Box>
         <Box>
-          <h1 className="deux" data-text="Please, try again">
+          <h1 className="second-line" data-text="Please, try again">
             <span> Please, try again</span>
           </h1>
         </Box>
-        <button onClick={resetError}>Reset</button>
-      </Box>
+        <Box className="button">
+            <DynamicIconButton text={"Reset"} icon={<AlbumIcon/>} onClick={resetError}/>
+        </Box>
     </Box>
   );
 }
