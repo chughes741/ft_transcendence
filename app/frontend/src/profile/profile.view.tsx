@@ -193,29 +193,26 @@ function FriendsListRow(friend: ProfileEntity): JSX.Element | null {
 
   return (
     <>
-      <MenuItem onClick={() => handleClick()}>
-        <Badge
-          color={
-            friend.status === UserStatus.ONLINE
-              ? "success"
-              : friend.status === UserStatus.OFFLINE
-              ? "error"
-              : "warning"
-          }
-          anchorOrigin={{
-            vertical: "bottom",
-            horizontal: "right"
-          }}
+      <MenuItem
+        onClick={() => handleClick()}
+        sx={{ padding: "0.5rem" }}
+      >
+        <StyledBadge
           overlap="circular"
+          anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
           variant="dot"
+          status={friend.status}
         >
           <Avatar
             alt={friend.username}
             src={friend.avatar}
-            sx={{ width: 40, height: 40, marginRight: 1 }}
+            sx={{ width: "2rem", height: "2rem" }}
           />
-        </Badge>
-        <ListItemText primary={friend.username} />
+        </StyledBadge>
+        <ListItemText
+          sx={{ ml: "1rem" }}
+          primary={friend.username}
+        />
       </MenuItem>
     </>
   );
