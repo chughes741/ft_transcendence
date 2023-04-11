@@ -10,6 +10,7 @@ This project is about creating a website for the mighty **Pong** contest!
 ### II.1 Overview
 Thanks to your website, users will play Pong with others. You will provide a nice user
 interface, a chat, and real-time multiplayer online games!
+
 Your work has to comply with the following rules:
 
 - [x] Your website backend must be written in `NestJS`.
@@ -65,6 +66,5 @@ The main purpose of this website is to play Pong versus other players and show e
 - [ ] It can be a canvas game, or it can be a game rendered in 3D, it can also be ugly, but in any case, it must be faithful to the **original Pong** (1972).
 - [ ] You must offer some **customization options** (for example, power-ups or different maps). However, the user should be able to select a default version of the game without any extra features if they want to.
 - [x] The game must be **responsive**!
-- [ ] The user should be able to watch a live play between other users without interfering with it.
 
 > Think about network issues, like unexpected disconnection or lag. You have to offer the best user experience possible.
