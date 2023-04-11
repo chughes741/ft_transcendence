@@ -153,6 +153,7 @@ export class ChatGateway
   }
 
   // Create a sendEventToAllUserSockets(member.username, "newChatRoomMember", newMember) function
+  /* eslint-disable-next-line -- This function is not responsible for payload validation*/
   async sendEventToAllUserSockets(username: string, event: string, data: any) {
     logger.log(`Sending event ${event} to user ${username}`);
     const userSockets = this.userConnectionsService.getUserSockets(username);
