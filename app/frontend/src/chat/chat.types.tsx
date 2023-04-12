@@ -16,10 +16,10 @@ export enum UserStatus {
 }
 
 export enum ChatRoomStatus {
-  DIALOGUE = "Dialogue",
-  PUBLIC = "Public",
-  PRIVATE = "Private",
-  PASSWORD = "Password"
+  DIALOGUE = "DIALOGUE",
+  PUBLIC = "PUBLIC",
+  PRIVATE = "PRIVATE",
+  PASSWORD = "PASSWORD"
 }
 
 export type MessageType = {

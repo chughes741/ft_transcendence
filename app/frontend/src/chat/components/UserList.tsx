@@ -7,7 +7,7 @@ import {
   ListItemButton
 } from "@mui/material";
 import GroupIcon from "@mui/icons-material/Group";
-import ContextMenuUsers from "../../components/ContextMenuUsers";
+import ContextMenuUsers from "./UserListContextMenu";
 import { UserStatus } from "kingpong-lib";
 import { UserListItem } from "../chat.types";
 

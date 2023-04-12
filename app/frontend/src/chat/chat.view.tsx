@@ -3,7 +3,7 @@ import { Box } from "@mui/material";
 import DevLoginBanner from "../components/DevLoginBanner";
 import ChatAreaView from "./components/ChatArea";
 import { useChatContext } from "./chat.context";
-import UserListView from "./components/Userlist";
+import UserListView from "./components/UserList";
 import { useRoomManager } from "./lib/roomManager";
 
 export const ChatView: React.FC = () => {

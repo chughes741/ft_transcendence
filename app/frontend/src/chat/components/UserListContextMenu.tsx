@@ -1,5 +1,5 @@
-import { useChatContext } from "../chat/chat.context";
-import ContextMenu from "./ContextMenu";
+import { useChatContext } from "../chat.context";
+import ContextMenu from "../../components/ContextMenu";
 import { PageState } from "src/root.model";
 import { Paper } from "@mui/material";
 import { useProfileViewModelContext } from "src/profile/profile.viewModel";
