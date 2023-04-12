@@ -44,26 +44,12 @@ export const ChatViewModelProvider = ({ children }) => {
     setTempUsername,
     currentRoomName,
     setCurrentRoomName,
-    currentRoomMessages,
     setCurrentRoomMessages,
     contextMenuData,
-    contextMenuUsersData,
-    contextMenuPosition,
-    contextMenuUsersPosition,
-    contextMenuRoomsVisible,
-    contextMenuUsersVisible,
     setContextMenuRoomsVisible,
-    setContextMenuUsersVisible,
-    showDirectMessageModal,
-    setShowDirectMessageModal,
-    showCreateRoomModal,
-    setShowCreateRoomModal,
-    showJoinRoomModal,
-    setShowJoinRoomModal,
-    showInviteUsersModal,
-    setShowInviteUsersModal,
-    showNewRoomSnackbar,
-    setShowNewRoomSnackbar
+    setShowNewRoomSnackbar,
+    setShowPasswordModal,
+    setPasswordModalCallback
   } = chatModel;
 
   const { pageState, setPageState } = useRootViewModelContext();
@@ -112,7 +98,6 @@ export const ChatViewModelProvider = ({ children }) => {
   /**********************/
   /*   Room Functions   */
   /**********************/
-
   const changeRoomStatus = async (
     newStatus: ChatRoomStatus
   ): Promise<boolean> => {
@@ -120,15 +105,35 @@ export const ChatViewModelProvider = ({ children }) => {
     const roomName = contextMenuData.name;
     if (currentRoomName === "" || currentRoomName === undefined)
       return Promise.resolve(false);
-    //FIXME: Should I prompt the user here?
-    const success = handleChangeRoomStatus(roomName, newStatus);
-    console.log(`changeRoomStatus success status: ${success}`);
-    if (!success) return false;
-    updateRooms((newRooms) => {
-      newRooms[roomName].status = newStatus;
-      return newRooms;
-    });
-    return success;
+
+    if (newStatus === ChatRoomStatus.PASSWORD) {
+      setShowPasswordModal(true);
+      setPasswordModalCallback(async (password) => {
+        setShowPasswordModal(false);
+
+        const success = await handleChangeRoomStatus(
+          roomName,
+          newStatus,
+          password
+        );
+        console.log(`changeRoomStatus ${success ? "success" : "failure :((("}`);
+        if (!success) return false;
+        updateRooms((newRooms) => {
+          newRooms[roomName].status = newStatus;
+          return newRooms;
+        });
+        return success;
+      });
+    } else {
+      const success = await handleChangeRoomStatus(roomName, newStatus);
+      console.log(`changeRoomStatus ${success ? "success" : "failure :((("}`);
+      if (!success) return false;
+      updateRooms((newRooms) => {
+        newRooms[roomName].status = newStatus;
+        return newRooms;
+      });
+      return success;
+    }
   };
 
   /**********************/
@@ -236,7 +241,7 @@ export const ChatViewModelProvider = ({ children }) => {
   // TODO: remove this when user creation is implemented
   useEffect(() => {
     if (socket && !tempUsername) {
-      setTempUsername("temp_user");
+      setTempUsername("schlurp");
     }
   }, [socket, ""]);
 
