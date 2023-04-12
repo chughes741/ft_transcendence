@@ -20,15 +20,21 @@ export type RoomMap = { [key: string]: RoomType };
 export interface RoomManagerContextType {
   rooms: RoomMap;
   setRooms: (callback: (prevRooms: RoomMap) => RoomMap) => void;
-  joinRoom: (roomName: string, password: string) => Promise<boolean>;
-  sendRoomMessage: (roomName: string, message: string) => Promise<boolean>;
-  createNewRoom: (
+  handleJoinRoom: (roomName: string, password: string) => Promise<boolean>;
+  handleSendRoomMessage: (
+    roomName: string,
+    message: string
+  ) => Promise<boolean>;
+  handleCreateNewRoom: (
     roomName: string,
     roomStatus: ChatRoomStatus,
     password: string
   ) => Promise<boolean>;
-  leaveRoom: () => Promise<boolean>;
-  changeRoomStatus: (newStatus: ChatRoomStatus) => Promise<boolean>;
+  handleLeaveRoom: () => Promise<boolean>;
+  handleChangeRoomStatus: (
+    roomName: string,
+    newStatus: ChatRoomStatus
+  ) => Promise<boolean>;
   updateRooms: (updateFn: (rooms: RoomMap) => void) => void;
   convertMessagePayloadToMessageType: (
     messagePayload: MessagePayload
@@ -108,7 +114,7 @@ export const RoomManagerProvider = ({ children }) => {
     });
   };
 
-  const getChatRoomMembers = async (roomName: string) => {
+  const getRoomUserList = async (roomName: string) => {
     return new Promise<{ [key: string]: UserListItem }>((resolve) => {
       socket.emit(
         "listUsers",
@@ -131,7 +137,7 @@ export const RoomManagerProvider = ({ children }) => {
   const addChatRoom = async (
     chatRoomPayload: ChatRoomPayload
   ): Promise<RoomType> => {
-    const userList = await getChatRoomMembers(chatRoomPayload.name);
+    const userList = await getRoomUserList(chatRoomPayload.name);
 
     // Validate the payload
     if (!chatRoomPayload.name) {
@@ -197,7 +203,7 @@ export const RoomManagerProvider = ({ children }) => {
   };
 
   // Create a new room
-  const createNewRoom = async (
+  const handleCreateNewRoom = async (
     roomName: string,
     roomStatus: ChatRoomStatus,
     roomPassword?: string
@@ -224,7 +230,7 @@ export const RoomManagerProvider = ({ children }) => {
   };
 
   // Join a room
-  const joinRoom = async (
+  const handleJoinRoom = async (
     roomName: string,
     password: string
   ): Promise<boolean> => {
@@ -259,7 +265,7 @@ export const RoomManagerProvider = ({ children }) => {
     return true;
   };
 
-  const leaveRoom = async (roomName: string): Promise<boolean> => {
+  const handleLeaveRoom = async (roomName: string): Promise<boolean> => {
     return new Promise<boolean>((resolve) => {
       socket.emit("leaveRoom", { roomName }, (response: DevError | string) => {
         if (handleSocketErrorResponse(response)) {
@@ -276,7 +282,7 @@ export const RoomManagerProvider = ({ children }) => {
     });
   };
 
-  const sendRoomMessage = async (
+  const handleSendRoomMessage = async (
     roomName: string,
     message: string
   ): Promise<boolean> => {
@@ -299,7 +305,7 @@ export const RoomManagerProvider = ({ children }) => {
     });
   };
 
-  const changeRoomStatus = async (
+  const handleChangeRoomStatus = async (
     roomName: string,
     newStatus: ChatRoomStatus
   ): Promise<boolean> => {
@@ -333,17 +339,17 @@ export const RoomManagerProvider = ({ children }) => {
         rooms,
         setRooms,
         addMemberToRoom,
-        getChatRoomMembers,
+        getChatRoomMembers: getRoomUserList,
         addChatRoom,
         addMessageToRoom,
         addMessagesToRoom,
         updateRooms,
         convertMessagePayloadToMessageType,
-        joinRoom,
-        sendRoomMessage,
-        createNewRoom,
-        leaveRoom,
-        changeRoomStatus
+        handleJoinRoom,
+        handleSendRoomMessage,
+        handleCreateNewRoom,
+        handleLeaveRoom,
+        handleChangeRoomStatus
       }}
     >
       {children}

@@ -44,14 +44,32 @@ export const ChatViewModelProvider = ({ children }) => {
     setTempUsername,
     currentRoomName,
     setCurrentRoomName,
-    setShowNewRoomSnackbar,
-    setCurrentRoomMessages
+    currentRoomMessages,
+    setCurrentRoomMessages,
+    contextMenuData,
+    contextMenuUsersData,
+    contextMenuPosition,
+    contextMenuUsersPosition,
+    contextMenuRoomsVisible,
+    contextMenuUsersVisible,
+    setContextMenuRoomsVisible,
+    setContextMenuUsersVisible,
+    showDirectMessageModal,
+    setShowDirectMessageModal,
+    showCreateRoomModal,
+    setShowCreateRoomModal,
+    showJoinRoomModal,
+    setShowJoinRoomModal,
+    showInviteUsersModal,
+    setShowInviteUsersModal,
+    showNewRoomSnackbar,
+    setShowNewRoomSnackbar
   } = chatModel;
 
   const { pageState, setPageState } = useRootViewModelContext();
 
   /**********************/
-  /*   Room Functions   */
+  /*   Room Variables   */
   /**********************/
 
   const {
@@ -62,11 +80,11 @@ export const ChatViewModelProvider = ({ children }) => {
     addMemberToRoom,
     addChatRoom,
     addMessageToRoom,
-    joinRoom,
-    sendRoomMessage,
-    createNewRoom,
-    leaveRoom,
-    changeRoomStatus
+    handleJoinRoom: joinRoom,
+    handleSendRoomMessage: sendRoomMessage,
+    handleCreateNewRoom: createNewRoom,
+    handleLeaveRoom: leaveRoom,
+    handleChangeRoomStatus
   } = useRoomManager();
 
   /**********************/
@@ -89,6 +107,28 @@ export const ChatViewModelProvider = ({ children }) => {
     setCurrentRoomName(roomName);
     setCurrentRoomMessages(rooms[roomName].messages);
     setPageState(PageState.Chat);
+  };
+
+  /**********************/
+  /*   Room Functions   */
+  /**********************/
+
+  const changeRoomStatus = async (
+    newStatus: ChatRoomStatus
+  ): Promise<boolean> => {
+    setContextMenuRoomsVisible(false);
+    const roomName = contextMenuData.name;
+    if (currentRoomName === "" || currentRoomName === undefined)
+      return Promise.resolve(false);
+    //FIXME: Should I prompt the user here?
+    const success = handleChangeRoomStatus(roomName, newStatus);
+    console.log(`changeRoomStatus success status: ${success}`);
+    if (!success) return false;
+    updateRooms((newRooms) => {
+      newRooms[roomName].status = newStatus;
+      return newRooms;
+    });
+    return success;
   };
 
   /**********************/
