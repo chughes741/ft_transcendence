@@ -21,7 +21,7 @@ import { UserStatus } from "kingpong-lib";
 import { socket } from "../../contexts/WebSocket.context";
 import { useChatContext } from "../chat.context";
 import { Public, VpnKey } from "@mui/icons-material";
-import UserStatusBadge from "./UserStatusBadge";
+import UserStatusBadge from "../../components/UserStatusBadge";
 
 interface JoinRoomModalProps {
   showModal: boolean;

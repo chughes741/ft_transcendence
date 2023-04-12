@@ -16,7 +16,7 @@ import { UserStatus } from "kingpong-lib";
 import ButtonFunky from "../../components/ButtonFunky";
 import { useChatContext } from "../chat.context";
 import { socket } from "../../contexts/WebSocket.context";
-import UserStatusBadge from "./UserStatusBadge";
+import UserStatusBadge from "../../components/UserStatusBadge";
 
 export interface UserEntity {
   username: string;
