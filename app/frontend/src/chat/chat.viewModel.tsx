@@ -272,41 +272,6 @@ export const ChatViewModelProvider = ({ children }) => {
     }
   }, [tempUsername, ""]);
 
-  // Select the current room only once the room is ready
-  useEffect(() => {
-    if (currentRoomName && rooms && rooms[currentRoomName]) {
-      console.log(
-        `selectRoom: Room ${currentRoomName} selected!: `,
-        rooms[currentRoomName]
-      );
-      setCurrentRoomName(currentRoomName);
-      setCurrentRoomMessages(rooms[currentRoomName].messages);
-      setPageState(PageState.Chat);
-    }
-  }, [currentRoomName, rooms]);
-
-  // Get the list of users in the current room
-  // useEffect(() => {
-  //   if (
-  //     rooms &&
-  //     currentRoomName &&
-  //     rooms[currentRoomName] &&
-  //     rooms[currentRoomName].users &&
-  //     Object.keys(rooms[currentRoomName].users).length === 0
-  //   ) {
-  //     socket.emit(
-  //       "listUsers",
-  //       { chatRoomName: currentRoomName },
-  //       (users: UserListItem[]) => {
-  //         users.map((user) => {
-  //           console.log(`Adding user to room ${currentRoomName}: `, user);
-  //           addMemberToRoom(currentRoomName, user);
-  //         });
-  //       }
-  //     );
-  //   }
-  // }, [socket, currentRoomName, rooms]);
-
   return (
     <ChatContext.Provider
       value={{

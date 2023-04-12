@@ -615,7 +615,7 @@ export class ChatGateway
   ): Promise<string> {
     try {
       //Try to update the satus
-      const chatMember = await this.chatService.updateStatus(data);
+      const chatMember = await this.chatService.updateMemberStatus(data);
       //If Successful, Broadcast back the updated list
       if (chatMember)
         await this.listUsers(client, { chatRoomName: data.forRoomName });

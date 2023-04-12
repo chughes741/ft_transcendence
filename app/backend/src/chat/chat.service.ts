@@ -149,6 +149,7 @@ export class ChatService {
     }
 
     // Add the user as a chat member if they are not already a member
+    logger.warn("getUserIdByNick: ", user);
     const userId = await this.prismaService.getUserIdByNick(user);
     // This should really be a findUnique, but I can't figure out how to make it work
     let chatMember = await this.prismaService.chatMember.findFirst({
@@ -166,6 +167,7 @@ export class ChatService {
   }
 
   async leaveRoom(req: LeaveRoomRequest): Promise<ChatMember | Error> {
+    logger.warn("leaveRoom: getUserIdByNick: ", req.username);
     const userId = await this.prismaService.getUserIdByNick(req.username);
     logger.log(`User ${req.username} is leaving room ${req.roomName}`);
     const roomId = await this.prismaService.getChatRoomId(req.roomName);
@@ -196,6 +198,10 @@ export class ChatService {
     let userId: string;
     let roomId: number;
     try {
+      logger.warn(
+        "createTempUser: sendMessage: updateRoom: getUserIdByNick: ",
+        username
+      );
       userId = await this.prismaService.getUserIdByNick(username);
       roomId = await this.prismaService.getChatRoomId(roomName);
     } catch (e) {
@@ -269,6 +275,10 @@ export class ChatService {
     if (!roomId) return Error("Room not found");
 
     // Try to get the user database ID
+    logger.warn(
+      "createTempUser: sendMessage: getUserIdByNick: ",
+      sendDto.sender
+    );
     const userId = await this.prismaService.getUserIdByNick(sendDto.sender);
     if (!userId) return Error("User not found");
 
@@ -307,6 +317,7 @@ export class ChatService {
     username: string
   ): Promise<Error | string> {
     // Check if the user already exists
+    logger.warn("createTempUser: getUserIdByNick: ", username);
     const userExists = await this.prismaService.getUserIdByNick(username);
     if (userExists) {
       // Warn the client that the user already exists
@@ -343,6 +354,7 @@ export class ChatService {
    */
   async devUserLogin(username: string): Promise<Error | string> {
     // Check if the user already exists
+    logger.warn("devUsertLogin: getUserIdByNick: ", username);
     const userExists = await this.prismaService.getUserIdByNick(username);
     if (!userExists) {
       // Warn the client that the user already exists
@@ -356,44 +368,52 @@ export class ChatService {
     return username;
   }
 
-  /*
-    GET USER LIST : Get all user information relevant for the chat user tab Component
-    Takes a ChatmemberPrismaType array and transforms it into a ChatMemberEntity[], expected by the client
-  */
+  /**
+   * Get the list of users in a chat room
+   * If the room does not exist, return an error
+   * @param chatRoomName - The name of the chat room
+   * @returns ChatMemberEntity[] - An array of ChatMemberEntities
+   */
   async getUserList(chatRoomName: string): Promise<ChatMemberEntity[]> {
-    console.log("Inside getUserList, chatRoomName: ", chatRoomName);
-
-    //get all users that are members of a specific Chat Room (with string name)
-    const userMembers: ChatMemberPrismaType[] =
-      await this.prismaService.getRoomMembers(chatRoomName);
-    const chatMembers: ChatMemberEntity[] = userMembers.map(
-      (chatMember) => new ChatMemberEntity(chatMember)
-    );
-    if (userMembers.length > 0) {
-      return chatMembers;
+    try {
+      const roomMembers: ChatMemberEntity[] = (
+        await this.prismaService.getRoomMembers(chatRoomName)
+      ).map((chatMember) => new ChatMemberEntity(chatMember));
+      return roomMembers;
+    } catch (error) {
+      logger.error("Error getting user list", error);
+      return [];
     }
-    console.log("There is no members in room");
-    return [];
   }
 
-  async updateStatus(updateDto: updateChatMemberStatusDto) {
+  /**
+   * Update the status of a chat member
+   * If the member to update is the owner, return an error
+   * If the member requesting the update is a user, return an error
+   * @param updateDto - The updateChatMemberStatusDto object
+   * @returns ChatMember - The updated ChatMember object
+   */
+  async updateMemberStatus(
+    updateDto: updateChatMemberStatusDto
+  ): Promise<ChatMember> {
     try {
-      //MANAGES INVALID INPUTS:
-      if (updateDto.memberRequestRank === ChatMemberRank.USER)
-        throw new Error("Wrong rank: Can't request operation");
-      if (updateDto.memberToUpdateRANK === ChatMemberRank.OWNER)
-        throw new Error(
-          "ALARM: Trying to modify the owner's status, this activity will be reported !"
-        );
-
-      //TRIES TO UPDATE STATUS with Prisma and returns if successful response
+      if (
+        updateDto.memberToUpdateRANK === ChatMemberRank.OWNER ||
+        updateDto.memberRequestRank === ChatMemberRank.USER
+      ) {
+        const error =
+          updateDto.memberRequestRank === ChatMemberRank.USER
+            ? "Wrong rank: Can't request operation"
+            : "Wrong rank: Can't update owner";
+        logger.error("Error updating chat member status", error);
+        throw new Error(error);
+      }
       const response = await this.prismaService.updateChatMemberStatus(
         updateDto
       );
       return response;
     } catch (error) {
-      //RETURNS ERROR from any Error message
-      console.error(error);
+      logger.error("Error updating chat member status", error);
       throw error;
     }
   }

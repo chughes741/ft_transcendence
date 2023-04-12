@@ -86,7 +86,6 @@ export class PrismaService extends PrismaClient {
 
   async getUserIdByNick(nick: string): Promise<string> {
     if (!nick) {
-      logger.error("getUserIdByNick: nick is required");
       return null;
     }
 
@@ -123,7 +122,6 @@ export class PrismaService extends PrismaClient {
       },
       take: limit
     });
-    logger.log(`There are ${members.length} members in the room ${roomName}`);
     return members;
   }
 
