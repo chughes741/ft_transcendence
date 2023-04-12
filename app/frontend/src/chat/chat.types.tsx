@@ -22,6 +22,30 @@ export enum ChatRoomStatus {
   PASSWORD = "Password"
 }
 
+export type MessageType = {
+  username: string;
+  roomId: string;
+  content: string;
+  timestamp_readable: string;
+  timestamp: Date;
+  isOwn: boolean;
+  displayUser: boolean;
+  displayTimestamp: boolean;
+  displayDate: boolean;
+  avatar?: string;
+};
+
+export interface UserListItem {
+  username: string;
+  roomName?: string;
+  avatar: string;
+  userStatus: UserStatus;
+  chatMemberStatus?: ChatMemberStatus;
+  rank?: ChatMemberRank;
+  endOfBan?: Date;
+  endOfMute?: Date;
+}
+
 export type RoomMemberEntity = {
   roomName: string;
   user: UserListItem;
@@ -71,27 +95,3 @@ export class LeaveRoomRequest {
   roomName: string;
   username: string;
 }
-
-export interface UserListItem {
-  username: string;
-  roomName?: string;
-  avatar: string;
-  userStatus: UserStatus;
-  chatMemberStatus?: ChatMemberStatus;
-  rank?: ChatMemberRank;
-  endOfBan?: Date;
-  endOfMute?: Date;
-}
-
-export type MessageType = {
-  username: string;
-  roomId: string;
-  content: string;
-  timestamp_readable: string;
-  timestamp: Date;
-  isOwn: boolean;
-  displayUser: boolean;
-  displayTimestamp: boolean;
-  displayDate: boolean;
-  avatar?: string;
-};

@@ -12,11 +12,8 @@ import {
   ChatRoomPayload,
   RoomType,
   CreateRoomRequest,
-  RoomMemberEntity,
-  LeaveRoomRequest,
   ChatRoomStatus
 } from "./chat.types";
-import { convertMessagePayloadToMessageType } from "./lib/roomManager";
 import {
   handleChatRoomMemberLeftCreator,
   handleChatRoomMemberKickedCreator,
@@ -59,9 +56,32 @@ export const ChatViewModelProvider = ({ children }) => {
 
   const { pageState, setPageState } = useRootViewModelContext();
 
-  /*******************************/
-  /*   Wrapper State Functions   */
-  /*******************************/
+  /**********************/
+  /*   Util Functions   */
+  /**********************/
+  const convertMessagePayloadToMessageType = (
+    messagePayload: MessagePayload
+  ): MessageType => {
+    const timestamp = new Date(messagePayload.timestamp);
+    const timestamp_readable = timestamp.toLocaleTimeString("en-US", {
+      hour: "numeric",
+      minute: "numeric",
+      hour12: true
+    });
+
+    return {
+      username: messagePayload.username,
+      roomId: messagePayload.roomName,
+      content: messagePayload.content,
+      timestamp_readable,
+      timestamp,
+      isOwn: messagePayload.username === tempUsername,
+      displayUser: true,
+      displayTimestamp: true,
+      displayDate: true,
+      avatar: rooms[messagePayload.roomName]?.avatars[messagePayload.username]
+    };
+  };
 
   // This function will be called when a room focus is changed.
   // If the previous room is the same as the current one, toggle the page state to PageState.Home
@@ -404,15 +424,15 @@ export const ChatViewModelProvider = ({ children }) => {
   /***********************/
   /*   Socket Listener   */
   /***********************/
+  const { addSocketListener } = useWebSocketContext();
 
   const setupSocketListeners = () => {
-    const { addSocketListener } = useWebSocketContext();
-
     // Create the actual handlers by invoking the higher-order functions
     const handleConnect = handleConnectCreator();
     const handleNewMessage = handleNewMessageCreator(
       addMessageToRoom,
-      currentRoomName
+      currentRoomName,
+      convertMessagePayloadToMessageType
     );
     const handleNewChatRoomMember = handleNewChatRoomMemberCreator(updateRooms);
     const handleChatRoomMemberLeft =
