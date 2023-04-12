@@ -1,19 +1,16 @@
-/** Libraries */
-import { useState } from "react";
-import { Box, Input, Button, InputAdornment } from "@mui/material";
-import { IconButton } from "@mui/material";
-import { PhotoCamera } from "@mui/icons-material";
+import { Box, Input, Button, InputAdornment } from '@mui/material';
+import { IconButton } from '@mui/material';
+import { PhotoCamera } from '@mui/icons-material';
+import { useState, useContext } from 'react';
+import { WebSocketContext } from 'src/contexts/WebSocket.context';
+import { useRootViewModelContext } from 'src/root.context';
 
-/** Providers */
-import { useRootViewModelContext } from "src/root.context";
-
-/**
- * ImgUpload
- */
 function ImgUpload() {
   const [file, setFile] = useState(null);
-  const { self } = useRootViewModelContext();
+  const [ImgUrl, setImgUrl] = useState('');
 
+  const socket = useContext(WebSocketContext);
+  const { self } = useRootViewModelContext();
   const handleFileChange = (event) => {
     setFile(event.target.files[0]);
   };
@@ -22,17 +19,18 @@ function ImgUpload() {
     console.log("handUpload Clicked", file);
 
     if (file) {
-      /** REPLACE WITH CONTEXT USERNAME HERE */
-      const newdata = { username: self.username };
+      //  
+      //     REPLACE WITH CONTEXT USERNAME HERE
+      const newdata = { username: self.username, }
 
-      /** End of Username */
+      //--------------------- End of Username
       const formData = new FormData();
-      formData.append("file", file);
-      formData.append("newData", JSON.stringify(newdata));
+      formData.append('file', file);
+      formData.append('newData', JSON.stringify(newdata));
 
       fetch("/imgtransfer/upload", {
         method: "POST",
-        body: formData
+        body: formData,
       })
         .then((response) => {
           if (response.ok) {
@@ -50,34 +48,21 @@ function ImgUpload() {
           console.error("Caught error uploading avatar:", error);
         });
     }
-  };
+  }
 
-  /** <form onSubmit={handleUpload}> </form> */
+  //<form onSubmit={handleUpload}> </form> 
   return (
     <>
-      <Box className="ImgComponent">
-        <Input
-          type="file"
-          inputProps={{
-            accept: "image/*",
-            "aria-label": "Choose image",
-            placeholder: "No image"
-          }}
-          onChange={handleFileChange}
-          endAdornment={
+      <Box className='ImgComponent'>
+        <Input type="file" inputProps={{ accept: 'image/*', 'aria-label': 'Choose image', placeholder: 'No image' }}
+          onChange={handleFileChange} endAdornment={
             <InputAdornment position="end">
               <IconButton>
                 <PhotoCamera />
               </IconButton>
             </InputAdornment>
-          }
-        />
-        <Button
-          type="submit"
-          onClick={handleUpload}
-        >
-          Submit File
-        </Button>
+          } />
+        <Button type='submit' onClick={handleUpload}>Submit File</Button>
       </Box>
     </>
   );

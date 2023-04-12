@@ -31,7 +31,7 @@ export default {
   databasepw: process.env.POSTGRES_PASSWORD,
 
   /**
-   * SITE URL:
-   */
+ * SITE URL:
+ */
   website_url: process.env.SITE_URL
 };
