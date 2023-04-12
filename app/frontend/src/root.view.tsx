@@ -1,31 +1,18 @@
-import { Helmet } from "react-helmet";
+/** Libraries */
+import { useEffect } from "react";
 import { Box, Container } from "@mui/material";
+
+/** Providers */
+import { useRootViewModelContext } from "./root.context";
+
+/** Components */
 import SideBar from "src/components/SideBar/SideBar";
 import TopBar from "src/components/TopBar/TopBar";
-import { useRootViewModelContext } from "./root.context";
 import { PageState } from "./root.model";
 import GameWindow from "./game/game.master";
 import { ChatView } from "./chat/chat.view";
 import ProfileView from "./profile/profile.view";
-import { useEffect } from "react";
-
-/**
- * Helmet with dynamic page names
- *
- * @todo - Move to /components
- * @returns {JSX.Element} - Helmet with dynamic page names
- */
-function HelmetView(): JSX.Element {
-  const { pageState } = useRootViewModelContext();
-
-  return (
-    <>
-      <Helmet>
-        <title>King Pong | {pageState}</title>
-      </Helmet>
-    </>
-  );
-}
+import { HelmetView } from "./components/Helmet";
 
 /**
  * Root view content
