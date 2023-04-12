@@ -259,39 +259,36 @@ export const ChatViewModelProvider = ({ children }) => {
     });
   };
 
+  // Helper function to handle errors
+  const handleSocketErrorResponse = (res: DevError | any): res is DevError => {
+    return (res as DevError).error !== undefined;
+  };
+
   // Create a new room
   const createNewRoom = async (
     roomName: string,
     roomStatus: "PUBLIC" | "PRIVATE" | "PASSWORD",
-    roomPassword: string
+    roomPassword?: string
   ): Promise<boolean> => {
-    return new Promise<boolean>((resolve) => {
-      const roomRequest: CreateRoomRequest = {
-        name: roomName,
-        status: roomStatus,
-        password: roomPassword,
-        owner: tempUsername
-      };
-      console.log("ChatPage: Creating new room", { ...roomRequest });
-      socket.emit(
-        "createRoom",
-        roomRequest,
-        async (res: DevError | ChatRoomPayload) => {
-          if ((res as DevError).error !== undefined) {
-            console.log(
-              "Error response from join room: ",
-              (res as DevError).error
-            );
-            resolve(false);
-          } else {
-            // res is ChatRoomPayload
-            console.log("Response from join room: ", res);
-            await addChatRoom(res as ChatRoomPayload);
-            resolve(true);
-          }
-        }
-      );
-    });
+    const roomRequest: CreateRoomRequest = {
+      name: roomName,
+      status: roomStatus,
+      password: roomPassword,
+      owner: tempUsername
+    };
+    console.log("ChatPage: Creating new room", { ...roomRequest });
+
+    const response = await new Promise<DevError | ChatRoomPayload>((resolve) =>
+      socket.emit("createRoom", roomRequest, resolve)
+    );
+
+    if (handleSocketErrorResponse(response)) {
+      console.log("Error response from join room: ", response.error);
+      return false;
+    }
+
+    await addChatRoom(response as ChatRoomPayload);
+    return true;
   };
 
   // Join a room
@@ -299,60 +296,37 @@ export const ChatViewModelProvider = ({ children }) => {
     roomName: string,
     password: string
   ): Promise<boolean> => {
-    return new Promise<boolean>((resolve) => {
-      let room: RoomType;
-      const joinRoomRes = new Promise<DevError | ChatRoomPayload>(
-        (joinRoomResolve) => {
-          socket.emit(
-            "joinRoom",
-            { roomName, password, user: tempUsername },
-            (res: DevError | ChatRoomPayload) => {
-              joinRoomResolve(res);
-            }
-          );
-        }
-      );
+    const joinRoomPayload = { roomName, password, user: tempUsername };
+    const joinRoomRes = await new Promise<DevError | ChatRoomPayload>(
+      (resolve) => socket.emit("joinRoom", joinRoomPayload, resolve)
+    );
 
-      joinRoomRes.then(async (joinRoomRes) => {
-        if ((joinRoomRes as DevError).error !== undefined) {
-          console.log(
-            "Error response from join room: ",
-            (joinRoomRes as DevError).error
-          );
-          // FIXME: handle errors more gracefully
-          alert((joinRoomRes as DevError).error);
-          resolve(false);
-        } else {
-          console.log("Response from join room: ", joinRoomRes);
-          room = await addChatRoom(joinRoomRes as ChatRoomPayload);
-          selectRoom(room.name);
+    if (handleSocketErrorResponse(joinRoomRes)) {
+      console.log("Error response from join room: ", joinRoomRes.error);
+      alert(joinRoomRes.error);
+      return false;
+    }
 
-          socket.emit(
-            "getRoomMessagesPage",
-            { roomName, date: new Date(), pageSize: 50 },
-            (res: DevError | MessagePayload[]) => {
-              if (res instanceof Array) {
-                console.log("getRoomMessagesPage response: ", res);
-                const messages = res.map((message) =>
-                  convertMessagePayloadToMessageType(message)
-                );
-                console.log("Converted messages: ", messages);
-                addMessagesToRoom(roomName, messages);
-                setCurrentRoomName(roomName);
-                console.log("Added messages to room: ", roomName);
-                resolve(true);
-              } else {
-                console.log(
-                  "Error response from get room messages: ",
-                  res.error
-                );
-                resolve(false);
-              }
-            }
-          );
-        }
-      });
-    });
+    const room = await addChatRoom(joinRoomRes as ChatRoomPayload);
+    selectRoom(room.name);
+
+    const messageRequest = { roomName, date: new Date(), pageSize: 50 };
+    const messagesRes = await new Promise<DevError | MessagePayload[]>(
+      (resolve) => socket.emit("getRoomMessagesPage", messageRequest, resolve)
+    );
+
+    if (handleSocketErrorResponse(messagesRes)) {
+      console.log("Error response from get room messages: ", messagesRes.error);
+      return false;
+    }
+
+    const messages = (messagesRes as MessagePayload[]).map((message) =>
+      convertMessagePayloadToMessageType(message)
+    );
+    addMessagesToRoom(roomName, messages);
+    setCurrentRoomName(roomName);
+
+    return true;
   };
 
   const leaveRoom = async (): Promise<boolean> => {
@@ -413,7 +387,7 @@ export const ChatViewModelProvider = ({ children }) => {
     return new Promise<boolean>((resolve) => {
       const roomName = contextMenuData.name;
       console.log(`Changing room status of ${roomName} to ${newStatus}`);
-      // TODO: instead of sendin only the status, send the whole room object
+      // TODO: instead of sending only the status, send the whole room object
       // TODO: if status is password, open a modal to ask for the password
       socket.emit(
         "updateChatRoom",
