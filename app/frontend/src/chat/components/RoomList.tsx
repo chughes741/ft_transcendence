@@ -1,7 +1,6 @@
 import React, { useEffect } from "react";
 import "src/styles/chat/RoomList.css";
-import { JoinRoomModal, UserEntity } from "./JoinRoomModal";
-import { CreateRoomModal } from "./CreateRoomModal";
+import { CreateRoomModal } from "../modals/CreateRoomModal";
 import { Box, List } from "@mui/material";
 import { useChatContext } from "../chat.context";
 
@@ -9,11 +8,12 @@ import { Snackbar } from "@mui/material";
 import Alert from "@mui/material/Alert";
 
 import { socket } from "../../contexts/WebSocket.context";
-import { InviteUsersModal } from "./InviteUsersModal";
-import { DirectMessageModal } from "./DirectMessageModal";
 import RoomContextMenu from "./RoomListContextMenu";
 import RoomListItem from "./RoomListItem";
 import { useRoomManager } from "../lib/roomManager";
+import { DirectMessageModal } from "../modals/DirectMessageModal";
+import { UserEntity, InviteUsersModal } from "../modals/InviteUsersModal";
+import { JoinRoomModal } from "../modals/JoinRoomModal";
 
 const RoomList: React.FC = () => {
   const {
