@@ -92,7 +92,7 @@ export interface UserEntity {
 export interface AvailableRoomEntity {
   roomName: string;
   nbMembers: number;
-  status: "PASSWORD" | "PUBLIC";
+  status: ChatRoomStatus;
   owner: UserEntity;
 }
 

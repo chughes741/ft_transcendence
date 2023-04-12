@@ -101,10 +101,10 @@ model ChatRoom {
 }
 
 enum ChatRoomStatus {
-  DIALOGUE
-  PUBLIC
-  PRIVATE
-  PASSWORD
+  DIALOGUE @map("Dialogue")
+  PUBLIC   @map("Public")
+  PRIVATE  @map("Private")
+  PASSWORD @map("Password")
 }
 
 model Message {
