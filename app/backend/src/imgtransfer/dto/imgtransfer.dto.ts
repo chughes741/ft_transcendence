@@ -1,4 +1,10 @@
 export interface imgTransferDTO {
-    username : string
-  }
-  
+  username: string;
+  newData : string;
+}
+
+export interface dataTransfer {
+  Name: string,
+  fileName: string,
+  URL: string
+}

@@ -77,7 +77,7 @@ function ProfileHeader(): JSX.Element | null {
                 ></Avatar>
               </StyledBadge>
             </Grid>
-            <ImgUpload/>
+            <ImgUpload />
             <Grid
               container
               item
