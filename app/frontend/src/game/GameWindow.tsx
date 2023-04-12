@@ -5,6 +5,7 @@ import { socket } from "src/contexts/WebSocket.context";
 import { GameStateDto } from "./game.types";
 import { BallConfig, GameColours, PaddleConfig } from "./game.config";
 import { Mesh } from "three";
+import GameLoader from "./components/GameLoader";
 
 /**
  *
@@ -175,28 +176,31 @@ export default function Game() {
     gameState = GameState;
   });
   return (
-    <Canvas>
-      {/* Gameplay Objects */}
-      <Ball {...gameState} />
-      <PaddleLeft {...gameState} />
-      <PaddleRight {...gameState} />
+    <>
+      <Canvas>
+        {/* Gameplay Objects */}
+        <Ball {...gameState} />
+        <PaddleLeft {...gameState} />
+        <PaddleRight {...gameState} />
 
-      {/* Scene Objects */}
-      <Floor />
-      <OuterFrameTop />
-      <OuterFrameBottom />
-      <OuterFrameLeft />
-      <OuterFrameRight />
+        {/* Scene Objects */}
+        <Floor />
+        <OuterFrameTop />
+        <OuterFrameBottom />
+        <OuterFrameLeft />
+        <OuterFrameRight />
 
-      {/* Lighting */}
-      <ambientLight
-        args={[0xffffff]}
-        intensity={0.1}
-      />
-      <directionalLight
-        position={[0, 5, 3]}
-        intensity={0.5}
-      />
-    </Canvas>
+        {/* Lighting */}
+        <ambientLight
+          args={[0xffffff]}
+          intensity={0.1}
+        />
+        <directionalLight
+          position={[0, 5, 3]}
+          intensity={0.5}
+        />
+      </Canvas>
+      <GameLoader />
+    </>
   );
 }

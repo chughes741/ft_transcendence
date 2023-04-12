@@ -13,13 +13,14 @@ import customTheme from "src/theme";
 import { RootView } from "./root.view";
 import { ErrorBoundary } from "react-error-boundary";
 import Fallback from "./components/error/error";
+import GameLoader from "./game/components/GameLoader";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 const theme = customTheme();
 
 
 root.render(
-  <ErrorBoundary FallbackComponent={Fallback}>
+  <ErrorBoundary FallbackComponent={GameLoader}>
     <React.StrictMode>
       <WebSocketProvider value={socket}>
         <ThemeProvider theme={theme}>
