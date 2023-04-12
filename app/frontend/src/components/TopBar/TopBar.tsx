@@ -14,6 +14,7 @@ import { useProfileViewModelContext } from "src/profile/profile.viewModel";
 import ButtonFunky from "src/components/ButtonFunky";
 import { SportsEsports } from "@mui/icons-material";
 import DynamicIconButton from "../DynamicIconButton";
+import { useRootViewModelContext } from "src/root.context";
 const settings = ["Profile", "Settings", "Logout"];
 
 //Set css flexbox options for the toolbar component to create proper object positioning for child elements
@@ -22,8 +23,10 @@ const toolbarStyle = {
   justifyContent: "space-between"
 };
 
-function TopBar({ setPageState }) {
-  const { profile, setUser } = useProfileViewModelContext();
+function TopBar() {
+  const { setPageState } = useRootViewModelContext();
+  const { setUser } = useProfileViewModelContext();
+  const { self } = useRootViewModelContext();
   const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(
     null
   );
@@ -37,7 +40,7 @@ function TopBar({ setPageState }) {
   };
 
   const onClickProfile = () => {
-    setUser("schlurp");
+    setUser(self.username);
     setPageState(PageState.Profile);
     handleCloseUserMenu();
   };
@@ -98,11 +101,7 @@ function TopBar({ setPageState }) {
               onClick={handleOpenUserMenu}
               sx={{ p: 0, mr: 2 }}
             >
-              {profile !== null ? (
-                <Avatar src={profile.avatar} />
-              ) : (
-                <Avatar alt="" />
-              )}
+              <Avatar src={self.avatar} />
             </IconButton>
           </Tooltip>
           <Menu
