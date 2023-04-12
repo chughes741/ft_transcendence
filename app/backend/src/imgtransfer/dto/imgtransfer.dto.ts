@@ -1,4 +1,3 @@
 export interface imgTransferDTO {
-    username : string
-  }
-  
+  username: string;
+}

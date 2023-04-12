@@ -17,7 +17,6 @@ import { ImgTransferModule } from "./imgtransfer/imgtransfer.module";
 import { ImgTransferController } from "./imgtransfer/imgtransfer.controller";
 import { ImgTransferService } from "./imgtransfer/imgtransfer.service";
 
-
 /** Used for src/... import paths */
 require("tsconfig-paths");
 
@@ -25,8 +24,8 @@ require("tsconfig-paths");
   imports: [
     ScheduleModule.forRoot(),
     ServeStaticModule.forRoot({
-      rootPath: join(__dirname, "..", "..", "..", "frontend", "build"),
-      }),
+      rootPath: join(__dirname, "..", "..", "..", "frontend", "build")
+    }),
     ChatModule,
     GameModule,
     ImgTransferModule,
@@ -41,6 +40,11 @@ require("tsconfig-paths");
     }) // Loads env vars. Uses dotenv library under the hood
   ],
   controllers: [ImgTransferController],
-  providers: [AppService, PrismaService, UserConnectionsService, ImgTransferService]
+  providers: [
+    AppService,
+    PrismaService,
+    UserConnectionsService,
+    ImgTransferService
+  ]
 })
 export class AppModule {}
