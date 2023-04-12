@@ -13,8 +13,7 @@ import {
   /* Rooms dropdown */
   Autocomplete,
   MenuItem,
-  Avatar,
-  Badge
+  Avatar
 } from "@mui/material";
 import { useRoomModal } from "./useRoomModal";
 import ButtonFunky from "../../components/ButtonFunky";
@@ -22,6 +21,7 @@ import { UserStatus } from "kingpong-lib";
 import { socket } from "../../contexts/WebSocket.context";
 import { useChatContext } from "../chat.context";
 import { Public, VpnKey } from "@mui/icons-material";
+import UserStatusBadge from "./UserStatusBadge";
 
 interface JoinRoomModalProps {
   showModal: boolean;
@@ -127,26 +127,18 @@ export const JoinRoomModal: React.FC<JoinRoomModalProps> = ({
               sx={{ paddingTop: "16px" }}
             >
               <AvatarGroup total={option.nbMembers + 1}>
-                <Badge
-                  color={
-                    option.owner.status === UserStatus.ONLINE
-                      ? "success"
-                      : option.owner.status === UserStatus.OFFLINE
-                      ? "error"
-                      : "warning"
-                  }
+                <UserStatusBadge
+                  status={option.owner.status}
                   anchorOrigin={{
                     vertical: "top",
                     horizontal: "left"
                   }}
-                  overlap="circular"
-                  variant="dot"
                 >
                   <Avatar
                     src={option.owner.avatar}
                     alt={option.owner.username}
                   />
-                </Badge>
+                </UserStatusBadge>
               </AvatarGroup>
               <Box
                 justifyContent="center"

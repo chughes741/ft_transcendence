@@ -3,7 +3,6 @@ import {
   Dialog,
   DialogTitle,
   Avatar,
-  Badge,
   MenuItem,
   TextField,
   Autocomplete,
@@ -15,6 +14,7 @@ import {
 import { socket } from "../../contexts/WebSocket.context";
 import { UserStatus } from "kingpong-lib";
 import { useChatContext } from "../chat.context";
+import UserStatusBadge from "./UserStatusBadge";
 
 interface UserEntity {
   username: string;
@@ -82,27 +82,19 @@ export const DirectMessageModal: React.FC<DirectMessageModalProps> = ({
           value={selectedUser}
           renderOption={(props, option) => (
             <MenuItem {...props}>
-              <Badge
-                color={
-                  option.status === UserStatus.ONLINE
-                    ? "success"
-                    : option.status === UserStatus.OFFLINE
-                    ? "error"
-                    : "warning"
-                }
+              <UserStatusBadge
+                status={option.status}
                 anchorOrigin={{
                   vertical: "bottom",
                   horizontal: "right"
                 }}
-                overlap="circular"
-                variant="dot"
               >
                 <Avatar
                   alt={option.username}
                   src={option.avatar}
                   sx={{ width: 40, height: 40, marginRight: 1 }}
                 />
-              </Badge>
+              </UserStatusBadge>
               <ListItemText primary={option.username} />
             </MenuItem>
           )}

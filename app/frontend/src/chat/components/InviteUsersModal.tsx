@@ -16,6 +16,7 @@ import { UserStatus } from "kingpong-lib";
 import ButtonFunky from "../../components/ButtonFunky";
 import { useChatContext } from "../chat.context";
 import { socket } from "../../contexts/WebSocket.context";
+import UserStatusBadge from "./UserStatusBadge";
 
 export interface UserEntity {
   username: string;
@@ -92,27 +93,19 @@ export const InviteUsersModal: React.FC<InviteUsersToRoomProps> = ({
           value={selectedUsers}
           renderOption={(props, option) => (
             <MenuItem {...props}>
-              <Badge
-                color={
-                  option.status === UserStatus.ONLINE
-                    ? "success"
-                    : option.status === UserStatus.OFFLINE
-                    ? "error"
-                    : "warning"
-                }
+              <UserStatusBadge
+                status={option.status}
                 anchorOrigin={{
                   vertical: "bottom",
                   horizontal: "right"
                 }}
-                overlap="circular"
-                variant="dot"
               >
                 <Avatar
                   alt={option.username}
                   src={option.avatar}
                   sx={{ width: 40, height: 40, marginRight: 1 }}
                 />
-              </Badge>
+              </UserStatusBadge>
               <ListItemText primary={option.username} />
             </MenuItem>
           )}
