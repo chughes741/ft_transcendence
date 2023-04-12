@@ -14,7 +14,8 @@ import { useProfileViewModelContext } from "src/profile/profile.viewModel";
 import ButtonFunky from "src/components/ButtonFunky";
 import { SportsEsports } from "@mui/icons-material";
 import DynamicIconButton from "../DynamicIconButton";
-const settings = ["Profile", "Settings", "Logout"];
+import { useRootViewModelContext } from "src/root.context";
+import { useSettingsViewModelContext } from "../settings/settings.viewModel";
 
 //Set css flexbox options for the toolbar component to create proper object positioning for child elements
 const toolbarStyle = {
@@ -22,8 +23,11 @@ const toolbarStyle = {
   justifyContent: "space-between"
 };
 
-function TopBar({ setPageState }) {
-  const { profile, setUser } = useProfileViewModelContext();
+function TopBar() {
+  const { setPageState } = useRootViewModelContext();
+  const { setUser } = useProfileViewModelContext();
+  const { self } = useRootViewModelContext();
+  const { handleOpenSettings } = useSettingsViewModelContext();
   const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(
     null
   );
@@ -37,8 +41,13 @@ function TopBar({ setPageState }) {
   };
 
   const onClickProfile = () => {
-    setUser("schlurp");
+    setUser(self.username);
     setPageState(PageState.Profile);
+    handleCloseUserMenu();
+  };
+
+  const onClickSettings = () => {
+    handleOpenSettings();
     handleCloseUserMenu();
   };
 
@@ -98,11 +107,7 @@ function TopBar({ setPageState }) {
               onClick={handleOpenUserMenu}
               sx={{ p: 0, mr: 2 }}
             >
-              {profile !== null ? (
-                <Avatar src={profile.avatar} />
-              ) : (
-                <Avatar alt="" />
-              )}
+              <Avatar src={self.avatar} />
             </IconButton>
           </Tooltip>
           <Menu
@@ -121,14 +126,15 @@ function TopBar({ setPageState }) {
             open={Boolean(anchorElUser)}
             onClose={handleCloseUserMenu}
           >
-            {settings.map((setting) => (
-              <MenuItem
-                key={setting}
-                onClick={onClickProfile}
-              >
-                <Typography textAlign="center">{setting}</Typography>
-              </MenuItem>
-            ))}
+            <MenuItem onClick={onClickProfile}>
+              <Typography textAlign="center">Profile</Typography>
+            </MenuItem>
+            <MenuItem onClick={onClickSettings}>
+              <Typography textAlign="center">Settings</Typography>
+            </MenuItem>
+            <MenuItem onClick={onClickProfile}>
+              <Typography textAlign="center">Logout</Typography>
+            </MenuItem>
           </Menu>
         </Box>
       </Toolbar>

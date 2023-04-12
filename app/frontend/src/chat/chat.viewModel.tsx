@@ -1,11 +1,11 @@
 import { useEffect } from "react";
-import { usePageStateContext } from "src/contexts/PageState.context";
 import { socket } from "src/contexts/WebSocket.context";
 import { PageState } from "src/root.model";
 import { ChatModelType, useChatModel } from "./chat.model";
 import { MessageType } from "src/chat/components/Message";
 import { ChatContext } from "src/chat/chat.context";
 import { UserListItem } from "src/chat/components/Userlist";
+import { useRootViewModelContext } from "src/root.context";
 
 export type ChatRoomStatus = "PUBLIC" | "PRIVATE" | "PASSWORD" | "DIALOGUE";
 export type ChatMemberRank = "USER" | "ADMIN" | "OWNER";
@@ -93,7 +93,7 @@ export const ChatViewModelProvider = ({ children }) => {
     setContextMenuRoomsVisible
   } = chatModel;
 
-  const { pageState, setPageState } = usePageStateContext();
+  const { pageState, setPageState } = useRootViewModelContext();
 
   /*******************************/
   /*   Wrapper State Functions   */

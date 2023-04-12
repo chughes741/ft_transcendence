@@ -8,10 +8,10 @@ const drawerWidth = "20%";
 
 /**
  * Creates the side bar component
- * @param - Current page state
- * @returns - Box containing sidebar
+ *
+ * @returns {JSX.Element} - Side bar component
  */
-export default function SideBar({ setPageState }) {
+export default function SideBar() {
   return (
     <>
       <Drawer
@@ -28,7 +28,7 @@ export default function SideBar({ setPageState }) {
         }}
       >
         <Box sx={{ overflow: "hidden" }}>
-          <SidebarChatOptions setPageState={setPageState} />
+          <SidebarChatOptions />
           <Divider />
         </Box>
         <Box sx={{ overflow: "hidden auto", maxHeight: "66vh" }}>

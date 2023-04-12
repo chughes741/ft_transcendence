@@ -13,7 +13,7 @@ import {
   TableRow,
   Grid,
   Badge,
-  styled, Button
+  styled
 } from "@mui/material";
 
 /** Shared Library */
@@ -21,8 +21,6 @@ import { MatchHistoryItem, ProfileEntity, UserStatus } from "kingpong-lib";
 
 /** View Model */
 import { useProfileViewModelContext } from "src/profile/profile.viewModel";
-import {Simulate} from "react-dom/test-utils";
-import {useState} from "react";
 
 type StyledBadgeProps = {
   status: UserStatus;
@@ -42,7 +40,7 @@ const StyledBadge = styled(Badge)<StyledBadgeProps>(({ theme, status }) => ({
         : status === UserStatus.OFFLINE
         ? "#ff0000"
         : "#ffa500",
-    boxShadow: `0 0 0 4px ${theme.palette.background.paper}`,
+    boxShadow: `0 0 0 4px ${theme.palette.background.paper}`
   }
 }));
 
@@ -53,8 +51,6 @@ const StyledBadge = styled(Badge)<StyledBadgeProps>(({ theme, status }) => ({
  */
 function ProfileHeader(): JSX.Element | null {
   const { profile } = useProfileViewModelContext();
-    const [value, setValue] = useState(null);
-    const handleClick = () => value.toUpperCase();
 
   return (
     <>
@@ -101,7 +97,6 @@ function ProfileHeader(): JSX.Element | null {
           </Grid>
         </Paper>
       )}
-        <button onClick={handleClick}>{value.toUpperCase()}</button>
     </>
   );
 }

@@ -1,5 +1,6 @@
 import { Injectable, Logger } from "@nestjs/common";
 import {
+  AddFriendRequest,
   GetMatchHistoryRequest,
   GetProfileRequest,
   MatchHistoryItem,
@@ -77,7 +78,7 @@ export class ProfileService {
           : UserStatus.AWAY,
       createdAt: user.createdAt.toLocaleTimeString()
     };
-
+    logger.log("PROFILE AVATAR :" + profile.avatar);
     return profile;
   }
 
@@ -101,7 +102,7 @@ export class ProfileService {
       return {
         username: friend.friend.username,
         avatar: friend.friend.avatar,
-        status: 
+        status:
           friend.friend.status === "ONLINE"
             ? UserStatus.ONLINE
             : friend.friend.status === "OFFLINE"
@@ -122,6 +123,21 @@ export class ProfileService {
    * @returns {boolean} - Update successful
    */
   updateProfile(updateProfileRequest: UpdateProfileRequest): boolean {
+    logger.log(`Updating profile for ${updateProfileRequest.username}`);
     return true;
+  }
+
+  /**
+   * Adds a friend to a users friend list
+   *
+   * @todo Implement
+   * @param {AddFriendRequest} addFriendRequest
+   * @returns {boolean} - Add successful
+   */
+  addFriend(addFriendRequest: AddFriendRequest): Promise<boolean> {
+    logger.log(
+      `Adding friend ${addFriendRequest.friend} to ${addFriendRequest.username}`
+    );
+    return this.prismaService.addFriend(addFriendRequest);
   }
 }

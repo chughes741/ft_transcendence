@@ -1,10 +1,10 @@
 import React from "react";
 import { useChatContext } from "../chat/chat.context";
 import ContextMenu from "./ContextMenu";
-import { usePageStateContext } from "../contexts/PageState.context";
 import { PageState } from "src/root.model";
 import { Paper } from "@mui/material";
 import { useProfileViewModelContext } from "src/profile/profile.viewModel";
+import { useRootViewModelContext } from "src/root.context";
 
 export default function ContextMenuUsers() {
   const {
@@ -14,8 +14,8 @@ export default function ContextMenuUsers() {
     setContextMenuUsersVisible
   } = useChatContext();
 
-  const { setUser } = useProfileViewModelContext();
-  const { setPageState } = usePageStateContext();
+  const { setUser, addFriend } = useProfileViewModelContext();
+  const { self, setPageState } = useRootViewModelContext();
   const isOwner = false;
 
   return (
@@ -45,6 +45,13 @@ export default function ContextMenuUsers() {
             label: "Dm",
             onClick: () => {
               console.log("Send a dm");
+            }
+          },
+          {
+            label: "Add friend",
+            onClick: () => {
+              console.log("Add friend");
+              addFriend(self.username, contextMenuUsersData.username);
             }
           },
           ...(isOwner

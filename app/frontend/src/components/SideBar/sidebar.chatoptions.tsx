@@ -9,8 +9,11 @@ import ButtonFunky from "../ButtonFunky";
 import { useChatContext } from "../../chat/chat.context";
 import { AddCircleOutline, Chat, MeetingRoom } from "@mui/icons-material";
 import DynamicIconButton from "../DynamicIconButton";
+import { useRootViewModelContext } from "src/root.context";
 
-export default function SidebarChatOptions({ setPageState }) {
+export default function SidebarChatOptions() {
+  const { setPageState } = useRootViewModelContext();
+
   const {
     setShowJoinRoomModal,
     setShowCreateRoomModal,

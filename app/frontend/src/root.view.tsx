@@ -1,66 +1,75 @@
-import { Helmet } from "react-helmet";
+/** Libraries */
+import { useEffect } from "react";
 import { Box, Container } from "@mui/material";
+
+/** Providers */
+import { useRootViewModelContext } from "./root.context";
+
+/** Components */
 import SideBar from "src/components/SideBar/SideBar";
 import TopBar from "src/components/TopBar/TopBar";
-import { RootViewModel } from "./root.viewModel";
-import { usePageStateContext } from "./contexts/PageState.context";
-import GameWindow from "./game/game.master";
 import { PageState } from "./root.model";
-import { useEffect } from "react";
+import GameWindow from "./game/game.master";
+import { ChatView } from "./chat/chat.view";
+import ProfileView from "./profile/profile.view";
+import { HelmetView } from "./components/Helmet";
+import SettingsView from "./components/settings/settings.view";
 
 /**
- * Helmet with dynamic page names
- * @param - Current page state
- * @returns - Helmet component
+ * Root view content
+ *
+ * @returns {JSX.Element} - Root view content
  */
-function HelmetView({ state }) {
-  const page_name = ["Home", "Game", "Chat", "Profile"];
+function RootViewContent(): JSX.Element {
+  const { pageState } = useRootViewModelContext();
 
-  return (
-    <>
-      <Helmet>
-        <title>King Pong | {page_name[state]}</title>
-      </Helmet>
-    </>
-  );
+  switch (pageState) {
+    case PageState.Home: {
+      return <div></div>;
+    }
+    case PageState.Game: {
+      return <GameWindow />;
+    }
+    case PageState.Chat: {
+      return <ChatView />;
+    }
+    case PageState.Profile: {
+      return <ProfileView />;
+    }
+    default: {
+      return <div></div>;
+    }
+  }
 }
 
 /**
  * Rendering entrypoint
- * @returns - View model with dynamic content
+ *
+ * @returns {JSX.Element} - View model with dynamic content
  */
 export function RootView(): JSX.Element {
-  const { pageState, setPageState } = usePageStateContext();
-  const diffFullScreen = PageState.FullScreenGame - PageState.Game;
-
-  console.log(`Page state: ${pageState}`);
-  // Handle keydown event
+  const { fullscreen, setFullscreen } = useRootViewModelContext();
   const handleKeyDown = (event: KeyboardEvent) => {
-    console.log(`Keydown event: ${event.key}`);
-    console.log(`Page state: ${pageState}`);
-    if (event.key === "Escape" && pageState >= PageState.FullScreenGame) {
-      console.log(
-        `it worked! setting pagestate: ${pageState} to ${
-          pageState - diffFullScreen
-        }`
-      );
-      setPageState(pageState - diffFullScreen); // lol
+    if (event.key === "Escape" && fullscreen) {
+      console.log(`it worked! esc was pressed and fullscreen is ${fullscreen}`);
+      setFullscreen(false);
     }
   };
 
-  // Add event listener for keydown event
+  /** Add event listener for keydown event */
   useEffect(() => {
     window.addEventListener("keydown", handleKeyDown);
 
-    // Cleanup event listener on unmount
+    /** Cleanup event listener on unmount */
     return () => {
       window.removeEventListener("keydown", handleKeyDown);
     };
-  }, [pageState]);
+  }, [fullscreen]);
 
   return (
     <>
-      <HelmetView state={pageState} />
+      <HelmetView />
+      <SettingsView />
       <Container
         id="page-container"
         style={{ margin: "0", padding: "0", maxWidth: "100vw" }}
@@ -69,16 +78,14 @@ export function RootView(): JSX.Element {
           id="page-box"
           sx={{ display: "flex", flexDirection: "column" }}
         >
-          {(pageState >= PageState.FullScreenGame && (
-            <RootViewModel state={pageState - diffFullScreen} />
-          )) || (
+          {(fullscreen && <RootViewContent />) || (
             <>
-              <TopBar setPageState={setPageState} />
+              <TopBar />
               <Box
                 id="sidebar-container"
                 sx={{ display: "flex" }}
               >
-                <SideBar setPageState={setPageState} />
+                <SideBar />
                 <Box
                   component={"main"}
                   sx={{
@@ -88,7 +95,7 @@ export function RootView(): JSX.Element {
                     overflow: "hidden"
                   }}
                 >
-                  <RootViewModel state={pageState} />
+                  <RootViewContent />
                 </Box>
               </Box>
             </>

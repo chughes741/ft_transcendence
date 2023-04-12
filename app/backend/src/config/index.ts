@@ -28,5 +28,10 @@ export default {
   /**
    * PostgreSQL password
    */
-  databasepw: process.env.POSTGRES_PASSWORD
+  databasepw: process.env.POSTGRES_PASSWORD,
+
+  /**
+   * SITE URL:
+   */
+  website_url: process.env.SITE_URL
 };
