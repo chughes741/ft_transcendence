@@ -82,6 +82,7 @@ export interface ChatRoomEntity {
   lastActivity: Date;
   avatars?: string[];
 }
+
 export interface UserEntity {
   username: string;
   avatar: string;
@@ -260,6 +261,32 @@ export class ChatGateway
     return rooms;
   }
 
+  // /**
+  //  * Get all available users
+  //  */
+  // @SubscribeMessage("listAllAvailableUsers")
+  // async listAllAvailableUsers(client: Socket): Promise<User[]> {
+  //   logger.log(`Received listAllAvailableUsers request from ${client.id}`);
+  //   const username = this.userConnectionsService.getUserBySocket(client.id);
+  //   const userId = await this.prismaService.getUserIdByNick(username);
+  //   if (!userId) {
+  //     logger.error(`User id: ${userId} not found`);
+  //     return [];
+  //   }
+
+  //   try {
+  //     const availableUsers = await this.prismaService.getAllAvailableUsers(
+  //       userId
+  //     );
+  //     logger.warn(`List of users: `);
+  //     console.log(availableUsers);
+  //     return availableUsers;
+  //   } catch (e) {
+  //     logger.error(`Error while getting available users: ${e}`);
+  //   }
+  //   return [];
+  // }
+
   /**
    * Get all available users
    */
@@ -269,24 +296,25 @@ export class ChatGateway
     req: ListUsersRequest
   ): Promise<User[]> {
     logger.log(`Received listAvailableUsers request from ${client.id}`);
-    console.log(req);
-    const roomName = req.chatRoomName;
-    console.log(`Room name: ${roomName}`);
     const username = this.userConnectionsService.getUserBySocket(client.id);
     const userId = await this.prismaService.getUserIdByNick(username);
     const roomId = await this.prismaService.getChatRoomId(req.chatRoomName);
-    logger.warn(`User id: ${userId}`);
-    if (!userId) {
+    if (!userId || (!roomId && req.chatRoomName !== "")) {
+      logger.error(`User id: ${userId} or room id: ${roomId} not found`);
       return [];
     }
 
-    const availableUsers = await this.prismaService.getAvailableUsers(
-      userId,
-      roomId
-    );
-    logger.warn(`List of users: `);
-    console.log(availableUsers);
-    return availableUsers;
+    try {
+      const availableUsers = await this.prismaService.getAvailableUsers(
+        userId,
+        roomId
+      );
+      logger.warn(`List of users: `);
+      console.log(availableUsers);
+      return availableUsers;
+    } catch (e) {
+      logger.error(`Error while getting available users: ${e}`);
+    }
     return [];
   }
 

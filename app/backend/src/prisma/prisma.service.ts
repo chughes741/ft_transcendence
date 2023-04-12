@@ -649,17 +649,21 @@ export class PrismaService extends PrismaClient {
     );
 
     // Get a list of users who are not in the specified chat room
-    const usersNotInRoom = await this.chatMember.findMany({
-      where: {
-        roomId: roomId
-      },
-      select: {
-        memberId: true
-      }
-    });
-    const usersNotInRoomIds = usersNotInRoom.map((user) => user.memberId);
+    const usersNotInRoom = roomId
+      ? await this.chatMember.findMany({
+          where: {
+            roomId: roomId
+          },
+          select: {
+            memberId: true
+          }
+        })
+      : [];
+    const usersNotInRoomIds = usersNotInRoom
+      ? usersNotInRoom.map((user) => user.memberId)
+      : [];
 
-    logger.warn(`Blocked users: ${blockedIds}`);
+    logger.warn(`Blocked users:`, blockedIds);
 
     // Find users who are not in the blocked list and not in the specified room
     const availableUsers = await this.user.findMany({
