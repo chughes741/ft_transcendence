@@ -3,6 +3,7 @@ import Message from "./Message";
 import { Box } from "@mui/material";
 import { useChatContext } from "../chat.context";
 import { MessageType } from "../chat.types";
+import { useRoomManager } from "../lib/roomManager";
 
 const isSameDate = (date1: Date, date2: Date): boolean => {
   if (!(date1 instanceof Date) || !(date2 instanceof Date)) {
@@ -53,12 +54,9 @@ const groupMessages = (
 const ChatMessagesContainerView = () => {
   const lastMessageRef = useRef<HTMLDivElement>(null);
 
-  const {
-    currentRoomMessages,
-    currentRoomName,
-    rooms,
-    setCurrentRoomMessages
-  } = useChatContext();
+  const { currentRoomMessages, currentRoomName, setCurrentRoomMessages } =
+    useChatContext();
+  const { rooms } = useRoomManager();
   useEffect(() => {
     if (rooms[currentRoomName]) {
       setCurrentRoomMessages(rooms[currentRoomName].messages);

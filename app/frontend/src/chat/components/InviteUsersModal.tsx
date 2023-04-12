@@ -64,6 +64,12 @@ export const InviteUsersModal: React.FC<InviteUsersToRoomProps> = ({
     closeModal();
   };
 
+  const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Escape") {
+      closeModal();
+    }
+  };
+
   if (!showModal) {
     return null;
   }
@@ -89,6 +95,7 @@ export const InviteUsersModal: React.FC<InviteUsersToRoomProps> = ({
           id="user-autocomplete"
           options={availableUsers}
           getOptionLabel={(option) => option.username}
+          onKeyDown={handleKeyPress}
           multiple
           value={selectedUsers}
           renderOption={(props, option) => (

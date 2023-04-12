@@ -4,15 +4,16 @@ import DevLoginBanner from "../components/DevLoginBanner";
 import ChatAreaView from "./components/ChatArea";
 import { useChatContext } from "./chat.context";
 import UserListView from "./components/Userlist";
+import { useRoomManager } from "./lib/roomManager";
 
 export const ChatView: React.FC = () => {
   const {
     currentRoomName,
     tempUsername,
     setTempUsername,
-    rooms,
     handleContextMenuUsers
   } = useChatContext();
+  const { rooms } = useRoomManager();
 
   return (
     <Box

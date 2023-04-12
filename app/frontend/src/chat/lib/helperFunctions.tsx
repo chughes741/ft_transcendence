@@ -1,7 +1,14 @@
 import React from "react";
 import { Avatar, AvatarGroup } from "@mui/material";
 import { VpnKey, Public, VisibilityOff } from "@mui/icons-material";
-import { ChatRoomStatus, RoomType } from "../chat.types";
+import { ChatRoomStatus, DevError, RoomType } from "../chat.types";
+
+// Helper function to handle errors
+export const handleSocketErrorResponse = (
+  res: DevError | any
+): res is DevError => {
+  return (res as DevError).error !== undefined;
+};
 
 export const getStatusIcon = (status: ChatRoomStatus) => {
   switch (status) {

@@ -10,12 +10,6 @@ export interface ChatModelType {
   /* Room List Information */
   currentRoomName: string;
   setCurrentRoomName: (roomName: string) => void;
-  rooms: { [key: string]: RoomType };
-  setRooms: (
-    callback: (prevRooms: { [key: string]: RoomType }) => {
-      [key: string]: RoomType;
-    }
-  ) => void;
   currentRoomMessages: Array<MessageType>;
   setCurrentRoomMessages: (messages: Array<MessageType>) => void;
 
@@ -54,7 +48,6 @@ export const useChatModel = (): ChatModelType => {
 
   /* Room List Information */
   const [currentRoomName, setCurrentRoomName] = useState("");
-  const [rooms, setRooms] = useState({});
   const [currentRoomMessages, setCurrentRoomMessages] = useState([]);
 
   /* Modals */
@@ -101,8 +94,6 @@ export const useChatModel = (): ChatModelType => {
     setTempUsername,
     currentRoomName,
     setCurrentRoomName,
-    rooms,
-    setRooms,
     currentRoomMessages,
     setCurrentRoomMessages,
     contextMenuData,

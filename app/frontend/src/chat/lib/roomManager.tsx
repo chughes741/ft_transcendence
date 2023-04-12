@@ -1,0 +1,352 @@
+import { createContext, useContext, useState } from "react";
+import { socket } from "../../contexts/WebSocket.context";
+import { PageState } from "../../root.model";
+import {
+  UserListItem,
+  ChatRoomPayload,
+  RoomType,
+  MessageType,
+  ChatRoomStatus,
+  CreateRoomRequest,
+  DevError,
+  MessagePayload
+} from "../chat.types";
+import { handleSocketErrorResponse } from "./helperFunctions";
+import { useRootViewModelContext } from "../../root.context";
+
+const RoomManagerContext = createContext(null);
+export type RoomMap = { [key: string]: RoomType };
+
+export interface RoomManagerContextType {
+  rooms: RoomMap;
+  setRooms: (callback: (prevRooms: RoomMap) => RoomMap) => void;
+  joinRoom: (roomName: string, password: string) => Promise<boolean>;
+  sendRoomMessage: (roomName: string, message: string) => Promise<boolean>;
+  createNewRoom: (
+    roomName: string,
+    roomStatus: ChatRoomStatus,
+    password: string
+  ) => Promise<boolean>;
+  leaveRoom: () => Promise<boolean>;
+  changeRoomStatus: (newStatus: ChatRoomStatus) => Promise<boolean>;
+  updateRooms: (updateFn: (rooms: RoomMap) => void) => void;
+  convertMessagePayloadToMessageType: (
+    messagePayload: MessagePayload
+  ) => MessageType;
+  addMemberToRoom: (roomName: string, member: UserListItem) => void;
+  addChatRoom: (chatRoomPayload: ChatRoomPayload) => Promise<RoomType>;
+  addMessageToRoom: (roomName: string, message: MessageType) => void;
+}
+
+export const useRoomManager = (): RoomManagerContextType => {
+  const context = useContext(RoomManagerContext);
+  if (!context) {
+    throw new Error("useRoomManager must be used within a RoomManagerProvider");
+  }
+  return context;
+};
+
+export const RoomManagerProvider = ({ children }) => {
+  const { self } = useRootViewModelContext();
+
+  const [rooms, setRooms] = useState({});
+
+  /**********************/
+  /*   Util Functions   */
+  /**********************/
+  const convertMessagePayloadToMessageType = (
+    messagePayload: MessagePayload
+  ): MessageType => {
+    const timestamp = new Date(messagePayload.timestamp);
+    const timestamp_readable = timestamp.toLocaleTimeString("en-US", {
+      hour: "numeric",
+      minute: "numeric",
+      hour12: true
+    });
+
+    return {
+      username: messagePayload.username,
+      roomId: messagePayload.roomName,
+      content: messagePayload.content,
+      timestamp_readable,
+      timestamp,
+      isOwn: messagePayload.username === self.username,
+      displayUser: true,
+      displayTimestamp: true,
+      displayDate: true,
+      avatar:
+        rooms[messagePayload.roomName]?.users[messagePayload.username]?.avatar
+    };
+  };
+
+  /**
+   *
+   * @param updateFn Callback function that takes in the previous rooms state and returns the new rooms state
+   */
+  const updateRooms = (updateFn) => {
+    setRooms((prevRooms) => {
+      const newRooms = { ...prevRooms };
+      updateFn(newRooms);
+      return newRooms;
+    });
+  };
+
+  /**********************/
+  /*   Room Functions   */
+  /**********************/
+
+  // Add member to room
+  const addMemberToRoom = (roomName: string, member: UserListItem) => {
+    setRooms((prevRooms) => {
+      const newRooms = { ...prevRooms };
+      if (!newRooms[roomName]) {
+        console.log("In addMemberToRoom, room not found: ", roomName);
+        return newRooms;
+      }
+      newRooms[roomName].users[member.username] = member;
+      return newRooms;
+    });
+  };
+
+  const getChatRoomMembers = async (roomName: string) => {
+    return new Promise<{ [key: string]: UserListItem }>((resolve) => {
+      socket.emit(
+        "listUsers",
+        { chatRoomName: roomName },
+        (users: UserListItem[]) => {
+          const usersObj = users.reduce<{ [key: string]: UserListItem }>(
+            (acc, user) => {
+              acc[user.username] = user;
+              return acc;
+            },
+            {}
+          );
+          resolve(usersObj);
+        }
+      );
+    });
+  };
+
+  // Adds a new room to the rooms state variable
+  const addChatRoom = async (
+    chatRoomPayload: ChatRoomPayload
+  ): Promise<RoomType> => {
+    const userList = await getChatRoomMembers(chatRoomPayload.name);
+
+    // Validate the payload
+    if (!chatRoomPayload.name) {
+      console.log("In addChatRoom, invalid payload: ", chatRoomPayload);
+      return;
+    }
+
+    return new Promise<RoomType>((resolve) => {
+      const {
+        name,
+        status,
+        queryingUserRank,
+        latestMessage,
+        lastActivity,
+        avatars
+      } = chatRoomPayload;
+      const convertedLatestMessage = latestMessage
+        ? convertMessagePayloadToMessageType(latestMessage)
+        : undefined;
+
+      const newRoom = {
+        name: name,
+        status: status,
+        rank: queryingUserRank,
+        latestMessage: convertedLatestMessage,
+        messages: [],
+        lastActivity,
+        hasUnreadMessages: false,
+        avatars,
+        users: userList
+      };
+      updateRooms((newRooms) => {
+        if (!newRooms[name]) {
+          newRooms[name] = newRoom;
+        }
+        console.log("Added room to rooms: ", newRooms);
+        resolve(newRoom);
+      });
+    });
+  };
+
+  // FIXME: move to model?
+  const addMessageToRoom = (roomName: string, message: MessageType) => {
+    updateRooms((newRooms) => {
+      if (!newRooms[roomName]) {
+        console.log("addMessageToRoom: Room does not exist");
+      } else {
+        newRooms[roomName].messages.push(message);
+        newRooms[roomName].latestMessage = message;
+      }
+    });
+  };
+
+  const addMessagesToRoom = (roomName: string, messages: MessageType[]) => {
+    updateRooms((newRooms) => {
+      if (!newRooms[roomName]) {
+        console.log("addMessageSSSSSSSToRoom: Room does not exist");
+      } else {
+        newRooms[roomName].messages.push(...messages);
+        newRooms[roomName].latestMessage = messages[messages.length - 1];
+      }
+    });
+  };
+
+  // Create a new room
+  const createNewRoom = async (
+    roomName: string,
+    roomStatus: ChatRoomStatus,
+    roomPassword?: string
+  ): Promise<boolean> => {
+    const roomRequest: CreateRoomRequest = {
+      name: roomName,
+      status: roomStatus,
+      password: roomPassword,
+      owner: self.username
+    };
+    console.log("ChatPage: Creating new room", { ...roomRequest });
+
+    const response = await new Promise<DevError | ChatRoomPayload>((resolve) =>
+      socket.emit("createRoom", roomRequest, resolve)
+    );
+
+    if (handleSocketErrorResponse(response)) {
+      console.log("Error response from join room: ", response.error);
+      return false;
+    }
+
+    await addChatRoom(response as ChatRoomPayload);
+    return true;
+  };
+
+  // Join a room
+  const joinRoom = async (
+    roomName: string,
+    password: string
+  ): Promise<boolean> => {
+    const joinRoomPayload = { roomName, password, user: self.username };
+    const joinRoomRes = await new Promise<DevError | ChatRoomPayload>(
+      (resolve) => socket.emit("joinRoom", joinRoomPayload, resolve)
+    );
+
+    if (handleSocketErrorResponse(joinRoomRes)) {
+      console.log("Error response from join room: ", joinRoomRes.error);
+      alert(joinRoomRes.error);
+      return false;
+    }
+
+    const room = await addChatRoom(joinRoomRes as ChatRoomPayload);
+
+    const messageRequest = { roomName, date: new Date(), pageSize: 50 };
+    const messagesRes = await new Promise<DevError | MessagePayload[]>(
+      (resolve) => socket.emit("getRoomMessagesPage", messageRequest, resolve)
+    );
+
+    if (handleSocketErrorResponse(messagesRes)) {
+      console.log("Error response from get room messages: ", messagesRes.error);
+      return false;
+    }
+
+    const messages = (messagesRes as MessagePayload[]).map((message) =>
+      convertMessagePayloadToMessageType(message)
+    );
+    addMessagesToRoom(roomName, messages);
+
+    return true;
+  };
+
+  const leaveRoom = async (roomName: string): Promise<boolean> => {
+    return new Promise<boolean>((resolve) => {
+      socket.emit("leaveRoom", { roomName }, (response: DevError | string) => {
+        if (handleSocketErrorResponse(response)) {
+          console.log("Error response from leave room: ", response.error);
+          resolve(false);
+        }
+      });
+      setRooms((prevRooms) => {
+        const newRooms = { ...prevRooms };
+        delete newRooms[roomName];
+        return newRooms;
+      });
+      resolve(true);
+    });
+  };
+
+  const sendRoomMessage = async (
+    roomName: string,
+    message: string
+  ): Promise<boolean> => {
+    return new Promise<boolean>((resolve) => {
+      socket.emit(
+        "sendMessage",
+        {
+          sender: self.username,
+          roomName: roomName,
+          content: message
+        },
+        (res: DevError | string) => {
+          if (typeof res === "object" && res.error) {
+            console.log("Error response from send message: ", res.error);
+            resolve(false);
+          }
+        }
+      );
+      resolve(true);
+    });
+  };
+
+  const changeRoomStatus = async (
+    roomName: string,
+    newStatus: ChatRoomStatus
+  ): Promise<boolean> => {
+    return new Promise<boolean>((resolve) => {
+      console.log(`Changing room status of ${roomName} to ${newStatus}`);
+      // TODO: instead of sending only the status, send the whole room object
+      // TODO: if status is password, open a modal to ask for the password
+      const newRoom = rooms[roomName];
+      newRoom.status = newStatus;
+      socket.emit(
+        "updateChatRoom",
+        newRoom,
+        (response: DevError | ChatRoomPayload) => {
+          if (handleSocketErrorResponse(response)) {
+            console.log("Error changing room status");
+            resolve(false);
+          }
+          console.log("Successfully changed room status");
+          updateRooms((newRooms) => {
+            newRooms[roomName] = newRoom;
+          });
+        }
+      );
+      resolve(true);
+    });
+  };
+
+  return (
+    <RoomManagerContext.Provider
+      value={{
+        rooms,
+        setRooms,
+        addMemberToRoom,
+        getChatRoomMembers,
+        addChatRoom,
+        addMessageToRoom,
+        addMessagesToRoom,
+        updateRooms,
+        convertMessagePayloadToMessageType,
+        joinRoom,
+        sendRoomMessage,
+        createNewRoom,
+        leaveRoom,
+        changeRoomStatus
+      }}
+    >
+      {children}
+    </RoomManagerContext.Provider>
+  );
+};

@@ -13,7 +13,7 @@ import {
   getStatusIcon,
   renderAvatarGroup,
   truncateText
-} from "./helperFunctions";
+} from "../lib/helperFunctions";
 import { ChatRoomStatus, RoomType } from "../chat.types";
 
 interface RoomListItemProps {

@@ -13,10 +13,10 @@ import { InviteUsersModal } from "./InviteUsersModal";
 import { DirectMessageModal } from "./DirectMessageModal";
 import RoomContextMenu from "./RoomListContextMenu";
 import RoomListItem from "./RoomListItem";
+import { useRoomManager } from "../lib/roomManager";
 
 const RoomList: React.FC = () => {
   const {
-    rooms,
     currentRoomName,
     setShowCreateRoomModal,
     setShowJoinRoomModal,
@@ -41,6 +41,7 @@ const RoomList: React.FC = () => {
     showNewRoomSnackbar,
     setShowNewRoomSnackbar
   } = useChatContext();
+  const { rooms } = useRoomManager();
 
   const [selectedUsers, setSelectedUsers] = React.useState<UserEntity[]>([]);
   const [availableUsers, setAvailableUsers] = React.useState<UserEntity[]>([]);

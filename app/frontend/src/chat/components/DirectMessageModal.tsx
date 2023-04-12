@@ -47,6 +47,15 @@ export const DirectMessageModal: React.FC<DirectMessageModalProps> = ({
     closeModal();
   };
 
+  const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter") {
+      handleSendDirectMessage();
+    }
+    if (e.key === "Escape") {
+      closeModal();
+    }
+  };
+
   useEffect(() => {
     if (!showModal || !tempUsername) {
       return;
@@ -82,6 +91,7 @@ export const DirectMessageModal: React.FC<DirectMessageModalProps> = ({
           id="user-autocomplete"
           options={availableUsers}
           getOptionLabel={(option) => option.username}
+          onKeyDown={handleKeyPress}
           value={selectedUser}
           renderOption={(props, option) => (
             <MenuItem {...props}>
