@@ -103,10 +103,13 @@ export const ChatViewModelProvider = ({ children }) => {
   ): Promise<boolean> => {
     setContextMenuRoomsVisible(false);
     const roomName = contextMenuData.name;
-    if (currentRoomName === "" || currentRoomName === undefined)
+    console.warn(`changeRoomStatus: ${roomName} to ${newStatus}...`);
+
+    if (roomName === "" || roomName === undefined)
       return Promise.resolve(false);
 
     if (newStatus === ChatRoomStatus.PASSWORD) {
+      console.warn(`new status is password, opening modal`);
       setShowPasswordModal(true);
       setPasswordModalCallback(async (password) => {
         setShowPasswordModal(false);
@@ -283,26 +286,26 @@ export const ChatViewModelProvider = ({ children }) => {
   }, [currentRoomName, rooms]);
 
   // Get the list of users in the current room
-  useEffect(() => {
-    if (
-      rooms &&
-      currentRoomName &&
-      rooms[currentRoomName] &&
-      rooms[currentRoomName].users &&
-      Object.keys(rooms[currentRoomName].users).length === 0
-    ) {
-      socket.emit(
-        "listUsers",
-        { chatRoomName: currentRoomName },
-        (users: UserListItem[]) => {
-          users.map((user) => {
-            console.log(`Adding user to room ${currentRoomName}: `, user);
-            addMemberToRoom(currentRoomName, user);
-          });
-        }
-      );
-    }
-  }, [socket, currentRoomName, rooms]);
+  // useEffect(() => {
+  //   if (
+  //     rooms &&
+  //     currentRoomName &&
+  //     rooms[currentRoomName] &&
+  //     rooms[currentRoomName].users &&
+  //     Object.keys(rooms[currentRoomName].users).length === 0
+  //   ) {
+  //     socket.emit(
+  //       "listUsers",
+  //       { chatRoomName: currentRoomName },
+  //       (users: UserListItem[]) => {
+  //         users.map((user) => {
+  //           console.log(`Adding user to room ${currentRoomName}: `, user);
+  //           addMemberToRoom(currentRoomName, user);
+  //         });
+  //       }
+  //     );
+  //   }
+  // }, [socket, currentRoomName, rooms]);
 
   return (
     <ChatContext.Provider

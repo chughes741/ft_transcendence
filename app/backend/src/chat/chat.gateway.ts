@@ -105,6 +105,14 @@ export class CreateChatRoomDto {
   owner: string;
 }
 
+export class UpdateChatRoomRequest {
+  username: string;
+  roomName: string;
+  status: ChatRoomStatus;
+  password?: string;
+  oldPassword?: string;
+}
+
 export class SendMessageDto {
   roomName: string;
   content: string;
@@ -189,32 +197,31 @@ export class ChatGateway
   @SubscribeMessage("updateChatRoom")
   async updateChatRoom(
     client: Socket,
-    updateChatRoomRequest: CreateChatRoomDto
+    updateChatRoomRequest: UpdateChatRoomRequest
   ): Promise<ChatRoomEntity | DevError> {
-    // const userId = await this.prismaService.getUserIdByNick(
-    //   updateChatRoomRequest.owner
-    // );
-    // logger.log(
-    //   `Received updateChatRoom request from ${userId}, name ${updateChatRoomRequest.owner}`
-    // );
-    // if (!userId) {
-    //   return { error: "User not found" };
-    // }
-    // const updatedRoom = await this.chatService.updateChatRoom(
-    //   updateChatRoomRequest
-    // );
-    // if (updatedRoom instanceof Error) {
-    //   return { error: updatedRoom.message };
-    // }
-    // const updatedRoomEntity = await this.chatService.getChatRoomEntity(
-    //   updatedRoom.name
-    // );
-    // if (!updatedRoomEntity) {
-    //   return { error: "Room not found" };
-    // }
-    // this.server.to(updatedRoom.name).emit("updateChatRoom", updatedRoomEntity);
-    // return updatedRoomEntity;
-    return { error: "Not implemented" };
+    const username = await this.userConnectionsService.getUserBySocket(
+      client.id
+    );
+    if (!username) {
+      return { error: "User not found" };
+    }
+    logger.log(
+      `Received updateChatRoom request from ${username}, for room ${updateChatRoomRequest.roomName}`
+    );
+    console.log(updateChatRoomRequest);
+    // FIXME: Should not have to be here
+    try {
+      const updatedRoom = await this.chatService.updateRoom(
+        updateChatRoomRequest
+      );
+      if (updatedRoom instanceof Error) {
+        return { error: updatedRoom.message };
+      }
+      return updatedRoom;
+    } catch (error) {
+      logger.error(error);
+      return { error: "Internal server error" };
+    }
   }
 
   /**

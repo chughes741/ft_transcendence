@@ -9,7 +9,8 @@ import {
   ChatRoomStatus,
   CreateRoomRequest,
   DevError,
-  MessagePayload
+  MessagePayload,
+  UpdateChatRoomRequest
 } from "../chat.types";
 import { handleSocketErrorResponse } from "./helperFunctions";
 import { useRootViewModelContext } from "../../root.context";
@@ -309,7 +310,8 @@ export const RoomManagerProvider = ({ children }) => {
   const handleChangeRoomStatus = async (
     roomName: string,
     newStatus: ChatRoomStatus,
-    password?: string
+    password?: string,
+    oldPassword?: string
   ): Promise<boolean> => {
     return new Promise<boolean>((resolve) => {
       console.log(`Changing room status of ${roomName} to ${newStatus}`);
@@ -317,9 +319,21 @@ export const RoomManagerProvider = ({ children }) => {
       // TODO: if status is password, open a modal to ask for the password
       const newRoom = rooms[roomName];
       newRoom.status = newStatus;
+      console.warn(`New room: `, newRoom);
+      console.warn(`Old room: `, rooms[roomName]);
+      console.warn(`username: `, self.username);
+
+      const req: UpdateChatRoomRequest = {
+        roomName,
+        username: self.username,
+        status: newStatus,
+        password,
+        oldPassword
+      };
+      console.log(`Request: `, req);
       socket.emit(
         "updateChatRoom",
-        newRoom,
+        req,
         (response: DevError | ChatRoomPayload) => {
           if (handleSocketErrorResponse(response)) {
             console.log("Error changing room status");

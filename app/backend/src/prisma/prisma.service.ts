@@ -16,7 +16,11 @@ import {
   UserDto,
   MessageDto
 } from "../auth/dto/prisma.dto";
-import { ChatMemberPrismaType, MessagePrismaType } from "../chat/chat.gateway";
+import {
+  ChatMemberPrismaType,
+  MessagePrismaType,
+  UpdateChatRoomRequest
+} from "../chat/chat.gateway";
 import config from "../config";
 
 /** Here for profile */
@@ -342,12 +346,15 @@ export class PrismaService extends PrismaClient {
   // Update a chat room
   async updateChatRoom(
     id: number,
-    dto: Partial<ChatRoomDto>
+    req: Partial<UpdateChatRoomRequest>
   ): Promise<ChatRoom> {
+    if (!req.status || !req.roomName) {
+      return;
+    }
     const data: Prisma.ChatRoomCreateInput = {
-      status: dto.status,
-      name: dto.name,
-      password: dto.password
+      status: req.status,
+      name: req.roomName,
+      password: req.password
     };
     return this.chatRoom.update({ where: { id }, data });
   }
