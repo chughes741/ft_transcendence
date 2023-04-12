@@ -18,7 +18,6 @@ import {
 
 /** Shared Library */
 import { MatchHistoryItem, ProfileEntity, UserStatus } from "kingpong-lib";
-import ImgUpload from "src/components/ImgUpload";
 
 /** View Model */
 import { useProfileViewModelContext } from "src/profile/profile.viewModel";

@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Box, Button, Modal, Typography } from "@mui/material";
+import ImgUpload from "src/components/ImgUpload";
 
 /**
  * SettingsView
@@ -35,17 +36,12 @@ export default function SettingsView() {
         >
           <Typography
             id="modal-modal-title"
-            variant="h6"
+            variant="h5"
             component="h2"
           >
-            Text in a modal
+            Settings
           </Typography>
-          <Typography
-            id="modal-modal-description"
-            sx={{ mt: 2 }}
-          >
-            Duis mollis, est non commodo luctus, nisi erat porttitor ligula.
-          </Typography>
+          <ImgUpload />
         </Box>
       </Modal>
     </>
