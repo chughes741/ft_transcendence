@@ -1,7 +1,6 @@
 import { Helmet } from "react-helmet";
 import { useRootViewModelContext } from "src/root.context";
 
-
 /**
  * Helmet with dynamic page names
  *
