@@ -3,12 +3,14 @@ import { IconButton } from '@mui/material';
 import { PhotoCamera } from '@mui/icons-material';
 import { useState, useContext } from 'react';
 import { WebSocketContext } from 'src/contexts/WebSocket.context';
+import { useRootViewModelContext } from 'src/root.context';
 
 function ImgUpload() {
   const [file, setFile] = useState(null);
   const [ImgUrl, setImgUrl] = useState('');
 
   const socket = useContext(WebSocketContext);
+  const { self } = useRootViewModelContext();
   const handleFileChange = (event) => {
     setFile(event.target.files[0]);
   };
@@ -19,7 +21,7 @@ function ImgUpload() {
     if (file) {
       //  
       //     REPLACE WITH CONTEXT USERNAME HERE
-      const newdata = { username: 'schlurp', }
+      const newdata = { username: self.username, }
 
       //--------------------- End of Username
       const formData = new FormData();
