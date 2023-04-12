@@ -48,9 +48,6 @@ export interface ChatModelType {
   /* Snackbars */
   showNewRoomSnackbar: boolean;
   setShowNewRoomSnackbar: (visible: boolean) => void;
-
-  /* Helper Functions */
-  truncateText: (text: string, maxLength: number) => string;
 }
 
 export const useChatModel = (): ChatModelType => {
@@ -101,14 +98,6 @@ export const useChatModel = (): ChatModelType => {
     setContextMenuUsersData(userData);
   };
 
-  /* Helper Functions */
-  const truncateText = (text: string, maxLength: number) => {
-    if (text.length <= maxLength) {
-      return text;
-    }
-    return text.substring(0, maxLength - 1) + "…";
-  };
-
   return {
     tempUsername,
     setTempUsername,
@@ -137,7 +126,6 @@ export const useChatModel = (): ChatModelType => {
     showInviteUsersModal,
     setShowInviteUsersModal,
     showNewRoomSnackbar,
-    setShowNewRoomSnackbar,
-    truncateText
+    setShowNewRoomSnackbar
   };
 };

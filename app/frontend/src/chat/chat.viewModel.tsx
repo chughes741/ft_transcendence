@@ -116,6 +116,23 @@ export const ChatViewModelProvider = ({ children }) => {
     setPageState(PageState.Chat);
   };
 
+  /**
+   *
+   * @param updateFn Callback function that takes in the previous rooms state and returns the new rooms state
+   */
+  const updateRooms = (updateFn) => {
+    setRooms((prevRooms) => {
+      const newRooms = { ...prevRooms };
+      updateFn(newRooms);
+      return newRooms;
+    });
+  };
+
+  // Helper function to handle errors
+  const handleSocketErrorResponse = (res: DevError | any): res is DevError => {
+    return (res as DevError).error !== undefined;
+  };
+
   /**********************/
   /*   Util Functions   */
   /**********************/
@@ -216,52 +233,37 @@ export const ChatViewModelProvider = ({ children }) => {
         avatars,
         users: userList
       };
-
-      setRooms((prevRooms) => {
-        const newRooms = { ...prevRooms };
-
+      updateRooms((newRooms) => {
         if (!newRooms[name]) {
           newRooms[name] = newRoom;
         }
-
         console.log("Added room to rooms: ", newRooms);
-
         resolve(newRoom);
-        return newRooms;
       });
     });
   };
 
   // FIXME: move to model?
   const addMessageToRoom = (roomName: string, message: MessageType) => {
-    setRooms((prevRooms) => {
-      const newRooms = { ...prevRooms };
+    updateRooms((newRooms) => {
       if (!newRooms[roomName]) {
         console.log("addMessageToRoom: Room does not exist");
       } else {
         newRooms[roomName].messages.push(message);
         newRooms[roomName].latestMessage = message;
       }
-      return newRooms;
     });
   };
 
   const addMessagesToRoom = (roomName: string, messages: MessageType[]) => {
-    setRooms((prevRooms) => {
-      const newRooms = { ...prevRooms };
+    updateRooms((newRooms) => {
       if (!newRooms[roomName]) {
         console.log("addMessageSSSSSSSToRoom: Room does not exist");
       } else {
         newRooms[roomName].messages.push(...messages);
         newRooms[roomName].latestMessage = messages[messages.length - 1];
       }
-      return newRooms;
     });
-  };
-
-  // Helper function to handle errors
-  const handleSocketErrorResponse = (res: DevError | any): res is DevError => {
-    return (res as DevError).error !== undefined;
   };
 
   // Create a new room
@@ -337,7 +339,7 @@ export const ChatViewModelProvider = ({ children }) => {
         "leaveRoom",
         { roomName, username: tempUsername },
         (response: DevError | string) => {
-          if (typeof response === "object" && response.error) {
+          if (handleSocketErrorResponse(response)) {
             console.log("Error response from leave room: ", response.error);
             resolve(false);
           }
@@ -389,20 +391,20 @@ export const ChatViewModelProvider = ({ children }) => {
       console.log(`Changing room status of ${roomName} to ${newStatus}`);
       // TODO: instead of sending only the status, send the whole room object
       // TODO: if status is password, open a modal to ask for the password
+      const newRoom = rooms[roomName];
+      newRoom.status = newStatus;
       socket.emit(
         "updateChatRoom",
-        { roomName, newStatus },
-        (success: boolean) => {
-          if (success) {
-            setRooms((prevRooms) => {
-              const newRooms = { ...prevRooms };
-              newRooms[roomName].status = newStatus;
-              return newRooms;
-            });
-          } else {
+        { newRoom },
+        (response: DevError | ChatRoomPayload) => {
+          if (handleSocketErrorResponse(response)) {
             console.log("Error changing room status");
             resolve(false);
           }
+          console.log("Successfully changed room status");
+          updateRooms((newRooms) => {
+            newRooms[roomName] = newRoom;
+          });
         }
       );
       resolve(true);
