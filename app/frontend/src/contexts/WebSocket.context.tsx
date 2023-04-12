@@ -11,7 +11,7 @@ export interface WebSocketContextValue {
   ) => void;
   removeSocketListener: (
     eventName: string,
-    handler: (...args: any[]) => void
+    handler?: (...args: any[]) => void
   ) => void;
 }
 
@@ -37,7 +37,7 @@ const WebSocketProvider: React.FC<WebSocketProviderProps> = ({ children }) => {
 
   const removeSocketListener = (
     eventName: string,
-    handler: (...args: any[]) => void
+    handler?: (...args: any[]) => void
   ) => {
     if (eventHandlers.current.has(eventName)) {
       const handlers = eventHandlers.current.get(eventName);

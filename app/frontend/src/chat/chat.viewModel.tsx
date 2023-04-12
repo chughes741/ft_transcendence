@@ -147,7 +147,7 @@ export const ChatViewModelProvider = ({ children }) => {
   /***********************/
   /*   Socket Listener   */
   /***********************/
-  const { addSocketListener } = useWebSocketContext();
+  const { addSocketListener, removeSocketListener } = useWebSocketContext();
 
   const setupSocketListeners = () => {
     // Create the actual handlers by invoking the higher-order functions
@@ -179,12 +179,12 @@ export const ChatViewModelProvider = ({ children }) => {
   useEffect(() => {
     setupSocketListeners();
     return () => {
-      socket.off("connect");
-      socket.off("newMessage");
-      socket.off("newChatRoomMember");
-      socket.off("chatRoomMemberLeft");
-      socket.off("chatRoomMemberKicked");
-      socket.off("addedToNewChatRoom");
+      removeSocketListener("connect");
+      removeSocketListener("newMessage");
+      removeSocketListener("newChatRoomMember");
+      removeSocketListener("chatRoomMemberLeft");
+      removeSocketListener("chatRoomMemberKicked");
+      removeSocketListener("addedToNewChatRoom");
     };
   }, []);
 
