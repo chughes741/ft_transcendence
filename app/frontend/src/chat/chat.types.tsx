@@ -91,7 +91,11 @@ export type CreateRoomRequest = {
   owner: string;
 };
 
-export class LeaveRoomRequest {
+export interface ListUsersRequest {
+  chatRoomName: string;
+}
+
+export interface LeaveRoomRequest {
   roomName: string;
   username: string;
 }

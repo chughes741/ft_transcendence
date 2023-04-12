@@ -14,6 +14,8 @@ import { useRoomManager } from "../lib/roomManager";
 import { DirectMessageModal } from "../modals/DirectMessageModal";
 import { UserEntity, InviteUsersModal } from "../modals/InviteUsersModal";
 import { JoinRoomModal } from "../modals/JoinRoomModal";
+import { handleSocketErrorResponse } from "../lib/helperFunctions";
+import { DevError, ListUsersRequest } from "../chat.types";
 
 const RoomList: React.FC = () => {
   const {
@@ -48,20 +50,31 @@ const RoomList: React.FC = () => {
 
   // Emit a "listAvailableUsers" socket event when the roomName changes
   useEffect(() => {
-    if (!showInviteUsersModal) return;
-    console.log("Room name changed: ", currentRoomName);
-
-    socket.emit(
-      "listAvailableUsers",
-      currentRoomName,
-      (users: UserEntity[]) => {
-        console.log("Available users: ", users);
-        console.log("Current room name: ", currentRoomName);
-        setAvailableUsers(users);
-        setSelectedUsers([]);
-      }
+    if (!showInviteUsersModal || !contextMenuData?.name) return;
+    console.log(
+      "showInviteUsers Modal has been activated, so me too: ",
+      contextMenuData?.name
     );
-  }, [currentRoomName]);
+
+    const req: ListUsersRequest = { chatRoomName: contextMenuData.name };
+    console.warn(
+      `RoomList: Fetching available users for room ${contextMenuData.name}...`,
+      req
+    );
+    socket.emit("listAvailableUsers", req, (users: DevError | UserEntity[]) => {
+      if (handleSocketErrorResponse(users)) {
+        const error = users as DevError;
+        console.error(
+          `RoomList: Error fetching the available users: ${error.error}`
+        );
+        return;
+      }
+      console.log("Available users: ", users);
+      console.log("Current room name: ", currentRoomName);
+      setAvailableUsers(users);
+      setSelectedUsers([]);
+    });
+  }, [showInviteUsersModal]);
 
   const handleInvitePeopleToRoom = () => {
     setContextMenuRoomsVisible(false);
@@ -131,6 +144,7 @@ const RoomList: React.FC = () => {
         onJoinRoom={joinRoom}
       />
       <InviteUsersModal
+        roomName={contextMenuData?.name}
         showModal={showInviteUsersModal}
         closeModal={() => setShowInviteUsersModal(false)}
         availableUsers={availableUsers}

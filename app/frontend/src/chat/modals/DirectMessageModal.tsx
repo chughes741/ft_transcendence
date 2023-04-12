@@ -15,6 +15,7 @@ import { socket } from "../../contexts/WebSocket.context";
 import { UserStatus } from "kingpong-lib";
 import { useChatContext } from "../chat.context";
 import UserStatusBadge from "../../components/UserStatusBadge";
+import { ListUsersRequest } from "../chat.types";
 
 interface UserEntity {
   username: string;
@@ -60,8 +61,9 @@ export const DirectMessageModal: React.FC<DirectMessageModalProps> = ({
     if (!showModal || !tempUsername) {
       return;
     }
-    console.log("Fetching available users...");
-    socket.emit("listAvailableUsers", "", (users: UserEntity[]) => {
+    const req: ListUsersRequest = { chatRoomName: "" };
+    console.warn(`RoomList: Fetching available users to DM...`, req);
+    socket.emit("listAvailableUsers", req, (users: UserEntity[]) => {
       console.log("Available users: ", users);
       setAvailableUsers(users);
       setSelectedUser(null);

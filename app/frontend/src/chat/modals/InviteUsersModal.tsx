@@ -30,6 +30,7 @@ export interface InviteUsersToRoomRequest {
 }
 
 interface InviteUsersToRoomProps {
+  roomName: string;
   showModal: boolean;
   closeModal: () => void;
   availableUsers: UserEntity[];
@@ -38,13 +39,17 @@ interface InviteUsersToRoomProps {
 }
 
 export const InviteUsersModal: React.FC<InviteUsersToRoomProps> = ({
+  roomName,
   showModal,
   closeModal,
   availableUsers,
   selectedUsers,
   setSelectedUsers
 }) => {
-  const { currentRoomName } = useChatContext();
+  if (!showModal) {
+    return null;
+  }
+  console.warn("InviteUsersModal.tsx: ", availableUsers, selectedUsers);
 
   const handleInvite = () => {
     if (selectedUsers.length <= 0) {
@@ -53,7 +58,7 @@ export const InviteUsersModal: React.FC<InviteUsersToRoomProps> = ({
     }
 
     const req: InviteUsersToRoomRequest = {
-      roomName: currentRoomName,
+      roomName,
       usernames: selectedUsers.map((user) => user.username)
     };
     socket.emit("inviteUsersToRoom", req, (res: boolean | null) => {
@@ -70,10 +75,6 @@ export const InviteUsersModal: React.FC<InviteUsersToRoomProps> = ({
     }
   };
 
-  if (!showModal) {
-    return null;
-  }
-
   return (
     <Dialog
       open={showModal}
@@ -88,7 +89,7 @@ export const InviteUsersModal: React.FC<InviteUsersToRoomProps> = ({
       }}
     >
       <DialogTitle alignContent={"center"}>
-        Invite Users to Room ${currentRoomName}
+        Invite Users to Room ${roomName}
       </DialogTitle>
       <DialogContent>
         <Autocomplete

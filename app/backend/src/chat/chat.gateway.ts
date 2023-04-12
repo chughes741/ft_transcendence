@@ -13,7 +13,6 @@ import { ChatMemberRank, ChatRoomStatus, User } from "@prisma/client";
 import { UserConnectionsService } from "../user-connections.service";
 import { ChatService } from "./chat.service";
 
-// Trickaroo to add fields to the Prisma Message type
 import { Message } from "@prisma/client";
 import { ChatMember } from "@prisma/client";
 import { ChatMemberEntity, MessageEntity } from "./entities/message.entity";
@@ -265,18 +264,30 @@ export class ChatGateway
    * Get all available users
    */
   @SubscribeMessage("listAvailableUsers")
-  async listAvailableUsers(client: Socket, roomName: string): Promise<User[]> {
+  async listAvailableUsers(
+    client: Socket,
+    req: ListUsersRequest
+  ): Promise<User[]> {
+    logger.log(`Received listAvailableUsers request from ${client.id}`);
+    console.log(req);
+    const roomName = req.chatRoomName;
+    console.log(`Room name: ${roomName}`);
     const username = this.userConnectionsService.getUserBySocket(client.id);
     const userId = await this.prismaService.getUserIdByNick(username);
-    const roomId = await this.prismaService.getChatRoomId(roomName);
-    logger.log(
-      `Received listAvailableUsers request from ${client.id} for room ${roomName} (id: ${roomId})`
-    );
-    if (!userId || !roomId) {
+    const roomId = await this.prismaService.getChatRoomId(req.chatRoomName);
+    logger.warn(`User id: ${userId}`);
+    if (!userId) {
       return [];
     }
 
-    return await this.prismaService.getAvailableUsers(userId, roomId);
+    const availableUsers = await this.prismaService.getAvailableUsers(
+      userId,
+      roomId
+    );
+    logger.warn(`List of users: `);
+    console.log(availableUsers);
+    return availableUsers;
+    return [];
   }
 
   /**
@@ -513,10 +524,10 @@ export class ChatGateway
     client: Socket,
     payload: ListUsersRequest
   ): Promise<ChatMemberEntity[]> {
+    logger.log(`Received listUsers request from ${client.id}, sending list`);
     const list: ChatMemberEntity[] = await this.chatService.getUserList(
       payload.chatRoomName
     );
-    logger.log(`Received listUsers request from ${client.id}, sending list`);
     return list;
   }
 

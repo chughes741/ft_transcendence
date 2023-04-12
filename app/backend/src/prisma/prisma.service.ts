@@ -624,6 +624,13 @@ export class PrismaService extends PrismaClient {
   // Get a list of all users in the server that have not been blocked by the querying user,
   // and are not in the chat room passsed in the query
   async getAvailableUsers(userId: string, roomId: number): Promise<User[]> {
+    if (!userId) {
+      logger.error("User ID is undefined");
+      throw new Error("User ID is undefined");
+    }
+    logger.warn(
+      `getAvailableUsers request for user ${userId} in room ${roomId}`
+    );
     // Get a list of users who blocked or have been blocked by the querying user
     const blockedUsers = await this.blockedUser.findMany({
       where: {
@@ -652,6 +659,8 @@ export class PrismaService extends PrismaClient {
     });
     const usersNotInRoomIds = usersNotInRoom.map((user) => user.memberId);
 
+    logger.warn(`Blocked users: ${blockedIds}`);
+
     // Find users who are not in the blocked list and not in the specified room
     const availableUsers = await this.user.findMany({
       where: {
@@ -660,6 +669,7 @@ export class PrismaService extends PrismaClient {
         }
       }
     });
+    logger.warn("Available users: " + availableUsers);
 
     return availableUsers;
   }

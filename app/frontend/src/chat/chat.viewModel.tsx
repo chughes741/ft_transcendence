@@ -157,6 +157,7 @@ export const ChatViewModelProvider = ({ children }) => {
           joinRoom("PrivateRoom", "");
           joinRoom("PasswordProtectedRoom", "secret");
           joinRoom("test", "secret");
+          joinRoom("asdf", "secret");
           resolve(true);
         }
       });
@@ -294,7 +295,6 @@ export const ChatViewModelProvider = ({ children }) => {
         "listUsers",
         { chatRoomName: currentRoomName },
         (users: UserListItem[]) => {
-          console.log(`Users in room ${currentRoomName}: `, users);
           users.map((user) => {
             console.log(`Adding user to room ${currentRoomName}: `, user);
             addMemberToRoom(currentRoomName, user);

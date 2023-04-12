@@ -13,7 +13,7 @@
     "prebuild": "yarn prisma:generate",
     "build": "nest build",
     "start": "nest start",
-    "start:dev": "nest start --watch",
+    "start:dev": "nodemon --watch src --ext ts --exec 'nest start'",
     "start:debug": "nest start --debug --watch",
     "start:prod": "node dist/main",
     "test": "jest",
