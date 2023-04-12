@@ -5,6 +5,7 @@ import { ChatRoomStatus, DevError, RoomType } from "../chat.types";
 
 // Helper function to handle errors
 export const handleSocketErrorResponse = (
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   res: DevError | any
 ): res is DevError => {
   return (res as DevError).error !== undefined;

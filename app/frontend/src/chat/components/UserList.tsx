@@ -8,7 +8,6 @@ import {
 } from "@mui/material";
 import GroupIcon from "@mui/icons-material/Group";
 import ContextMenuUsers from "./UserListContextMenu";
-import { UserStatus } from "kingpong-lib";
 import { UserListItem } from "../chat.types";
 
 export interface UserListProps {

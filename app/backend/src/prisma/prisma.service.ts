@@ -241,10 +241,6 @@ export class PrismaService extends PrismaClient {
    * @param uuid
    * @param pageSize number of chat rooms to return
    * @param dateOldest date of the oldest chat room retrieved thus far
-   * @async
-   * @memberof PrismaService
-   * @see https://www.prisma.io/docs/concepts/components/prisma-client/crud#pagination
-   * @see https://www.prisma.io/docs/concepts/components/prisma-client/crud#filtering
    * @returns
    */
   async getUserChatRooms(
@@ -252,7 +248,6 @@ export class PrismaService extends PrismaClient {
     pageSize = 15,
     dateOldest: Date = new Date(Date.now())
   ): Promise<ChatRoomDto[] | Error> {
-    // Check if the user exists
     if (!uuid) {
       logger.error("getUserChatRooms: uuid is required");
       return Error("User ID is required");
@@ -261,8 +256,6 @@ export class PrismaService extends PrismaClient {
     if (!user) {
       return Error("User does not exist");
     }
-    // Get `pageSize` amount of chat rooms, starting with the oldest one that is older than `dateOldest`
-    // sorted in descending order of last activity
     const chatRooms = await this.chatRoom.findMany({
       where: {
         members: {
@@ -293,8 +286,6 @@ export class PrismaService extends PrismaClient {
    * @param date of the oldest message retrieved thus far
    * @param pageSize number of messages to return
    * @returns {Promise<MessageDto[]>} a page of messages
-   * @async
-   * @memberof PrismaService
    */
   async getChatMessagesPage(
     id: number,
@@ -304,7 +295,7 @@ export class PrismaService extends PrismaClient {
     return this.message.findMany({
       where: {
         room: { id },
-        createdAt: { lt: date } // Here, lt stands for less than
+        createdAt: { lt: date }
       },
       include: {
         sender: {
@@ -312,7 +303,7 @@ export class PrismaService extends PrismaClient {
         },
         room: { select: { name: true } }
       },
-      take: pageSize, // take is the same as limit, and specifies the number of rows to return
+      take: pageSize,
       orderBy: { createdAt: "desc" }
     });
   }
@@ -459,6 +450,7 @@ export class PrismaService extends PrismaClient {
    * @async
    * @returns {Promise<Friend[]>}
    */
+  //TODO: define a prisma type for the return
   async getFriends(getFriendsRequest: GetFriendsRequest): Promise<any[]> {
     logger.log(getFriendsRequest.username);
     const user = await this.user.findUnique({

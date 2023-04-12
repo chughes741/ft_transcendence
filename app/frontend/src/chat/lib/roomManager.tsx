@@ -1,6 +1,5 @@
 import { createContext, useContext, useState } from "react";
 import { socket } from "../../contexts/WebSocket.context";
-import { PageState } from "../../root.model";
 import {
   UserListItem,
   ChatRoomPayload,
@@ -247,7 +246,7 @@ export const RoomManagerProvider = ({ children }) => {
       return false;
     }
 
-    const room = await addChatRoom(joinRoomRes as ChatRoomPayload);
+    await addChatRoom(joinRoomRes as ChatRoomPayload);
 
     const messageRequest = { roomName, date: new Date(), pageSize: 50 };
     const messagesRes = await new Promise<DevError | MessagePayload[]>(

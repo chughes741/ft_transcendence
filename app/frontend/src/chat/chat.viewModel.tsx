@@ -4,12 +4,7 @@ import { PageState } from "src/root.model";
 import { ChatModelType, useChatModel } from "./chat.model";
 import { ChatContext } from "src/chat/chat.context";
 import { useRootViewModelContext } from "../root.context";
-import {
-  DevError,
-  UserListItem,
-  ChatRoomPayload,
-  ChatRoomStatus
-} from "./chat.types";
+import { DevError, ChatRoomStatus } from "./chat.types";
 import {
   handleChatRoomMemberLeftCreator,
   handleChatRoomMemberKickedCreator,
@@ -18,8 +13,7 @@ import {
   handleNewMessageCreator,
   handleAddedToNewChatRoomCreator
 } from "./lib/socketHandler";
-import { handleSocketErrorResponse } from "./lib/helperFunctions";
-import { RoomManagerProvider, useRoomManager } from "./lib/roomManager";
+import { useRoomManager } from "./lib/roomManager";
 
 export interface ChatViewModelType extends ChatModelType {
   joinRoom: (roomName: string, password: string) => Promise<boolean>;
@@ -63,7 +57,6 @@ export const ChatViewModelProvider = ({ children }) => {
     setRooms,
     updateRooms,
     convertMessagePayloadToMessageType,
-    addMemberToRoom,
     addChatRoom,
     addMessageToRoom,
     handleJoinRoom: joinRoom,

@@ -1,5 +1,5 @@
 import React from "react";
-import { Badge, Avatar, BadgeProps } from "@mui/material";
+import { Badge, BadgeProps } from "@mui/material";
 import { UserStatus } from "kingpong-lib";
 
 interface UserStatusBadgeProps {

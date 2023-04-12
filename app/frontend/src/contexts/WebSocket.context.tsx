@@ -7,14 +7,17 @@ export interface WebSocketContextValue {
   socket: Socket;
   addSocketListener: (
     eventName: string,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     handler: (...args: any[]) => void
   ) => void;
   removeSocketListener: (
     eventName: string,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     handler?: (...args: any[]) => void
   ) => void;
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const WebSocketContext = createContext<WebSocketContextValue>(null as any);
 
 interface WebSocketProviderProps {
@@ -26,6 +29,7 @@ const WebSocketProvider: React.FC<WebSocketProviderProps> = ({ children }) => {
 
   const addSocketListener = (
     eventName: string,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     handler: (...args: any[]) => void
   ) => {
     if (!eventHandlers.current.has(eventName)) {
@@ -37,6 +41,7 @@ const WebSocketProvider: React.FC<WebSocketProviderProps> = ({ children }) => {
 
   const removeSocketListener = (
     eventName: string,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     handler?: (...args: any[]) => void
   ) => {
     if (eventHandlers.current.has(eventName)) {

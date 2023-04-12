@@ -3,7 +3,7 @@ import ReactDOM from "react-dom/client";
 import "./index.css";
 
 /** Providers */
-import { socket, WebSocketProvider } from "src/contexts/WebSocket.context";
+import { WebSocketProvider } from "src/contexts/WebSocket.context";
 import { CssBaseline, ThemeProvider } from "@mui/material";
 import { ChatViewModelProvider } from "src/chat/chat.viewModel";
 import { ProfileViewModelProvider } from "./profile/profile.viewModel";

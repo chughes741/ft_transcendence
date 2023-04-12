@@ -20,9 +20,7 @@ import {
 } from "./chat.gateway";
 import { MessageEntity } from "./entities/message.entity";
 import { kickMemberDto, updateChatMemberStatusDto } from "./dto/userlist.dto";
-import { ChatMemberPrismaType } from "./chat.gateway";
 import { ChatMemberEntity } from "./entities/message.entity";
-import { ChatRoomDto } from "../auth/dto/prisma.dto";
 
 const logger = new Logger("ChatService");
 

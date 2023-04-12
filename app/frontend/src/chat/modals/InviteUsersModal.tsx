@@ -3,7 +3,6 @@ import {
   Dialog,
   DialogTitle,
   Avatar,
-  Badge,
   MenuItem,
   ListItemText,
   TextField,
@@ -14,7 +13,6 @@ import {
 } from "@mui/material";
 import { UserStatus } from "kingpong-lib";
 import ButtonFunky from "../../components/ButtonFunky";
-import { useChatContext } from "../chat.context";
 import { socket } from "../../contexts/WebSocket.context";
 import UserStatusBadge from "../../components/UserStatusBadge";
 
