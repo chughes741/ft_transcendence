@@ -16,6 +16,15 @@ import {
   LeaveRoomRequest,
   ChatRoomStatus
 } from "./chat.types";
+import { convertMessagePayloadToMessageType } from "./lib/roomManager";
+import {
+  handleChatRoomMemberLeftCreator,
+  handleChatRoomMemberKickedCreator,
+  handleConnectCreator,
+  handleNewChatRoomMemberCreator,
+  handleNewMessageCreator,
+  handleAddedToNewChatRoomCreator
+} from "./lib/socketHandler";
 
 export interface ChatViewModelType extends ChatModelType {
   joinRoom: (roomName: string, password: string) => Promise<boolean>;
@@ -87,34 +96,6 @@ export const ChatViewModelProvider = ({ children }) => {
   // Helper function to handle errors
   const handleSocketErrorResponse = (res: DevError | any): res is DevError => {
     return (res as DevError).error !== undefined;
-  };
-
-  /**********************/
-  /*   Util Functions   */
-  /**********************/
-
-  const convertMessagePayloadToMessageType = (
-    messagePayload: MessagePayload
-  ): MessageType => {
-    const timestamp = new Date(messagePayload.timestamp);
-    const timestamp_readable = timestamp.toLocaleTimeString("en-US", {
-      hour: "numeric",
-      minute: "numeric",
-      hour12: true
-    });
-
-    return {
-      username: messagePayload.username,
-      roomId: messagePayload.roomName,
-      content: messagePayload.content,
-      timestamp_readable,
-      timestamp,
-      isOwn: messagePayload.username === tempUsername,
-      displayUser: true,
-      displayTimestamp: true,
-      displayDate: true,
-      avatar: rooms[messagePayload.roomName]?.avatars[messagePayload.username]
-    };
   };
 
   /**********************/
@@ -423,57 +404,26 @@ export const ChatViewModelProvider = ({ children }) => {
   /***********************/
   /*   Socket Listener   */
   /***********************/
-  const { addSocketListener } = useWebSocketContext();
 
-  // Define handlers
-  const handleConnect = () => {
-    console.log("Successfully connected to the server");
-  };
-
-  const handleNewMessage = (newMessage: MessagePayload): boolean => {
-    console.log("Ding ding, you've got mail:", newMessage);
-    const messageData = convertMessagePayloadToMessageType(newMessage);
-    addMessageToRoom(newMessage.roomName, messageData);
-    return newMessage.roomName === currentRoomName;
-  };
-
-  const handleNewChatRoomMember = (member: RoomMemberEntity) => {
-    console.log("New room member: ", member.user);
-    updateRooms((newRooms) => {
-      if (!newRooms || !newRooms[member.roomName]) return newRooms;
-      newRooms[member.roomName] = newRooms[member.roomName];
-      newRooms[member.roomName].users[member.user.username] = member.user;
-    });
-  };
-
-  const handleChatRoomMemberLeft = ({
-    roomName,
-    username
-  }: LeaveRoomRequest) => {
-    console.log(`User ${username} left room ${roomName}`);
-    updateRooms((newRooms) => {
-      delete newRooms[roomName].users[username];
-    });
-  };
-
-  const handleChatRoomMemberKicked = (member: RoomMemberEntity) => {
-    console.log("Room member kicked: ", member.user);
-    updateRooms((newRooms) => {
-      delete newRooms[member.roomName].users[member.user.username];
-    });
-  };
-
-  const handleAddedToNewChatRoom = (room) => {
-    console.log(
-      "You have been added to a new chat room, adding it to the list"
-    );
-    console.log(room);
-    addChatRoom(room);
-    setShowNewRoomSnackbar(true);
-  };
-
-  // Setup socket listeners
   const setupSocketListeners = () => {
+    const { addSocketListener } = useWebSocketContext();
+
+    // Create the actual handlers by invoking the higher-order functions
+    const handleConnect = handleConnectCreator();
+    const handleNewMessage = handleNewMessageCreator(
+      addMessageToRoom,
+      currentRoomName
+    );
+    const handleNewChatRoomMember = handleNewChatRoomMemberCreator(updateRooms);
+    const handleChatRoomMemberLeft =
+      handleChatRoomMemberLeftCreator(updateRooms);
+    const handleChatRoomMemberKicked =
+      handleChatRoomMemberKickedCreator(updateRooms);
+    const handleAddedToNewChatRoom = handleAddedToNewChatRoomCreator(
+      addChatRoom,
+      setShowNewRoomSnackbar
+    );
+
     addSocketListener("connect", handleConnect);
     addSocketListener("newMessage", handleNewMessage);
     addSocketListener("newChatRoomMember", handleNewChatRoomMember);

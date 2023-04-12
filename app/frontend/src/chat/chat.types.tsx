@@ -32,6 +32,7 @@ export type MessagePayload = {
   roomName: string;
   content: string;
   timestamp: Date;
+  avatar?: string;
 };
 
 export interface ChatRoomPayload {
