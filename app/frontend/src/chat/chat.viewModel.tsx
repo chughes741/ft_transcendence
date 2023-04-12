@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { socket } from "src/contexts/WebSocket.context";
+import { socket, useWebSocketContext } from "src/contexts/WebSocket.context";
 import { PageState } from "src/root.model";
 import { ChatModelType, useChatModel } from "./chat.model";
 import { MessageType } from "src/chat/components/Message";
@@ -467,71 +467,77 @@ export const ChatViewModelProvider = ({ children }) => {
   /***********************/
   /*   Socket Listener   */
   /***********************/
-  useEffect(() => {
-    socket.on("connect", () => {
-      console.log("Successfully connected to the server");
+  const { addSocketListener } = useWebSocketContext();
+
+  // Define handlers
+  const handleConnect = () => {
+    console.log("Successfully connected to the server");
+  };
+
+  const handleNewMessage = (newMessage: MessagePayload): boolean => {
+    console.log("Ding ding, you've got mail:", newMessage);
+    const messageData = convertMessagePayloadToMessageType(newMessage);
+    addMessageToRoom(newMessage.roomName, messageData);
+    return newMessage.roomName === currentRoomName;
+  };
+
+  const handleNewChatRoomMember = (member: RoomMemberEntity) => {
+    console.log("New room member: ", member.user);
+    updateRooms((newRooms) => {
+      if (!newRooms || !newRooms[member.roomName]) return newRooms;
+      newRooms[member.roomName] = newRooms[member.roomName];
+      newRooms[member.roomName].users[member.user.username] = member.user;
     });
+  };
 
-    socket.on("newMessage", (newMessage: MessagePayload): boolean => {
-      console.log("Ding ding, you've got mail:", newMessage);
-
-      const messageData = convertMessagePayloadToMessageType(newMessage);
-      addMessageToRoom(newMessage.roomName, messageData);
-      // TODO: Implement a callback in the backend to check if user has read the message
-      return newMessage.roomName === currentRoomName;
+  const handleChatRoomMemberLeft = ({
+    roomName,
+    username
+  }: LeaveRoomRequest) => {
+    console.log(`User ${username} left room ${roomName}`);
+    updateRooms((newRooms) => {
+      delete newRooms[roomName].users[username];
     });
+  };
 
-    socket.on("newChatRoomMember", (member: RoomMemberEntity) => {
-      console.log("New room member: ", member.user);
-      setRooms((prevRooms) => {
-        const newRooms = { ...prevRooms };
-        // Protection, cause I'm apparently too dumb to send a message to
-        // everyone except the sender from the backend...
-        if (!prevRooms || !prevRooms[member.roomName]) return newRooms;
-        newRooms[member.roomName] = prevRooms[member.roomName];
-        newRooms[member.roomName].users[member.user.username] = member.user;
-        return newRooms;
-      });
+  const handleChatRoomMemberKicked = (member: RoomMemberEntity) => {
+    console.log("Room member kicked: ", member.user);
+    updateRooms((newRooms) => {
+      delete newRooms[member.roomName].users[member.user.username];
     });
+  };
 
-    socket.on(
-      "chatRoomMemberLeft",
-      ({ roomName, username }: LeaveRoomRequest) => {
-        console.log(`User ${username} left room ${roomName}`);
-        setRooms((prevRooms) => {
-          const newRooms = { ...prevRooms };
-          delete newRooms[roomName].users[username];
-          return newRooms;
-        });
-      }
+  const handleAddedToNewChatRoom = (room) => {
+    console.log(
+      "You have been added to a new chat room, adding it to the list"
     );
+    console.log(room);
+    addChatRoom(room);
+    setShowNewRoomSnackbar(true);
+  };
 
-    socket.on("chatRoomMemberKicked", (member: RoomMemberEntity) => {
-      console.log("Room member kicked: ", member.user);
-      setRooms((prevRooms) => {
-        const newRooms = { ...prevRooms };
-        delete newRooms[member.roomName].users[member.user.username];
-        return newRooms;
-      });
-    });
+  // Setup socket listeners
+  const setupSocketListeners = () => {
+    addSocketListener("connect", handleConnect);
+    addSocketListener("newMessage", handleNewMessage);
+    addSocketListener("newChatRoomMember", handleNewChatRoomMember);
+    addSocketListener("chatRoomMemberLeft", handleChatRoomMemberLeft);
+    addSocketListener("chatRoomMemberKicked", handleChatRoomMemberKicked);
+    addSocketListener("addedToNewChatRoom", handleAddedToNewChatRoom);
+  };
 
-    socket.on("addedToNewChatRoom", (room) => {
-      console.log(
-        "You have been added to a new chat room, adding it to the list"
-      );
-      console.log(room);
-      addChatRoom(room);
-      setShowNewRoomSnackbar(true);
-    });
-
+  // Use effect for setting up and cleaning up listeners
+  useEffect(() => {
+    setupSocketListeners();
     return () => {
+      socket.off("connect");
       socket.off("newMessage");
       socket.off("newChatRoomMember");
-      socket.off("addedToNewChatRoom");
       socket.off("chatRoomMemberLeft");
       socket.off("chatRoomMemberKicked");
+      socket.off("addedToNewChatRoom");
     };
-  }, [socket, tempUsername]);
+  }, []);
 
   /******************/
   /*   useEffects   */
