@@ -22,6 +22,7 @@ import ImgUpload from "src/components/ImgUpload";
 
 /** View Model */
 import { useProfileViewModelContext } from "src/profile/profile.viewModel";
+import SettingsView from "./settings/settings.view";
 
 type StyledBadgeProps = {
   status: UserStatus;
@@ -77,7 +78,6 @@ function ProfileHeader(): JSX.Element | null {
                 ></Avatar>
               </StyledBadge>
             </Grid>
-            <ImgUpload />
             <Grid
               container
               item
