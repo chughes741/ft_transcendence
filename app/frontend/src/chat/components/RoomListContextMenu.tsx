@@ -1,6 +1,6 @@
 import React from "react";
-import { ChatRoomStatus, RoomType } from "../chat.viewModel";
 import ContextMenu from "../../components/ContextMenu";
+import { RoomType, ChatRoomStatus } from "../chat.types";
 
 interface RoomContextMenuProps {
   contextMenuVisible: boolean;
@@ -26,12 +26,12 @@ const RoomContextMenu: React.FC<RoomContextMenuProps> = ({
   const options = [
     {
       label:
-        contextMenuData.status === "DIALOGUE"
+        contextMenuData.status === ChatRoomStatus.DIALOGUE
           ? "Quit Conversation"
           : "Leave Room",
       onClick: onLeaveRoom
     },
-    ...(contextMenuData && contextMenuData.status !== "DIALOGUE"
+    ...(contextMenuData && contextMenuData.status !== ChatRoomStatus.DIALOGUE
       ? [
           {
             label: "Invite Users to Room",
@@ -40,38 +40,41 @@ const RoomContextMenu: React.FC<RoomContextMenuProps> = ({
         ]
       : []),
     ...(contextMenuData &&
-    contextMenuData.status !== "DIALOGUE" &&
+    contextMenuData.status !== ChatRoomStatus.DIALOGUE &&
     contextMenuData.rank === "OWNER"
       ? [
           {
             label: "Change Room Status",
             submenu: [
-              ...(contextMenuData && contextMenuData.status !== "PRIVATE"
+              ...(contextMenuData &&
+              contextMenuData.status !== ChatRoomStatus.PRIVATE
                 ? [
                     {
                       label: "Private",
                       onClick: () => {
-                        onChangeRoomStatus("PRIVATE").then();
+                        onChangeRoomStatus(ChatRoomStatus.PRIVATE).then();
                       }
                     }
                   ]
                 : []),
-              ...(contextMenuData && contextMenuData.status !== "PUBLIC"
+              ...(contextMenuData &&
+              contextMenuData.status !== ChatRoomStatus.PUBLIC
                 ? [
                     {
                       label: "Public",
                       onClick: () => {
-                        onChangeRoomStatus("PUBLIC").then();
+                        onChangeRoomStatus(ChatRoomStatus.PUBLIC).then();
                       }
                     }
                   ]
                 : []),
-              ...(contextMenuData && contextMenuData.status !== "PASSWORD"
+              ...(contextMenuData &&
+              contextMenuData.status !== ChatRoomStatus.PASSWORD
                 ? [
                     {
                       label: "Password Protected",
                       onClick: () => {
-                        onChangeRoomStatus("PASSWORD").then();
+                        onChangeRoomStatus(ChatRoomStatus.PASSWORD).then();
                       }
                     }
                   ]

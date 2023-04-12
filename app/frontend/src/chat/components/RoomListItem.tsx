@@ -7,7 +7,6 @@ import {
   ListItemIcon,
   ListItemText
 } from "@mui/material";
-import { RoomType } from "../chat.viewModel";
 import { FaCrown } from "react-icons/fa";
 import { useChatContext } from "../chat.context";
 import {
@@ -15,6 +14,7 @@ import {
   renderAvatarGroup,
   truncateText
 } from "./helperFunctions";
+import { ChatRoomStatus, RoomType } from "../chat.types";
 
 interface RoomListItemProps {
   room: RoomType;
@@ -37,7 +37,9 @@ const RoomListItem: React.FC<RoomListItemProps> = ({
     >
       <ListItemButton selected={isSelected}>
         <span style={{ marginRight: "auto", marginLeft: "8px" }}>
-          {room.status !== "DIALOGUE" && room.rank === "OWNER" && <FaCrown />}
+          {room.status !== ChatRoomStatus.DIALOGUE && room.rank === "OWNER" && (
+            <FaCrown />
+          )}
         </span>
         <ListItemIcon>{renderAvatarGroup(room, tempUsername)}</ListItemIcon>
         <ListItemText

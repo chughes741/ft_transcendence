@@ -2,75 +2,31 @@ import { useEffect } from "react";
 import { socket, useWebSocketContext } from "src/contexts/WebSocket.context";
 import { PageState } from "src/root.model";
 import { ChatModelType, useChatModel } from "./chat.model";
-import { MessageType } from "src/chat/components/Message";
 import { ChatContext } from "src/chat/chat.context";
-import { UserListItem } from "src/chat/components/Userlist";
-import { useRootViewModelContext } from "src/root.context";
-
-export type ChatRoomStatus = "PUBLIC" | "PRIVATE" | "PASSWORD" | "DIALOGUE";
-export type ChatMemberRank = "USER" | "ADMIN" | "OWNER";
-
-export type RoomMemberEntity = {
-  roomName: string;
-  user: UserListItem;
-};
-
-export type MessagePayload = {
-  username: string;
-  roomName: string;
-  content: string;
-  timestamp: Date;
-};
-
-export interface ChatRoomPayload {
-  name: string;
-  status: ChatRoomStatus;
-  queryingUserRank: ChatMemberRank;
-  latestMessage?: MessagePayload;
-  lastActivity: Date;
-  avatars?: string[];
-}
-
-export type RoomType = {
-  name: string;
-  status: ChatRoomStatus;
-  rank: ChatMemberRank;
-  messages: MessageType[];
-  latestMessage?: MessageType;
-  lastActivity: Date;
-  hasUnreadMessages: boolean;
-  avatars?: string[];
-  users: { [key: string]: UserListItem };
-};
-
-export type DevError = {
-  error: string;
-};
-
-export type CreateRoomRequest = {
-  name: string;
-  status: "PUBLIC" | "PRIVATE" | "PASSWORD";
-  password: string;
-  owner: string;
-};
-
-export class LeaveRoomRequest {
-  roomName: string;
-  username: string;
-}
+import { useRootViewModelContext } from "../root.context";
+import {
+  DevError,
+  MessagePayload,
+  MessageType,
+  UserListItem,
+  ChatRoomPayload,
+  RoomType,
+  CreateRoomRequest,
+  RoomMemberEntity,
+  LeaveRoomRequest,
+  ChatRoomStatus
+} from "./chat.types";
 
 export interface ChatViewModelType extends ChatModelType {
   joinRoom: (roomName: string, password: string) => Promise<boolean>;
   sendRoomMessage: (roomName: string, message: string) => Promise<boolean>;
   createNewRoom: (
     roomName: string,
-    roomStatus: "PUBLIC" | "PRIVATE" | "PASSWORD",
+    roomStatus: ChatRoomStatus,
     password: string
   ) => Promise<boolean>;
   leaveRoom: () => Promise<boolean>;
-  changeRoomStatus: (
-    newStatus: "PRIVATE" | "PUBLIC" | "PASSWORD"
-  ) => Promise<boolean>;
+  changeRoomStatus: (newStatus: ChatRoomStatus) => Promise<boolean>;
   selectRoom: (roomName: string) => void;
 }
 
@@ -269,7 +225,7 @@ export const ChatViewModelProvider = ({ children }) => {
   // Create a new room
   const createNewRoom = async (
     roomName: string,
-    roomStatus: "PUBLIC" | "PRIVATE" | "PASSWORD",
+    roomStatus: ChatRoomStatus,
     roomPassword?: string
   ): Promise<boolean> => {
     const roomRequest: CreateRoomRequest = {
@@ -384,7 +340,7 @@ export const ChatViewModelProvider = ({ children }) => {
   };
 
   const changeRoomStatus = async (
-    newStatus: "PRIVATE" | "PUBLIC" | "PASSWORD"
+    newStatus: ChatRoomStatus
   ): Promise<boolean> => {
     return new Promise<boolean>((resolve) => {
       const roomName = contextMenuData.name;

@@ -1,8 +1,6 @@
 // ChatModel.tsx
 import { useState, MouseEvent } from "react";
-import { RoomType } from "./chat.viewModel";
-import { MessageType } from "./components/Message";
-import { UserListItem } from "./components/Userlist";
+import { RoomType, MessageType, UserListItem } from "./chat.types";
 
 export interface ChatModelType {
   /* User */

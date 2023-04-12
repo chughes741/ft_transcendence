@@ -1,17 +1,17 @@
 import React from "react";
 import { Avatar, AvatarGroup } from "@mui/material";
 import { VpnKey, Public, VisibilityOff } from "@mui/icons-material";
-import { ChatRoomStatus, RoomType } from "../chat.viewModel";
+import { ChatRoomStatus, RoomType } from "../chat.types";
 
 export const getStatusIcon = (status: ChatRoomStatus) => {
   switch (status) {
-    case "PASSWORD":
+    case ChatRoomStatus.PASSWORD:
       return <VpnKey />;
-    case "PUBLIC":
+    case ChatRoomStatus.PUBLIC:
       return <Public />;
-    case "PRIVATE":
+    case ChatRoomStatus.PRIVATE:
       return <VisibilityOff />;
-    case "DIALOGUE":
+    case ChatRoomStatus.DIALOGUE:
       return <></>;
     default:
       return null;
@@ -19,7 +19,7 @@ export const getStatusIcon = (status: ChatRoomStatus) => {
 };
 
 export const renderAvatarGroup = (room: RoomType, tempUsername: string) => {
-  if (room.status === "DIALOGUE") {
+  if (room.status === ChatRoomStatus.DIALOGUE) {
     const otherUser = Object.values(room.users)?.find(
       (user) => user.username !== tempUsername
     );

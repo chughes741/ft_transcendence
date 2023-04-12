@@ -22,6 +22,7 @@ import { socket } from "../../contexts/WebSocket.context";
 import { useChatContext } from "../chat.context";
 import { Public, VpnKey } from "@mui/icons-material";
 import UserStatusBadge from "../../components/UserStatusBadge";
+import { ChatRoomStatus } from "../chat.types";
 
 interface JoinRoomModalProps {
   showModal: boolean;
@@ -38,7 +39,7 @@ export interface UserEntity {
 export interface AvailableRoomEntity {
   roomName: string;
   nbMembers: number;
-  status: "PASSWORD" | "PUBLIC";
+  status: ChatRoomStatus.PASSWORD | ChatRoomStatus.PUBLIC;
   owner: UserEntity;
 }
 
@@ -155,7 +156,11 @@ export const JoinRoomModal: React.FC<JoinRoomModalProps> = ({
                 </Typography>
               </Box>
               <span style={{ marginLeft: "auto", marginRight: "16px" }}>
-                {option.status === "PASSWORD" ? <VpnKey /> : <Public />}
+                {option.status === ChatRoomStatus.PASSWORD ? (
+                  <VpnKey />
+                ) : (
+                  <Public />
+                )}
               </span>
             </MenuItem>
           )}
@@ -170,7 +175,7 @@ export const JoinRoomModal: React.FC<JoinRoomModalProps> = ({
           )}
           onChange={(event, value) => setSelectedRoom(value)}
         />
-        {selectedRoom && selectedRoom.status === "PASSWORD" && (
+        {selectedRoom && selectedRoom.status === ChatRoomStatus.PASSWORD && (
           <TextField
             margin="dense"
             label="Password"
