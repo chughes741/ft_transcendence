@@ -413,7 +413,6 @@ export const ChatViewModelProvider = ({ children }) => {
     return new Promise<boolean>((resolve) => {
       const roomName = contextMenuData.name;
       console.log(`Changing room status of ${roomName} to ${newStatus}`);
-      // TODO: implement the backend handler for this socket event
       // TODO: instead of sendin only the status, send the whole room object
       // TODO: if status is password, open a modal to ask for the password
       socket.emit(

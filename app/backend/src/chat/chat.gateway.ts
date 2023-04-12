@@ -158,7 +158,7 @@ export class ChatGateway
     logger.log(`Sending event ${event} to user ${username}`);
     const userSockets = this.userConnectionsService.getUserSockets(username);
     if (!userSockets) {
-      logger.error(`User ${username} has no sockets`);
+      logger.warn(`User ${username} has no sockets`);
       return;
     }
     console.log(data);
@@ -170,7 +170,7 @@ export class ChatGateway
   async bindAllUserSocketsToRoom(username: string, roomName: string) {
     const userSockets = this.userConnectionsService.getUserSockets(username);
     if (!userSockets) {
-      logger.error(`User ${username} has no sockets`);
+      logger.warn(`User ${username} has no sockets`);
       return;
     }
     userSockets.forEach((socketId) => {

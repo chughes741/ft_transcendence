@@ -1,33 +1,21 @@
 import React, { useEffect } from "react";
 import "src/styles/chat/RoomList.css";
-import ContextMenu from "../../components/ContextMenu";
 import { JoinRoomModal, UserEntity } from "./JoinRoomModal";
 import { CreateRoomModal } from "./CreateRoomModal";
-import {
-  Avatar,
-  AvatarGroup,
-  Box,
-  List,
-  ListItem,
-  ListItemButton,
-  ListItemIcon,
-  ListItemText
-} from "@mui/material";
+import { Box, List } from "@mui/material";
 import { useChatContext } from "../chat.context";
-import { FaCrown } from "react-icons/fa";
 
 import { Snackbar } from "@mui/material";
 import Alert from "@mui/material/Alert";
 
-import { ChatRoomStatus, RoomType } from "../chat.viewModel";
 import { socket } from "../../contexts/WebSocket.context";
 import { InviteUsersModal } from "./InviteUsersModal";
-import { Public, VisibilityOff, VpnKey } from "@mui/icons-material";
 import { DirectMessageModal } from "./DirectMessageModal";
+import RoomContextMenu from "./RoomListContextMenu";
+import RoomListItem from "./RoomListItem";
 
 const RoomList: React.FC = () => {
   const {
-    tempUsername,
     rooms,
     currentRoomName,
     setShowCreateRoomModal,
@@ -37,7 +25,6 @@ const RoomList: React.FC = () => {
     contextMenuRoomsVisible,
     setContextMenuRoomsVisible,
     handleContextMenu,
-    truncateText,
     createNewRoom,
     leaveRoom,
     changeRoomStatus,
@@ -60,6 +47,7 @@ const RoomList: React.FC = () => {
 
   // Emit a "listAvailableUsers" socket event when the roomName changes
   useEffect(() => {
+    if (!showInviteUsersModal) return;
     console.log("Room name changed: ", currentRoomName);
 
     socket.emit(
@@ -79,24 +67,6 @@ const RoomList: React.FC = () => {
     setShowInviteUsersModal(true);
   };
 
-  /******************/
-  /*   Room Icons   */
-  /******************/
-  const getStatusIcon = (status: ChatRoomStatus) => {
-    switch (status) {
-      case "PASSWORD":
-        return <VpnKey />;
-      case "PUBLIC":
-        return <Public />;
-      case "PRIVATE":
-        return <VisibilityOff />;
-      case "DIALOGUE":
-        return <></>;
-      default:
-        return null;
-    }
-  };
-
   /****************/
   /*   Snackbar   */
   /****************/
@@ -104,9 +74,7 @@ const RoomList: React.FC = () => {
 
   useEffect(() => {
     socket.on("addedToNewChatRoom", (room) => {
-      console.log(
-        "*****************************************in RoomList, new room added: "
-      );
+      console.log(`You have been added to a new chat room: ${room.name}`);
       console.log(room);
       setAddedRoomName(room.name);
     });
@@ -122,79 +90,34 @@ const RoomList: React.FC = () => {
     setShowNewRoomSnackbar(false);
   };
 
-  const renderAvatarGroup = (room: RoomType) => {
-    if (room.status === "DIALOGUE") {
-      const otherUser = Object.values(room.users)?.find(
-        (user) => user.username !== tempUsername
-      );
-      return (
-        <Avatar
-          src={otherUser.avatar}
-          alt={`Profile ${otherUser.username}`}
-        />
-      );
-    } else {
-      return (
-        <AvatarGroup
-          max={1}
-          spacing="small"
-        >
-          {room.users &&
-            Object.keys(room.users).length > 0 &&
-            Object.values(room.users).map((user) => (
-              <Avatar
-                key={user.username}
-                src={user.avatar}
-                alt={`Profile ${user.username}`}
-              />
-            ))}
-        </AvatarGroup>
-      );
-    }
-  };
-
   return (
     <div className="room-list">
       <Box sx={{ overflow: "auto" }}>
         <List>
           {rooms &&
             Object.entries(rooms).map(([roomName, room]) => (
-              <ListItem
+              <RoomListItem
                 key={roomName}
-                onClick={() => selectRoom(roomName)}
-                onContextMenu={(e) => handleContextMenu(e, room)}
-              >
-                <ListItemButton selected={currentRoomName === roomName}>
-                  <span style={{ marginRight: "auto", marginLeft: "8px" }}>
-                    {room.status !== "DIALOGUE" && room.rank === "OWNER" && (
-                      <FaCrown />
-                    )}
-                  </span>
-                  <ListItemIcon>{renderAvatarGroup(room)}</ListItemIcon>
-                  <ListItemText
-                    style={{ overflowX: "hidden" }}
-                    primary={roomName}
-                    secondary={
-                      room.messages.length > 0
-                        ? truncateText(
-                            room?.messages[room.messages.length - 1]?.content,
-                            42
-                          )
-                        : ""
-                    }
-                  />
-                  <span style={{ marginLeft: "auto", marginRight: "16px" }}>
-                    {getStatusIcon(room.status)}
-                  </span>
-                </ListItemButton>
-              </ListItem>
+                room={room}
+                isSelected={currentRoomName === roomName}
+                onRoomSelect={selectRoom}
+                onContextMenu={handleContextMenu}
+              />
             ))}
         </List>
       </Box>
+      <RoomContextMenu
+        contextMenuVisible={contextMenuRoomsVisible}
+        setContextMenuVisible={setContextMenuRoomsVisible}
+        position={contextMenuPosition}
+        contextMenuData={contextMenuData}
+        onLeaveRoom={leaveRoom}
+        onInvitePeopleToRoom={handleInvitePeopleToRoom}
+        onChangeRoomStatus={changeRoomStatus}
+      />
       <DirectMessageModal
         showModal={showDirectMessageModal}
         closeModal={() => setShowDirectMessageModal(false)}
-        // onCreateRoom={() => setShowDirectMessageModal(false)}
       />
       <CreateRoomModal
         showModal={showCreateRoomModal}
@@ -212,65 +135,6 @@ const RoomList: React.FC = () => {
         availableUsers={availableUsers}
         selectedUsers={selectedUsers}
         setSelectedUsers={setSelectedUsers}
-      />
-      <ContextMenu
-        contextMenuVisible={contextMenuRoomsVisible}
-        setContextMenuVisible={setContextMenuRoomsVisible}
-        position={contextMenuPosition}
-        options={[
-          {
-            label: "Leave Room",
-            onClick: leaveRoom
-          },
-          ...(contextMenuData && contextMenuData.status !== "DIALOGUE"
-            ? [
-                {
-                  label: "Invite Users to Room",
-                  onClick: handleInvitePeopleToRoom
-                }
-              ]
-            : []),
-          ...(contextMenuData && contextMenuData.rank === "OWNER"
-            ? [
-                {
-                  label: "Change Room Status",
-                  submenu: [
-                    ...(contextMenuData && contextMenuData.status !== "PRIVATE"
-                      ? [
-                          {
-                            label: "Private",
-                            onClick: () => {
-                              changeRoomStatus("PRIVATE").then();
-                            }
-                          }
-                        ]
-                      : []),
-                    ...(contextMenuData && contextMenuData.status !== "PRIVATE"
-                      ? [
-                          {
-                            label: "Public",
-                            onClick: () => {
-                              changeRoomStatus("PUBLIC").then();
-                            }
-                          }
-                        ]
-                      : []),
-                    ...(contextMenuData && contextMenuData.status !== "PRIVATE"
-                      ? [
-                          {
-                            // TODO: add dialog to enter and confirm new password
-                            label: "Password Protected",
-                            onClick: () => {
-                              changeRoomStatus("PASSWORD").then();
-                            }
-                          }
-                        ]
-                      : [])
-                  ]
-                }
-              ]
-            : [])
-        ]}
       />
       <Snackbar
         open={showNewRoomSnackbar}
