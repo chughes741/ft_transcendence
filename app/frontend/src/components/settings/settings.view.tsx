@@ -1,6 +1,6 @@
-import { useState } from "react";
-import { Box, Button, Modal, Typography } from "@mui/material";
+import { Box, Modal, Typography } from "@mui/material";
 import ImgUpload from "src/components/ImgUpload";
+import { useSettingsViewModelContext } from "./settings.viewModel";
 
 /**
  * SettingsView
@@ -8,16 +8,13 @@ import ImgUpload from "src/components/ImgUpload";
  * @returns {JSX.Element}
  */
 export default function SettingsView() {
-  const [open, setOpen] = useState(false);
-  const handleOpen = () => setOpen(true);
-  const handleClose = () => setOpen(false);
+  const { open, handleCloseSettings } = useSettingsViewModelContext();
 
   return (
     <>
-      <Button onClick={handleOpen}>Open Modal</Button>
       <Modal
         open={open}
-        onClose={handleClose}
+        onClose={handleCloseSettings}
         aria-labelledby="modal-modal-title"
         aria-describedby="modal-modal-description"
       >

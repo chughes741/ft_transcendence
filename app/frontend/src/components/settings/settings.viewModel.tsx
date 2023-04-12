@@ -1,27 +1,43 @@
 import React, { createContext } from "react";
 import { SettingsModelType, useSettingsModel } from "./settings.model";
 
+/**
+ * SettingsViewModelType
+ *
+ * @interface SettingsViewModelType
+ * @extends {SettingsModelType}
+ */
 export interface SettingsViewModelType extends SettingsModelType {
-  handleOpen: () => void;
-  handleClose: () => void;
+  handleOpenSettings: () => void;
+  handleCloseSettings: () => void;
 }
 
+/**
+ * SettingsViewModelContext
+ *
+ * @type {React.Context<SettingsViewModelType | null>}
+ */
 export const SettingsViewModelContext: React.Context<SettingsViewModelType | null> =
   createContext<SettingsViewModelType | null>(null);
 
+/**
+ * SettingsViewModelProvider
+ *
+ * @returns {JSX.Element}
+ */
 export const SettingsViewModelProvider = ({ children }) => {
   const { open, setOpen } = useSettingsModel();
 
-  const handleOpen = () => setOpen(true);
-  const handleClose = () => setOpen(false);
+  const handleOpenSettings = () => setOpen(true);
+  const handleCloseSettings = () => setOpen(false);
 
   return (
     <SettingsViewModelContext.Provider
       value={{
         open,
         setOpen,
-        handleOpen,
-        handleClose
+        handleOpenSettings,
+        handleCloseSettings
       }}
     >
       {children}
@@ -29,7 +45,12 @@ export const SettingsViewModelProvider = ({ children }) => {
   );
 };
 
-export const useSettingsViewModel = (): SettingsViewModelType => {
+/**
+ * useSettingsViewModelContext
+ *
+ * @returns {SettingsViewModelType}
+ */
+export const useSettingsViewModelContext = (): SettingsViewModelType => {
   const context = React.useContext(SettingsViewModelContext);
   if (context === null) {
     throw new Error(
