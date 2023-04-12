@@ -13,6 +13,7 @@ import customTheme from "src/theme";
 import { RootView } from "./root.view";
 import { ErrorBoundary } from "react-error-boundary";
 import Fallback from "./components/error/error";
+import { SettingsViewModelProvider } from "./components/settings/settings.viewModel";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 const theme = customTheme();
@@ -25,8 +26,10 @@ root.render(
           <RootViewModelProvider>
             <ChatViewModelProvider>
               <ProfileViewModelProvider>
-                <CssBaseline />
-                <RootView />
+                <SettingsViewModelProvider>
+                  <CssBaseline />
+                  <RootView />
+                </SettingsViewModelProvider>
               </ProfileViewModelProvider>
             </ChatViewModelProvider>
           </RootViewModelProvider>

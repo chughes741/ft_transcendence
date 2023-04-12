@@ -13,6 +13,7 @@ import GameWindow from "./game/game.master";
 import { ChatView } from "./chat/chat.view";
 import ProfileView from "./profile/profile.view";
 import { HelmetView } from "./components/Helmet";
+import SettingsView from "./components/settings/settings.view";
 
 /**
  * Root view content
@@ -68,6 +69,7 @@ export function RootView(): JSX.Element {
   return (
     <>
       <HelmetView />
+      <SettingsView />
       <Container
         id="page-container"
         style={{ margin: "0", padding: "0", maxWidth: "100vw" }}

@@ -15,7 +15,7 @@ import ButtonFunky from "src/components/ButtonFunky";
 import { SportsEsports } from "@mui/icons-material";
 import DynamicIconButton from "../DynamicIconButton";
 import { useRootViewModelContext } from "src/root.context";
-const settings = ["Profile", "Settings", "Logout"];
+import { useSettingsViewModelContext } from "../settings/settings.viewModel";
 
 //Set css flexbox options for the toolbar component to create proper object positioning for child elements
 const toolbarStyle = {
@@ -27,6 +27,7 @@ function TopBar() {
   const { setPageState } = useRootViewModelContext();
   const { setUser } = useProfileViewModelContext();
   const { self } = useRootViewModelContext();
+  const { handleOpenSettings } = useSettingsViewModelContext();
   const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(
     null
   );
@@ -42,6 +43,11 @@ function TopBar() {
   const onClickProfile = () => {
     setUser(self.username);
     setPageState(PageState.Profile);
+    handleCloseUserMenu();
+  };
+
+  const onClickSettings = () => {
+    handleOpenSettings();
     handleCloseUserMenu();
   };
 
@@ -120,14 +126,15 @@ function TopBar() {
             open={Boolean(anchorElUser)}
             onClose={handleCloseUserMenu}
           >
-            {settings.map((setting) => (
-              <MenuItem
-                key={setting}
-                onClick={onClickProfile}
-              >
-                <Typography textAlign="center">{setting}</Typography>
-              </MenuItem>
-            ))}
+            <MenuItem onClick={onClickProfile}>
+              <Typography textAlign="center">Profile</Typography>
+            </MenuItem>
+            <MenuItem onClick={onClickSettings}>
+              <Typography textAlign="center">Settings</Typography>
+            </MenuItem>
+            <MenuItem onClick={onClickProfile}>
+              <Typography textAlign="center">Logout</Typography>
+            </MenuItem>
           </Menu>
         </Box>
       </Toolbar>
