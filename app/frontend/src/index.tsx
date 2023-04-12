@@ -21,7 +21,7 @@ const theme = customTheme();
 root.render(
   <ErrorBoundary FallbackComponent={Fallback}>
     <React.StrictMode>
-      <WebSocketProvider value={socket}>
+      <WebSocketProvider>
         <ThemeProvider theme={theme}>
           <RootViewModelProvider>
             <ChatViewModelProvider>
