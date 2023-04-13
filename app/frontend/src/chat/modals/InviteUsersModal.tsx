@@ -87,7 +87,7 @@ export const InviteUsersModal: React.FC<InviteUsersToRoomProps> = ({
       }}
     >
       <DialogTitle alignContent={"center"}>
-        Invite Users to Room ${roomName}
+        {roomName} - Invite Users to Room
       </DialogTitle>
       <DialogContent>
         <Autocomplete

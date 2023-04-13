@@ -125,8 +125,8 @@ export const ChatViewModelProvider = ({ children }) => {
           console.log("Success response from user login: ");
           console.log(response);
           setTempUsername(username);
-          joinRoom("PublicRoom", "");
-          joinRoom("PrivateRoom", "");
+          joinRoom("PublicRoom", "secret");
+          joinRoom("PrivateRoom", "secret");
           joinRoom("PasswordProtectedRoom", "secret");
           joinRoom("test", "secret");
           joinRoom("asdf", "secret");
@@ -152,8 +152,8 @@ export const ChatViewModelProvider = ({ children }) => {
 
           // FIXME: For testing purposes only
           // Join three separate rooms on connection
-          joinRoom("PublicRoom", "");
-          joinRoom("PrivateRoom", "");
+          joinRoom("PublicRoom", "secret");
+          joinRoom("PrivateRoom", "secret");
           joinRoom("PasswordProtectedRoom", "secret");
           joinRoom("PasswordProtectedRoomFromCreateUser", "secret");
           resolve(true);

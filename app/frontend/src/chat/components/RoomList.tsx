@@ -42,6 +42,7 @@ const RoomList: React.FC = () => {
     setShowCreateRoomModal,
     setShowJoinRoomModal,
     setShowInviteUsersModal,
+    setShowPasswordModal,
     /* Snackbar */
     showNewRoomSnackbar,
     setShowNewRoomSnackbar,
@@ -136,7 +137,7 @@ const RoomList: React.FC = () => {
       />
       <RoomPasswordModal
         showModal={showPasswordModal}
-        closeModal={() => setShowDirectMessageModal(false)}
+        closeModal={() => setShowPasswordModal(false)}
       />
       <DirectMessageModal
         showModal={showDirectMessageModal}

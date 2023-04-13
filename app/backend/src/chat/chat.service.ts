@@ -221,12 +221,13 @@ export class ChatService {
       logger.warn(`Previous status was ${room.status}`);
       logger.log(`Updating room ${roomName} to status ${status}`);
 
-      if (status === ChatRoomStatus.PASSWORD && newPassword) {
+      if (status === ChatRoomStatus.PASSWORD) {
+        if (!newPassword) {
+          const err = `Error, no password provided for password protected room`;
+          logger.error(err);
+          return Error(err);
+        }
         newPassword = await argon2.hash(newPassword);
-      } else {
-        const err = `Error, no password provided for password protected room`;
-        logger.error(err);
-        return Error(err);
       }
 
       const updatedRoom = await this.prismaService.updateChatRoom(room.id, {

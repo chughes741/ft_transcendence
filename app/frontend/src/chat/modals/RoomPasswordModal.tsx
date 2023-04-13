@@ -37,6 +37,7 @@ export const RoomPasswordModal: React.FC<RoomPasswordModalProps> = ({
 
   const [newPassword, setNewPassword] = useState("");
   const [newPasswordConfirm, setNewPasswordConfirm] = useState("");
+  const [showNewPassword, setShowNewPassword] = useState(false);
 
   const handleSubmit = useCallback(async () => {
     if (newPassword !== newPasswordConfirm) {
@@ -82,7 +83,9 @@ export const RoomPasswordModal: React.FC<RoomPasswordModalProps> = ({
         }
       }}
     >
-      <DialogTitle alignContent={"center"}>Change Room Password</DialogTitle>
+      <DialogTitle alignContent={"center"}>
+        {roomName} - Change Password
+      </DialogTitle>
       <DialogContent
         sx={{
           "& > *:not(:last-child)": {
@@ -90,27 +93,29 @@ export const RoomPasswordModal: React.FC<RoomPasswordModalProps> = ({
           }
         }}
       >
+        {room.status === ChatRoomStatus.PASSWORD && (
+          <TextField
+            autoFocus
+            margin="dense"
+            label="Old Password"
+            type={showPassword ? "text" : "password"}
+            fullWidth
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            onKeyDown={handleKeyPress}
+            InputProps={{
+              endAdornment: (
+                <IconButton
+                  edge="end"
+                  onClick={togglePasswordVisibility}
+                >
+                  {showPassword ? <FiEye /> : <FiEyeOff />}
+                </IconButton>
+              )
+            }}
+          />
+        )}
         <DialogContentText>Enter new password:</DialogContentText>
-        <TextField
-          autoFocus
-          margin="dense"
-          label="Old Password"
-          type={showPassword ? "text" : "password"}
-          fullWidth
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          onKeyDown={handleKeyPress}
-          InputProps={{
-            endAdornment: (
-              <IconButton
-                edge="end"
-                onClick={togglePasswordVisibility}
-              >
-                {showPassword ? <FiEye /> : <FiEyeOff />}
-              </IconButton>
-            )
-          }}
-        />
         <TextField
           margin="dense"
           label="New Password"

@@ -199,9 +199,7 @@ export class ChatGateway
     client: Socket,
     updateChatRoomRequest: UpdateChatRoomRequest
   ): Promise<ChatRoomEntity | DevError> {
-    const username = await this.userConnectionsService.getUserBySocket(
-      client.id
-    );
+    const username = this.userConnectionsService.getUserBySocket(client.id);
     if (!username) {
       return { error: "User not found" };
     }
