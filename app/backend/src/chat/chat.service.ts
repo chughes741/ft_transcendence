@@ -120,6 +120,7 @@ export class ChatService {
   async joinRoom(joinDto: JoinRoomDto): Promise<ChatRoomEntity | Error> {
     const { roomName, password, user } = joinDto;
     let room: ChatRoom;
+
     try {
       room = await this.prismaService.chatRoom.findUnique({
         where: { name: roomName }
@@ -149,21 +150,22 @@ export class ChatService {
     )
       return Error("Incorrect password");
 
-    // Add the user as a chat member if they are not already a member
+    // Add the user as a chat member
     const userId = await this.prismaService.getUserIdByNick(user);
-    // This should really be a findUnique, but I can't figure out how to make it work
-    let chatMember = await this.prismaService.chatMember.findFirst({
-      where: { memberId: userId, roomId: room.id }
-    });
-    if (!chatMember) {
-      chatMember = await this.prismaService.addChatMember(
+
+    // FIXME: Verify that the user is not in there and banned?
+    try {
+      // This should really be a findUnique, but I can't figure out how to make it work
+      const chatMember = await this.prismaService.addChatMember(
         userId,
         room.id,
         ChatMemberRank.USER
       );
+      return this.getChatRoomEntity(room, chatMember.rank);
+    } catch (e) {
+      logger.error(`PrismaError adding user ${user} to room ${roomName}`, e);
+      return e;
     }
-
-    return this.getChatRoomEntity(room, chatMember.rank);
   }
 
   async leaveRoom(req: LeaveRoomRequest): Promise<ChatMember | Error> {
