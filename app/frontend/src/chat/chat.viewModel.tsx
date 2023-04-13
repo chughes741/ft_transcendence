@@ -14,6 +14,7 @@ import {
   handleAddedToNewChatRoomCreator
 } from "./lib/socketHandler";
 import { useRoomManager } from "./lib/roomManager";
+import { handleSocketErrorResponse } from "./lib/helperFunctions";
 
 export interface ChatViewModelType extends ChatModelType {
   joinRoom: (roomName: string, password: string) => Promise<boolean>;
@@ -83,6 +84,28 @@ export const ChatViewModelProvider = ({ children }) => {
     setCurrentRoomName(roomName);
     setCurrentRoomMessages(rooms[roomName].messages);
     setPageState(PageState.Chat);
+  };
+
+  /***************************/
+  /*   User List Functions   */
+  /***************************/
+  const changeChatMemberStatus = (
+    username: string,
+    status: string,
+    duration?: number
+  ) => {
+    socket.emit(
+      "updateChatMemberStatus",
+      {
+        username,
+        status,
+        duration
+      },
+      (response: DevError | string) => {
+        if (handleSocketErrorResponse(response))
+          alert("Error changing chat member status: " + response);
+      }
+    );
   };
 
   /**********************/

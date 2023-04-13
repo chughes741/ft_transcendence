@@ -588,13 +588,13 @@ export class ChatGateway
     data: updateChatMemberStatusDto
   ): Promise<string> {
     try {
-      //Try to update the satus
       const chatMember = await this.chatService.updateMemberStatus(data);
-      //If Successful, Broadcast back the updated list
-      if (chatMember)
-        await this.listUsers(client, { chatRoomName: data.forRoomName });
-
-      // (Might not be useful now that we broadcast the list) Broadcast the updated chat member information to all clients connected to the chat
+      if (chatMember.status === "BANNED") {
+        // TODO: implement this
+        // Return this.kickChatMember, but with a different DTO
+      }
+      this.listUsers(client, { chatRoomName: data.forRoomName });
+      // TODO: implement a listener on the client side to handle this event
       //this.server.to(data.roomName).emit('chatMemberUpdated', chatMember);
 
       return "Chat Member's Status succesfully updated !";
