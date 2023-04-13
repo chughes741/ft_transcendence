@@ -1,8 +1,6 @@
 // ChatModel.tsx
 import { useState, MouseEvent } from "react";
-import { RoomType } from "./chat.viewModel";
-import { MessageType } from "./components/Message";
-import { UserListItem } from "./components/Userlist";
+import { RoomType, MessageType, UserListItem } from "./chat.types";
 
 export interface ChatModelType {
   /* User */
@@ -12,12 +10,6 @@ export interface ChatModelType {
   /* Room List Information */
   currentRoomName: string;
   setCurrentRoomName: (roomName: string) => void;
-  rooms: { [key: string]: RoomType };
-  setRooms: (
-    callback: (prevRooms: { [key: string]: RoomType }) => {
-      [key: string]: RoomType;
-    }
-  ) => void;
   currentRoomMessages: Array<MessageType>;
   setCurrentRoomMessages: (messages: Array<MessageType>) => void;
 
@@ -44,13 +36,12 @@ export interface ChatModelType {
   setShowJoinRoomModal: (visible: boolean) => void;
   showInviteUsersModal: boolean;
   setShowInviteUsersModal: (visible: boolean) => void;
+  showPasswordModal: boolean;
+  setShowPasswordModal: (visible: boolean) => void;
 
   /* Snackbars */
   showNewRoomSnackbar: boolean;
   setShowNewRoomSnackbar: (visible: boolean) => void;
-
-  /* Helper Functions */
-  truncateText: (text: string, maxLength: number) => string;
 }
 
 export const useChatModel = (): ChatModelType => {
@@ -59,7 +50,6 @@ export const useChatModel = (): ChatModelType => {
 
   /* Room List Information */
   const [currentRoomName, setCurrentRoomName] = useState("");
-  const [rooms, setRooms] = useState({});
   const [currentRoomMessages, setCurrentRoomMessages] = useState([]);
 
   /* Modals */
@@ -67,6 +57,7 @@ export const useChatModel = (): ChatModelType => {
   const [showCreateRoomModal, setShowCreateRoomModal] = useState(false);
   const [showJoinRoomModal, setShowJoinRoomModal] = useState(false);
   const [showInviteUsersModal, setShowInviteUsersModal] = useState(false);
+  const [showPasswordModal, setShowPasswordModal] = useState(false);
 
   /* Snackbars */
   const [showNewRoomSnackbar, setShowNewRoomSnackbar] = useState(false);
@@ -101,21 +92,11 @@ export const useChatModel = (): ChatModelType => {
     setContextMenuUsersData(userData);
   };
 
-  /* Helper Functions */
-  const truncateText = (text: string, maxLength: number) => {
-    if (text.length <= maxLength) {
-      return text;
-    }
-    return text.substring(0, maxLength - 1) + "…";
-  };
-
   return {
     tempUsername,
     setTempUsername,
     currentRoomName,
     setCurrentRoomName,
-    rooms,
-    setRooms,
     currentRoomMessages,
     setCurrentRoomMessages,
     contextMenuData,
@@ -136,8 +117,9 @@ export const useChatModel = (): ChatModelType => {
     setShowJoinRoomModal,
     showInviteUsersModal,
     setShowInviteUsersModal,
+    showPasswordModal,
+    setShowPasswordModal,
     showNewRoomSnackbar,
-    setShowNewRoomSnackbar,
-    truncateText
+    setShowNewRoomSnackbar
   };
 };

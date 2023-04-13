@@ -3,7 +3,6 @@ import {
   Dialog,
   DialogTitle,
   Avatar,
-  Badge,
   MenuItem,
   ListItemText,
   TextField,
@@ -14,8 +13,8 @@ import {
 } from "@mui/material";
 import { UserStatus } from "kingpong-lib";
 import ButtonFunky from "../../components/ButtonFunky";
-import { useChatContext } from "../chat.context";
 import { socket } from "../../contexts/WebSocket.context";
+import UserStatusBadge from "../../components/UserStatusBadge";
 
 export interface UserEntity {
   username: string;
@@ -29,6 +28,7 @@ export interface InviteUsersToRoomRequest {
 }
 
 interface InviteUsersToRoomProps {
+  roomName: string;
   showModal: boolean;
   closeModal: () => void;
   availableUsers: UserEntity[];
@@ -37,13 +37,17 @@ interface InviteUsersToRoomProps {
 }
 
 export const InviteUsersModal: React.FC<InviteUsersToRoomProps> = ({
+  roomName,
   showModal,
   closeModal,
   availableUsers,
   selectedUsers,
   setSelectedUsers
 }) => {
-  const { currentRoomName } = useChatContext();
+  if (!showModal) {
+    return null;
+  }
+  console.warn("InviteUsersModal.tsx: ", availableUsers, selectedUsers);
 
   const handleInvite = () => {
     if (selectedUsers.length <= 0) {
@@ -52,7 +56,7 @@ export const InviteUsersModal: React.FC<InviteUsersToRoomProps> = ({
     }
 
     const req: InviteUsersToRoomRequest = {
-      roomName: currentRoomName,
+      roomName,
       usernames: selectedUsers.map((user) => user.username)
     };
     socket.emit("inviteUsersToRoom", req, (res: boolean | null) => {
@@ -63,9 +67,11 @@ export const InviteUsersModal: React.FC<InviteUsersToRoomProps> = ({
     closeModal();
   };
 
-  if (!showModal) {
-    return null;
-  }
+  const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Escape") {
+      closeModal();
+    }
+  };
 
   return (
     <Dialog
@@ -81,38 +87,31 @@ export const InviteUsersModal: React.FC<InviteUsersToRoomProps> = ({
       }}
     >
       <DialogTitle alignContent={"center"}>
-        Invite Users to Room ${currentRoomName}
+        {roomName} - Invite Users to Room
       </DialogTitle>
       <DialogContent>
         <Autocomplete
           id="user-autocomplete"
           options={availableUsers}
           getOptionLabel={(option) => option.username}
+          onKeyDown={handleKeyPress}
           multiple
           value={selectedUsers}
           renderOption={(props, option) => (
             <MenuItem {...props}>
-              <Badge
-                color={
-                  option.status === UserStatus.ONLINE
-                    ? "success"
-                    : option.status === UserStatus.OFFLINE
-                    ? "error"
-                    : "warning"
-                }
+              <UserStatusBadge
+                status={option.status}
                 anchorOrigin={{
                   vertical: "bottom",
                   horizontal: "right"
                 }}
-                overlap="circular"
-                variant="dot"
               >
                 <Avatar
                   alt={option.username}
                   src={option.avatar}
                   sx={{ width: 40, height: 40, marginRight: 1 }}
                 />
-              </Badge>
+              </UserStatusBadge>
               <ListItemText primary={option.username} />
             </MenuItem>
           )}

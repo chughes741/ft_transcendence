@@ -1,3 +1,4 @@
+import * as argon2 from "argon2";
 import { Injectable, Logger } from "@nestjs/common";
 import {
   ChatMember,
@@ -15,11 +16,11 @@ import {
   InviteUsersToRoomRequest,
   JoinRoomDto,
   LeaveRoomRequest,
-  SendMessageDto
+  SendMessageDto,
+  UpdateChatRoomRequest
 } from "./chat.gateway";
 import { MessageEntity } from "./entities/message.entity";
 import { kickMemberDto, updateChatMemberStatusDto } from "./dto/userlist.dto";
-import { ChatMemberPrismaType } from "./chat.gateway";
 import { ChatMemberEntity } from "./entities/message.entity";
 
 const logger = new Logger("ChatService");
@@ -70,14 +71,19 @@ export class ChatService {
   async createRoom(
     createDto: CreateChatRoomDto
   ): Promise<ChatRoomEntity | Error> {
-    // Check if the room already exists
-    const roomExists = await this.prismaService.chatRoom.findUnique({
-      where: { name: createDto.name }
-    });
-    if (roomExists) {
-      // Warn the client that the room already exists
-      logger.log(`RoomCreation error: Room ${createDto.name} already exists`);
-      return Error("Room already exists");
+    try {
+      // Check if the room already exists
+      const roomExists = await this.prismaService.chatRoom.findUnique({
+        where: { name: createDto.name }
+      });
+      if (roomExists) {
+        // Warn the client that the room already exists
+        logger.log(`RoomCreation error: Room ${createDto.name} already exists`);
+        return Error("Room already exists");
+      }
+    } catch (e) {
+      logger.error("Error checking if room exists", e);
+      return Error("Error checking if room exists");
     }
 
     // Add the room to the database
@@ -96,7 +102,7 @@ export class ChatService {
         avatars: [members[0].member.avatar]
       };
     } catch (e) {
-      logger.error(e);
+      logger.error("Error creating room in database", e);
       return Error("Error creating room in database");
     }
   }
@@ -113,30 +119,35 @@ export class ChatService {
    */
   async joinRoom(joinDto: JoinRoomDto): Promise<ChatRoomEntity | Error> {
     const { roomName, password, user } = joinDto;
-    let room = await this.prismaService.chatRoom.findUnique({
-      where: { name: roomName }
-    });
-    if (!room) {
+    let room: ChatRoom;
+    try {
+      room = await this.prismaService.chatRoom.findUnique({
+        where: { name: roomName }
+      });
+    } catch (e) {
+      // FIXME: Remove this behaviour after development is complete
+      logger.error(
+        `Error finding room ${roomName}: ${e.message}, attempting to create it`
+      );
       try {
         room = await this.prismaService.createChatRoom({
           name: roomName,
           status: ChatRoomStatus.PUBLIC,
           owner: user
         });
-        logger.log(
-          `Tried to join room ${roomName}, but it did not exist. Created it as a public room: `
-        );
+        logger.log(`Room ${roomName} created: `);
         console.log(room);
       } catch (e) {
         logger.error(`Error creating room ${roomName}: ${e}`);
         return e;
       }
-    } else if (
-      room.status === ChatRoomStatus.PASSWORD &&
-      room.password !== password
-    ) {
-      return Error("Incorrect password");
     }
+
+    if (
+      room.status === ChatRoomStatus.PASSWORD &&
+      !argon2.verify(room.password, password)
+    )
+      return Error("Incorrect password");
 
     // Add the user as a chat member if they are not already a member
     const userId = await this.prismaService.getUserIdByNick(user);
@@ -171,6 +182,66 @@ export class ChatService {
     return this.prismaService.chatMember.delete({
       where: { id: chatMember.id }
     });
+  }
+
+  /**
+   * Update a Chat Room
+   * @param updateDto - The room name, password, and user
+   * @returns - The updated room, or an error
+   */
+  async updateRoom(
+    req: UpdateChatRoomRequest
+  ): Promise<ChatRoomEntity | Error> {
+    try {
+      const { roomName, status, username, oldPassword } = req;
+      let { newPassword } = req;
+
+      const roomWithMember = await this.prismaService.getChatRoomWithMember(
+        roomName,
+        username
+      );
+
+      if (!roomWithMember) {
+        return Error("Room not found");
+      }
+
+      const { room, chatMember } = roomWithMember;
+
+      if (!chatMember || chatMember.rank !== ChatMemberRank.OWNER) {
+        return Error("User is not allowed to update this room");
+      }
+
+      if (room.status === ChatRoomStatus.PASSWORD) {
+        if (!oldPassword) {
+          return Error("Old password is required");
+        }
+        const passwordMatch = await argon2.verify(room.password, oldPassword);
+        if (!passwordMatch) {
+          return Error("Old password is incorrect");
+        }
+      }
+      logger.warn(`Previous status was ${room.status}`);
+      logger.log(`Updating room ${roomName} to status ${status}`);
+
+      if (status === ChatRoomStatus.PASSWORD) {
+        if (!newPassword) {
+          const err = `Error, no password provided for password protected room`;
+          logger.error(err);
+          return Error(err);
+        }
+        newPassword = await argon2.hash(newPassword);
+      }
+
+      const updatedRoom = await this.prismaService.updateChatRoom(room.id, {
+        roomName,
+        newPassword,
+        status
+      });
+      return this.getChatRoomEntity(updatedRoom, chatMember.rank);
+    } catch (e) {
+      logger.error("Error updating room", e);
+      return Error("Error updating room");
+    }
   }
 
   /**
@@ -227,7 +298,7 @@ export class ChatService {
       console.log(ret);
       return new MessageEntity(ret);
     } catch (e) {
-      logger.error(e);
+      logger.error("Error adding message to database", e);
       return Error("Error adding message to database");
     }
   }
@@ -267,7 +338,7 @@ export class ChatService {
         logger.log(`User ${username} added to the database: `);
         console.log(prismaReturn);
       } catch (e) {
-        logger.error(e);
+        logger.error("User already exists", "User already exists", e);
         return Error("User already exists");
       }
       // Add the user connection to the UserConnections map
@@ -300,44 +371,52 @@ export class ChatService {
     return username;
   }
 
-  /*
-    GET USER LIST : Get all user information relevant for the chat user tab Component
-    Takes a ChatmemberPrismaType array and transforms it into a ChatMemberEntity[], expected by the client
-  */
+  /**
+   * Get the list of users in a chat room
+   * If the room does not exist, return an error
+   * @param chatRoomName - The name of the chat room
+   * @returns ChatMemberEntity[] - An array of ChatMemberEntities
+   */
   async getUserList(chatRoomName: string): Promise<ChatMemberEntity[]> {
-    console.log("Inside getUserList, chatRoomName: ", chatRoomName);
-
-    //get all users that are members of a specific Chat Room (with string name)
-    const userMembers: ChatMemberPrismaType[] =
-      await this.prismaService.getRoomMembers(chatRoomName);
-    const chatMembers: ChatMemberEntity[] = userMembers.map(
-      (chatMember) => new ChatMemberEntity(chatMember)
-    );
-    if (userMembers.length > 0) {
-      return chatMembers;
+    try {
+      const roomMembers: ChatMemberEntity[] = (
+        await this.prismaService.getRoomMembers(chatRoomName)
+      ).map((chatMember) => new ChatMemberEntity(chatMember));
+      return roomMembers;
+    } catch (error) {
+      logger.error("Error getting user list", error);
+      return [];
     }
-    console.log("There is no members in room");
-    return [];
   }
 
-  async updateStatus(updateDto: updateChatMemberStatusDto) {
+  /**
+   * Update the status of a chat member
+   * If the member to update is the owner, return an error
+   * If the member requesting the update is a user, return an error
+   * @param updateDto - The updateChatMemberStatusDto object
+   * @returns ChatMember - The updated ChatMember object
+   */
+  async updateMemberStatus(
+    updateDto: updateChatMemberStatusDto
+  ): Promise<ChatMember> {
     try {
-      //MANAGES INVALID INPUTS:
-      if (updateDto.memberRequestRank === ChatMemberRank.USER)
-        throw new Error("Wrong rank: Can't request operation");
-      if (updateDto.memberToUpdateRANK === ChatMemberRank.OWNER)
-        throw new Error(
-          "ALARM: Trying to modify the owner's status, this activity will be reported !"
-        );
-
-      //TRIES TO UPDATE STATUS with Prisma and returns if successful response
+      if (
+        updateDto.memberToUpdateRANK === ChatMemberRank.OWNER ||
+        updateDto.memberRequestRank === ChatMemberRank.USER
+      ) {
+        const error =
+          updateDto.memberRequestRank === ChatMemberRank.USER
+            ? "Wrong rank: Can't request operation"
+            : "Wrong rank: Can't update owner";
+        logger.error("Error updating chat member status", error);
+        throw new Error(error);
+      }
       const response = await this.prismaService.updateChatMemberStatus(
         updateDto
       );
       return response;
     } catch (error) {
-      //RETURNS ERROR from any Error message
-      console.error(error);
+      logger.error("Error updating chat member status", error);
       throw error;
     }
   }

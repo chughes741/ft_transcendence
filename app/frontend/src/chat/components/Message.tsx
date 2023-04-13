@@ -1,19 +1,7 @@
 import { forwardRef } from "react";
 import { Tooltip, Typography, Divider, Avatar, Fade } from "@mui/material";
 import "src/styles/chat/Message.css";
-
-export type MessageType = {
-  username: string;
-  roomId: string;
-  content: string;
-  timestamp_readable: string;
-  timestamp: Date;
-  isOwn: boolean;
-  displayUser: boolean;
-  displayTimestamp: boolean;
-  displayDate: boolean;
-  avatar?: string;
-};
+import { MessageType } from "../chat.types";
 
 type MessageProps = {
   message: MessageType;

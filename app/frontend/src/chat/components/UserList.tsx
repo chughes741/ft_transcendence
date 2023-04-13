@@ -7,26 +7,8 @@ import {
   ListItemButton
 } from "@mui/material";
 import GroupIcon from "@mui/icons-material/Group";
-import ContextMenuUsers from "../../components/ContextMenuUsers";
-import { UserStatus } from "kingpong-lib";
-import { ChatMemberRank } from "../chat.viewModel";
-
-export enum ChatMemberStatus {
-  OK = "OK",
-  BANNED = "BANNED",
-  MUTED = "MUTED"
-}
-
-export interface UserListItem {
-  username: string;
-  roomName?: string;
-  avatar: string;
-  userStatus: UserStatus;
-  chatMemberStatus?: ChatMemberStatus;
-  rank?: ChatMemberRank;
-  endOfBan?: Date;
-  endOfMute?: Date;
-}
+import ContextMenuUsers from "./UserListContextMenu";
+import { UserListItem } from "../chat.types";
 
 export interface UserListProps {
   userList: { [key: string]: UserListItem };

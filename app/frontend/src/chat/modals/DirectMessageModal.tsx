@@ -3,7 +3,6 @@ import {
   Dialog,
   DialogTitle,
   Avatar,
-  Badge,
   MenuItem,
   TextField,
   Autocomplete,
@@ -15,6 +14,8 @@ import {
 import { socket } from "../../contexts/WebSocket.context";
 import { UserStatus } from "kingpong-lib";
 import { useChatContext } from "../chat.context";
+import UserStatusBadge from "../../components/UserStatusBadge";
+import { ListUsersRequest } from "../chat.types";
 
 interface UserEntity {
   username: string;
@@ -31,6 +32,10 @@ export const DirectMessageModal: React.FC<DirectMessageModalProps> = ({
   showModal,
   closeModal
 }) => {
+  if (!showModal) {
+    return null;
+  }
+
   const { tempUsername } = useChatContext();
   const [availableUsers, setAvailableUsers] = useState<UserEntity[]>([]);
   const [selectedUser, setSelectedUser] = useState<UserEntity | null>(null);
@@ -47,18 +52,27 @@ export const DirectMessageModal: React.FC<DirectMessageModalProps> = ({
     closeModal();
   };
 
+  const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter") {
+      handleSendDirectMessage();
+    }
+    if (e.key === "Escape") {
+      closeModal();
+    }
+  };
+
   useEffect(() => {
-    console.log("Fetching available users...");
-    socket.emit("listAvailableUsers", "", (users: UserEntity[]) => {
+    if (!showModal || !tempUsername) {
+      return;
+    }
+    const req: ListUsersRequest = { chatRoomName: "" };
+    console.warn(`RoomList: Fetching available users to DM...`, req);
+    socket.emit("listAvailableUsers", req, (users: UserEntity[]) => {
       console.log("Available users: ", users);
       setAvailableUsers(users);
       setSelectedUser(null);
     });
   }, [tempUsername, showModal]);
-
-  if (!showModal) {
-    return null;
-  }
 
   return (
     <Dialog
@@ -79,30 +93,23 @@ export const DirectMessageModal: React.FC<DirectMessageModalProps> = ({
           id="user-autocomplete"
           options={availableUsers}
           getOptionLabel={(option) => option.username}
+          onKeyDown={handleKeyPress}
           value={selectedUser}
           renderOption={(props, option) => (
             <MenuItem {...props}>
-              <Badge
-                color={
-                  option.status === UserStatus.ONLINE
-                    ? "success"
-                    : option.status === UserStatus.OFFLINE
-                    ? "error"
-                    : "warning"
-                }
+              <UserStatusBadge
+                status={option.status}
                 anchorOrigin={{
                   vertical: "bottom",
                   horizontal: "right"
                 }}
-                overlap="circular"
-                variant="dot"
               >
                 <Avatar
                   alt={option.username}
                   src={option.avatar}
                   sx={{ width: 40, height: 40, marginRight: 1 }}
                 />
-              </Badge>
+              </UserStatusBadge>
               <ListItemText primary={option.username} />
             </MenuItem>
           )}
