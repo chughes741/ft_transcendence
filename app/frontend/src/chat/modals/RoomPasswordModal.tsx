@@ -47,8 +47,8 @@ export const RoomPasswordModal: React.FC<RoomPasswordModalProps> = ({
     const success = await handleChangeRoomStatus(
       roomName,
       ChatRoomStatus.PASSWORD,
-      newPassword,
-      password
+      password,
+      newPassword
     );
     if (success) {
       setPassword("");

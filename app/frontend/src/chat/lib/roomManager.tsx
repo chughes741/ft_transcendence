@@ -315,6 +315,8 @@ export const RoomManagerProvider = ({ children }) => {
   ): Promise<boolean> => {
     return new Promise<boolean>((resolve) => {
       console.log(`Changing room status of ${roomName} to ${newStatus}`);
+      console.log(`Old password: ${oldPassword}`);
+      console.log(`New password: ${newPassword}`);
 
       const req: UpdateChatRoomRequest = {
         roomName,
