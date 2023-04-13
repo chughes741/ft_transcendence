@@ -134,6 +134,7 @@ const RoomList: React.FC = () => {
         onLeaveRoom={leaveRoom}
         onInvitePeopleToRoom={handleInvitePeopleToRoom}
         onChangeRoomStatus={changeRoomStatus}
+        onChangeRoomPassword={() => setShowPasswordModal(true)}
       />
       <RoomPasswordModal
         showModal={showPasswordModal}

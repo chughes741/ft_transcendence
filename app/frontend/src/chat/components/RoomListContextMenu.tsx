@@ -10,6 +10,7 @@ interface RoomContextMenuProps {
   onLeaveRoom: () => void;
   onInvitePeopleToRoom: () => void;
   onChangeRoomStatus: (status: ChatRoomStatus) => Promise<boolean>;
+  onChangeRoomPassword: () => void;
 }
 
 const RoomContextMenu: React.FC<RoomContextMenuProps> = ({
@@ -19,7 +20,8 @@ const RoomContextMenu: React.FC<RoomContextMenuProps> = ({
   contextMenuData,
   onLeaveRoom,
   onInvitePeopleToRoom,
-  onChangeRoomStatus
+  onChangeRoomStatus,
+  onChangeRoomPassword
 }) => {
   if (!contextMenuData) return null;
 
@@ -55,6 +57,14 @@ const RoomContextMenu: React.FC<RoomContextMenuProps> = ({
                 {
                   label: "Change Room Status",
                   submenu: generateSubmenuOptions()
+                }
+              ]
+            : []),
+          ...(contextMenuData.status === ChatRoomStatus.PASSWORD
+            ? [
+                {
+                  label: "Change Room Password",
+                  onClick: onChangeRoomPassword
                 }
               ]
             : [])
