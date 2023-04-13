@@ -16,34 +16,39 @@ import { UserEntity, InviteUsersModal } from "../modals/InviteUsersModal";
 import { JoinRoomModal } from "../modals/JoinRoomModal";
 import { handleSocketErrorResponse } from "../lib/helperFunctions";
 import { DevError, ListUsersRequest } from "../chat.types";
+import { RoomPasswordModal } from "../modals/RoomPasswordModal";
 
 const RoomList: React.FC = () => {
+  const { rooms } = useRoomManager();
   const {
     currentRoomName,
-    setShowCreateRoomModal,
-    setShowJoinRoomModal,
+    /* Room fcts */
+    createNewRoom,
+    joinRoom,
+    leaveRoom,
+    changeRoomStatus,
+    /* Context Menu */
     contextMenuData,
     contextMenuPosition,
     contextMenuRoomsVisible,
     setContextMenuRoomsVisible,
-    handleContextMenu,
-    createNewRoom,
-    leaveRoom,
-    changeRoomStatus,
-    /* Direct message */
+    /* Modals */
     showDirectMessageModal,
-    setShowDirectMessageModal,
     showCreateRoomModal,
     showJoinRoomModal,
-    /* Invite users */
     showInviteUsersModal,
+    showPasswordModal,
+    setShowDirectMessageModal,
+    setShowCreateRoomModal,
+    setShowJoinRoomModal,
     setShowInviteUsersModal,
-    joinRoom,
-    selectRoom,
+    /* Snackbar */
     showNewRoomSnackbar,
-    setShowNewRoomSnackbar
+    setShowNewRoomSnackbar,
+    /* Util fcts */
+    selectRoom,
+    handleContextMenu
   } = useChatContext();
-  const { rooms } = useRoomManager();
 
   const [selectedUsers, setSelectedUsers] = React.useState<UserEntity[]>([]);
   const [availableUsers, setAvailableUsers] = React.useState<UserEntity[]>([]);
@@ -128,6 +133,10 @@ const RoomList: React.FC = () => {
         onLeaveRoom={leaveRoom}
         onInvitePeopleToRoom={handleInvitePeopleToRoom}
         onChangeRoomStatus={changeRoomStatus}
+      />
+      <RoomPasswordModal
+        showModal={showPasswordModal}
+        closeModal={() => setShowDirectMessageModal(false)}
       />
       <DirectMessageModal
         showModal={showDirectMessageModal}

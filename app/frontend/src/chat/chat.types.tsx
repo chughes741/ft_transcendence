@@ -104,6 +104,6 @@ export class UpdateChatRoomRequest {
   username: string;
   roomName: string;
   status: ChatRoomStatus;
-  password?: string;
   oldPassword?: string;
+  newPassword?: string;
 }

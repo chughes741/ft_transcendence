@@ -192,7 +192,7 @@ export class ChatService {
   ): Promise<ChatRoomEntity | Error> {
     try {
       const { roomName, status, username, oldPassword } = req;
-      let { password } = req;
+      let { newPassword } = req;
 
       const roomWithMember = await this.prismaService.getChatRoomWithMember(
         roomName,
@@ -221,10 +221,8 @@ export class ChatService {
       logger.warn(`Previous status was ${room.status}`);
       logger.log(`Updating room ${roomName} to status ${status}`);
 
-      logger.error(`*****REMOVE ME***** Hashing password: ${password}`);
-      if (status === ChatRoomStatus.PASSWORD && password) {
-        logger.error(`*****REMOVE ME***** Hashing password: ${password}`);
-        password = await argon2.hash(password);
+      if (status === ChatRoomStatus.PASSWORD && newPassword) {
+        newPassword = await argon2.hash(newPassword);
       } else {
         const err = `Error, no password provided for password protected room`;
         logger.error(err);
@@ -233,7 +231,7 @@ export class ChatService {
 
       const updatedRoom = await this.prismaService.updateChatRoom(room.id, {
         roomName,
-        password,
+        newPassword,
         status
       });
       return this.getChatRoomEntity(updatedRoom, chatMember.rank);

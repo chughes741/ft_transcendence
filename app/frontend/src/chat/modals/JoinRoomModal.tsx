@@ -48,6 +48,9 @@ export const JoinRoomModal: React.FC<JoinRoomModalProps> = ({
   closeModal,
   onJoinRoom
 }) => {
+  if (!showModal) {
+    return null;
+  }
   const { tempUsername } = useChatContext();
 
   const { password, setPassword, showPassword, togglePasswordVisibility } =
@@ -92,9 +95,6 @@ export const JoinRoomModal: React.FC<JoinRoomModalProps> = ({
     );
   }, [tempUsername, showModal]);
 
-  if (!showModal) {
-    return null;
-  }
   return (
     <Dialog
       open={showModal}

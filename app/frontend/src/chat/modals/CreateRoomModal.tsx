@@ -42,6 +42,9 @@ export const CreateRoomModal: React.FC<CreateRoomModalProps> = ({
   closeModal,
   onCreateRoom
 }) => {
+  if (!showModal) {
+    return null;
+  }
   // const classes = useStyles();
   const [roomStatus, setRoomStatus] = useState<ChatRoomStatus>(
     ChatRoomStatus.PUBLIC
@@ -87,9 +90,6 @@ export const CreateRoomModal: React.FC<CreateRoomModalProps> = ({
     }
   };
 
-  if (!showModal) {
-    return null;
-  }
   return (
     <Dialog
       open={showModal}

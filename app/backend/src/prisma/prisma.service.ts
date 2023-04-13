@@ -364,7 +364,7 @@ export class PrismaService extends PrismaClient {
     const data: Prisma.ChatRoomCreateInput = {
       status: req.status,
       name: req.roomName,
-      password: req.password
+      password: req.newPassword
     };
     return this.chatRoom.update({ where: { id }, data });
   }

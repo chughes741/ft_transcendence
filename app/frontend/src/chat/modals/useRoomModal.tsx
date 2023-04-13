@@ -12,9 +12,6 @@ export const useRoomModal = (showModal: boolean, closeModal: () => void) => {
     }
   }, [showModal]);
 
-  //FIXME: speaks for itself
-  if (roomName === "fuck-es-lint") closeModal();
-
   const togglePasswordVisibility = () => {
     setShowPassword(!showPassword);
   };

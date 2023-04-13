@@ -34,7 +34,8 @@ export interface RoomManagerContextType {
   handleChangeRoomStatus: (
     roomName: string,
     newStatus: ChatRoomStatus,
-    password?: string
+    oldPassword?: string,
+    newPassword?: string
   ) => Promise<boolean>;
   updateRooms: (updateFn: (rooms: RoomMap) => void) => void;
   convertMessagePayloadToMessageType: (
@@ -309,8 +310,8 @@ export const RoomManagerProvider = ({ children }) => {
   const handleChangeRoomStatus = async (
     roomName: string,
     newStatus: ChatRoomStatus,
-    password?: string,
-    oldPassword?: string
+    oldPassword?: string,
+    newPassword?: string
   ): Promise<boolean> => {
     return new Promise<boolean>((resolve) => {
       console.log(`Changing room status of ${roomName} to ${newStatus}`);
@@ -319,8 +320,8 @@ export const RoomManagerProvider = ({ children }) => {
         roomName,
         username: self.username,
         status: newStatus,
-        password,
-        oldPassword
+        oldPassword,
+        newPassword
       };
       console.log(`Request: `, req);
       socket.emit(

@@ -32,6 +32,10 @@ export const DirectMessageModal: React.FC<DirectMessageModalProps> = ({
   showModal,
   closeModal
 }) => {
+  if (!showModal) {
+    return null;
+  }
+
   const { tempUsername } = useChatContext();
   const [availableUsers, setAvailableUsers] = useState<UserEntity[]>([]);
   const [selectedUser, setSelectedUser] = useState<UserEntity | null>(null);
@@ -69,10 +73,6 @@ export const DirectMessageModal: React.FC<DirectMessageModalProps> = ({
       setSelectedUser(null);
     });
   }, [tempUsername, showModal]);
-
-  if (!showModal) {
-    return null;
-  }
 
   return (
     <Dialog
