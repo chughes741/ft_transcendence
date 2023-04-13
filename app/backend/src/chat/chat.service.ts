@@ -174,22 +174,21 @@ export class ChatService {
       return Error(`Error verifying password for room ${roomName}`);
     }
 
-    // Add the user as a chat member
+    // Add the user as a chat member if they are not already a member
     const userId = await this.prismaService.getUserIdByNick(user);
-
-    // FIXME: Verify that the user is not in there and banned?
-    try {
-      // This should really be a findUnique, but I can't figure out how to make it work
-      const chatMember = await this.prismaService.addChatMember(
+    // This should really be a findUnique, but I can't figure out how to make it work
+    let chatMember = await this.prismaService.chatMember.findFirst({
+      where: { memberId: userId, roomId: room.id }
+    });
+    if (!chatMember) {
+      chatMember = await this.prismaService.addChatMember(
         userId,
         room.id,
         ChatMemberRank.USER
       );
-      return this.getChatRoomEntity(room, chatMember.rank);
-    } catch (e) {
-      logger.error(`PrismaError adding user ${user} to room ${roomName}`, e);
-      return e;
     }
+
+    return this.getChatRoomEntity(room, chatMember.rank);
   }
 
   async leaveRoom(req: LeaveRoomRequest): Promise<ChatMember | Error> {
