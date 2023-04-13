@@ -46,7 +46,7 @@ require("tsconfig-paths");
     AppService,
     PrismaService,
     UserConnectionsService,
-    ImgTransferService,
+    ImgTransferService
   ]
 })
 export class AppModule {}

@@ -71,18 +71,18 @@ export class AuthController {
   }
 
   @Get("token")
-  async generate42Token(@Query('code') authorizationCode: string){
+  async generate42Token(@Query("code") authorizationCode: string) {
     console.log("Inside Generate42Token");
-    console.log("Authorisation code : "+ authorizationCode);
-    const token = await this.authService.getAuht42(authorizationCode)
-    return {token};
+    console.log("Authorisation code : " + authorizationCode);
+    const token = await this.authService.getAuht42(authorizationCode);
+    return { token };
   }
 
   @Get("authorisationURL")
-  async generateAuth42Url(){
+  async generateAuth42Url() {
     const REDIRECT_URI = "http://localhost:3000/";
-    const CLIENT_ID = "u-s4t2ud-51fb382cccb5740fc1b9129a3ddacef8324a59dc4c449e3e8ba5f62acb2079b6";
+    const CLIENT_ID =
+      "u-s4t2ud-51fb382cccb5740fc1b9129a3ddacef8324a59dc4c449e3e8ba5f62acb2079b6";
     return `https://api.intra.42.fr/oauth/authorize?client_id=${CLIENT_ID}&redirect_uri=${REDIRECT_URI}&response_type=code`;
   }
-
 }

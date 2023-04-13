@@ -1,9 +1,10 @@
-
 import { useState, useEffect } from "react";
 import { Button } from "@mui/material";
 
-const CLIENT_ID = "u-s4t2ud-51fb382cccb5740fc1b9129a3ddacef8324a59dc4c449e3e8ba5f62acb2079b6";
-const CLIENT_SECRET = "23a8bf4322ff2bc64ca1f076599b479198db24e5327041ce65735631d6ee8875";
+const CLIENT_ID =
+  "u-s4t2ud-51fb382cccb5740fc1b9129a3ddacef8324a59dc4c449e3e8ba5f62acb2079b6";
+const CLIENT_SECRET =
+  "23a8bf4322ff2bc64ca1f076599b479198db24e5327041ce65735631d6ee8875";
 const REDIRECT_URI = "http://localhost:3000/";
 
 interface LoginWith42ButtonProps {
@@ -34,13 +35,13 @@ function LoginWith42Button({ onSuccess, onFailure }: LoginWith42ButtonProps) {
       }
 
       try {
-        console.log("Before Trying to get token")
+        console.log("Before Trying to get token");
         const url = `http://localhost:3000/auth/token?code=${authorizationCode}`;
         const response = await fetch(url, {
-          method: 'GET',
+          method: "GET",
           headers: {
-            'Content-Type': 'application/json',
-          },
+            "Content-Type": "application/json"
+          }
         });
         console.log(response);
 
@@ -62,14 +63,15 @@ function LoginWith42Button({ onSuccess, onFailure }: LoginWith42ButtonProps) {
 
   return (
     <>
-      <span>What the fuck
-
-      </span>
-      <Button onClick={handleLoginClick} disabled={isLoading}>
+      <span>What the fuck</span>
+      <Button
+        onClick={handleLoginClick}
+        disabled={isLoading}
+      >
         {isLoading ? "Logging in..." : "Login with 42"}
       </Button>
     </>
-  )
+  );
 }
 
 export default LoginWith42Button;

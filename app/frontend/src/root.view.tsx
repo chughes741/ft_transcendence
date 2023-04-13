@@ -34,13 +34,14 @@ function RootViewContent(): JSX.Element {
     // setError(error);
   };
 
-
   switch (pageState) {
     case PageState.Home: {
-      return <LoginWith42Button 
-        onSuccess={handleLoginSuccess}
-        onFailure={handleLoginFailure} 
+      return (
+        <LoginWith42Button
+          onSuccess={handleLoginSuccess}
+          onFailure={handleLoginFailure}
         />
+      );
     }
     case PageState.Game: {
       return <GameWindow />;
