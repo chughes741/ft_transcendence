@@ -37,7 +37,9 @@ export const RoomPasswordModal: React.FC<RoomPasswordModalProps> = ({
 
   const [newPassword, setNewPassword] = useState("");
   const [newPasswordConfirm, setNewPasswordConfirm] = useState("");
-  const [showNewPassword, setShowNewPassword] = useState(false);
+  const [showNewPassword, setShowNewPassword] = useState<boolean>(false);
+  const [showNewPasswordConfirm, setShowNewPasswordConfirm] =
+    useState<boolean>(false);
 
   const handleSubmit = useCallback(async () => {
     if (newPassword !== newPasswordConfirm) {
@@ -119,7 +121,7 @@ export const RoomPasswordModal: React.FC<RoomPasswordModalProps> = ({
         <TextField
           margin="dense"
           label="New Password"
-          type={showPassword ? "text" : "password"}
+          type={showNewPassword ? "text" : "password"}
           fullWidth
           value={newPassword}
           onChange={(e) => setNewPassword(e.target.value)}
@@ -130,7 +132,7 @@ export const RoomPasswordModal: React.FC<RoomPasswordModalProps> = ({
                 edge="end"
                 onClick={togglePasswordVisibility}
               >
-                {showPassword ? <FiEye /> : <FiEyeOff />}
+                {showNewPassword ? <FiEye /> : <FiEyeOff />}
               </IconButton>
             )
           }}
@@ -138,7 +140,7 @@ export const RoomPasswordModal: React.FC<RoomPasswordModalProps> = ({
         <TextField
           margin="dense"
           label="Confirm New Password"
-          type={showPassword ? "text" : "password"}
+          type={showNewPasswordConfirm ? "text" : "password"}
           fullWidth
           value={newPasswordConfirm}
           onChange={(e) => setNewPasswordConfirm(e.target.value)}
@@ -147,9 +149,11 @@ export const RoomPasswordModal: React.FC<RoomPasswordModalProps> = ({
             endAdornment: (
               <IconButton
                 edge="end"
-                onClick={togglePasswordVisibility}
+                onClick={() =>
+                  setShowNewPasswordConfirm(!showNewPasswordConfirm)
+                }
               >
-                {showPassword ? <FiEye /> : <FiEyeOff />}
+                {showNewPasswordConfirm ? <FiEye /> : <FiEyeOff />}
               </IconButton>
             )
           }}
