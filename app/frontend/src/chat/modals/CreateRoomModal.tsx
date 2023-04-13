@@ -58,7 +58,7 @@ export const CreateRoomModal: React.FC<CreateRoomModalProps> = ({
     setPassword,
     showPassword,
     togglePasswordVisibility
-  } = useRoomModal(showModal, closeModal);
+  } = useRoomModal(showModal);
 
   const handleSubmit = useCallback(async () => {
     if (roomName.trim().length <= 0) {

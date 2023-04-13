@@ -29,7 +29,7 @@ export const RoomPasswordModal: React.FC<RoomPasswordModalProps> = ({
   }
 
   const { password, setPassword, showPassword, togglePasswordVisibility } =
-    useRoomModal(showModal, closeModal);
+    useRoomModal(showModal);
 
   const { handleChangeRoomStatus } = useRoomManager();
   const { contextMenuData: room } = useChatContext();

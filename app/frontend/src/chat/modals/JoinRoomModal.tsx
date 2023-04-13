@@ -54,7 +54,7 @@ export const JoinRoomModal: React.FC<JoinRoomModalProps> = ({
   const { tempUsername } = useChatContext();
 
   const { password, setPassword, showPassword, togglePasswordVisibility } =
-    useRoomModal(showModal, closeModal);
+    useRoomModal(showModal);
   const [availableRooms, setAvailableRooms] = useState<AvailableRoomEntity[]>(
     []
   );

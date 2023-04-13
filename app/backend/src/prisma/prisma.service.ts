@@ -10,12 +10,7 @@ import {
   PrismaClient,
   User
 } from "@prisma/client";
-import {
-  ChatRoomDto,
-  ProfileDto,
-  UserDto,
-  MessageDto
-} from "../auth/dto/prisma.dto";
+import { ChatRoomDto, UserDto, MessageDto } from "../auth/dto/prisma.dto";
 import {
   ChatMemberPrismaType,
   MessagePrismaType,
