@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from "react";
 
-export const useRoomModal = (showModal: boolean, closeModal: () => void) => {
+export const useRoomModal = (showModal: boolean) => {
   const [roomName, setRoomName] = useState<string>("");
   const [password, setPassword] = useState<string>("");
   const [showPassword, setShowPassword] = useState<boolean>(false);
@@ -11,9 +11,6 @@ export const useRoomModal = (showModal: boolean, closeModal: () => void) => {
       roomNameInput.current.focus();
     }
   }, [showModal]);
-
-  //FIXME: speaks for itself
-  if (roomName === "fuck-es-lint") closeModal();
 
   const togglePasswordVisibility = () => {
     setShowPassword(!showPassword);

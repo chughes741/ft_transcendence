@@ -25,13 +25,14 @@ import ButtonFunky from "../../components/ButtonFunky";
 /***************/
 import "src/styles/chat/ChatPage.css";
 import { useRoomModal } from "./useRoomModal";
+import { ChatRoomStatus } from "../chat.types";
 
 interface CreateRoomModalProps {
   showModal: boolean;
   closeModal: () => void;
   onCreateRoom: (
     roomName: string,
-    roomStatus: "PUBLIC" | "PRIVATE" | "PASSWORD", // This will need an enum :cry:
+    roomStatus: ChatRoomStatus,
     password: string
   ) => Promise<boolean>;
 }
@@ -41,10 +42,13 @@ export const CreateRoomModal: React.FC<CreateRoomModalProps> = ({
   closeModal,
   onCreateRoom
 }) => {
+  if (!showModal) {
+    return null;
+  }
   // const classes = useStyles();
-  const [roomStatus, setRoomStatus] = useState<
-    "PUBLIC" | "PRIVATE" | "PASSWORD"
-  >("PUBLIC"); // defaults to public
+  const [roomStatus, setRoomStatus] = useState<ChatRoomStatus>(
+    ChatRoomStatus.PUBLIC
+  ); // defaults to public
 
   // Improves code re-usability btw Create and Join RoomModals
   const {
@@ -54,7 +58,7 @@ export const CreateRoomModal: React.FC<CreateRoomModalProps> = ({
     setPassword,
     showPassword,
     togglePasswordVisibility
-  } = useRoomModal(showModal, closeModal);
+  } = useRoomModal(showModal);
 
   const handleSubmit = useCallback(async () => {
     if (roomName.trim().length <= 0) {
@@ -62,7 +66,7 @@ export const CreateRoomModal: React.FC<CreateRoomModalProps> = ({
       return;
     }
     // Necessary check b/c we're not using a `form`, but a `button` w `onClick`
-    if (roomStatus === "PASSWORD" && !password) {
+    if (roomStatus === ChatRoomStatus.PASSWORD && !password) {
       alert("Please enter a room password.");
       return;
     }
@@ -86,9 +90,6 @@ export const CreateRoomModal: React.FC<CreateRoomModalProps> = ({
     }
   };
 
-  if (!showModal) {
-    return null;
-  }
   return (
     <Dialog
       open={showModal}
@@ -123,7 +124,7 @@ export const CreateRoomModal: React.FC<CreateRoomModalProps> = ({
           onKeyDown={handleKeyPress}
           inputProps={{ maxLength: 25 }}
         />
-        {roomStatus === "PASSWORD" && (
+        {roomStatus === ChatRoomStatus.PASSWORD && (
           <TextField
             margin="dense"
             label="Password"
@@ -151,13 +152,13 @@ export const CreateRoomModal: React.FC<CreateRoomModalProps> = ({
             id="room-status"
             value={roomStatus}
             label="Room Status"
-            onChange={(e) =>
-              setRoomStatus(e.target.value as "PUBLIC" | "PRIVATE" | "PASSWORD")
-            }
+            onChange={(e) => setRoomStatus(e.target.value as ChatRoomStatus)}
           >
-            <MenuItem value="PUBLIC">Public</MenuItem>
-            <MenuItem value="PRIVATE">Private</MenuItem>
-            <MenuItem value="PASSWORD">Password Protected</MenuItem>
+            <MenuItem value={ChatRoomStatus.PUBLIC}>Public</MenuItem>
+            <MenuItem value={ChatRoomStatus.PRIVATE}>Private</MenuItem>
+            <MenuItem value={ChatRoomStatus.PASSWORD}>
+              Password Protected
+            </MenuItem>
           </Select>
         </FormControl>
       </DialogContent>

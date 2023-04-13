@@ -13,8 +13,7 @@ import {
   /* Rooms dropdown */
   Autocomplete,
   MenuItem,
-  Avatar,
-  Badge
+  Avatar
 } from "@mui/material";
 import { useRoomModal } from "./useRoomModal";
 import ButtonFunky from "../../components/ButtonFunky";
@@ -22,6 +21,8 @@ import { UserStatus } from "kingpong-lib";
 import { socket } from "../../contexts/WebSocket.context";
 import { useChatContext } from "../chat.context";
 import { Public, VpnKey } from "@mui/icons-material";
+import UserStatusBadge from "../../components/UserStatusBadge";
+import { ChatRoomStatus } from "../chat.types";
 
 interface JoinRoomModalProps {
   showModal: boolean;
@@ -38,7 +39,7 @@ export interface UserEntity {
 export interface AvailableRoomEntity {
   roomName: string;
   nbMembers: number;
-  status: "PASSWORD" | "PUBLIC";
+  status: ChatRoomStatus.PASSWORD | ChatRoomStatus.PUBLIC;
   owner: UserEntity;
 }
 
@@ -47,10 +48,13 @@ export const JoinRoomModal: React.FC<JoinRoomModalProps> = ({
   closeModal,
   onJoinRoom
 }) => {
+  if (!showModal) {
+    return null;
+  }
   const { tempUsername } = useChatContext();
 
   const { password, setPassword, showPassword, togglePasswordVisibility } =
-    useRoomModal(showModal, closeModal);
+    useRoomModal(showModal);
   const [availableRooms, setAvailableRooms] = useState<AvailableRoomEntity[]>(
     []
   );
@@ -91,9 +95,6 @@ export const JoinRoomModal: React.FC<JoinRoomModalProps> = ({
     );
   }, [tempUsername, showModal]);
 
-  if (!showModal) {
-    return null;
-  }
   return (
     <Dialog
       open={showModal}
@@ -127,26 +128,18 @@ export const JoinRoomModal: React.FC<JoinRoomModalProps> = ({
               sx={{ paddingTop: "16px" }}
             >
               <AvatarGroup total={option.nbMembers + 1}>
-                <Badge
-                  color={
-                    option.owner.status === UserStatus.ONLINE
-                      ? "success"
-                      : option.owner.status === UserStatus.OFFLINE
-                      ? "error"
-                      : "warning"
-                  }
+                <UserStatusBadge
+                  status={option.owner.status}
                   anchorOrigin={{
                     vertical: "top",
                     horizontal: "left"
                   }}
-                  overlap="circular"
-                  variant="dot"
                 >
                   <Avatar
                     src={option.owner.avatar}
                     alt={option.owner.username}
                   />
-                </Badge>
+                </UserStatusBadge>
               </AvatarGroup>
               <Box
                 justifyContent="center"
@@ -163,7 +156,11 @@ export const JoinRoomModal: React.FC<JoinRoomModalProps> = ({
                 </Typography>
               </Box>
               <span style={{ marginLeft: "auto", marginRight: "16px" }}>
-                {option.status === "PASSWORD" ? <VpnKey /> : <Public />}
+                {option.status === ChatRoomStatus.PASSWORD ? (
+                  <VpnKey />
+                ) : (
+                  <Public />
+                )}
               </span>
             </MenuItem>
           )}
@@ -178,7 +175,7 @@ export const JoinRoomModal: React.FC<JoinRoomModalProps> = ({
           )}
           onChange={(event, value) => setSelectedRoom(value)}
         />
-        {selectedRoom && selectedRoom.status === "PASSWORD" && (
+        {selectedRoom && selectedRoom.status === ChatRoomStatus.PASSWORD && (
           <TextField
             margin="dense"
             label="Password"

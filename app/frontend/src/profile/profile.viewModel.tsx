@@ -51,7 +51,8 @@ export const ProfileViewModelProvider = ({ children }) => {
    */
   const getMatchHistory = async (): Promise<void> => {
     console.log("getMatchHistory", user);
-    if (user === null) {
+    if (!user || user === "") {
+      console.log("No user found");
       return;
     }
     socket.emit(

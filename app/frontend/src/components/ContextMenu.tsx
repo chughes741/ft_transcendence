@@ -22,7 +22,6 @@ const ContextMenu: React.FC<ContextMenuProps> = ({
 }) => {
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
   const { x, y } = position;
-  let hoverTimeout: ReturnType<typeof setTimeout>;
 
   useEffect(() => {
     const handleClick = (e: MouseEvent) => {
@@ -52,17 +51,14 @@ const ContextMenu: React.FC<ContextMenuProps> = ({
       {options.map((option, index) => (
         <MenuItem
           key={index}
-          onClick={option.onClick}
-          onMouseEnter={(e) => {
-            clearTimeout(hoverTimeout);
+          onClick={(e) => {
             if (option.submenu) {
-              setAnchorEl(e.currentTarget);
+              e.stopPropagation();
+              setAnchorEl(anchorEl ? null : e.currentTarget);
+            } else if (option.onClick) {
+              e.stopPropagation();
+              option.onClick();
             }
-          }}
-          onMouseLeave={() => {
-            hoverTimeout = setTimeout(() => {
-              setAnchorEl(null);
-            }, 1000);
           }}
         >
           {option.label}
@@ -73,12 +69,6 @@ const ContextMenu: React.FC<ContextMenuProps> = ({
               onClose={() => setAnchorEl(null)}
               anchorOrigin={{ vertical: "top", horizontal: "right" }}
               transformOrigin={{ vertical: "top", horizontal: "left" }}
-              onMouseEnter={() => clearTimeout(hoverTimeout)}
-              onMouseLeave={() => {
-                hoverTimeout = setTimeout(() => {
-                  setAnchorEl(null);
-                }, 1000);
-              }}
             >
               {option.submenu.map((submenuOption, submenuIndex) => (
                 <MenuItem
