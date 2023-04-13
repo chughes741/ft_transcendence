@@ -3,18 +3,12 @@ import { io, Socket } from "socket.io-client";
 
 const socket = io("http://localhost:3000");
 
+export type EventHandler = (...args: unknown[]) => void;
+
 export interface WebSocketContextValue {
   socket: Socket;
-  addSocketListener: (
-    eventName: string,
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    handler: (...args: any[]) => void
-  ) => void;
-  removeSocketListener: (
-    eventName: string,
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    handler?: (...args: any[]) => void
-  ) => void;
+  addSocketListener: (eventName: string, handler: EventHandler) => void;
+  removeSocketListener: (eventName: string, handler?: EventHandler) => void;
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -25,13 +19,9 @@ interface WebSocketProviderProps {
 }
 
 const WebSocketProvider: React.FC<WebSocketProviderProps> = ({ children }) => {
-  const eventHandlers = useRef(new Map());
+  const eventHandlers = useRef(new Map<string, EventHandler[]>());
 
-  const addSocketListener = (
-    eventName: string,
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    handler: (...args: any[]) => void
-  ) => {
+  const addSocketListener = (eventName: string, handler: EventHandler) => {
     if (!eventHandlers.current.has(eventName)) {
       eventHandlers.current.set(eventName, []);
     }
@@ -39,11 +29,7 @@ const WebSocketProvider: React.FC<WebSocketProviderProps> = ({ children }) => {
     socket.on(eventName, handler);
   };
 
-  const removeSocketListener = (
-    eventName: string,
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    handler?: (...args: any[]) => void
-  ) => {
+  const removeSocketListener = (eventName: string, handler?: EventHandler) => {
     if (eventHandlers.current.has(eventName)) {
       const handlers = eventHandlers.current.get(eventName);
       const index = handlers.indexOf(handler);
