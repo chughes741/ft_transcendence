@@ -1,19 +1,20 @@
 /** Libraries */
-import { useEffect } from "react";
-import { Box, Container } from "@mui/material";
+import {useEffect} from "react";
+import {Box, Container} from "@mui/material";
 
 /** Providers */
-import { useRootViewModelContext } from "./root.context";
+import {useRootViewModelContext} from "./root.context";
 
 /** Components */
 import SideBar from "src/components/SideBar/SideBar";
 import TopBar from "src/components/TopBar/TopBar";
-import { PageState } from "./root.model";
+import {PageState} from "./root.model";
 import GameWindow from "./game/game.master";
-import { ChatView } from "./chat/chat.view";
+import {ChatView} from "./chat/chat.view";
 import ProfileView from "./profile/profile.view";
-import { HelmetView } from "./components/Helmet";
+import {HelmetView} from "./components/Helmet";
 import SettingsView from "./components/settings/settings.view";
+import GameLoader from "./game/components/GameLoader";
 
 /**
  * Root view content
@@ -35,6 +36,9 @@ function RootViewContent(): JSX.Element {
     }
     case PageState.Profile: {
       return <ProfileView />;
+    }
+    case PageState.Loader: {
+      return  <GameLoader />;
     }
     default: {
       return <div></div>;

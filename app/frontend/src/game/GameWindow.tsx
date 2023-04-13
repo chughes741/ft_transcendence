@@ -1,11 +1,10 @@
-import React, { useRef } from "react";
-import { Canvas, useFrame, useThree } from "@react-three/fiber";
-import { socket } from "src/contexts/WebSocket.context";
+import React, {useRef} from "react";
+import {Canvas, useFrame, useThree} from "@react-three/fiber";
+import {socket} from "src/contexts/WebSocket.context";
 //Local includes
-import { GameStateDto } from "./game.types";
-import { BallConfig, GameColours, PaddleConfig } from "./game.config";
-import { Mesh } from "three";
-import GameLoader from "./components/GameLoader";
+import {GameStateDto} from "./game.types";
+import {BallConfig, GameColours, PaddleConfig} from "./game.config";
+import {Mesh} from "three";
 
 /**
  *
@@ -177,6 +176,7 @@ export default function Game() {
   });
   return (
     <>
+
       <Canvas>
         {/* Gameplay Objects */}
         <Ball {...gameState} />
@@ -200,7 +200,7 @@ export default function Game() {
           intensity={0.5}
         />
       </Canvas>
-      <GameLoader />
+
     </>
   );
 }

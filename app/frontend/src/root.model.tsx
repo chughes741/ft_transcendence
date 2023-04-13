@@ -10,7 +10,8 @@ export enum PageState {
   Home = "Home",
   Game = "Game",
   Chat = "Chat",
-  Profile = "Profile"
+  Profile = "Profile",
+  Loader = "Loader"
 }
 
 /**
