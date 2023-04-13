@@ -143,9 +143,11 @@ export class ChatService {
       }
     }
 
-    if (room.status === ChatRoomStatus.PASSWORD && room.password !== password) {
+    if (
+      room.status === ChatRoomStatus.PASSWORD &&
+      !argon2.verify(room.password, password)
+    )
       return Error("Incorrect password");
-    }
 
     // Add the user as a chat member if they are not already a member
     const userId = await this.prismaService.getUserIdByNick(user);

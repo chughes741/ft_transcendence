@@ -130,7 +130,7 @@ export const RoomPasswordModal: React.FC<RoomPasswordModalProps> = ({
             endAdornment: (
               <IconButton
                 edge="end"
-                onClick={togglePasswordVisibility}
+                onClick={() => setShowNewPassword(!showNewPassword)}
               >
                 {showNewPassword ? <FiEye /> : <FiEyeOff />}
               </IconButton>
