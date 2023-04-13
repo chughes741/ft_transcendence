@@ -7,8 +7,12 @@ import {
   ListItemButton
 } from "@mui/material";
 import GroupIcon from "@mui/icons-material/Group";
-import ContextMenuUsers from "./UserListContextMenu";
+import UserContextMenu from "./UserListContextMenu";
 import { UserListItem } from "../chat.types";
+import { useChatContext } from "../chat.context";
+import { useProfileViewModelContext } from "../../profile/profile.viewModel";
+import { useRootViewModelContext } from "../../root.context";
+import { PageState } from "../../root.model";
 
 export interface UserListProps {
   userList: { [key: string]: UserListItem };
@@ -16,6 +20,59 @@ export interface UserListProps {
 }
 
 export default function UserListView({ userList, handleClick }: UserListProps) {
+  const {
+    contextMenuUsersPosition,
+    contextMenuUsersVisible,
+    contextMenuUsersData,
+    setContextMenuUsersVisible
+  } = useChatContext();
+
+  const { setUser, addFriend } = useProfileViewModelContext();
+  const { self, setPageState } = useRootViewModelContext();
+
+  const onViewProfile = () => {
+    console.log("View Profile");
+    setUser(contextMenuUsersData.username);
+    setPageState(PageState.Profile);
+  };
+
+  const onInviteToGame = () => {
+    console.log("Invite to game");
+    setPageState(PageState.Game);
+  };
+
+  const onSendDirectMessage = () => {
+    console.log("Send Direct Message");
+  };
+
+  const onAddFriend = () => {
+    console.log("Add friend");
+    addFriend(self.username, contextMenuUsersData.username);
+  };
+
+  const onKickUser = (duration: number) => {
+    console.log("Kick User");
+  };
+
+  const onBanUser = (duration: number) => {
+    console.log("Ban User");
+  };
+
+  const onMuteUser = (duration: number) => {
+    console.log("Mute User");
+  };
+
+  const onPromoteToAdmin = () => {
+    console.log("Promote to Admin");
+  };
+
+  const onDemoteToUser = () => {
+    console.log("Demote to User");
+  };
+
+  // Find your own rank by looking for your username in the userlist
+  const ownRank = userList[self.username]?.rank;
+
   return (
     <>
       <Box
@@ -92,7 +149,22 @@ export default function UserListView({ userList, handleClick }: UserListProps) {
           </Box>
         </Box>
       </Box>
-      <ContextMenuUsers />
+      <UserContextMenu
+        ownRank={ownRank}
+        contextMenuVisible={contextMenuUsersVisible}
+        setContextMenuVisible={setContextMenuUsersVisible}
+        position={contextMenuUsersPosition}
+        contextMenuData={contextMenuUsersData}
+        onViewProfile={onViewProfile}
+        onInviteToGame={onInviteToGame}
+        onSendDirectMessage={onSendDirectMessage}
+        onAddFriend={onAddFriend}
+        onKickUser={onKickUser}
+        onBanUser={onBanUser}
+        onMuteUser={onMuteUser}
+        onPromoteToAdmin={onPromoteToAdmin}
+        onDemoteToUser={onDemoteToUser}
+      />
     </>
   );
 }
