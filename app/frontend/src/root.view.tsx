@@ -14,6 +14,7 @@ import { ChatView } from "./chat/chat.view";
 import ProfileView from "./profile/profile.view";
 import { HelmetView } from "./components/Helmet";
 import SettingsView from "./components/settings/settings.view";
+import LoginWith42Button from "./components/Login42";
 
 /**
  * Root view content
@@ -23,9 +24,21 @@ import SettingsView from "./components/settings/settings.view";
 function RootViewContent(): JSX.Element {
   const { pageState } = useRootViewModelContext();
 
+  const handleLoginSuccess = (accessToken: string) => {
+    //setAccessToken(accessToken);
+   // setError(null);
+  };
+
+  const handleLoginFailure = (error: Error) => {
+    //setAccessToken(null);
+   // setError(error);
+  };
+
+
   switch (pageState) {
     case PageState.Home: {
-      return <div></div>;
+      return <LoginWith42Button onSuccess={handleLoginSuccess} 
+                  onFailure={handleLoginFailure}/>
     }
     case PageState.Game: {
       return <GameWindow />;

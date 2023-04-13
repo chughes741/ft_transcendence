@@ -16,6 +16,8 @@ import { UserConnectionsService } from "./user-connections.service";
 import { ImgTransferModule } from "./imgtransfer/imgtransfer.module";
 import { ImgTransferController } from "./imgtransfer/imgtransfer.controller";
 import { ImgTransferService } from "./imgtransfer/imgtransfer.service";
+import { AuthController } from "./auth/auth.controller";
+import { AuthService } from "./auth/auth.service";
 
 /** Used for src/... import paths */
 require("tsconfig-paths");
@@ -44,7 +46,7 @@ require("tsconfig-paths");
     AppService,
     PrismaService,
     UserConnectionsService,
-    ImgTransferService
+    ImgTransferService,
   ]
 })
 export class AppModule {}
