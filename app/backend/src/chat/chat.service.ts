@@ -1,3 +1,4 @@
+import * as argon2 from "argon2";
 import { Injectable, Logger } from "@nestjs/common";
 import {
   ChatMember,
@@ -147,7 +148,6 @@ export class ChatService {
     }
 
     // Add the user as a chat member if they are not already a member
-    logger.warn("getUserIdByNick: ", user);
     const userId = await this.prismaService.getUserIdByNick(user);
     // This should really be a findUnique, but I can't figure out how to make it work
     let chatMember = await this.prismaService.chatMember.findFirst({
@@ -165,7 +165,6 @@ export class ChatService {
   }
 
   async leaveRoom(req: LeaveRoomRequest): Promise<ChatMember | Error> {
-    logger.warn("leaveRoom: getUserIdByNick: ", req.username);
     const userId = await this.prismaService.getUserIdByNick(req.username);
     logger.log(`User ${req.username} is leaving room ${req.roomName}`);
     const roomId = await this.prismaService.getChatRoomId(req.roomName);
@@ -191,42 +190,53 @@ export class ChatService {
   async updateRoom(
     req: UpdateChatRoomRequest
   ): Promise<ChatRoomEntity | Error> {
-    const { roomName, status, username, oldPassword } = req;
-    let { password } = req;
-    let userId: string;
-    let roomId: number;
     try {
-      logger.warn(
-        "createTempUser: sendMessage: updateRoom: getUserIdByNick: ",
+      const { roomName, status, username, oldPassword } = req;
+      let { password } = req;
+
+      const roomWithMember = await this.prismaService.getChatRoomWithMember(
+        roomName,
         username
       );
-      userId = await this.prismaService.getUserIdByNick(username);
-      roomId = await this.prismaService.getChatRoomId(roomName);
-    } catch (e) {
-      logger.error("Error getting user or room id", e);
-      return Error("Error getting user or room id");
-    }
-    logger.warn(`User ${username} is updating room ${roomName}`);
-    logger.warn(`Room id: ${roomId} | User id: ${userId}`);
-    if (!roomId) {
-      return Error("Room not found");
-    }
-    const chatMember = await this.prismaService.chatMember.findFirst({
-      where: { memberId: userId, roomId: roomId }
-    });
-    if (!chatMember || chatMember.rank !== ChatMemberRank.OWNER) {
-      return Error("User is not allowed to update this room");
-    }
-    if (status === ChatRoomStatus.PASSWORD) {
-      // TODO: Do password verification here
-    } else password = null; // If the room is not password protected, set the password to null
-    try {
-      const room = await this.prismaService.updateChatRoom(roomId, {
+
+      if (!roomWithMember) {
+        return Error("Room not found");
+      }
+
+      const { room, chatMember } = roomWithMember;
+
+      if (!chatMember || chatMember.rank !== ChatMemberRank.OWNER) {
+        return Error("User is not allowed to update this room");
+      }
+
+      if (room.status === ChatRoomStatus.PASSWORD) {
+        if (!oldPassword) {
+          return Error("Old password is required");
+        }
+        const passwordMatch = await argon2.verify(room.password, oldPassword);
+        if (!passwordMatch) {
+          return Error("Old password is incorrect");
+        }
+      }
+      logger.warn(`Previous status was ${room.status}`);
+      logger.log(`Updating room ${roomName} to status ${status}`);
+
+      logger.error(`*****REMOVE ME***** Hashing password: ${password}`);
+      if (status === ChatRoomStatus.PASSWORD && password) {
+        logger.error(`*****REMOVE ME***** Hashing password: ${password}`);
+        password = await argon2.hash(password);
+      } else {
+        const err = `Error, no password provided for password protected room`;
+        logger.error(err);
+        return Error(err);
+      }
+
+      const updatedRoom = await this.prismaService.updateChatRoom(room.id, {
         roomName,
         password,
         status
       });
-      return this.getChatRoomEntity(room, chatMember.rank);
+      return this.getChatRoomEntity(updatedRoom, chatMember.rank);
     } catch (e) {
       logger.error("Error updating room", e);
       return Error("Error updating room");
@@ -273,10 +283,6 @@ export class ChatService {
     if (!roomId) return Error("Room not found");
 
     // Try to get the user database ID
-    logger.warn(
-      "createTempUser: sendMessage: getUserIdByNick: ",
-      sendDto.sender
-    );
     const userId = await this.prismaService.getUserIdByNick(sendDto.sender);
     if (!userId) return Error("User not found");
 
@@ -315,7 +321,6 @@ export class ChatService {
     username: string
   ): Promise<Error | string> {
     // Check if the user already exists
-    logger.warn("createTempUser: getUserIdByNick: ", username);
     const userExists = await this.prismaService.getUserIdByNick(username);
     if (userExists) {
       // Warn the client that the user already exists
@@ -352,7 +357,6 @@ export class ChatService {
    */
   async devUserLogin(username: string): Promise<Error | string> {
     // Check if the user already exists
-    logger.warn("devUsertLogin: getUserIdByNick: ", username);
     const userExists = await this.prismaService.getUserIdByNick(username);
     if (!userExists) {
       // Warn the client that the user already exists

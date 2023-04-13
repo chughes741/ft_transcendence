@@ -215,8 +215,10 @@ export class ChatGateway
         updateChatRoomRequest
       );
       if (updatedRoom instanceof Error) {
+        logger.error("Error updating room", updatedRoom);
         return { error: updatedRoom.message };
       }
+      logger.warn("It worked?", updatedRoom);
       return updatedRoom;
     } catch (error) {
       logger.error(error);
@@ -267,32 +269,6 @@ export class ChatGateway
 
     return rooms;
   }
-
-  // /**
-  //  * Get all available users
-  //  */
-  // @SubscribeMessage("listAllAvailableUsers")
-  // async listAllAvailableUsers(client: Socket): Promise<User[]> {
-  //   logger.log(`Received listAllAvailableUsers request from ${client.id}`);
-  //   const username = this.userConnectionsService.getUserBySocket(client.id);
-  //   const userId = await this.prismaService.getUserIdByNick(username);
-  //   if (!userId) {
-  //     logger.error(`User id: ${userId} not found`);
-  //     return [];
-  //   }
-
-  //   try {
-  //     const availableUsers = await this.prismaService.getAllAvailableUsers(
-  //       userId
-  //     );
-  //     logger.warn(`List of users: `);
-  //     console.log(availableUsers);
-  //     return availableUsers;
-  //   } catch (e) {
-  //     logger.error(`Error while getting available users: ${e}`);
-  //   }
-  //   return [];
-  // }
 
   /**
    * Get all available users

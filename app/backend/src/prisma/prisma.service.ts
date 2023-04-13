@@ -332,6 +332,30 @@ export class PrismaService extends PrismaClient {
     });
   }
 
+  // Get a chat room with its member
+  async getChatRoomWithMember(
+    roomName: string,
+    username: string
+  ): Promise<{ room: ChatRoom; chatMember: ChatMember } | null> {
+    const roomWithMember = await this.chatRoom.findFirst({
+      where: { name: roomName },
+      include: {
+        members: {
+          where: { member: { username } }
+        }
+      }
+    });
+
+    if (!roomWithMember) {
+      return null;
+    }
+
+    return {
+      room: roomWithMember,
+      chatMember: roomWithMember.members[0]
+    };
+  }
+
   // Update a chat room
   async updateChatRoom(
     id: number,
