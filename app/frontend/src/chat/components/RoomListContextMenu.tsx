@@ -25,12 +25,28 @@ const RoomContextMenu: React.FC<RoomContextMenuProps> = ({
 }) => {
   if (!contextMenuData) return null;
 
+  const humanFriendlyStatus = (status: ChatRoomStatus) => {
+    switch (status) {
+      case ChatRoomStatus.PASSWORD:
+        return "Password";
+      case ChatRoomStatus.PUBLIC:
+        return "Public";
+      case ChatRoomStatus.PRIVATE:
+        return "Private";
+      default:
+        return status;
+    }
+  };
+
   const generateSubmenuOptions = () => {
     const options = [];
     for (const status in ChatRoomStatus) {
-      if (contextMenuData.status !== ChatRoomStatus[status]) {
+      if (
+        contextMenuData.status !== ChatRoomStatus[status] &&
+        ChatRoomStatus[status] !== ChatRoomStatus.DIALOGUE
+      ) {
         options.push({
-          label: ChatRoomStatus[status],
+          label: humanFriendlyStatus(ChatRoomStatus[status]),
           onClick: () => onChangeRoomStatus(ChatRoomStatus[status]).then()
         });
       }
