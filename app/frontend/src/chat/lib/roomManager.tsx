@@ -314,13 +314,6 @@ export const RoomManagerProvider = ({ children }) => {
   ): Promise<boolean> => {
     return new Promise<boolean>((resolve) => {
       console.log(`Changing room status of ${roomName} to ${newStatus}`);
-      // TODO: instead of sending only the status, send the whole room object
-      // TODO: if status is password, open a modal to ask for the password
-      const newRoom = rooms[roomName];
-      newRoom.status = newStatus;
-      console.warn(`New room: `, newRoom);
-      console.warn(`Old room: `, rooms[roomName]);
-      console.warn(`username: `, self.username);
 
       const req: UpdateChatRoomRequest = {
         roomName,
@@ -335,16 +328,17 @@ export const RoomManagerProvider = ({ children }) => {
         req,
         (response: DevError | ChatRoomPayload) => {
           if (handleSocketErrorResponse(response)) {
-            console.log("Error changing room status");
+            console.error("Error changing room status", response.error);
             resolve(false);
+          } else {
+            console.log("Successfully changed room status!");
+            updateRooms((newRooms) => {
+              newRooms[roomName].status = newStatus;
+            });
+            resolve(true);
           }
-          console.log("Successfully changed room status");
-          updateRooms((newRooms) => {
-            newRooms[roomName] = newRoom;
-          });
         }
       );
-      resolve(true);
     });
   };
 

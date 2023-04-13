@@ -96,13 +96,11 @@ export const ChatViewModelProvider = ({ children }) => {
   ): Promise<boolean> => {
     setContextMenuRoomsVisible(false);
     const roomName = contextMenuData.name;
-    console.warn(`changeRoomStatus: ${roomName} to ${newStatus}...`);
 
     if (roomName === "" || roomName === undefined)
       return Promise.resolve(false);
 
     if (newStatus === ChatRoomStatus.PASSWORD) {
-      console.warn(`new status is password, opening modal`);
       setShowPasswordModal(true);
       setPasswordModalCallback(async (password) => {
         setShowPasswordModal(false);
@@ -112,17 +110,11 @@ export const ChatViewModelProvider = ({ children }) => {
           newStatus,
           password
         );
-        console.log(`changeRoomStatus ${success ? "success" : "failure :((("}`);
         if (!success) return false;
-        updateRooms((newRooms) => {
-          newRooms[roomName].status = newStatus;
-          return newRooms;
-        });
         return success;
       });
     } else {
       const success = await handleChangeRoomStatus(roomName, newStatus);
-      console.log(`changeRoomStatus ${success ? "success" : "failure :((("}`);
       if (!success) return false;
       updateRooms((newRooms) => {
         newRooms[roomName].status = newStatus;
