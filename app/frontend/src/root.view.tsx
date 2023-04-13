@@ -26,19 +26,21 @@ function RootViewContent(): JSX.Element {
 
   const handleLoginSuccess = (accessToken: string) => {
     //setAccessToken(accessToken);
-   // setError(null);
+    // setError(null);
   };
 
   const handleLoginFailure = (error: Error) => {
     //setAccessToken(null);
-   // setError(error);
+    // setError(error);
   };
 
 
   switch (pageState) {
     case PageState.Home: {
-      return <LoginWith42Button onSuccess={handleLoginSuccess} 
-                  onFailure={handleLoginFailure}/>
+      return <LoginWith42Button 
+        onSuccess={handleLoginSuccess}
+        onFailure={handleLoginFailure} 
+        />
     }
     case PageState.Game: {
       return <GameWindow />;
