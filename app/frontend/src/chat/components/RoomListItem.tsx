@@ -1,5 +1,6 @@
 import React from "react";
 import {
+  Badge,
   ListItem,
   ListItemButton,
   ListItemIcon,
@@ -34,12 +35,23 @@ const RoomListItem: React.FC<RoomListItemProps> = ({
       onContextMenu={(e) => onContextMenu(e, room)}
     >
       <ListItemButton selected={isSelected}>
-        <span style={{ marginRight: "auto", marginLeft: "8px" }}>
-          {room.status !== ChatRoomStatus.DIALOGUE && room.rank === "OWNER" && (
-            <FaCrown />
-          )}
-        </span>
-        <ListItemIcon>{renderAvatarGroup(room, tempUsername)}</ListItemIcon>
+        <ListItemIcon>
+          <Badge
+            anchorOrigin={{
+              vertical: "top",
+              horizontal: "left"
+            }}
+            overlap="circular"
+            badgeContent={
+              room.status !== ChatRoomStatus.DIALOGUE &&
+              room.rank === "OWNER" ? (
+                <FaCrown size={16} />
+              ) : null
+            }
+          >
+            {renderAvatarGroup(room, tempUsername)}
+          </Badge>
+        </ListItemIcon>
         <ListItemText
           style={{ overflowX: "hidden" }}
           primary={room.name}
