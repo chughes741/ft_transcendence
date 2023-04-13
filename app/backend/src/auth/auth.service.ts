@@ -199,19 +199,29 @@ export class AuthService {
     const SECRET = "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";
     const API_BASE_URL = "https://api.intra.42.fr/oauth/token";
     const API_42_URL = "https://api.intra.42.fr";
+    const REDIRECT_URI = "http://localhost:3000/"
 
+    /*
     const response = await axios.post(API_BASE_URL, {
       grant_type: 'client_credentials',
       client_id: UID,
       client_secret: SECRET,
+    });*/
+    const response = await axios.post('https://api.intra.42.fr/oauth/token', {
+      grant_type: 'authorization_code',
+      client_id: UID,
+      client_secret: SECRET,
+      redirect_uri: REDIRECT_URI,
+      code: authorization_code,
     });
 
 
-   //console.log("CLIENT here TOKEN ", response)
+   console.log("CLIENT here TOKEN ", response)
     // Get an access token
+    
     console.log("HERE IS MY TOKEN FROM 42:", response.data.access_token);
 
-    const response2 = await axios.get(`${API_42_URL}/v2/cursus`, {
+    const response2 = await axios.get(`${API_42_URL}/v2/me`, {
       headers: {
         Authorization: `Bearer ${response.data.access_token}`,
       },
