@@ -42,8 +42,7 @@ export const ChatViewModelProvider = ({ children }) => {
     contextMenuData,
     setContextMenuRoomsVisible,
     setShowNewRoomSnackbar,
-    setShowPasswordModal,
-    setPasswordModalCallback
+    setShowPasswordModal
   } = chatModel;
 
   const { pageState, setPageState } = useRootViewModelContext();
@@ -70,8 +69,6 @@ export const ChatViewModelProvider = ({ children }) => {
   /*   Util Functions   */
   /**********************/
 
-  // This function will be called when a room focus is changed.
-  // If the previous room is the same as the current one, toggle the page state to PageState.Home
   const selectRoom = (roomName: string) => {
     if (currentRoomName === roomName && pageState === PageState.Chat) {
       console.log("selectRoom: Room is already selected. Toggling to Home.");
@@ -97,31 +94,18 @@ export const ChatViewModelProvider = ({ children }) => {
     setContextMenuRoomsVisible(false);
     const roomName = contextMenuData.name;
 
-    if (roomName === "" || roomName === undefined)
-      return Promise.resolve(false);
+    if (roomName === "" || roomName === undefined) return false;
 
-    if (newStatus === ChatRoomStatus.PASSWORD) {
+    if (
+      newStatus === ChatRoomStatus.PASSWORD ||
+      contextMenuData.status === ChatRoomStatus.PASSWORD
+    ) {
       setShowPasswordModal(true);
-      setPasswordModalCallback(async (password) => {
-        setShowPasswordModal(false);
-
-        const success = await handleChangeRoomStatus(
-          roomName,
-          newStatus,
-          password
-        );
-        if (!success) return false;
-        return success;
-      });
     } else {
-      const success = await handleChangeRoomStatus(roomName, newStatus);
-      if (!success) return false;
-      updateRooms((newRooms) => {
-        newRooms[roomName].status = newStatus;
-        return newRooms;
-      });
-      return success;
+      if ((await handleChangeRoomStatus(roomName, newStatus)) === false)
+        return false;
     }
+    return true;
   };
 
   /**********************/

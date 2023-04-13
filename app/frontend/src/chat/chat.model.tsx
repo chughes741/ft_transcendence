@@ -38,10 +38,6 @@ export interface ChatModelType {
   setShowInviteUsersModal: (visible: boolean) => void;
   showPasswordModal: boolean;
   setShowPasswordModal: (visible: boolean) => void;
-  passwordModalCallback: (password: string) => Promise<boolean>;
-  setPasswordModalCallback: (
-    callback: (password: string) => Promise<boolean>
-  ) => void;
 
   /* Snackbars */
   showNewRoomSnackbar: boolean;
@@ -62,9 +58,6 @@ export const useChatModel = (): ChatModelType => {
   const [showJoinRoomModal, setShowJoinRoomModal] = useState(false);
   const [showInviteUsersModal, setShowInviteUsersModal] = useState(false);
   const [showPasswordModal, setShowPasswordModal] = useState(false);
-  const [passwordModalCallback, setPasswordModalCallback] = useState<
-    (password: string) => Promise<boolean>
-  >(() => async () => false);
 
   /* Snackbars */
   const [showNewRoomSnackbar, setShowNewRoomSnackbar] = useState(false);
@@ -126,8 +119,6 @@ export const useChatModel = (): ChatModelType => {
     setShowInviteUsersModal,
     showPasswordModal,
     setShowPasswordModal,
-    passwordModalCallback,
-    setPasswordModalCallback,
     showNewRoomSnackbar,
     setShowNewRoomSnackbar
   };
