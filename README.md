@@ -36,7 +36,7 @@ have to tackle:
 > For obvious security reasons, any credentials, API keys, env variables etc... must be saved locally in a .env file and ignored by git. Publicly stored credentials will lead you directly to a failure of the project.
 
 ## II.3 User Account
-- [ ] The user must login using the `OAuth` system of 42 intranet.
+- [x] The user must login using the `OAuth` system of 42 intranet.
 - [ ] The user should be able to choose a unique name that will be displayed on the website.
 - [x] The user should be able to upload an avatar. If the user doesn’t upload an avatar, a default one must be set.
 - [ ] The user should be able to enable **two-factor authentication**. For instance, *Google Authenticator* or sending a text message to their phone.
