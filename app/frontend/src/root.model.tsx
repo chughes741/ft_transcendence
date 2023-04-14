@@ -44,7 +44,7 @@ export const useRootModel = (): RootModelType => {
   });
   const [pageState, setPageState] = useState<PageState>(PageState.Home);
   const [fullscreen, setFullscreen] = useState<boolean>(false);
-  const [sessionToken, setSessionToken] = useState<string>();
+  const [sessionToken, setSessionToken] = useState<string>("");
 
   return {
     self,
