@@ -2,7 +2,6 @@ import { useState } from "react";
 import { Lobby } from "./game.types";
 
 export interface GameModelType {
-
   lobby: Lobby;
   setLobby: (lobby: Lobby) => void;
 
@@ -30,24 +29,31 @@ export interface GameModelType {
 
   displayScore: boolean;
   setDisplayScore: (displayScore: boolean) => void;
+
+  scoreLeft: number;
+  setScoreLeft: (scoreLeft: number) => void;
+
+  scoreRight: number;
+  setScoreRight: (scoreRight: number) => void;
 }
 
 export const useGameModel = (): GameModelType => {
-  //Store lobby id to pass to server
   const [lobbyId, setLobbyId] = useState<string>(null);
-
-  //Store if the player controls the left or right paddle
   const [playerSide, setPlayerSide] = useState<string>(null);
+  const [scoreLeft, setScoreLeft] = useState<number>(0);
+  const [scoreRight, setScoreRight] = useState<number>(0);
+  const [lobby, setLobby] = useState<Lobby>(null);
 
   //Toggle state of ready button
   const [playerReady, setPlayerReady] = useState<boolean>(false);
 
-  const [displayQueue, setDisplayQueue] = useState<boolean>(false);
+  //Display states
+  /** @todo displayQueue should be default true */
+  const [displayQueue, setDisplayQueue] = useState<boolean>(true);
   const [displayLobby, setDisplayLobby] = useState<boolean>(false);
   const [displayReady, setDisplayReady] = useState<boolean>(false);
   const [displayGame, setDisplayGame] = useState<boolean>(false);
   const [displayScore, setDisplayScore] = useState<boolean>(false);
-  const [lobby, setLobby] = useState<Lobby>(null);
 
   return {
     lobbyId,
@@ -67,37 +73,10 @@ export const useGameModel = (): GameModelType => {
     displayScore,
     setDisplayScore,
     lobby,
-    setLobby
+    setLobby,
+    scoreLeft,
+    setScoreLeft,
+    scoreRight,
+    setScoreRight
   };
 };
-
-/* Data to be stored client side:
-
-- lobby_id
-- player_side
-
-*/
-
-/* Components to be displayed:
-
-default:
-  - Find a Match button (joinQueue)
-  - Some filler graphic or background
-
-queued:
-- mui waiting component
-- leave queue button
-
-lobby:
-- chat component
-- empty game component
-- player details
-- ready buttons
-
-game:
-- chat component
-- game component
-- player details
-- score component
-
-*/

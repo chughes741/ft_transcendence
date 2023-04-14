@@ -23,7 +23,6 @@ export class GameLogic {
 
   //Create a new game instance
   async createGame(gameState: GameData) {
-
     //Create new gameData object
     gameState = this.initNewGame();
     logger.log("New game object created");
@@ -101,7 +100,7 @@ export class GameLogic {
     // gameData.player_left_ready = false;
     // gameData.player_right_ready = false;
     gameData.players_ready = 0;
-    
+
     //Randomize serve side for initial serve
     if (Math.round(Math.random()) === 0) gameData.last_serve_side = "left";
     else gameData.last_serve_side = "right";

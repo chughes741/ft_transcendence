@@ -68,12 +68,10 @@ export class GameStateDto {
   paddle_right_pos: number;
 }
 
-
 export class LobbyCreatedDto {
   lobby_id: string;
   player_side: string;
 }
-
 
 export class JoinGameQueueDto {
   client_id: string;

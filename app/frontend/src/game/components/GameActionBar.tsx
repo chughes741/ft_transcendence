@@ -1,4 +1,3 @@
-
 import * as React from "react";
 import {
   Avatar,
@@ -17,7 +16,7 @@ import { GameContext } from "src/game/game.context";
 import * as GameTypes from "../game.types";
 
 export default function GameActionBar(lobby: LobbyCreatedDto) {
-  const {playerReady, setPlayerReadyState} = useContext(GameContext);
+  const { playerReady, setPlayerReadyState } = useContext(GameContext);
   console.log(lobby);
   return (
     <Box
@@ -42,7 +41,7 @@ export default function GameActionBar(lobby: LobbyCreatedDto) {
         <ToggleButton
           value="check"
           selected={playerReady}
-          onChange={() =>  setPlayerReadyState(!playerReady)}
+          onChange={() => setPlayerReadyState(!playerReady)}
         >
           <CheckCircleIcon />
         </ToggleButton>

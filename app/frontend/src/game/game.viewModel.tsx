@@ -1,5 +1,5 @@
-import React, { useEffect } from "react";
-import { GameModelType, useGameModel} from "./game.model";
+import React, { useEffect, createContext, useContext } from "react";
+import { GameModelType, useGameModel } from "./game.model";
 import { GameContext } from "./game.context";
 import * as GameTypes from "src/game/game.types";
 import { socket } from "src/contexts/WebSocketContext";
@@ -7,6 +7,9 @@ import { socket } from "src/contexts/WebSocketContext";
 export interface GameViewModelType extends GameModelType {
   setPlayerReadyState: (state: boolean) => Promise<boolean>;
 }
+
+export const GameViewModelContext: React.Context<GameViewModelType | null> =
+  createContext<GameViewModelType | undefined>(null);
 
 export const GameViewModelProvider = ({ children }) => {
   const gameModel = useGameModel();
@@ -51,35 +54,15 @@ export const GameViewModelProvider = ({ children }) => {
       console.log("lobbyCreated event received. Payload:");
       console.log(payload);
 
-      setLobby(new GameTypes.Lobby(payload.lobby_id, payload.player_side))
+      setLobby(new GameTypes.Lobby(payload.lobby_id, payload.player_side));
       // Set the lobby display state to true
       gameModel.setDisplayLobby(true);
-      
     });
 
     return () => {
       socket.off("lobbyCreated");
     };
   }, [displayQueue]);
-
-
-  // export class Lobby {
-  //   constructor(Lobby_ID: string, Player_Side: string) {
-  //     this.lobby_id = Lobby_ID;
-  //     this.player_side = Player_Side;
-  //   }
-  //   player_side: string;
-  //   lobby_id: string;
-  
-  //   game: {
-  //     ball_x: number,
-  //     ball_y: number,
-  //     paddle_left_y: number;
-  //     paddle_right_y: number;
-  //     //pause state?
-  //     score: number[];
-  //   }
-  // }
 
   /**
    * Manage ready toggle
@@ -109,7 +92,7 @@ export const GameViewModelProvider = ({ children }) => {
     <GameContext.Provider
       value={{
         ...gameModel,
-        setPlayerReadyState,
+        setPlayerReadyState
 
         //...
       }}
@@ -119,3 +102,17 @@ export const GameViewModelProvider = ({ children }) => {
   );
 };
 
+/**
+ *  Returns the GameViewModelContext
+ *
+ * @returns {GameViewModelType}
+ */
+export const useGameViewModelContext = (): GameViewModelType => {
+  const context = useContext(GameViewModelContext);
+  if (context === undefined) {
+    throw new Error(
+      "useProfileViewModelContext must be used within a ProfileViewModelProvider"
+    );
+  }
+  return context;
+};

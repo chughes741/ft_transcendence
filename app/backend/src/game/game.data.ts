@@ -69,7 +69,6 @@ export class GameModuleData {
     });
   }
 
-
   /**
    * Update the player ready status for a player in specified lobby
    * @param {GameTypes.PlayerReadyDto} payload
@@ -89,7 +88,6 @@ export class GameModuleData {
       }
     });
   }
-
 
   /**
    * Retrieve the lobby object that corresponds to the given lobby id

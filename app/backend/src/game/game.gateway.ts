@@ -9,10 +9,7 @@ import { Server, Socket } from "socket.io";
 import { GameService } from "./game.service";
 
 import { Logger } from "@nestjs/common";
-import {
-  JoinGameInviteDto,
-  JoinGameQueueDto,
-} from "./dto/game.dto";
+import { JoinGameInviteDto, JoinGameQueueDto } from "./dto/game.dto";
 import { GameStartEntity } from "./entities/game.entity";
 import { ClientUpdateEvent } from "kingpong-lib";
 import { ClientGameStateUpdate } from "./game.types";
@@ -77,7 +74,6 @@ export class GameGateway {
    */
   @SubscribeMessage("playerReady")
   async playerReady(@MessageBody() payload: GameTypes.PlayerReadyDto) {
-
     //Retrieve the client id of the user who is ready
     console.log("Payload in playerReady");
     console.log(payload.lobby_id);

@@ -1,6 +1,6 @@
 import ProfileView from "src/views/profile/profile.view";
 import { ChatView } from "../pages/chat/ChatView";
-import GameWindow from "src/game/game.master";
+import GameWindow from "src/game/game.view";
 
 /**
  * Root view model

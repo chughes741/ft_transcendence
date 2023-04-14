@@ -74,7 +74,9 @@ export class PlayerReadyDto {
 }
 
 export class LobbyCreatedDto {
-  constructor(Lobby_ID) {this.lobby_id = Lobby_ID}
+  constructor(Lobby_ID) {
+    this.lobby_id = Lobby_ID;
+  }
   lobby_id: string;
   player_side: string;
 }
@@ -83,8 +85,6 @@ export class GameStartedDto {
   match_id: string;
   player_side: string;
 }
-
-
 
 export class Lobby {
   constructor(Lobby_ID: string, Player_Side: string) {
@@ -97,16 +97,19 @@ export class Lobby {
   }
   player_side: string;
   lobby_id: string;
+  player_name: string;
+  opponent_name: string;
+  player_avatar: string;
+  opponent_avatar: string;
+  player_ready: boolean;
+  opponent_ready: boolean;
 
   game: {
-    ball_x: number,
-    ball_y: number,
+    ball_x: number;
+    ball_y: number;
     paddle_left_y: number;
     paddle_right_y: number;
-    //pause state?
-    score: number[];
-  }
+    score_left: number;
+    score_right: number;
+  };
 }
-
-
-

@@ -110,9 +110,7 @@ export class GameService {
     this.server.in(playerPair[0].socket_id).socketsJoin(newLobby.lobby_id);
     this.server.in(playerPair[1].socket_id).socketsJoin(newLobby.lobby_id);
 
-
     //Add the game init here instead of elsewhere
-
 
     //Add lobby to map of lobbies
     //TODO: Swap this to a setter function in the data module
@@ -121,14 +119,12 @@ export class GameService {
     //Create payload
     const payload: GameTypes.LobbyCreatedDto = {
       lobby_id: newLobby.lobby_id,
-      player_side = 
-    }
+      player_side: "left"
+    };
 
     //Emit lobbyCreated event to room members
     this.server.to(newLobby.lobby_id).emit("lobbyCreated", payload);
   }
-
-
 
   /**
    * Start the game if both players are ready
@@ -141,15 +137,13 @@ export class GameService {
 
     //Retrieve the correct lobby
     const lobby: GameTypes.gameLobby = this.gameModuleData.getLobby(lobby_id);
-    if (!lobby)
-      return;
+    if (!lobby) return;
     //Check if both players are ready
     if (lobby.gamestate.players_ready === 2) {
       try {
         this.schedulerRegistry.getInterval("gameUpdateInterval");
         logger.log("Error creating gameUpdateInterval");
       } catch {
-        
         logger.log("Started game successfully");
         this.gameLogic.createGame(this.gameState);
       }

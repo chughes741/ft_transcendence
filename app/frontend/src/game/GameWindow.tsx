@@ -191,7 +191,7 @@ export default function Game() {
 
     return () => {
       socket.off("serverUpdate");
-    }
+    };
   }, [gameState]);
 
   if (!gameState) return <div>Loading...</div>;
