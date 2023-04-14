@@ -19,6 +19,7 @@ export class GameBounds {
 }
 
 export class GameData {
+  match_id: string;
   last_update_time: number;
   is_new_round: boolean;
   last_serve_side: string;
@@ -28,6 +29,7 @@ export class GameData {
   paddle_right: PaddleData = new PaddleData();
   player_left_ready: boolean;
   player_right_ready: boolean;
+  players_ready: number;
 }
 
 export class PlayerQueue {
@@ -64,4 +66,19 @@ export class GameStateDto {
   };
   paddle_left_pos: number;
   paddle_right_pos: number;
+}
+
+export class LobbyCreatedDto {
+  lobby_id: string;
+  player_side: string;
+}
+
+export class JoinGameQueueDto {
+  client_id: string;
+  join_time: number;
+}
+
+export class PlayerReadyDto {
+  lobby_id: string;
+  is_ready: boolean;
 }

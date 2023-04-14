@@ -1,10 +1,10 @@
-import React, {useRef} from "react";
-import {Canvas, useFrame, useThree} from "@react-three/fiber";
-import {socket} from "src/contexts/WebSocket.context";
+import React, { useRef, useContext, useEffect } from "react";
+import { Canvas, useFrame, ThreeElements, useThree } from "@react-three/fiber";
+import { socket } from "src/contexts/WebSocket.context";
 //Local includes
-import {GameStateDto} from "./game.types";
-import {BallConfig, GameColours, PaddleConfig} from "./game.config";
-import {Mesh} from "three";
+import { GameStateDto } from "./game.types";
+import { BallConfig, GameColours, PaddleConfig } from "./game.config";
+import { Mesh } from "three";
 
 /**
  *
@@ -168,39 +168,51 @@ function OuterFrameRight() {
  * @returns
  */
 export default function Game() {
-  let gameState: GameStateDto = new GameStateDto("", "right", 0, 0, 0, 0);
+  let gameState: GameStateDto | null = new GameStateDto(
+    "",
+    "right",
+    0,
+    0,
+    0,
+    0
+  );
 
-  socket.on("serverUpdate", (GameState: GameStateDto) => {
-    console.log(GameState);
-    gameState = GameState;
-  });
+  useEffect(() => {
+    socket.on("serverUpdate", (GameState: GameStateDto) => {
+      console.log(GameState);
+      gameState = GameState;
+    });
+
+    return () => {
+      socket.off("serverUpdate");
+    };
+  }, [gameState]);
+
+  if (!gameState) return <div>Loading...</div>;
+
   return (
-    <>
+    <Canvas>
+      {/* Gameplay Objects */}
+      <Ball {...gameState} />
+      <PaddleLeft {...gameState} />
+      <PaddleRight {...gameState} />
 
-      <Canvas>
-        {/* Gameplay Objects */}
-        <Ball {...gameState} />
-        <PaddleLeft {...gameState} />
-        <PaddleRight {...gameState} />
+      {/* Scene Objects */}
+      <Floor />
+      <OuterFrameTop />
+      <OuterFrameBottom />
+      <OuterFrameLeft />
+      <OuterFrameRight />
 
-        {/* Scene Objects */}
-        <Floor />
-        <OuterFrameTop />
-        <OuterFrameBottom />
-        <OuterFrameLeft />
-        <OuterFrameRight />
-
-        {/* Lighting */}
-        <ambientLight
-          args={[0xffffff]}
-          intensity={0.1}
-        />
-        <directionalLight
-          position={[0, 5, 3]}
-          intensity={0.5}
-        />
-      </Canvas>
-
-    </>
+      {/* Lighting */}
+      <ambientLight
+        args={[0xffffff]}
+        intensity={0.1}
+      />
+      <directionalLight
+        position={[0, 5, 3]}
+        intensity={0.5}
+      />
+    </Canvas>
   );
 }
