@@ -1,3 +1,8 @@
+export enum GameEvents {
+  JoinGameQueue = "joinGameQueue",
+  LeaveGameQueue = "leaveGameQueue",
+}
+
 export class Vec2 {
   x: number;
   y: number;
@@ -33,10 +38,10 @@ export class GameData {
 }
 
 export class PlayerQueue {
-  client_id: string;
+  username: string;
   join_time: number;
-  client_mmr: number;
-  socket_id: string; //Temporary
+  // client_mmr: number;
+  socket_id: string;
 }
 
 /**
@@ -52,7 +57,9 @@ export class gameLobby {
 }
 
 export class ClientGameStateUpdate {
+  username: string;
   match_id: string;
+  lobby_id: string;
   player_side: string;
   paddle_pos: number;
 }
@@ -74,8 +81,12 @@ export class LobbyCreatedDto {
 }
 
 export class JoinGameQueueDto {
-  client_id: string;
+  username: string;
   join_time: number;
+}
+
+export class LeaveGameQueueDto {
+  username: string;
 }
 
 export class PlayerReadyDto {

@@ -9,13 +9,14 @@ import { Server, Socket } from "socket.io";
 import { GameService } from "./game.service";
 
 import { Logger } from "@nestjs/common";
-import { JoinGameInviteDto, JoinGameQueueDto } from "./dto/game.dto";
 import { GameStartEntity } from "./entities/game.entity";
-import { ClientUpdateEvent } from "kingpong-lib";
+import { ClientUpdateEvent, LeaveGameQueueRequest } from "kingpong-lib";
 import { ClientGameStateUpdate } from "./game.types";
 import { GameModuleData } from "./game.data";
 
-import * as GameTypes from "./game.types";
+import { JoinGameQueueRequest} from "kingpong-lib";
+
+// import * as GameTypes from "./game.types";
 /** Create logger for module */
 const logger = new Logger("gameGateway");
 
@@ -43,13 +44,14 @@ export class GameGateway {
    * @returns {}
    * @listens sendGameInvite
    */
-  @SubscribeMessage("sendGameInvite")
-  async sendGameInvite(@MessageBody() joinGameInviteDto: JoinGameInviteDto) {
-    this.gameService.sendGameInvite();
-  }
+  // @SubscribeMessage("sendGameInvite")
+  // async sendGameInvite(@MessageBody()) {
+  //   this.gameService.sendGameInvite();
+  // }
 
   /**
    * Join matchmaking queue for new game
+   * 
    * @param {JoinGameQueueDto} joinGameQueueDto
    * @returns {}
    * @listens joinGameQueue
@@ -57,11 +59,26 @@ export class GameGateway {
   @SubscribeMessage("joinGameQueue")
   async joinGameQueue(
     @ConnectedSocket() client: Socket,
-    @MessageBody() joinGameQueueDto: JoinGameQueueDto
+    @MessageBody() payload: JoinGameQueueRequest
   ) {
-    logger.log("Socket id: " + client.id);
-    this.gameService.joinGameQueue(client, joinGameQueueDto);
+    this.gameService.joinGameQueue(client, payload);
   }
+
+
+  @SubscribeMessage("leaveGameQueue")
+  async leaveGameQueue(
+    @ConnectedSocket() client: Socket,
+    @MessageBody() payload: LeaveGameQueueRequest
+  ) {
+    this.gameService.leaveGameQueue(client,payload);
+  }
+
+
+
+
+
+
+
 
   /**
    * Handle playerReady event and start game when both players ready

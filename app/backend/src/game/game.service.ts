@@ -6,8 +6,9 @@ import { SchedulerRegistry } from "@nestjs/schedule";
 import { GameLogic } from "./game.logic";
 import { GameModuleData } from "./game.data";
 import * as GameTypes from "./game.types";
-import * as GameDto from "./dto/game.dto";
+// import * as GameDto from "./dto/game.dto";
 import { v4 as uuidv4 } from "uuid";
+import { JoinGameQueueRequest, LeaveGameQueueRequest } from "kingpong-lib";
 
 const logger = new Logger("gameService");
 
@@ -16,6 +17,11 @@ export class PlayerQueue {
   join_time: number;
   client_mmr: number;
   socket_id: string; //Temporary
+}
+
+export class JoinGameQueueDto {
+  username: string;
+  join_time: number;
 }
 
 /**
@@ -61,17 +67,14 @@ export class GameService {
    * @returns {}
    * @async
    */
-  async joinGameQueue(client: Socket, player: GameDto.JoinGameQueueDto) {
+  async joinGameQueue(client: Socket, player: JoinGameQueueRequest) {
     logger.log("joinGameQueue() called");
-
-    //Create a player queue object
 
     //Populate data for player
     const newPlayer: GameTypes.PlayerQueue = {
-      // newPlayer.client_id = player.client_id; //TODO: Database integration
-      client_id: uuidv4(), //TODO: Temporary
-      join_time: player.join_time,
-      client_mmr: 500,
+      username: player.username,
+      join_time: 0,
+      // client_mmr: getClientMMR;
       socket_id: client.id
     };
 
@@ -88,6 +91,18 @@ export class GameService {
   }
 
   /**
+   * 
+   * @param player 
+   */
+  async leaveGameQueue(player: LeaveGameQueueRequest) {
+    logger.log("leaveGameQueue() called");
+
+
+    //Check if player is in queue
+    
+  }
+
+  /**
    * Emit event to tell client that lobby has been successfully created
    * @method createLobby
    * @param {GameTypes.PlayerQueue[]} playerPair
@@ -101,8 +116,8 @@ export class GameService {
     const newLobby = new GameTypes.gameLobby();
     newLobby.players = [];
     //Populate lobby data
-    newLobby.players.push(playerPair[0].client_id);
-    newLobby.players.push(playerPair[1].client_id);
+    newLobby.players.push(playerPair[0].username);
+    newLobby.players.push(playerPair[1].username);
     newLobby.created_at = Date.now();
     newLobby.lobby_id = uuidv4();
 
@@ -149,6 +164,7 @@ export class GameService {
       }
     }
   }
+
 
   /**
    *
