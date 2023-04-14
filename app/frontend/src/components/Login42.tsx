@@ -15,16 +15,8 @@ interface LoginWith42ButtonProps {
 function LoginWith42Button({ onSuccess, onFailure }: LoginWith42ButtonProps) {
   const [isLoading, setIsLoading] = useState(false);
 
-  const handleLoginClick = () => {
-    setIsLoading(true);
-
-    // Step 1: Redirect the user to the 42 OAuth authorization endpoint
-    const authorizationUrl = `https://api.intra.42.fr/oauth/authorize?client_id=${CLIENT_ID}&redirect_uri=${REDIRECT_URI}&response_type=code`;
-    window.location.href = authorizationUrl;
-  };
 
   // Step 2: Handle the authorization code and exchange it for an access token
-  useEffect(() => {
     const handleAuthorizationCode = async () => {
       const searchParams = new URLSearchParams(window.location.search);
       const authorizationCode = searchParams.get("code");
@@ -58,12 +50,18 @@ function LoginWith42Button({ onSuccess, onFailure }: LoginWith42ButtonProps) {
       }
     };
 
-    handleAuthorizationCode();
-  }, [onSuccess, onFailure]);
+    const handleLoginClick = () => {
+      setIsLoading(true);
+  
+      // Step 1: Redirect the user to the 42 OAuth authorization endpoint
+      const authorizationUrl = `https://api.intra.42.fr/oauth/authorize?client_id=${CLIENT_ID}&redirect_uri=${REDIRECT_URI}&response_type=code`;
+      window.location.href = authorizationUrl;
+      handleAuthorizationCode();
+    };
 
   return (
     <>
-      <span>What the fuck</span>
+      <span>Log in only option :    </span>
       <Button
         onClick={handleLoginClick}
         disabled={isLoading}
