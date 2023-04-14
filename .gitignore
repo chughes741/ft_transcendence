@@ -22,3 +22,6 @@ generate.sh
 
 # Prisma Migrations
 app/backend/prisma/migrations/
+
+# User uploads
+app/backend/img/

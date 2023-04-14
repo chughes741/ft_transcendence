@@ -1,15 +1,8 @@
 import * as React from "react";
-import {
-  Avatar,
-  IconButton,
-  ToggleButton,
-  Typography,
-  useTheme
-} from "@mui/material";
+import { Avatar, ToggleButton, Typography } from "@mui/material";
 import Box from "@mui/material/Box";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
-import { ThemeProvider } from "@mui/material";
-import { socket } from "src/contexts/WebSocketContext";
+import { socket } from "src/contexts/WebSocket.context";
 import { LobbyCreatedDto } from "../game.types";
 import { useContext } from "react";
 import { GameContext } from "src/game/game.context";
@@ -36,7 +29,7 @@ export default function GameActionBar(lobby: LobbyCreatedDto) {
         <Typography>Joe Blow</Typography>
       </Box>
 
-      {/* Readybutton component */}
+      {/* ReadyButton component */}
       <Box sx={{ ml: 2 }}>
         <ToggleButton
           value="check"

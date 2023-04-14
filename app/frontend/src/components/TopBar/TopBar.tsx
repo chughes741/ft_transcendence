@@ -2,19 +2,19 @@ import * as React from "react";
 import AppBar from "@mui/material/AppBar";
 import Box from "@mui/material/Box";
 import Toolbar from "@mui/material/Toolbar";
-import IconButton from "@mui/material/IconButton";
 import Typography from "@mui/material/Typography";
 import Menu from "@mui/material/Menu";
 import Avatar from "@mui/material/Avatar";
 import MenuItem from "@mui/material/MenuItem";
 import { LogoSvg } from "./logoComponent";
 import { ButtonUnstyled } from "@mui/base";
-import { Button, Tooltip } from "@mui/material";
-import VideogameAssetIcon from "@mui/icons-material/VideogameAsset";
-import { PageState } from "src/views/root.model";
-import { useProfileViewModelContext } from "src/views/profile/profile.viewModel";
-
-const settings = ["Profile", "Settings", "Logout"];
+import { IconButton } from "@mui/material";
+import { PageState } from "src/root.model";
+import { useProfileViewModelContext } from "src/profile/profile.viewModel";
+import { SportsEsports } from "@mui/icons-material";
+import DynamicIconButton from "../DynamicIconButton";
+import { useRootViewModelContext } from "src/root.context";
+import { useSettingsViewModelContext } from "../settings/settings.viewModel";
 
 //Set css flexbox options for the toolbar component to create proper object positioning for child elements
 const toolbarStyle = {
@@ -22,25 +22,17 @@ const toolbarStyle = {
   justifyContent: "space-between"
 };
 
-function TopBar({ setPageState }) {
+export default function TopBar() {
+  const { setPageState } = useRootViewModelContext();
   const { setUser } = useProfileViewModelContext();
-
-  const [anchorElNav, setAnchorElNav] = React.useState<null | HTMLElement>(
-    null
-  );
+  const { self } = useRootViewModelContext();
+  const { handleOpenSettings } = useSettingsViewModelContext();
   const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(
     null
   );
 
-  const handleOpenNavMenu = (event: React.MouseEvent<HTMLElement>) => {
-    setAnchorElNav(event.currentTarget);
-  };
   const handleOpenUserMenu = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorElUser(event.currentTarget);
-  };
-
-  const handleCloseNavMenu = () => {
-    setAnchorElNav(null);
   };
 
   const handleCloseUserMenu = () => {
@@ -48,8 +40,18 @@ function TopBar({ setPageState }) {
   };
 
   const onClickProfile = () => {
-    setUser("schlurp");
+    setUser(self.username);
     setPageState(PageState.Profile);
+    handleCloseUserMenu();
+  };
+
+  const onClickSettings = () => {
+    handleOpenSettings();
+    handleCloseUserMenu();
+  };
+
+  const onClickLogout = () => {
+    /** @todo add logout function */
     handleCloseUserMenu();
   };
 
@@ -62,8 +64,7 @@ function TopBar({ setPageState }) {
         disableGutters
         style={toolbarStyle}
       >
-        {/* Logo wrapped in button to return to home */}
-
+        {/* Logo button */}
         <Box sx={{ flexGrow: 1 }}>
           <ButtonUnstyled
             onClick={() => setPageState(PageState.Home)}
@@ -79,30 +80,28 @@ function TopBar({ setPageState }) {
           </ButtonUnstyled>
         </Box>
 
+        {/* New game button */}
         <Box>
-          <Button
+          <DynamicIconButton
+            text="New Game"
+            icon={
+              <SportsEsports style={{ fontSize: "2rem", color: "white" }} />
+            }
             onClick={() => setPageState(PageState.Game)}
-            color="primary"
-            sx={{ mr: 5 }}
-            variant="outlined"
-            startIcon={<VideogameAssetIcon />}
-          >
-            Play A Game
-          </Button>
+          />
         </Box>
-        {/* Button to be displayed instead of profile when use not logged in*/}
-        {/* <Button color="inherit">Login</Button> */}
 
-        {/* Profile picture with context menu */}
+        {/* User menu */}
         <Box>
-          <Tooltip title="Open settings">
-            <IconButton
-              onClick={handleOpenUserMenu}
-              sx={{ p: 0, pr: 2 }}
-            >
-              <Avatar alt="Remy" />
-            </IconButton>
-          </Tooltip>
+          <IconButton
+            onClick={handleOpenUserMenu}
+            sx={{ p: 0, mr: "1rem", ml: "1rem" }}
+          >
+            <Avatar
+              src={self.avatar}
+              sx={{ width: "4rem", height: "4rem" }}
+            />
+          </IconButton>
           <Menu
             sx={{ mt: "45px" }}
             id="menu-appbar"
@@ -119,18 +118,18 @@ function TopBar({ setPageState }) {
             open={Boolean(anchorElUser)}
             onClose={handleCloseUserMenu}
           >
-            {settings.map((setting) => (
-              <MenuItem
-                key={setting}
-                onClick={onClickProfile}
-              >
-                <Typography textAlign="center">{setting}</Typography>
-              </MenuItem>
-            ))}
+            <MenuItem onClick={onClickProfile}>
+              <Typography textAlign="center">Profile</Typography>
+            </MenuItem>
+            <MenuItem onClick={onClickSettings}>
+              <Typography textAlign="center">Settings</Typography>
+            </MenuItem>
+            <MenuItem onClick={onClickLogout}>
+              <Typography textAlign="center">Logout</Typography>
+            </MenuItem>
           </Menu>
         </Box>
       </Toolbar>
     </AppBar>
   );
 }
-export default TopBar;

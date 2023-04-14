@@ -1,15 +1,11 @@
 .button-funky {
-/********Variables********/
-  /* --border: rgb(3, 169, 244); */
-  /* --g1: rgb(98, 0, 234);
-  --g2: rgb(236, 64, 122);
-  --g3: rgb(253, 216, 53); */
-
+  /********Variables********/
   /* Color scheme to fit the theme: */
   --g1: rgb(34, 186, 187);
   --g2: rgb(250, 127, 8);
   --g3: rgb(242, 68, 4);
-/*************************/
+  /*************************/
+
   border-radius: 2rem;
   cursor: pointer;
   color: white;
@@ -20,17 +16,15 @@
   justify-content: center;
   align-items: center;
   align-self: center;
-  translate: 5% 0%;
+  translate: 5% 0;
 }
 
 .button-funky:before {
-  background: linear-gradient(
-          130deg,
-          transparent 0% 33%,
-          var(--g1) 66%,
-          var(--g2) 83.5%,
-          var(--g3) 100%
-  ) 66% 66%;
+  background: linear-gradient(130deg,
+      transparent 0% 33%,
+      var(--g1) 66%,
+      var(--g2) 83.5%,
+      var(--g3) 100%) 66% 66%;
   background-size: 300% 300%;
   border-radius: 2rem;
   content: "";
@@ -39,7 +33,7 @@
   pointer-events: none;
   position: absolute;
   top: 0;
-  transition: background-position 350ms ease, transform 350ms ease;
+  transition: background-position 600ms ease, transform 600ms ease;
   width: 90%;
   z-index: 1;
 }
@@ -63,17 +57,14 @@
 }
 
 .button-funky-bg {
-
-    background-image: radial-gradient(
-    rgba(255, 255, 255, 0.2) 8%,
-    transparent 8%
-  );
+  background-image: radial-gradient(rgba(255, 255, 255, 0.2) 8%,
+      transparent 8%);
 
   background-position: 0;
   background-size: 2vmin 2vmin;
   border-radius: 2rem;
   position: absolute;
-  transition: background-position 350ms ease;
+  transition: background-position 600ms ease;
   z-index: 2;
   top: 0;
   left: 0;
@@ -88,7 +79,7 @@
   color: white;
   font-weight: 400;
   margin: 0;
-  transition: 350ms ease;
+  transition: 600ms ease;
   text-align: center;
   z-index: 3;
   padding: 8px 20px;

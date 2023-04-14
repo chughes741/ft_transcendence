@@ -1,5 +1,6 @@
 import { Injectable, Logger } from "@nestjs/common";
 import {
+  AddFriendRequest,
   GetMatchHistoryRequest,
   GetProfileRequest,
   MatchHistoryItem,
@@ -18,7 +19,6 @@ export class ProfileService {
   /**
    * Fetches match history of requested player
    *
-   * @todo update to return MatchHistoryEntity once kingpong-lib is updated
    * @param {GetMatchHistoryRequest} getMatchHistoryRequest
    * @async
    * @returns {Promise<MatchHistoryItem[]>}
@@ -78,44 +78,66 @@ export class ProfileService {
           : UserStatus.AWAY,
       createdAt: user.createdAt.toLocaleTimeString()
     };
-
+    logger.log("PROFILE AVATAR :" + profile.avatar);
     return profile;
   }
 
   /**
    * Get a list of all users friends
    *
-   * @todo update once kingpong-lib is updated
    * @param {GetFriendsRequest} getFriendsRequest
    * @async
-   * @returns {Promise<ProfileEntity[]>}
+   * @returns {Promise<ProfileEntity[] | null>}
    */
   async getFriends(
     getFriendsRequest: GetFriendsRequest
-  ): Promise<ProfileEntity[]> {
+  ): Promise<ProfileEntity[] | null> {
+    if (!getFriendsRequest.username) {
+      logger.log("No username is provided");
+      return null;
+    }
     logger.log(`Fetching friends for ${getFriendsRequest.username}`);
-    // const friends = await this.prismaService.getFriends(getFriendsRequest);
-    // const friendProfiles = friends.map((friend) => {
-    // return {
-    // username: friend.username,
-    // avatar: friend.avatar,
-    // status: UserStatus.ONLINE,
-    // createdAt: friend.createdAt.toLocaleTimeString()
-    // };
-    // });
+    const friends = await this.prismaService.getFriends(getFriendsRequest);
+    const friendProfiles = friends.map((friend) => {
+      return {
+        username: friend.friend.username,
+        avatar: friend.friend.avatar,
+        status:
+          friend.friend.status === "ONLINE"
+            ? UserStatus.ONLINE
+            : friend.friend.status === "OFFLINE"
+            ? UserStatus.OFFLINE
+            : UserStatus.AWAY,
+        createdAt: friend.createdAt.toLocaleTimeString()
+      };
+    });
 
-    // return friendProfiles;
-
-    return [];
+    return friendProfiles;
   }
 
   /**
    * Makes an update request to the database for a users profile
    *
+   * @todo Implement
    * @param {UpdateProfileRequest} updateProfileRequest
    * @returns {boolean} - Update successful
    */
   updateProfile(updateProfileRequest: UpdateProfileRequest): boolean {
+    logger.log(`Updating profile for ${updateProfileRequest.username}`);
     return true;
+  }
+
+  /**
+   * Adds a friend to a users friend list
+   *
+   * @todo Implement
+   * @param {AddFriendRequest} addFriendRequest
+   * @returns {boolean} - Add successful
+   */
+  addFriend(addFriendRequest: AddFriendRequest): Promise<boolean> {
+    logger.log(
+      `Adding friend ${addFriendRequest.friend} to ${addFriendRequest.username}`
+    );
+    return this.prismaService.addFriend(addFriendRequest);
   }
 }

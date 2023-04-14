@@ -4,6 +4,7 @@ import {
   MessageBody
 } from "@nestjs/websockets";
 import {
+  AddFriendRequest,
   GetMatchHistoryRequest,
   GetProfileRequest,
   MatchHistoryItem,
@@ -21,10 +22,9 @@ export class ProfileGateway {
   /**
    * Gateway for requesting a players match history
    *
-   * @todo update to return MatchHistoryEntity once kingpong-lib is updated
    * @param {GetMatchHistoryRequest} getMatchHistoryRequest
    * @async
-   * @returns {Promise<MatchHistoryEntity>} - MatchHistoryItem[]
+   * @returns {Promise<MatchHistoryItem[]>}
    */
   @SubscribeMessage(ProfileEvents.GetMatchHistory)
   async getMatchHistory(
@@ -38,7 +38,7 @@ export class ProfileGateway {
    *
    * @param {GetProfileRequest} getProfileRequest
    * @async
-   * @return {ProfileEntity} - Requested users profile
+   * @return {Promise<ProfileEntity | null>} - Requested users profile
    */
   @SubscribeMessage(ProfileEvents.GetProfile)
   async getProfile(
@@ -50,15 +50,14 @@ export class ProfileGateway {
   /**
    * Returns profile information of users friends
    *
-   * @todo update SubscribeMessage once kingpong-lib is updated
    * @param {GetFriendsRequest} getFriendsRequest
    * @async
-   * @returns {Promise<ProfileEntity[]>} - Requested users friends
+   * @returns {Promise<ProfileEntity[] | null>} - Requested users friends
    */
   @SubscribeMessage("getFriendsRequest")
   async getFriends(
     @MessageBody() getFriendsRequest: GetFriendsRequest
-  ): Promise<ProfileEntity[]> {
+  ): Promise<ProfileEntity[] | null> {
     return await this.profileService.getFriends(getFriendsRequest);
   }
 
@@ -73,5 +72,18 @@ export class ProfileGateway {
     @MessageBody() updateProfileRequest: UpdateProfileRequest
   ): boolean {
     return this.profileService.updateProfile(updateProfileRequest);
+  }
+
+  /**
+   * Add a friend to a users friend list
+   *
+   * @param {AddFriendRequest} addFriendRequest
+   * @returns {boolean} - Add friend successful
+   */
+  @SubscribeMessage(ProfileEvents.AddFriend)
+  addFriend(
+    @MessageBody() addFriendRequest: AddFriendRequest
+  ): Promise<boolean> {
+    return this.profileService.addFriend(addFriendRequest);
   }
 }

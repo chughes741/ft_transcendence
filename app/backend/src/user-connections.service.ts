@@ -1,5 +1,3 @@
-// [app/backend/src/chat/user-connections.service.ts]
-
 import { Injectable, Logger } from "@nestjs/common";
 
 const logger = new Logger("UserConnectionsService");
@@ -7,6 +5,11 @@ const logger = new Logger("UserConnectionsService");
 @Injectable()
 export class UserConnectionsService {
   private userConnections: Map<string, string[]> = new Map();
+
+  // Returns all of the socketIds for a given user
+  getUserSockets(username: string): string[] {
+    return this.userConnections.get(username);
+  }
 
   getUserBySocket(socketId: string): string {
     const userArray = Array.from(this.userConnections.entries()).find(

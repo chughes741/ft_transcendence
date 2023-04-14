@@ -1,34 +1,24 @@
-// noinspection SpellCheckingInspection
-
 import * as React from "react";
 import List from "@mui/material/List";
 import ListItemButton from "@mui/material/ListItemButton";
 import ListItemIcon from "@mui/material/ListItemIcon";
 import ListItemText from "@mui/material/ListItemText";
 import GroupAddIcon from "@mui/icons-material/GroupAdd";
-import { PageState } from "src/views/root.model";
+import { PageState } from "src/root.model";
 import ButtonFunky from "../ButtonFunky";
-import { useChatViewModelContext } from "../../pages/chat/contexts/ChatViewModelContext";
+import { useChatContext } from "../../chat/chat.context";
+import { AddCircleOutline, Chat, MeetingRoom } from "@mui/icons-material";
+import DynamicIconButton from "../DynamicIconButton";
+import { useRootViewModelContext } from "src/root.context";
 
-class ChatRoomListItemDto {
-  room_name: string;
-  is_private: boolean;
-  member_count: number;
-}
+export default function SidebarChatOptions() {
+  const { setPageState } = useRootViewModelContext();
 
-export default function SidebarChatOptions({ setPageState }) {
-  const { setShowJoinRoomModal, setShowCreateRoomModal } =
-    useChatViewModelContext();
-  const [open, setOpen] = React.useState(true);
-
-  const handleClick = () => {
-    setOpen(!open);
-  };
-
-  const rooms: ChatRoomListItemDto[] = [];
-  rooms.push({ room_name: "Test 1", member_count: 2, is_private: false });
-  rooms.push({ room_name: "Test 2", member_count: 4, is_private: true });
-  rooms.push({ room_name: "Test 3", member_count: 7, is_private: false });
+  const {
+    setShowJoinRoomModal,
+    setShowCreateRoomModal,
+    setShowDirectMessageModal
+  } = useChatContext();
 
   return (
     <List
@@ -49,16 +39,45 @@ export default function SidebarChatOptions({ setPageState }) {
         <ListItemText>Chat Page</ListItemText>
       </ListItemButton>
 
-      <ButtonFunky
-        content="Create a room"
-        width={"80%"}
+      <DynamicIconButton
+        text="Message a friend"
+        icon={<Chat style={{ fontSize: "2rem", color: "white" }} />}
+        onClick={() => setShowDirectMessageModal(true)}
+      />
+      <DynamicIconButton
+        text="Create a room"
+        icon={<AddCircleOutline style={{ fontSize: "2rem", color: "white" }} />}
         onClick={() => setShowCreateRoomModal(true)}
       />
-      <ButtonFunky
-        content="Join a room"
-        width={"80%"}
+      <DynamicIconButton
+        text="Join a room"
+        icon={<MeetingRoom style={{ fontSize: "2rem", color: "white" }} />}
         onClick={() => setShowJoinRoomModal(true)}
       />
+
+      {/* FIXME: If I remove this, the colors are fucked */}
+      {false && (
+        <>
+          <ButtonFunky
+            icon={<Chat />}
+            content="Message a friend"
+            width={"80%"}
+            onClick={() => setShowDirectMessageModal(true)}
+          />
+          <ButtonFunky
+            icon={<AddCircleOutline />}
+            content="Create a room"
+            width={"80%"}
+            onClick={() => setShowCreateRoomModal(true)}
+          />
+          <ButtonFunky
+            icon={<MeetingRoom />}
+            content="Join a room"
+            width={"80%"}
+            onClick={() => setShowJoinRoomModal(true)}
+          />
+        </>
+      )}
     </List>
   );
 }

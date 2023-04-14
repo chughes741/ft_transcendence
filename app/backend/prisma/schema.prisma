@@ -65,7 +65,6 @@ model BlockedUser {
   blocked       User   @relation("UserBlockedBy", fields: [blockedUserId], references: [id], onDelete: Cascade)
 
   createdAt DateTime @default(now())
-  userId    String?
 
   @@unique([blockerId, blockedUserId])
   @@map("blockedUsers")

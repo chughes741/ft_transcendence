@@ -3,36 +3,44 @@ import ReactDOM from "react-dom/client";
 import "./index.css";
 
 /** Providers */
-import { socket, WebSocketProvider } from "src/contexts/WebSocketContext";
+import { WebSocketProvider } from "src/contexts/WebSocket.context";
 import { CssBaseline, ThemeProvider } from "@mui/material";
-import { PageStateProvider } from "./contexts/PageStateContext";
-import { ChatViewModelProvider } from "src/pages/chat/ChatViewModel";
-import { ProfileViewModelProvider } from "./views/profile/profile.viewModel";
+import { ChatViewModelProvider } from "src/chat/chat.viewModel";
+import { ProfileViewModelProvider } from "./profile/profile.viewModel";
+import { RootViewModelProvider } from "./root.viewModel";
+import { SettingsViewModelProvider } from "./components/settings/settings.viewModel";
+import { RoomManagerProvider } from "./chat/lib/roomManager";
 
 import customTheme from "src/theme";
-import { RootView } from "./views/root.view";
+import { RootView } from "./root.view";
+import { ErrorBoundary } from "react-error-boundary";
+import Fallback from "./components/error/error";
 import { GameViewModelProvider } from "./game/game.viewModel";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 const theme = customTheme();
 
 root.render(
-  <>
+  <ErrorBoundary FallbackComponent={Fallback}>
     <React.StrictMode>
-      <WebSocketProvider value={socket}>
+      <WebSocketProvider>
         <ThemeProvider theme={theme}>
-          <PageStateProvider>
-            <ChatViewModelProvider>
-              <ProfileViewModelProvider>
-                <GameViewModelProvider>
+          <RootViewModelProvider>
+            <RoomManagerProvider>
+              <ChatViewModelProvider>
+                <ProfileViewModelProvider>
+                  <SettingsViewModelProvider>
+                    <GameViewModelProvider>
                   <CssBaseline />
-                  <RootView />
-                </GameViewModelProvider>
+                      <RootView />
+                  </SettingsViewModelProvider>
+                  </GameViewModelProvider>
               </ProfileViewModelProvider>
-            </ChatViewModelProvider>
-          </PageStateProvider>
+              </ChatViewModelProvider>
+            </RoomManagerProvider>
+          </RootViewModelProvider>
         </ThemeProvider>
       </WebSocketProvider>
     </React.StrictMode>
-  </>
+  </ErrorBoundary>
 );
