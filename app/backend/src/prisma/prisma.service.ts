@@ -26,7 +26,7 @@ import {
   GetProfileRequest
 } from "kingpong-lib";
 import { updateChatMemberStatusDto } from "src/chat/dto/userlist.dto";
-import { UserEntity } from "../auth/dto";
+import { AuthRequest, UserEntity } from "../auth/dto";
 
 /*End of Mute and End of Ban:  */
 //Is added to the current date (now)
@@ -96,14 +96,17 @@ export class PrismaService extends PrismaClient {
    * @returns {Promise<string>} - A Promise that resolves to the user id if the user is found, or an error if not found.
    * @async
    */
-  async getUserIdByNick(nick: string): Promise<string> {
+  async getUserIdByNick(nick: string): Promise<string | null> {
     if (!nick) {
       return null;
     }
 
-    const user = await this.user.findUnique({ where: { username: nick } });
-
-    return user ? user.id : null;
+    try {
+      const user = await this.user.findUnique({ where: { username: nick } });
+      return user.id;
+    } catch (err) {
+      return null;
+    }
   }
 
   /**
@@ -143,6 +146,8 @@ export class PrismaService extends PrismaClient {
    * @returns {Promise<User>} - A Promise that resolves to the chat member if the user is found, or an error if not found.
    */
   async addUser(req: UserEntity): Promise<User> {
+    logger.warn(`addUser:`);
+    console.log(req);
     if (!req.username || !req.avatar) {
       throw new Error(
         `Missing required fields: ${!!req.avatar && "avatar, "} ${
@@ -155,7 +160,8 @@ export class PrismaService extends PrismaClient {
       firstName: req.firstName,
       lastName: req.lastName,
       avatar: req.avatar,
-      email: req.email
+      email: req.email,
+      status: req.status
     };
     return this.user.create({ data });
   }

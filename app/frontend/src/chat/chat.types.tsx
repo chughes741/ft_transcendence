@@ -100,10 +100,18 @@ export interface LeaveRoomRequest {
   username: string;
 }
 
-export class UpdateChatRoomRequest {
+export interface UpdateChatRoomRequest {
   username: string;
   roomName: string;
   status: ChatRoomStatus;
   oldPassword?: string;
   newPassword?: string;
+}
+
+export interface AuthRequest {
+  username: string;
+  avatar: string;
+  firstName?: string;
+  lastName?: string;
+  email?: string;
 }
