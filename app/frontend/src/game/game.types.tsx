@@ -64,8 +64,52 @@ export class ClientGameStateUpdate {
   paddle_pos: number;
 }
 
-export class PlayerReady {
-  match_id: string;
-  client_id: string;
+export class PlayerReadyDto {
+  constructor(Lobby_ID: string, Is_Ready: boolean) {
+    this.lobby_id = Lobby_ID;
+    this.is_ready = Is_Ready;
+  }
+  lobby_id: string;
   is_ready: boolean;
+}
+
+export class LobbyCreatedDto {
+  constructor(Lobby_ID) {
+    this.lobby_id = Lobby_ID;
+  }
+  lobby_id: string;
+  player_side: string;
+}
+
+export class GameStartedDto {
+  match_id: string;
+  player_side: string;
+}
+
+export class Lobby {
+  constructor(Lobby_ID: string, Player_Side: string) {
+    this.lobby_id = Lobby_ID;
+    this.player_side = Player_Side;
+    this.game.ball_x = 0;
+    this.game.ball_y = 0;
+    this.game.paddle_left_y = 0;
+    this.game.paddle_right_y = 0;
+  }
+  player_side: string;
+  lobby_id: string;
+  player_name: string;
+  opponent_name: string;
+  player_avatar: string;
+  opponent_avatar: string;
+  player_ready: boolean;
+  opponent_ready: boolean;
+
+  game: {
+    ball_x: number;
+    ball_y: number;
+    paddle_left_y: number;
+    paddle_right_y: number;
+    score_left: number;
+    score_right: number;
+  };
 }

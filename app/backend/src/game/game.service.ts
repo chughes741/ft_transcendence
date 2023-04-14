@@ -34,7 +34,7 @@ export class GameService {
     private gameModuleData: GameModuleData
   ) {}
 
-  //Get local instance of websocker server
+  //Get local instance of websocket server
   @WebSocketServer()
   public server: Server;
   private gameState: GameTypes.GameData;
@@ -74,6 +74,7 @@ export class GameService {
       client_mmr: 500,
       socket_id: client.id
     };
+
     //Add player to queue
     this.gameModuleData.addQueue(newPlayer);
 
@@ -109,18 +110,21 @@ export class GameService {
     this.server.in(playerPair[0].socket_id).socketsJoin(newLobby.lobby_id);
     this.server.in(playerPair[1].socket_id).socketsJoin(newLobby.lobby_id);
 
+    //Add the game init here instead of elsewhere
+
     //Add lobby to map of lobbies
     //TODO: Swap this to a setter function in the data module
     GameModuleData.lobbies.push(newLobby);
 
+    //Create payload
+    const payload: GameTypes.LobbyCreatedDto = {
+      lobby_id: newLobby.lobby_id,
+      player_side: "left"
+    };
+
     //Emit lobbyCreated event to room members
-
-    this.server.to(newLobby.lobby_id).emit("lobbyCreated");
+    this.server.to(newLobby.lobby_id).emit("lobbyCreated", payload);
   }
-
-  // export class LobbyCreatedPayload {
-
-  // }
 
   /**
    * Start the game if both players are ready
@@ -128,29 +132,21 @@ export class GameService {
    * @returns {}
    * @async
    */
-  async gameStart() {
+  async gameStart(lobby_id: string) {
     logger.log("gameStart() called");
 
-    if (this.gameState?.player_left_ready && this.gameState?.player_right_ready)
-      this.startNewGame();
-
-    //Emit gameStart event to clients so they can render the game window
-  }
-
-  /**
-   * Creates a new game instance
-   * @method startNewGame
-   * @returns {}
-   * @async
-   */
-  async startNewGame() {
-    logger.log("startNewGame() called");
-
-    try {
-      this.schedulerRegistry.getInterval("gameUpdateInterval");
-    } catch {
-      logger.log("Error creating gameUpdateInterval");
-      this.gameLogic.createGame(this.gameState);
+    //Retrieve the correct lobby
+    const lobby: GameTypes.gameLobby = this.gameModuleData.getLobby(lobby_id);
+    if (!lobby) return;
+    //Check if both players are ready
+    if (lobby.gamestate.players_ready === 2) {
+      try {
+        this.schedulerRegistry.getInterval("gameUpdateInterval");
+        logger.log("Error creating gameUpdateInterval");
+      } catch {
+        logger.log("Started game successfully");
+        this.gameLogic.createGame(this.gameState);
+      }
     }
   }
 

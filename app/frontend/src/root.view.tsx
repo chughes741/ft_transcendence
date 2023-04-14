@@ -9,11 +9,11 @@ import { useRootViewModelContext } from "./root.context";
 import SideBar from "src/components/SideBar/SideBar";
 import TopBar from "src/components/TopBar/TopBar";
 import { PageState } from "./root.model";
-import GameWindow from "./game/game.master";
 import { ChatView } from "./chat/chat.view";
 import ProfileView from "./profile/profile.view";
 import { HelmetView } from "./components/Helmet";
 import SettingsView from "./components/settings/settings.view";
+import GameWindow from "./game/game.view";
 
 /**
  * Root view content

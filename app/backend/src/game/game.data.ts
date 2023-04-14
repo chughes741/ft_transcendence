@@ -68,4 +68,37 @@ export class GameModuleData {
       }
     });
   }
+
+  /**
+   * Update the player ready status for a player in specified lobby
+   * @param {GameTypes.PlayerReadyDto} payload
+   */
+  updatePlayerReady(payload: GameTypes.PlayerReadyDto) {
+    console.log("entered updatePlayerReady");
+    console.log(payload.lobby_id);
+    GameModuleData.lobbies.forEach((element) => {
+      //If match_id is found then update paddle pos
+      if (element.lobby_id === payload.lobby_id) {
+        if (payload.is_ready) {
+          element.gamestate.players_ready++;
+        } else {
+          element.gamestate.players_ready--;
+        }
+        console.log("PlayersReady: " + element.gamestate.players_ready);
+      }
+    });
+  }
+
+  /**
+   * Retrieve the lobby object that corresponds to the given lobby id
+   */
+  getLobby(lobby_id: string): GameTypes.gameLobby {
+    GameModuleData.lobbies.forEach((element) => {
+      //If match_id is found then update paddle pos
+      if (element.lobby_id === lobby_id) {
+        return element;
+      }
+    });
+    return null;
+  }
 }
