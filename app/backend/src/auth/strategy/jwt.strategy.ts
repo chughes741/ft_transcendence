@@ -37,7 +37,6 @@ export class JwtStrategy extends PassportStrategy(Strategy, "jwt") {
 
     // TODO: add business logic to throw unifies HttpStatus in case of error
 
-    delete user.hash; // Remove sensitive data before returning
     return user;
   }
 }

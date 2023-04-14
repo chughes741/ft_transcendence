@@ -26,6 +26,7 @@ import {
   GetProfileRequest
 } from "kingpong-lib";
 import { updateChatMemberStatusDto } from "src/chat/dto/userlist.dto";
+import { UserEntity } from "../auth/dto";
 
 /*End of Mute and End of Ban:  */
 //Is added to the current date (now)
@@ -138,23 +139,23 @@ export class PrismaService extends PrismaClient {
 
   /**
    * Adds a user to the database
-   * @param dto - dto containing the room name and the user id
+   * @param req - dto containing the room name and the user id
    * @returns {Promise<User>} - A Promise that resolves to the chat member if the user is found, or an error if not found.
    */
-  async addUser(dto: UserDto): Promise<User> {
-    if (!dto.username || !dto.password || !dto.avatar) {
+  async addUser(req: UserEntity): Promise<User> {
+    if (!req.username || !req.avatar) {
       throw new Error(
-        `Missing required fields: ${!!dto.avatar && "avatar, "} ${
-          !!dto.username && "username, "
-        } ${!!dto.password && "password "}`
+        `Missing required fields: ${!!req.avatar && "avatar, "} ${
+          !!req.username && "username, "
+        }`
       );
     }
     const data: Prisma.UserCreateInput = {
-      username: dto.username,
-      // firstName: dto.firstName,
-      // lastName: dto.lastName,
-      hash: dto.password,
-      avatar: dto.avatar
+      username: req.username,
+      firstName: req.firstName,
+      lastName: req.lastName,
+      avatar: req.avatar,
+      email: req.email
     };
     return this.user.create({ data });
   }
@@ -753,28 +754,4 @@ export class PrismaService extends PrismaClient {
     });
     return userToUpdate;
   }
-
-  async updateToken(userName : string, newToken : string){
-    const userToUpdate = await this.user.update({
-      where: {
-        username: userName
-      },
-      data: {
-        token: newToken
-      }
-    });
-    return userToUpdate;
-  }
-
-  async checkToken(userName : string ,incomingToken : string) : Promise<boolean> {
-    const user = await this.user.findUnique({
-      where : {
-        username : userName
-      }
-    })
-    if (incomingToken === user.token)
-      return true;
-    return false
-  }
-
 }
