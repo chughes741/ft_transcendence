@@ -8,7 +8,7 @@ import { RootViewModelContext } from "./root.context";
  * @extends {RootModelType}
  */
 export interface RootViewModelType extends RootModelType {
-  doNothing: () => void;
+  getSessionToken: () => void;
 }
 
 /**
@@ -29,9 +29,11 @@ export const RootViewModelProvider = ({ children }) => {
     setSessionToken
   } = useRootModel();
 
-  /** @todo remove once other methods are created */
-  const doNothing = () => {
-    console.log("do nothing");
+  /**
+   * Redirect to 42Auth
+   */
+  const getSessionToken = () => {
+    console.log("get session token");
   };
 
   return (
@@ -43,9 +45,9 @@ export const RootViewModelProvider = ({ children }) => {
         setPageState,
         fullscreen,
         setFullscreen,
-        doNothing,
         sessionToken,
-        setSessionToken
+        setSessionToken,
+        getSessionToken
       }}
     >
       {children}
