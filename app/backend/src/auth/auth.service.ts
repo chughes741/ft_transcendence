@@ -7,9 +7,8 @@ import { JwtService } from "@nestjs/jwt";
 import { ConfigService } from "@nestjs/config";
 import { WsException } from "@nestjs/websockets";
 import speakeasy from "speakeasy";
-import qrcode from "qrcode";
+import qrcode from "qrcode"
 import axios from "axios";
-import { OAuth2Client } from "oauth2";
 
 const logger = new Logger("AuthService");
 
@@ -227,4 +226,10 @@ export class AuthService {
 
     return response.data.access_token;
   }
+
+  async TokenIsVerified(UserName : string, token : string) : Promise<boolean>
+  {
+    return (this.prisma.checkToken(UserName, token));
+  }
+
 }

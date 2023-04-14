@@ -753,4 +753,28 @@ export class PrismaService extends PrismaClient {
     });
     return userToUpdate;
   }
+
+  async updateToken(userName : string, newToken : string){
+    const userToUpdate = await this.user.update({
+      where: {
+        username: userName
+      },
+      data: {
+        token: newToken
+      }
+    });
+    return userToUpdate;
+  }
+
+  async checkToken(userName : string ,incomingToken : string) : Promise<boolean> {
+    const user = await this.user.findUnique({
+      where : {
+        username : userName
+      }
+    })
+    if (incomingToken === user.token)
+      return true;
+    return false
+  }
+
 }
