@@ -10,15 +10,8 @@ export default function GameLoader() {
     <>
       <Box className="body-page">
         <Box className="body-text">
-          <h2 data-text="Looking for a game...">
-            Looking for a game...
-            <button
-              onClick={() => {
-                setPageState(PageState.Game);
-              }}
-            >
-              click
-            </button>
+          <h2 data-text="Looking for a match...">
+            Looking for a match...
           </h2>
         </Box>
 
@@ -28,6 +21,7 @@ export default function GameLoader() {
               <Box className="ball" />
               <Box className="ball bottom" />
               <Box className="shadow" />
+              <Box className="table" />
             </Box>
           </Box>
 
