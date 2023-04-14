@@ -18,8 +18,16 @@ export interface RootViewModelType extends RootModelType {
  * @returns - Root view model provider
  */
 export const RootViewModelProvider = ({ children }) => {
-  const { self, setSelf, pageState, setPageState, fullscreen, setFullscreen } =
-    useRootModel();
+  const {
+    self,
+    setSelf,
+    pageState,
+    setPageState,
+    fullscreen,
+    setFullscreen,
+    sessionToken,
+    setSessionToken
+  } = useRootModel();
 
   /** @todo remove once other methods are created */
   const doNothing = () => {
@@ -35,7 +43,9 @@ export const RootViewModelProvider = ({ children }) => {
         setPageState,
         fullscreen,
         setFullscreen,
-        doNothing
+        doNothing,
+        sessionToken,
+        setSessionToken
       }}
     >
       {children}
