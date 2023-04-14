@@ -31,11 +31,11 @@ root.render(
                 <ProfileViewModelProvider>
                   <SettingsViewModelProvider>
                     <GameViewModelProvider>
-                  <CssBaseline />
+                      <CssBaseline />
                       <RootView />
+                    </GameViewModelProvider>
                   </SettingsViewModelProvider>
-                  </GameViewModelProvider>
-              </ProfileViewModelProvider>
+                </ProfileViewModelProvider>
               </ChatViewModelProvider>
             </RoomManagerProvider>
           </RootViewModelProvider>

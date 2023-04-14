@@ -1,10 +1,8 @@
 import Game from "src/game/GameWindow";
 import Box from "@mui/material/Box";
 import GameActionBar from "./components/GameActionBar";
-import { socket } from "src/contexts/WebSocketContext";
+import { socket } from "src/contexts/WebSocket.context";
 import * as GameTypes from "./game.types";
-import { Button } from "@mui/material";
-import { useRef } from "react";
 import { useGameContext } from "src/game/game.context";
 import JoinGameQueue from "./components/game.joinGameQueue";
 
