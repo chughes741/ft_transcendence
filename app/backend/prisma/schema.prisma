@@ -19,7 +19,6 @@ model User {
 
   avatar String  @default("default_avatar.png")
   email  String? @unique // To prevent duplicates in the DB
-  token  String?
 
   firstName String?
   lastName  String?
