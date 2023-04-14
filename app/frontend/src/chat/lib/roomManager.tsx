@@ -238,11 +238,14 @@ export const RoomManagerProvider = ({ children }) => {
   ): Promise<boolean> => {
     const joinRoomPayload = { roomName, password, user: self.username };
     const joinRoomRes = await new Promise<DevError | ChatRoomPayload>(
-      (resolve) => socket.emit("joinRoom", joinRoomPayload, resolve)
+      (resolve) => {
+        console.warn("Getting messages for room: ", roomName);
+        socket.emit("joinRoom", joinRoomPayload, resolve);
+      }
     );
 
     if (handleSocketErrorResponse(joinRoomRes)) {
-      console.log("Error response from join room: ", joinRoomRes.error);
+      console.error("Error response from join room: ", joinRoomRes.error);
       alert(joinRoomRes.error);
       return false;
     }
@@ -251,13 +254,21 @@ export const RoomManagerProvider = ({ children }) => {
 
     const messageRequest = { roomName, date: new Date(), pageSize: 50 };
     const messagesRes = await new Promise<DevError | MessagePayload[]>(
-      (resolve) => socket.emit("getRoomMessagesPage", messageRequest, resolve)
+      (resolve) => {
+        console.warn("Getting messages for room: ", roomName);
+        socket.emit("getRoomMessagesPage", messageRequest, resolve);
+      }
     );
 
     if (handleSocketErrorResponse(messagesRes)) {
-      console.log("Error response from get room messages: ", messagesRes.error);
+      console.error(
+        "Error response from get room messages: ",
+        messagesRes.error
+      );
+      alert(messagesRes.error);
       return false;
     }
+    console.warn("Got messages for room: ", roomName, messagesRes);
 
     const messages = (messagesRes as MessagePayload[]).map((message) =>
       convertMessagePayloadToMessageType(message)

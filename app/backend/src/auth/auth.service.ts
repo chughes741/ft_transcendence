@@ -24,7 +24,7 @@ export class AuthService {
   ) {}
 
   async signup(
-    userEntity: UserEntity
+    req: AuthRequest
   ): Promise<
     { access_token: string } | { errorCode: number; errorMessage: string }
   > {
@@ -32,10 +32,10 @@ export class AuthService {
       // Save the new user in the db
       const user = await this.prisma.user.create({
         data: {
-          username: userEntity.username,
-          firstName: userEntity.firstName,
-          lastName: userEntity.lastName,
-          email: userEntity.email
+          username: req.username,
+          firstName: req.firstName,
+          lastName: req.lastName,
+          email: req.email
         }
       });
 
