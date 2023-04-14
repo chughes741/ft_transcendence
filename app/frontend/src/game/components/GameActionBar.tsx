@@ -1,12 +1,9 @@
-import * as React from "react";
 import { Avatar, ToggleButton, Typography } from "@mui/material";
 import Box from "@mui/material/Box";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
-import { socket } from "src/contexts/WebSocket.context";
 import { LobbyCreatedDto } from "../game.types";
 import { useContext } from "react";
 import { GameContext } from "src/game/game.context";
-import * as GameTypes from "../game.types";
 
 export default function GameActionBar(lobby: LobbyCreatedDto) {
   const { playerReady, setPlayerReadyState } = useContext(GameContext);

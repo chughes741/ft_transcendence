@@ -2,7 +2,7 @@ import React, { useEffect, createContext, useContext } from "react";
 import { GameModelType, useGameModel } from "./game.model";
 import { GameContext } from "./game.context";
 import * as GameTypes from "src/game/game.types";
-import { socket } from "src/contexts/WebSocketContext";
+import { socket } from "src/contexts/WebSocket.context";
 
 export interface GameViewModelType extends GameModelType {
   setPlayerReadyState: (state: boolean) => Promise<boolean>;

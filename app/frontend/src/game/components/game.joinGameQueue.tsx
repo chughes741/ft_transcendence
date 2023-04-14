@@ -1,6 +1,6 @@
 import * as React from "react";
 import { Button } from "@mui/material";
-import { socket } from "src/contexts/WebSocketContext";
+import { socket } from "src/contexts/WebSocket.context";
 import Box from "@mui/material/Box";
 import CircularProgress from "@mui/material/CircularProgress";
 

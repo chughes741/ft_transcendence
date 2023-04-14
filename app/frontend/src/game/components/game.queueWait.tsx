@@ -1,11 +1,7 @@
-import * as React from "react";
-import Stack from "@mui/material/Stack";
 import CircularProgress from "@mui/material/CircularProgress";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
-import { socket } from "src/contexts/WebSocketContext";
-import { useContext } from "react";
-import { GameContext } from "src/game/game.context";
+import { socket } from "src/contexts/WebSocket.context";
 
 /**
  *
