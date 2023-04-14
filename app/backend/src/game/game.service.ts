@@ -74,6 +74,7 @@ export class GameService {
       client_mmr: 500,
       socket_id: client.id
     };
+
     //Add player to queue
     this.gameModuleData.addQueue(newPlayer);
 
@@ -109,6 +110,10 @@ export class GameService {
     this.server.in(playerPair[0].socket_id).socketsJoin(newLobby.lobby_id);
     this.server.in(playerPair[1].socket_id).socketsJoin(newLobby.lobby_id);
 
+
+    //Add the game init here instead of elsewhere
+
+
     //Add lobby to map of lobbies
     //TODO: Swap this to a setter function in the data module
     GameModuleData.lobbies.push(newLobby);
@@ -116,6 +121,7 @@ export class GameService {
     //Create payload
     const payload: GameTypes.LobbyCreatedDto = {
       lobby_id: newLobby.lobby_id,
+      player_side = 
     }
 
     //Emit lobbyCreated event to room members

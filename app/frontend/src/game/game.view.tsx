@@ -5,15 +5,18 @@ import { socket } from "src/contexts/WebSocketContext";
 import * as GameTypes from "./game.types";
 import { Button } from "@mui/material";
 import { useRef } from "react";
+import { useGameContext } from "src/game/game.context";
 
 export default function GameWindow() {
   let lobby: GameTypes.LobbyCreatedDto = new GameTypes.LobbyCreatedDto("test");
+
+  const { displayQueue } = useGameContext();
 
   socket.on("lobbyCreated", (payload: GameTypes.LobbyCreatedDto) => {
     console.log(payload.lobby_id);
     console.log("lobbyCreated event received");
     //Store lobby data
-    
+
     lobby = payload;
     //Need to change views here
   });
@@ -49,20 +52,28 @@ export default function GameWindow() {
         </Box>
       </Box>
 
-      <Box
-        sx={{
-          display: "flex",
-          flexDirection: "row",
-          alignItems: "space-between"
-        }}
-      >
-        <Button 
-         onClick={() => {
-          console.log("joinGameQueue event emitted");
-          socket.emit("joinGameQueue", {client_id: "", join_time: Date.now()});
-        }}
-        variant="outlined">Join Queue</Button>
-      </Box>
+      {displayQueue ? (
+        <Box
+          sx={{
+            display: "flex",
+            flexDirection: "row",
+            alignItems: "space-between"
+          }}
+        >
+          <Button
+            onClick={() => {
+              console.log("joinGameQueue event emitted");
+              socket.emit("joinGameQueue", {
+                client_id: "",
+                join_time: Date.now()
+              });
+            }}
+            variant="outlined"
+          >
+            Join Queue
+          </Button>
+        </Box>
+      ) : <Box />}
     </Box>
   );
 }

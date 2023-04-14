@@ -1,4 +1,4 @@
-//This will return a name and ready status for a single player
+
 import * as React from "react";
 import {
   Avatar,
@@ -15,13 +15,9 @@ import { LobbyCreatedDto } from "../game.types";
 import { useContext } from "react";
 import { GameContext } from "src/game/game.context";
 import * as GameTypes from "../game.types";
-//If the player is the current user, it will have a toggleable button for ready status
-//If the player is the opposing user, it will have a badge that shows opponents ready status
-
-//Need to know which side each player is on, so both ready buttons can be in the middle
 
 export default function GameActionBar(lobby: LobbyCreatedDto) {
-  const {playerReady, setPlayerState} = useContext(GameContext);
+  const {playerReady, setPlayerReadyState} = useContext(GameContext);
   console.log(lobby);
   return (
     <Box

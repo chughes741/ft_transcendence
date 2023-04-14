@@ -71,8 +71,7 @@ export class GameStateDto {
 
 export class LobbyCreatedDto {
   lobby_id: string;
-  // match_id: string;
-  // rooom_entity: string; //FIXME: Change this later
+  player_side: string;
 }
 
 

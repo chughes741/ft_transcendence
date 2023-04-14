@@ -1,49 +1,85 @@
-import { GameModelType, useGameModel, DisplayState } from "./game.model";
+import React, { useEffect } from "react";
+import { GameModelType, useGameModel} from "./game.model";
 import { GameContext } from "./game.context";
 import * as GameTypes from "src/game/game.types";
 import { socket } from "src/contexts/WebSocketContext";
+
 export interface GameViewModelType extends GameModelType {
   setPlayerReadyState: (state: boolean) => Promise<boolean>;
-  setLobbyState: (state: string) => Promise<string>;
-  setGameState: (state: string) => Promise<string>;
 }
 
 export const GameViewModelProvider = ({ children }) => {
   const gameModel = useGameModel();
 
-  const { playerReady, setPlayerReady } = gameModel;
-  const { lobbyId, setLobbyId } = gameModel;
-  const { displayState, setDisplayState } = gameModel;
-  const { matchId, setMatchId } = gameModel;
-  const { playerSide, setPlayerSide} = gameModel;
+  const {
+    playerReady,
+    setPlayerReady,
+    setPlayerSide,
+    displayQueue,
+    displayGame,
+    setDisplayGame,
+    lobby,
+    setLobby
+  } = gameModel;
+
+  /*******************/
+  /*  Socket Calls   */
+  /*******************/
 
   /**
-   * Manage state transition from queue to lobby
-   * @param state
+   * @event "gameStarted"
+   * @dependency playerReady
    */
-  const setLobbyState = async (state: string) => {
+  useEffect(() => {
+    socket.on("gameStarted", (payload: GameTypes.GameStartedDto) => {
+      // TODO: implement rest of the lobby logic
+      setPlayerSide(payload.player_side);
+      setDisplayGame(true);
+    });
+
+    return () => {
+      socket.off("gameStarted");
+    };
+  }, [playerReady]);
+
+  /**
+   * @event "lobbyCreated"
+   * @dependency displayQueue
+   */
+  useEffect(() => {
     socket.on("lobbyCreated", (payload: GameTypes.LobbyCreatedDto) => {
+      console.log("lobbyCreated event received. Payload:");
       console.log(payload);
 
-      //store the new lobby id as a state
-      setLobbyId(payload.lobby_id);
-
-      //Change view state to render lobby
-      setDisplayState(DisplayState.lobby);
+      setLobby(new GameTypes.Lobby(payload.lobby_id, payload.player_side))
+      // Set the lobby display state to true
+      gameModel.setDisplayLobby(true);
+      
     });
-  };
 
-  /**
-   * Manage state transition to game start
-   * @param state 
-   */
-  const setGameState = async (state: string) => {
-    socket.on("gameStarted", (payload: GameTypes.GameStartedDto) => {
-      setMatchId(payload.match_id);
-      setPlayerSide(payload.player_side);
-      setDisplayState(DisplayState.game);
-    });
-  };
+    return () => {
+      socket.off("lobbyCreated");
+    };
+  }, [displayQueue]);
+
+
+  // export class Lobby {
+  //   constructor(Lobby_ID: string, Player_Side: string) {
+  //     this.lobby_id = Lobby_ID;
+  //     this.player_side = Player_Side;
+  //   }
+  //   player_side: string;
+  //   lobby_id: string;
+  
+  //   game: {
+  //     ball_x: number,
+  //     ball_y: number,
+  //     paddle_left_y: number;
+  //     paddle_right_y: number;
+  //     //pause state?
+  //     score: number[];
+  //   }
+  // }
 
   /**
    * Manage ready toggle
@@ -51,10 +87,8 @@ export const GameViewModelProvider = ({ children }) => {
    * @returns
    */
   const setPlayerReadyState = async (state: boolean) => {
-    console.log("in toggle button:");
-    console.log(lobbyId);
     const payload: GameTypes.PlayerReadyDto = new GameTypes.PlayerReadyDto(
-      lobbyId,
+      lobby.lobby_id,
       state
     );
     socket.emit(
@@ -76,8 +110,7 @@ export const GameViewModelProvider = ({ children }) => {
       value={{
         ...gameModel,
         setPlayerReadyState,
-        setLobbyState,
-        setGameState
+
         //...
       }}
     >
@@ -86,28 +119,3 @@ export const GameViewModelProvider = ({ children }) => {
   );
 };
 
-// lobbyId,
-// setLobbyId,
-// playerSide,
-// setPlayerSide,
-// playerReady,
-// setPlayerReady,
-// displayState,
-// setDisplayState,
-
-// export function GameViewModel(props) {
-//   switch (displayState) {
-//     case "queued": {
-//       return <>;
-//     }
-//     case : {
-//       return <>;
-//     }
-//     case 3: {
-//       return <>;
-//     }
-//     default: {
-//       return <>;
-//     }
-//   }
-// }

@@ -76,8 +76,7 @@ export class PlayerReadyDto {
 export class LobbyCreatedDto {
   constructor(Lobby_ID) {this.lobby_id = Lobby_ID}
   lobby_id: string;
-  // match_id: string;
-  // rooom_entity: string; //FIXME: Change this later
+  player_side: string;
 }
 
 export class GameStartedDto {
@@ -86,6 +85,28 @@ export class GameStartedDto {
 }
 
 
-// export class Lobby {
-//   lobby_id: ;
-// }
+
+export class Lobby {
+  constructor(Lobby_ID: string, Player_Side: string) {
+    this.lobby_id = Lobby_ID;
+    this.player_side = Player_Side;
+    this.game.ball_x = 0;
+    this.game.ball_y = 0;
+    this.game.paddle_left_y = 0;
+    this.game.paddle_right_y = 0;
+  }
+  player_side: string;
+  lobby_id: string;
+
+  game: {
+    ball_x: number,
+    ball_y: number,
+    paddle_left_y: number;
+    paddle_right_y: number;
+    //pause state?
+    score: number[];
+  }
+}
+
+
+
