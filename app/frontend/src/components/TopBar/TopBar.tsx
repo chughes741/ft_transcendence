@@ -8,10 +8,9 @@ import Avatar from "@mui/material/Avatar";
 import MenuItem from "@mui/material/MenuItem";
 import { LogoSvg } from "./logoComponent";
 import { ButtonUnstyled } from "@mui/base";
-import { IconButton, Tooltip } from "@mui/material";
+import { IconButton } from "@mui/material";
 import { PageState } from "src/root.model";
 import { useProfileViewModelContext } from "src/profile/profile.viewModel";
-import ButtonFunky from "src/components/ButtonFunky";
 import { SportsEsports } from "@mui/icons-material";
 import DynamicIconButton from "../DynamicIconButton";
 import { useRootViewModelContext } from "src/root.context";
@@ -23,7 +22,7 @@ const toolbarStyle = {
   justifyContent: "space-between"
 };
 
-function TopBar() {
+export default function TopBar() {
   const { setPageState } = useRootViewModelContext();
   const { setUser } = useProfileViewModelContext();
   const { self } = useRootViewModelContext();
@@ -51,6 +50,11 @@ function TopBar() {
     handleCloseUserMenu();
   };
 
+  const onClickLogout = () => {
+    /** @todo add logout function */
+    handleCloseUserMenu();
+  };
+
   return (
     <AppBar
       position="static"
@@ -60,8 +64,7 @@ function TopBar() {
         disableGutters
         style={toolbarStyle}
       >
-        {/* Logo wrapped in button to return to home */}
-
+        {/* Logo button */}
         <Box sx={{ flexGrow: 1 }}>
           <ButtonUnstyled
             onClick={() => setPageState(PageState.Home)}
@@ -77,39 +80,28 @@ function TopBar() {
           </ButtonUnstyled>
         </Box>
 
+        {/* New game button */}
         <Box>
           <DynamicIconButton
             text="New Game"
             icon={
               <SportsEsports style={{ fontSize: "2rem", color: "white" }} />
-            } // Adjust the size accordingly
+            }
             onClick={() => setPageState(PageState.Game)}
           />
         </Box>
 
-        {/* FIXME: If I remove this, the colors are fucked */}
-        {false && (
-          <Box sx={{ width: "20vw", maxHeight: "20vh" }}>
-            <ButtonFunky
-              content={"Play a game"}
-              width={"100%"}
-              onClick={() => setPageState(PageState.Game)}
-            />
-          </Box>
-        )}
-        {/* Button to be displayed instead of profile when use not logged in*/}
-        {/* <Button color="inherit">Login</Button> */}
-
-        {/* Profile picture with context menu */}
+        {/* User menu */}
         <Box>
-          <Tooltip title="Open settings">
-            <IconButton
-              onClick={handleOpenUserMenu}
-              sx={{ p: 0, mr: 2 }}
-            >
-              <Avatar src={self.avatar} />
-            </IconButton>
-          </Tooltip>
+          <IconButton
+            onClick={handleOpenUserMenu}
+            sx={{ p: 0, mr: "1rem", ml: "1rem" }}
+          >
+            <Avatar
+              src={self.avatar}
+              sx={{ width: "4rem", height: "4rem" }}
+            />
+          </IconButton>
           <Menu
             sx={{ mt: "45px" }}
             id="menu-appbar"
@@ -132,7 +124,7 @@ function TopBar() {
             <MenuItem onClick={onClickSettings}>
               <Typography textAlign="center">Settings</Typography>
             </MenuItem>
-            <MenuItem onClick={onClickProfile}>
+            <MenuItem onClick={onClickLogout}>
               <Typography textAlign="center">Logout</Typography>
             </MenuItem>
           </Menu>
@@ -141,4 +133,3 @@ function TopBar() {
     </AppBar>
   );
 }
-export default TopBar;
