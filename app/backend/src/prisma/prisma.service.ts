@@ -556,11 +556,15 @@ export class PrismaService extends PrismaClient {
    */
   async updateChatMemberStatus(updateDto: UpdateChatMemberRequest) {
     try {
-      const member = await this.getChatMemberByUsername(
-        updateDto.roomName,
-        updateDto.usernameToUpdate
-      );
-
+      const member = updateDto.memberToUpdateUuid
+        ? await this.chatMember.findUnique({
+            where: { id: updateDto.memberToUpdateUuid },
+            include: { room: true }
+          })
+        : await this.getChatMemberByUsername(
+            updateDto.roomName,
+            updateDto.usernameToUpdate
+          );
       if (!member) {
         throw new Error("User is not a member of this chatroom");
       }
@@ -655,6 +659,56 @@ export class PrismaService extends PrismaClient {
   }
 
   /**
+   * Fetches chat member by username and room name
+   *
+   * @param {string} roomName
+   * @param {string} uuid
+   * @async
+   * @returns {Promise<ChatMember>}
+   */
+  async getChatMemberByUUID(
+    roomName: string,
+    uuid: string
+  ): Promise<ChatMemberPrismaType> {
+    const chatMember = await this.chatMember.findFirst({
+      where: {
+        AND: [
+          {
+            room: {
+              name: { equals: roomName }
+            }
+          },
+          {
+            memberId: { equals: uuid }
+          }
+        ]
+      },
+      include: {
+        member: {
+          select: {
+            avatar: true,
+            username: true,
+            status: true
+          }
+        },
+        room: {
+          select: {
+            name: true
+          }
+        }
+      }
+    });
+
+    if (!chatMember) {
+      throw new Error(
+        `Chat member not found for room '${roomName}' and UUID '${uuid}'.`
+      );
+    }
+
+    return chatMember as ChatMemberPrismaType;
+  }
+
+  /**
    * Gets a list of all users in the server that have not been blocked by the querying user,
    * and are not in the specified chat room
    *
@@ -716,6 +770,37 @@ export class PrismaService extends PrismaClient {
     logger.warn("Available users: " + availableUsers);
 
     return availableUsers;
+  }
+
+  /**
+   * Check the status of a user in a chat room
+   *
+   * @param {number} userId
+   * @param {string} roomName
+   * @async
+   * @returns {Promise<{ status: ChatMemberStatus; expiration: Date | null }>}
+   */
+  async checkChatMemberStatus(
+    userId: string, // Changed from number to string to match your User model
+    roomName: string
+  ): Promise<{ status: ChatMemberStatus; expiration: Date | null }> {
+    const chatMember = await this.chatMember.findFirst({
+      where: {
+        memberId: userId, // Changed from memberId to userId to match your ChatMember model
+        room: {
+          name: roomName
+        }
+      },
+      select: {
+        status: true, // Changed from chatMemberStatus to status to match your ChatMember model
+        endOfMute: true // Changed from chatMemberStatusExpiration to endOfMute to match your ChatMember model
+      }
+    });
+
+    return {
+      status: chatMember?.status ?? ChatMemberStatus.OK,
+      expiration: chatMember?.endOfMute ?? null
+    };
   }
 
   /**

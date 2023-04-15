@@ -523,6 +523,10 @@ export class ChatGateway
       `Received sendMessage request from ${sendDto.sender} to room ${sendDto.roomName}.`
     );
 
+    // Try to get the user database ID
+    const userId = await this.prismaService.getUserIdByNick(sendDto.sender);
+    if (!userId) return { error: "User not found" };
+
     // Delegate business logic to the chat service
     const ret = await this.chatService.sendMessage(sendDto);
     if (ret instanceof Error) return { error: ret.message };

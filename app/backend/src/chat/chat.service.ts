@@ -304,13 +304,27 @@ export class ChatService {
   async sendMessage(sendDto: SendMessageDto): Promise<Error | MessageEntity> {
     if (!sendDto.content) return;
 
+    // Try to get the user database ID
+    const userId = await this.prismaService.getUserIdByNick(sendDto.sender);
+    if (!userId) return Error("User not found");
+
     // Try to get the room database ID
     const roomId = await this.prismaService.getChatRoomId(sendDto.roomName);
     if (!roomId) return Error("Room not found");
 
-    // Try to get the user database ID
-    const userId = await this.prismaService.getUserIdByNick(sendDto.sender);
-    if (!userId) return Error("User not found");
+    // Check and update the user's status
+    const userStatus = await this.checkAndUpdateUserStatus(
+      userId,
+      sendDto.roomName
+    );
+
+    // If the user is muted or banned, do not allow them to send a message
+    if (
+      userStatus === ChatMemberStatus.MUTED ||
+      userStatus === ChatMemberStatus.BANNED
+    ) {
+      return Error("User is muted or banned");
+    }
 
     // Add the message to the database
     try {
@@ -426,6 +440,45 @@ export class ChatService {
       logger.error("Error getting user list", error);
       return [];
     }
+  }
+
+  async checkAndUpdateUserStatus(
+    uuid: string,
+    roomName: string
+  ): Promise<ChatMemberStatus> {
+    const userStatus = await this.prismaService.checkChatMemberStatus(
+      uuid,
+      roomName
+    );
+
+    if (
+      userStatus.status === ChatMemberStatus.MUTED &&
+      userStatus.expiration &&
+      userStatus.expiration < new Date()
+    ) {
+      const updatedStatus = ChatMemberStatus.OK;
+      const usernameToUpdate = await this.prismaService.getChatMemberByUUID(
+        roomName,
+        uuid
+      );
+      try {
+        const updateData: Partial<ChatMember> = {
+          status: updatedStatus,
+          rank: usernameToUpdate.rank,
+          endOfMute: null
+        };
+        await this.prismaService.chatMember.update({
+          where: { id: usernameToUpdate.id },
+          data: updateData
+        });
+        return updatedStatus;
+      } catch (e) {
+        logger.error("Error updating chat member status", e);
+        return userStatus.status;
+      }
+    }
+
+    return userStatus.status;
   }
 
   /**

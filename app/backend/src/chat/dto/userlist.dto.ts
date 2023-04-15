@@ -3,6 +3,7 @@ import { ChatMemberRank, ChatMemberStatus } from "@prisma/client";
 export class UpdateChatMemberRequest {
   queryingUser: string;
   usernameToUpdate: string;
+  memberToUpdateUuid?: number;
   roomName: string;
   status: ChatMemberStatus;
   queryingMemberRank: ChatMemberRank;
