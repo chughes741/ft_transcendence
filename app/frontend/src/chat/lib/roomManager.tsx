@@ -139,13 +139,12 @@ export const RoomManagerProvider = ({ children }) => {
   const addChatRoom = async (
     chatRoomPayload: ChatRoomPayload
   ): Promise<RoomType> => {
-    const userList = await getRoomUserList(chatRoomPayload.name);
-
     // Validate the payload
     if (!chatRoomPayload.name) {
       console.log("In addChatRoom, invalid payload: ", chatRoomPayload);
       return;
     }
+    const userList = await getRoomUserList(chatRoomPayload.name);
 
     return new Promise<RoomType>((resolve) => {
       const {

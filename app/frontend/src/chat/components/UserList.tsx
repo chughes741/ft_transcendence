@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Box, Collapse } from "@mui/material";
 import { List, ListItemText, ListItemButton } from "@mui/material";
 import GroupIcon from "@mui/icons-material/Group";
@@ -46,16 +46,20 @@ export default function UserListView({ userList, handleClick }: UserListProps) {
   const ownRank = userList[self.username]?.rank;
   const [bannedUsersVisible, setBannedUsersVisible] = useState(false);
 
-  // Render sorted users
-  const renderSortedUsers = (
-    users: ChatMemberEntity[],
-    displayBanned: boolean
-  ) => {
+  let sortedUsers: ChatMemberEntity[] = [];
+  let bannedUsers: ChatMemberEntity[] = [];
+
+  const sortUsers = () => {
+    if (Object.values(userList).length === 0) return [];
+    const users = Object.values(userList);
+    console.log(`renderSortedUsers: ${users.length} users`);
+    console.log(users);
+    if (users.length === 0) return null;
+
     const filteredUsers = users.filter(
-      (user) =>
-        (user.chatMemberStatus === ChatMemberStatus.BANNED) === displayBanned
+      (user) => user.chatMemberStatus !== ChatMemberStatus.BANNED
     );
-    const sortedUsers = filteredUsers.sort((a, b): number => {
+    sortedUsers = filteredUsers.sort((a, b): number => {
       if (a.rank === "OWNER") return -1;
       if (b.rank === "OWNER") return 1;
       if (a.rank === "ADMIN") return -1;
@@ -64,7 +68,23 @@ export default function UserListView({ userList, handleClick }: UserListProps) {
       if (b.chatMemberStatus === ChatMemberStatus.MUTED) return -1;
       return a.username.localeCompare(b.username);
     });
+    return sortedUsers;
+  };
 
+  const sortBannedUsers = () => {
+    if (Object.values(userList).length === 0) return [];
+    bannedUsers = Object.values(userList).filter(
+      (user) => user.chatMemberStatus === ChatMemberStatus.BANNED
+    );
+
+    if (bannedUsers.length === 0) return null;
+    return bannedUsers;
+  };
+
+  // Render sorted users
+  const renderSortedUsers = () => {
+    sortUsers();
+    if (sortedUsers.length === 0) return null;
     return sortedUsers.map((user) => (
       <UserListItem
         key={user.username}
@@ -74,12 +94,8 @@ export default function UserListView({ userList, handleClick }: UserListProps) {
   };
 
   const renderBannedUsersSection = () => {
-    const bannedUsers = Object.values(userList).filter(
-      (user) => user.chatMemberStatus === ChatMemberStatus.BANNED
-    );
-
+    sortBannedUsers();
     if (bannedUsers.length === 0) return null;
-
     return (
       <>
         <ListItemButton
@@ -88,18 +104,25 @@ export default function UserListView({ userList, handleClick }: UserListProps) {
           <ListItemText primary="Banned Users" />
           {bannedUsersVisible ? <ExpandLess /> : <ExpandMore />}
         </ListItemButton>
-        <Collapse
-          in={bannedUsersVisible}
-          timeout="auto"
-          unmountOnExit
-        >
-          <List
-            component="div"
-            disablePadding
+        {bannedUsers.length > 0 && (
+          <Collapse
+            in={bannedUsersVisible}
+            timeout="auto"
+            unmountOnExit
           >
-            {renderSortedUsers(bannedUsers, true)}
-          </List>
-        </Collapse>
+            <List
+              component="div"
+              disablePadding
+            >
+              {bannedUsers.map((user) => (
+                <UserListItem
+                  key={user.username}
+                  user={user}
+                />
+              ))}
+            </List>
+          </Collapse>
+        )}
       </>
     );
   };
@@ -251,8 +274,8 @@ export default function UserListView({ userList, handleClick }: UserListProps) {
             {Object.keys(userList).length === 0 && <Box>No one in chat </Box>}
 
             <List>
-              {userList && renderSortedUsers(Object.values(userList), false)}
-              {renderBannedUsersSection()}
+              {userList && renderSortedUsers()}
+              {userList && renderBannedUsersSection()}
               {/* Object.entries(userList).map(([username, user]) => (
                  <ListItemButton
                    onContextMenu={(e) => handleClick(e, user)}

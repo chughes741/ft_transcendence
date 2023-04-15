@@ -27,9 +27,6 @@ export const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
     useRootViewModelContext();
 
   if (!showModal) return null;
-  console.warn("onConfirmation", onConfirmation);
-  console.warn("confirmationMessage", confirmationMessage);
-  console.warn("onConfirmation", onConfirmation);
   if (!onConfirmation) {
     // setShowConfirmationModal(false);
     return null;

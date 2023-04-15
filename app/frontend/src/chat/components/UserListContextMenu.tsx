@@ -9,6 +9,7 @@ import {
   ChatMemberEntity,
   ChatMemberStatus
 } from "../chat.types";
+import { useEffect } from "react";
 
 interface UserContextMenuProps {
   ownRank: ChatMemberRank;
@@ -138,7 +139,7 @@ const UserContextMenu: React.FC<UserContextMenuProps> = ({
         }
       : {
           label: "Ban User",
-          submenu: muteDurationOptions.map((option) => ({
+          submenu: banDurationOptions.map((option) => ({
             label: option.label,
             onClick: (duration: number) => {
               console.log(`Banning user ${contextMenuData.username}...`);
@@ -189,6 +190,13 @@ const UserContextMenu: React.FC<UserContextMenuProps> = ({
     ...adminOptions,
     ...ownerOptions
   ];
+
+  useEffect(() => {
+    if (contextMenuVisible) {
+      console.log(`UserContextMenu: ${contextMenuData.username}`);
+      console.log(contextMenuData);
+    }
+  }, [contextMenuVisible]);
 
   return (
     <ContextMenu

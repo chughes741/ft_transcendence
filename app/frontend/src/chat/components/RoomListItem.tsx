@@ -6,14 +6,14 @@ import {
   ListItemIcon,
   ListItemText
 } from "@mui/material";
-import { FaCrown } from "react-icons/fa";
 import { useChatContext } from "../chat.context";
 import {
+  getRankIcon,
   getStatusIcon,
   renderAvatarGroup,
   truncateText
 } from "../lib/helperFunctions";
-import { ChatRoomStatus, RoomType } from "../chat.types";
+import { RoomType } from "../chat.types";
 
 interface RoomListItemProps {
   room: RoomType;
@@ -39,36 +39,15 @@ const RoomListItem: React.FC<RoomListItemProps> = ({
           <Badge
             anchorOrigin={{
               vertical: "top",
-              horizontal: "left"
+              horizontal: "right"
             }}
             overlap="circular"
+            color="error"
             badgeContent={
-              room.status !== ChatRoomStatus.DIALOGUE &&
-              room.rank === "OWNER" ? (
-                <FaCrown
-                  size={20}
-                  style={{
-                    top: -15,
-                    left: -15,
-                    zIndex: 1
-                  }}
-                />
-              ) : null
+              room.hasUnreadMessages ? room.unreadMessagesCount : null
             }
           >
-            <Badge
-              anchorOrigin={{
-                vertical: "top",
-                horizontal: "right"
-              }}
-              overlap="circular"
-              color="error"
-              badgeContent={
-                room.hasUnreadMessages ? room.unreadMessagesCount : null
-              }
-            >
-              {renderAvatarGroup(room, tempUsername)}
-            </Badge>
+            {renderAvatarGroup(room, tempUsername)}
           </Badge>
         </ListItemIcon>
         <ListItemText
@@ -83,6 +62,9 @@ const RoomListItem: React.FC<RoomListItemProps> = ({
               : ""
           }
         />
+        <span style={{ marginLeft: "auto", marginRight: "38px" }}>
+          {getRankIcon(room.rank)}
+        </span>
         <span style={{ marginLeft: "auto", marginRight: "16px" }}>
           {getStatusIcon(room.status)}
         </span>
