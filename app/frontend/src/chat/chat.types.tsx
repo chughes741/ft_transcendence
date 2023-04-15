@@ -23,6 +23,10 @@ export enum ChatRoomStatus {
   PASSWORD = "PASSWORD"
 }
 
+/******************************************************************************/
+/***                           Chat Context Types                           ***/
+/******************************************************************************/
+
 export type MessageType = {
   username: string;
   roomId: string;
@@ -34,6 +38,14 @@ export type MessageType = {
   displayTimestamp: boolean;
   displayDate: boolean;
   avatar?: string;
+};
+
+/******************************************************************************/
+/***                            Returned Entities                           ***/
+/******************************************************************************/
+
+export type DevError = {
+  error: string;
 };
 
 export interface ChatMemberEntity {
@@ -82,9 +94,9 @@ export type RoomType = {
   users: { [key: string]: ChatMemberEntity };
 };
 
-export type DevError = {
-  error: string;
-};
+/******************************************************************************/
+/***                              Request Types                             ***/
+/******************************************************************************/
 
 export type CreateRoomRequest = {
   name: string;
@@ -118,7 +130,7 @@ export interface AuthRequest {
   email?: string;
 }
 
-export class UpdateChatMemberRequest {
+export interface UpdateChatMemberRequest {
   queryingUser: string;
   usernameToUpdate: string;
   roomName: string;
@@ -126,4 +138,12 @@ export class UpdateChatMemberRequest {
   queryingMemberRank: ChatMemberRank;
   memberToUpdateRank: ChatMemberRank;
   duration?: number;
+}
+
+export interface KickMemberRequest {
+  memberToKickUUID?: number;
+  memberToKickUsername: string;
+  memberToKickRank: ChatMemberRank;
+  roomName: string;
+  queryingMemberRank: ChatMemberRank;
 }

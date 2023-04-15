@@ -516,7 +516,7 @@ export class ChatService {
 
   async kickMember(
     kickDto: KickMemberRequest
-  ): Promise<ChatMemberPrismaType | Error> {
+  ): Promise<ChatMemberEntity | Error> {
     if (
       kickDto.queryingMemberRank === ChatMemberRank.USER ||
       kickDto.memberToKickRank === ChatMemberRank.OWNER
@@ -537,7 +537,8 @@ export class ChatService {
           room: true
         }
       });
-      return chatMember;
+      const entity: ChatMemberEntity = new ChatMemberEntity(chatMember);
+      return entity;
     } catch (error) {
       logger.error("Error kicking chat member", error);
       return error;

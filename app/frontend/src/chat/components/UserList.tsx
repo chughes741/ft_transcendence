@@ -8,7 +8,8 @@ import {
   ChatMemberStatus,
   DevError,
   UpdateChatMemberRequest,
-  ChatMemberEntity
+  ChatMemberEntity,
+  KickMemberRequest
 } from "../chat.types";
 import { useChatContext } from "../chat.context";
 import { useProfileViewModelContext } from "../../profile/profile.viewModel";
@@ -165,12 +166,23 @@ export default function UserListView({ userList, handleClick }: UserListProps) {
 
   const onKickUser = () => {
     console.log("Kick User");
-    socket.emit("kickUser", {
-      queryingUser: self.username,
-      usernameToKick: contextMenuUsersData.username,
+    const req: KickMemberRequest = {
+      memberToKickUsername: contextMenuUsersData.username,
+      memberToKickRank: contextMenuUsersData.rank,
       roomName: currentRoomName,
       queryingMemberRank: ownRank
+    };
+
+    socket.emit("kickUser", req, (res: DevError | any) => {
+      if (handleSocketErrorResponse(res)) return console.error(res);
+      console.log(`successfully kicked user ${res}`);
+      updateRooms((newRooms) => {
+        if (!newRooms[currentRoomName].users[res]) return newRooms;
+        delete newRooms[currentRoomName].users[res];
+        return newRooms;
+      });
     });
+
     setContextMenuUsersVisible(false);
   };
 

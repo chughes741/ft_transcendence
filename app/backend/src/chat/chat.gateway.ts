@@ -646,21 +646,15 @@ export class ChatGateway
   async kickChatMember(
     client: Socket,
     req: KickMemberRequest
-  ): Promise<string> {
-    try {
-      const response = await this.chatService.kickMember(req);
-      if (
-        response ===
-        "Chat Member " + req.memberToKickUsername + " kicked out successfully !"
-      ) {
-        const list: ChatMemberEntity[] = await this.chatService.getUserList(
-          req.roomName
-        );
-        this.server.to(req.roomName).emit("userList", list);
-      }
-      return response;
-    } catch (error) {
-      return error.message;
+  ): Promise<RoomMemberEntity | DevError> {
+    const response = await this.chatService.kickMember(req);
+    if (response instanceof Error) {
+      return { error: response.message };
+    } else {
+      const user = response as ChatMemberEntity;
+      // TODO: implement a listener on the client side to handle this event
+      this.server.to(req.roomName).emit("chatMemberKicked", user);
+      return { roomName: req.roomName, user };
     }
   }
 }
