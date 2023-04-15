@@ -162,7 +162,6 @@ export class PrismaService extends PrismaClient {
       avatar: req.avatar,
       email: req.email,
       status: req.status,
-      id : req.id,
     };
     return this.user.create({ data });
   }
@@ -479,11 +478,18 @@ export class PrismaService extends PrismaClient {
     });
   }
 
-  async GetProfilebyId(id: string): Promise<User> {
+  async getUserbyMail(email: string): Promise<User> {
+    if (email === undefined || null) {
+      logger.log("Username is undefined");
+      throw new Error("Username is undefined");
+    }
     return await this.user.findUnique({
-      where: { id: id }
+      where: { 
+        email: email
+      }
     });
   }
+
 
   /**
    * Returns a users friends from the database

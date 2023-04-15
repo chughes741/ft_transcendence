@@ -9,6 +9,7 @@ import qrcode from "qrcode";
 import axios from "axios";
 import { Token, TokenStorageService } from "../token-storage.service";
 import { UserStatus } from "@prisma/client";
+import { env } from "process";
 
 const logger = new Logger("AuthService");
 
@@ -41,7 +42,11 @@ export class AuthService {
   async signin(data : UserEntity) : Promise<UserEntity> {
 
     console.log ("SIGNIN USER ENTITY: " , data);
-    const user = await this.prisma.GetProfilebyId(data.id);
+
+    
+    const user = await this.prisma.getUserbyMail(data.email);
+    
+    //IF THERE IS NO USER
     if(!user)
     {
       const newuser = await this.prisma.addUser(data)
@@ -124,7 +129,6 @@ export class AuthService {
 
     this.tokenStorage.addToken(clientId, token);
     this.signin({
-      id : response2.data.id,
       username: userName,
       avatar: response2.data.image.link,
       firstName : response2.data.first_name,
