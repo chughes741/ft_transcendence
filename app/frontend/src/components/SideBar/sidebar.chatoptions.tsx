@@ -1,21 +1,15 @@
-import * as React from "react";
 import List from "@mui/material/List";
 import ListItemButton from "@mui/material/ListItemButton";
 import ListItemIcon from "@mui/material/ListItemIcon";
 import ListItemText from "@mui/material/ListItemText";
 import GroupAddIcon from "@mui/icons-material/GroupAdd";
 import { PageState } from "src/root.model";
-import ButtonFunky from "../ButtonFunky";
 import { useChatContext } from "../../chat/chat.context";
-import {
-  AddCircleOutline,
-  Chat,
-  MeetingRoom,
-  VerifiedUser
-} from "@mui/icons-material";
+import { AddCircleOutline, Chat, MeetingRoom } from "@mui/icons-material";
 import DynamicIconButton from "../DynamicIconButton";
 import { useRootViewModelContext } from "src/root.context";
 import { IoEnterOutline } from "react-icons/io5";
+import ButtonFunky from "../ButtonFunky";
 
 export default function SidebarChatOptions() {
   const { setPageState } = useRootViewModelContext();
@@ -25,8 +19,6 @@ export default function SidebarChatOptions() {
     setShowCreateRoomModal,
     setShowDirectMessageModal
   } = useChatContext();
-
-  const { setShowChooseUsernameModal } = useRootViewModelContext();
 
   return (
     <List
@@ -47,11 +39,6 @@ export default function SidebarChatOptions() {
         <ListItemText>Chat Page</ListItemText>
       </ListItemButton>
 
-      <DynamicIconButton
-        icon={<VerifiedUser style={{ fontSize: "2rem", color: "white" }} />}
-        text="Choose Username"
-        onClick={() => setShowChooseUsernameModal(true)}
-      />
       <DynamicIconButton
         text="Message a friend"
         icon={<Chat style={{ fontSize: "2rem", color: "white" }} />}

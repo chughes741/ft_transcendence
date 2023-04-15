@@ -196,6 +196,18 @@ export class ChatGateway
     });
   }
 
+  async unbindAllUserSocketsFromRoom(username: string, roomName: string) {
+    const userSockets = this.userConnectionsService.getUserSockets(username);
+    if (!userSockets) {
+      logger.warn(`User ${username} has no sockets`);
+      return;
+    }
+    userSockets.forEach((socketId) => {
+      const invitedUserSocket = this.server.sockets.sockets.get(socketId);
+      invitedUserSocket?.leave(roomName);
+    });
+  }
+
   /**
    * @event "updateChatRoom"
    * Update the status of a chat room member.
@@ -636,6 +648,9 @@ export class ChatGateway
         user
       };
       this.server.to(req.roomName).emit("chatMemberUpdated", newMember);
+      if (chatMember.status === "BANNED") {
+        this.unbindAllUserSocketsFromRoom(req.usernameToUpdate, req.roomName);
+      }
       return newMember;
     } catch (error) {
       return { error: error.message };
