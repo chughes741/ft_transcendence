@@ -565,10 +565,14 @@ export class PrismaService extends PrismaClient {
         throw new Error("User is not a member of this chatroom");
       }
 
+      const newRank: ChatMemberRank = updateDto.memberToUpdateRank;
       const newStatus: ChatMemberStatus = updateDto.status;
       const futureDate = new Date(Date.now() + GLOBAL_T_IN_DAYS);
 
-      let updateData: Partial<ChatMember> = { status: newStatus };
+      let updateData: Partial<ChatMember> = {
+        status: newStatus,
+        rank: newRank
+      };
 
       switch (newStatus) {
         case ChatMemberStatus.OK:

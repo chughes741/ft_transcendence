@@ -615,7 +615,8 @@ export class ChatGateway
       this.listUsers(client, { chatRoomName: req.roomName });
       // TODO: implement a listener on the client side to handle this event
       //this.server.to(data.roomName).emit('chatMemberUpdated', chatMember);
-
+      logger.log("Chat Member's Status succesfully updated !");
+      console.log(chatMember);
       return "Chat Member's Status succesfully updated !";
     } catch (error) {
       return error.message;

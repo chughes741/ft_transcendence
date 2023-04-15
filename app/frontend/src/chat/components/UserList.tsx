@@ -11,6 +11,7 @@ import UserContextMenu from "./UserListContextMenu";
 import {
   ChatMemberRank,
   ChatMemberStatus,
+  DevError,
   UpdateChatMemberRequest,
   UserListItem
 } from "../chat.types";
@@ -19,6 +20,8 @@ import { useProfileViewModelContext } from "../../profile/profile.viewModel";
 import { useRootViewModelContext } from "../../root.context";
 import { PageState } from "../../root.model";
 import { socket } from "../../contexts/WebSocket.context";
+import { handleSocketErrorResponse } from "../lib/helperFunctions";
+import { useRoomManager } from "../lib/roomManager";
 
 export interface UserListProps {
   userList: { [key: string]: UserListItem };
@@ -33,6 +36,7 @@ export default function UserListView({ userList, handleClick }: UserListProps) {
     contextMenuUsersData,
     setContextMenuUsersVisible
   } = useChatContext();
+  const { updateRooms } = useRoomManager();
 
   const { setUser, addFriend } = useProfileViewModelContext();
   const { self, setPageState } = useRootViewModelContext();
@@ -82,11 +86,16 @@ export default function UserListView({ userList, handleClick }: UserListProps) {
     };
     console.log(req);
 
-    socket.emit("updateChatMemberStatus", req, (res: any) => {
-      console.log(res);
+    socket.emit("updateChatMemberStatus", req, (res: DevError | any) => {
+      if (handleSocketErrorResponse(res)) return console.error(res);
+      console.log(`successfully updated user ${res}`);
+      updateRooms((newRooms) => {
+        newRooms[currentRoomName].users[contextMenuUsersData.username].rank =
+          ChatMemberRank.ADMIN;
+        return newRooms;
+      });
     });
     setContextMenuUsersVisible(false);
-    console.log("Promote to Admin");
   };
 
   const onDemoteToUser = () => {
@@ -102,11 +111,16 @@ export default function UserListView({ userList, handleClick }: UserListProps) {
     };
     console.log(req);
 
-    socket.emit("updateChatMemberStatus", req, (res: any) => {
-      console.log(res);
+    socket.emit("updateChatMemberStatus", req, (res: DevError | any) => {
+      if (handleSocketErrorResponse(res)) return console.error(res);
+      console.log(`successfully updated user ${res}`);
+      updateRooms((newRooms) => {
+        newRooms[currentRoomName].users[contextMenuUsersData.username].rank =
+          ChatMemberRank.USER;
+        return newRooms;
+      });
     });
     setContextMenuUsersVisible(false);
-    console.log("Promote to Admin");
   };
 
   // Find your own rank by looking for your username in the userlist
