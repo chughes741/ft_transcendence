@@ -49,7 +49,6 @@ export class PlayerQueue {
  */
 export class gameLobby {
   players: string[];
-  ready: number[];
   spectators: string[];
   lobby_id: string;
   match_id: string;
