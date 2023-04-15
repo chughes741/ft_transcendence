@@ -75,7 +75,10 @@ export class GameService {
 
     //Add lobby to map of lobbies
     //TODO: Swap this to a setter function in the data module
-    GameModuleData.lobbies.push(newLobby);
+    this.gameModuleData.addLobby(newLobby);
+    // GameModuleData.lobbies.push(newLobby);
+    console.log("Sizeof lobbies: ", GameModuleData.lobbies.length);
+    console.log(GameModuleData.lobbies[0]);
 
     //Create payload
     const payload: LobbyCreatedEvent = {
@@ -176,7 +179,8 @@ export class GameService {
    */
   async playerReady(payload: PlayerReadyRequest): Promise<boolean> {
     logger.log("playerReady() called");
-    //If the lobby exists update ready and attempt to start game
+    
+    logger.log("lobby_id: " + this.gameModuleData.getLobby(payload.lobby_id));
     if (this.gameModuleData.getLobby(payload.lobby_id)) {
       this.gameModuleData.updatePlayerReady(payload);
       this.gameStart(payload.lobby_id);
@@ -194,10 +198,10 @@ export class GameService {
   async gameStart(lobby_id: string) {
     logger.log("gameStart() called");
 
-    //Retrieve the correct lobby
+    // Retrieve the correct lobby
     const lobby: GameTypes.gameLobby = this.gameModuleData.getLobby(lobby_id);
     if (!lobby) return;
-    //Check if both players are ready
+    // Check if both players are ready
     if (lobby.gamestate.players_ready === 2) {
       this.gameLogic.gameStart(lobby);
     }

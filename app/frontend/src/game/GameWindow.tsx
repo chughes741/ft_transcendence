@@ -5,7 +5,7 @@ import { socket } from "src/contexts/WebSocket.context";
 import { GameStateDto } from "./game.types";
 import { BallConfig, GameColours, PaddleConfig } from "./game.config";
 import { Mesh } from "three";
-
+import { ServerGameStateUpdateEvent, GameEvents} from "kingpong-lib"
 /**
  *
  * @param gameState
@@ -41,7 +41,7 @@ function PaddleLeft(gameState: GameStateDto) {
   useFrame((state) => {
     if (gameState.player_side === "left") {
       ref.current.position.y = state.pointer.y * 4;
-      socket.emit("clientGameStateUpdate", {
+      socket.emit(GameEvents.ClientGameStateUpdate, {
         match_id: gameState.match_id,
         player_side: gameState.player_side,
         paddle_pos: state.pointer.y
@@ -75,7 +75,7 @@ function PaddleRight(gameState: GameStateDto) {
   useFrame(() => {
     if (gameState.player_side === "right") {
       ref.current.position.y = get().pointer.y * 4;
-      socket.emit("clientGameStateUpdate", {
+      socket.emit(GameEvents.ClientGameStateUpdate, {
         match_id: gameState.match_id,
         player_side: gameState.player_side,
         paddle_pos: ref.current.position.y
@@ -168,7 +168,7 @@ function OuterFrameRight() {
  * @returns
  */
 export default function Game() {
-  let gameState: GameStateDto | null = new GameStateDto(
+  const gamestate: GameStateDto | null = new GameStateDto(
     "",
     "right",
     0,
@@ -178,24 +178,29 @@ export default function Game() {
   );
 
   useEffect(() => {
-    socket.on("serverUpdate", (GameState: GameStateDto) => {
-      console.log(GameState);
-      gameState = GameState;
+    socket.on(GameEvents.ServerGameStateUpdate, (payload: ServerGameStateUpdateEvent) => {
+      console.log(payload);
+      gamestate.ball_pos_x = payload.game_state.ball_x;
+      gamestate.ball_pos_y = payload.game_state.ball_y;
+      // gameState.match_id = payload.game_state.match_id;
+      gamestate.paddle_left_pos = payload.game_state.paddle_left_y;
+
+
     });
 
     return () => {
-      socket.off("serverUpdate");
+      socket.off(GameEvents.ServerGameStateUpdate);
     };
-  }, [gameState]);
+  }, [gamestate]);
 
-  if (!gameState) return <div>Loading...</div>;
+  if (!gamestate) return <div>Loading...</div>;
 
   return (
     <Canvas>
       {/* Gameplay Objects */}
-      <Ball {...gameState} />
-      <PaddleLeft {...gameState} />
-      <PaddleRight {...gameState} />
+      <Ball {...gamestate} />
+      <PaddleLeft {...gamestate} />
+      <PaddleRight {...gamestate} />
 
       {/* Scene Objects */}
       <Floor />

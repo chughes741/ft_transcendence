@@ -42,6 +42,8 @@ export class GameLogic {
     gamestate.players = [];
     gamestate.players[0] = players[0];
     gamestate.players[1] = players[1];
+    gamestate.score = [0, 0];
+
 
     //Randomize serve side for initial serve
     if (Math.round(Math.random()) === 0) gamestate.last_serve_side = "left";
@@ -63,7 +65,6 @@ export class GameLogic {
   //Create a new game instance
   async gameStart(lobby: gameLobby) {
     //Add new interval to scheduler
-
     try {
       this.schedulerRegistry.getInterval("gameUpdateInterval" + lobby.lobby_id);
       logger.log("Error creating gameUpdateInterval");
@@ -281,11 +282,11 @@ export class GameLogic {
     name: string,
     milliseconds: number
   ) {
+    const lobby_id: string = lobby.lobby_id;
     //Set callback function to gamestate
-    const interval = setInterval(
-      this.sendServerUpdate.bind(this),
-      milliseconds
-    );
+    const interval = setInterval(() => { 
+      this.sendServerUpdate(lobby);
+     }, milliseconds);
     this.schedulerRegistry.addInterval(name, interval);
     logger.log(`Interval ${name} created`);
   }
@@ -296,3 +297,4 @@ export class GameLogic {
     logger.log(`Interval ${name} deleted!`);
   }
 }
+

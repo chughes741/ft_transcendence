@@ -121,21 +121,30 @@ export class GameModuleData {
     });
   }
 
-
-
-
-
-
   /**
    * Retrieve the lobby object that corresponds to the given lobby id
    */
-  getLobby(lobby_id: string): GameTypes.gameLobby {
-    GameModuleData.lobbies.forEach((element) => {
-      //If match_id is found then update paddle pos
+  getLobby(lobby_id: string): GameTypes.gameLobby | null {
+    for (let i = 0; i < GameModuleData.lobbies.length; i++) {
+      const element = GameModuleData.lobbies[i];
+      // If lobby_id is found, return the element
       if (element.lobby_id === lobby_id) {
         return element;
       }
-    });
-    return null;
+    }
+    return null; // Return null if lobby_id is not found
   }
+
+  /**
+   * Adds a lobby to the list of lobbies
+   */
+  addLobby(lobby: GameTypes.gameLobby) {
+    if (GameModuleData.lobbies.push(lobby)) {
+      return true;
+    }
+    return false;
+  };
+
 }
+
+
