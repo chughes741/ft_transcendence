@@ -1,11 +1,6 @@
-import React from "react";
-import { Box, Avatar } from "@mui/material";
-import {
-  List,
-  ListItemIcon,
-  ListItemText,
-  ListItemButton
-} from "@mui/material";
+import React, { useState } from "react";
+import { Box, Collapse } from "@mui/material";
+import { List, ListItemText, ListItemButton } from "@mui/material";
 import GroupIcon from "@mui/icons-material/Group";
 import UserContextMenu from "./UserListContextMenu";
 import {
@@ -24,7 +19,7 @@ import { socket } from "../../contexts/WebSocket.context";
 import { handleSocketErrorResponse } from "../lib/helperFunctions";
 import { useRoomManager } from "../lib/roomManager";
 import UserListItem from "./UserListItem";
-import { UserEntity } from "../modals/InviteUsersModal";
+import { ExpandLess, ExpandMore } from "@mui/icons-material";
 
 export interface UserListProps {
   userList: { [key: string]: ChatMemberEntity };
@@ -46,10 +41,18 @@ export default function UserListView({ userList, handleClick }: UserListProps) {
 
   // Find your own rank by looking for your username in the userlist
   const ownRank = userList[self.username]?.rank;
+  const [bannedUsersVisible, setBannedUsersVisible] = useState(false);
 
   // Render sorted users
-  const renderSortedUsers = (users: ChatMemberEntity[]) => {
-    const sortedUsers = users.sort((a, b): number => {
+  const renderSortedUsers = (
+    users: ChatMemberEntity[],
+    displayBanned: boolean
+  ) => {
+    const filteredUsers = users.filter(
+      (user) =>
+        (user.chatMemberStatus === ChatMemberStatus.BANNED) === displayBanned
+    );
+    const sortedUsers = filteredUsers.sort((a, b): number => {
       if (a.rank === "OWNER") return -1;
       if (b.rank === "OWNER") return 1;
       if (a.rank === "ADMIN") return -1;
@@ -65,6 +68,36 @@ export default function UserListView({ userList, handleClick }: UserListProps) {
         user={user}
       />
     ));
+  };
+  const renderBannedUsersSection = () => {
+    const bannedUsers = Object.values(userList).filter(
+      (user) => user.chatMemberStatus === ChatMemberStatus.BANNED
+    );
+
+    if (bannedUsers.length === 0) return null;
+
+    return (
+      <>
+        <ListItemButton
+          onClick={() => setBannedUsersVisible(!bannedUsersVisible)}
+        >
+          <ListItemText primary="Banned Users" />
+          {bannedUsersVisible ? <ExpandLess /> : <ExpandMore />}
+        </ListItemButton>
+        <Collapse
+          in={bannedUsersVisible}
+          timeout="auto"
+          unmountOnExit
+        >
+          <List
+            component="div"
+            disablePadding
+          >
+            {renderSortedUsers(bannedUsers, true)}
+          </List>
+        </Collapse>
+      </>
+    );
   };
 
   const sendUpdateRequest = (
@@ -82,7 +115,7 @@ export default function UserListView({ userList, handleClick }: UserListProps) {
       memberToUpdateRank: newRank,
       duration
     };
-    console.log(req);
+    console.log("Updating chat member...", req);
 
     socket.emit("updateChatMemberStatus", req, (res: DevError | any) => {
       if (handleSocketErrorResponse(res)) return console.error(res);
@@ -126,13 +159,22 @@ export default function UserListView({ userList, handleClick }: UserListProps) {
   };
 
   const onBanUser = (duration: number, status = ChatMemberStatus.BANNED) => {
+    console.log("Ban User");
+    console.log(`Current status: ${contextMenuUsersData.chatMemberStatus}`);
+    contextMenuUsersData.chatMemberStatus === ChatMemberStatus.BANNED
+      ? ((status = ChatMemberStatus.OK), duration === -1)
+      : (status = ChatMemberStatus.BANNED);
+    console.log("duration: " + duration + " status: " + status);
     sendUpdateRequest(duration, status, contextMenuUsersData.rank);
   };
 
   const onMuteUser = (duration: number, status = ChatMemberStatus.MUTED) => {
-    duration === UNBAN_USER
-      ? (status = ChatMemberStatus.OK)
+    console.log(`Muting user ${contextMenuUsersData.username}...`);
+    console.log(`Current status: ${contextMenuUsersData.chatMemberStatus}`);
+    contextMenuUsersData.chatMemberStatus === ChatMemberStatus.MUTED
+      ? ((status = ChatMemberStatus.OK), duration === -1)
       : (status = ChatMemberStatus.MUTED);
+    console.log("duration: " + duration + " status: " + status);
     sendUpdateRequest(duration, status, contextMenuUsersData.rank);
   };
 
@@ -199,10 +241,8 @@ export default function UserListView({ userList, handleClick }: UserListProps) {
             {Object.keys(userList).length === 0 && <Box>No one in chat </Box>}
 
             <List>
-              {userList &&
-                // Render the sorted users
-                renderSortedUsers(Object.values(userList))}
-
+              {userList && renderSortedUsers(Object.values(userList), false)}
+              {renderBannedUsersSection()}
               {/* Object.entries(userList).map(([username, user]) => (
                  <ListItemButton
                    onContextMenu={(e) => handleClick(e, user)}

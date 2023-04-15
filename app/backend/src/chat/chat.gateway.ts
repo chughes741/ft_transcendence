@@ -604,7 +604,7 @@ export class ChatGateway
   async updateChatMemberStatus(
     client: Socket,
     req: UpdateChatMemberRequest
-  ): Promise<string | DevError> {
+  ): Promise<RoomMemberEntity | DevError> {
     logger.log(
       `Received updateChatMemberStatus request from ${req.queryingUser} for ${req.usernameToUpdate}  in room ${req.roomName}`
     );
@@ -621,8 +621,22 @@ export class ChatGateway
       //this.server.to(data.roomName).emit('chatMemberUpdated', chatMember);
       logger.log("Chat Member's Status succesfully updated !");
       console.log(chatMember);
-      this.server.to(req.roomName).emit("chatMemberUpdated", chatMember);
-      return "Chat Member's Status succesfully updated !";
+      const user: ChatMemberEntity = {
+        username: chatMember.member.username,
+        roomName: req.roomName,
+        avatar: chatMember.member.avatar,
+        chatMemberstatus: chatMember.status,
+        userStatus: chatMember.member.status,
+        rank: chatMember.rank,
+        endOfBan: chatMember.endOfBan,
+        endOfMute: chatMember.endOfMute
+      };
+      const newMember: RoomMemberEntity = {
+        roomName: req.roomName,
+        user
+      };
+      this.server.to(req.roomName).emit("chatMemberUpdated", newMember);
+      return newMember;
     } catch (error) {
       return { error: error.message };
     }

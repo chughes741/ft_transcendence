@@ -12,6 +12,7 @@ import {
 import { PrismaService } from "../prisma/prisma.service";
 import { UserConnectionsService } from "../user-connections.service";
 import {
+  ChatMemberPrismaType,
   ChatRoomEntity,
   CreateChatRoomDto,
   InviteUsersToRoomRequest,
@@ -490,7 +491,7 @@ export class ChatService {
    */
   async updateMemberStatus(
     updateDto: UpdateChatMemberRequest
-  ): Promise<ChatMember> {
+  ): Promise<ChatMemberPrismaType> {
     try {
       if (
         updateDto.memberToUpdateRank === ChatMemberRank.OWNER ||

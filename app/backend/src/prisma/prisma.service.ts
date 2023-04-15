@@ -554,7 +554,9 @@ export class PrismaService extends PrismaClient {
    * @async
    * @returns {Promise<ChatMember>}
    */
-  async updateChatMemberStatus(updateDto: UpdateChatMemberRequest) {
+  async updateChatMemberStatus(
+    updateDto: UpdateChatMemberRequest
+  ): Promise<ChatMemberPrismaType> {
     try {
       const member = updateDto.memberToUpdateUuid
         ? await this.chatMember.findUnique({
@@ -599,7 +601,8 @@ export class PrismaService extends PrismaClient {
 
       const chatMember = await this.chatMember.update({
         where: { id: member.id },
-        data: updateData
+        data: updateData,
+        include: { member: true, room: true }
       });
 
       return chatMember;

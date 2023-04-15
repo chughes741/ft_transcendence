@@ -81,6 +81,7 @@ const ContextMenu: React.FC<ContextMenuProps> = ({
                     key={submenuIndex}
                     onClick={(e) => {
                       e.stopPropagation();
+                      setAnchorEl(null);
                       submenuOption.onClick && submenuOption.onClick();
                     }}
                   >
