@@ -17,6 +17,9 @@ export interface GameModelType {
   playerReady: boolean;
   setPlayerReady: (isReady: boolean) => void;
 
+  opponentUsername: string;
+  setOpponentUsername: (opponentUsername: string) => void;
+
   //Component display states
   displayQueue: boolean;
   setDisplayQueue: (displayQueue: boolean) => void;
@@ -46,17 +49,17 @@ export const useGameModel = (): GameModelType => {
   const [matchId, setMatchId] = useState<string>(null);
   const [playerSide, setPlayerSide] = useState<string>(null);
   const [playerReady, setPlayerReady] = useState<boolean>(false);
-  
+  const [opponentUsername, setOpponentUsername] = useState<string>(null);
+
   //Display states
   const [displayQueue, setDisplayQueue] = useState<boolean>(true);
   const [displayLobby, setDisplayLobby] = useState<boolean>(false);
   const [displayReady, setDisplayReady] = useState<boolean>(false);
   const [displayGame, setDisplayGame] = useState<boolean>(false);
   const [displayScore, setDisplayScore] = useState<boolean>(false);
-
   const [scoreLeft, setScoreLeft] = useState<number>(0);
   const [scoreRight, setScoreRight] = useState<number>(0);
-  
+
   return {
     lobbyId,
     setLobbyId,
@@ -66,6 +69,8 @@ export const useGameModel = (): GameModelType => {
     setPlayerSide,
     playerReady,
     setPlayerReady,
+    opponentUsername,
+    setOpponentUsername,
     displayQueue,
     setDisplayQueue,
     displayLobby,

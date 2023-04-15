@@ -16,26 +16,28 @@ export default function GameActionBar() {
         backgroundColor: "grey",
         display: "flex",
         flexDirection: "row",
-        alignItems: "center"
+        alignItems: "center",
+        alignContent: "space-between"
       }}
     >
       {/* Left Player */}
-      <Box>
+      <Box sx={{display: "flex", flexGrow: 1}}>
         <PlayerDetail side={"left"} />
       </Box>
       {/* ReadyButton component */}
-      <Box>
-        <ReadyButton side={"left"} />
+      <Box sx={{display: "flex", flexGrow: 1}}>
+        <ReadyButton />
       </Box>
 
       {/* Scoreboard Component */}
-      <ScoreBoard />
-
-      {/* ReadyButton component */}
-      <ReadyButton side={"right"} />
+      <Box sx={{display: "flex", flexGrow: 1}}>
+        <ScoreBoard />
+      </Box>
 
       {/* Right Player */}
-      <PlayerDetail side={"right"} />
+      <Box sx={{display: "flex", flexGrow: 1}}>
+        <PlayerDetail side={"right"} />
+      </Box>
     </Box>
   );
 }

@@ -58,24 +58,14 @@ export class GameStateDto {
   paddle_left_pos: number;
   paddle_right_pos: number;
 }
-
+//TODO: change this to gamestate
 export class Lobby {
-  constructor(Lobby_ID: string, Player_Side: string) {
-    this.lobby_id = Lobby_ID;
-    this.player_side = Player_Side;
+  constructor() {
     this.game_state = new GameState();
     this.game_state.ball_x = 0;
     this.game_state.ball_y = 0;
     this.game_state.paddle_left_y = 0;
     this.game_state.paddle_right_y = 0;
   }
-  player_side: string;
-  lobby_id: string;
-  player_username: string;
-  opponent_username: string;
-  player_avatar: string;
-  opponent_avatar: string;
-  player_ready: boolean;
-  opponent_ready: boolean;
   game_state: GameState;
 }

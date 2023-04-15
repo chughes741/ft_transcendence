@@ -12,7 +12,7 @@ import {
 import { useRootViewModelContext } from "src/root.context";
 
 export interface GameViewModelType extends GameModelType {
-  setPlayerReadyState: (state: boolean) => Promise<boolean>;
+  setPlayerReadyState: () => Promise<void>;
 }
 
 export const GameViewModelContext: React.Context<GameViewModelType | null> =
@@ -32,6 +32,8 @@ export const GameViewModelProvider = ({ children }) => {
     setPlayerSide,
     playerReady,
     setPlayerReady,
+    opponentUsername,
+    setOpponentUsername,
     displayQueue,
     setDisplayQueue,
     displayLobby,
@@ -62,10 +64,12 @@ export const GameViewModelProvider = ({ children }) => {
     if (!displayQueue) return;
 
     socket.on(GameEvents.LobbyCreated, (payload: LobbyCreatedEvent) => {
-      console.log("lobbyCreated event received. Payload:");
-      console.log(payload);
+      console.log("lobbyCreated event received");
 
-      setLobby(new GameTypes.Lobby(payload.lobby_id, payload.player_side));
+      setLobby(new GameTypes.Lobby());
+      setLobbyId(payload.lobby_id);
+      setPlayerSide(payload.player_side);
+      setOpponentUsername(payload.opponent_username);
 
       setDisplayQueue(false);
       setDisplayLobby(true);
@@ -141,10 +145,10 @@ export const GameViewModelProvider = ({ children }) => {
   /**
    * Manage ready toggle
    *
-   * @param state
    * @returns
    */
-  const setPlayerReadyState = async (state: boolean) => {
+  const setPlayerReadyState = async () => {
+    if (playerReady) return;
     socket.emit(
       GameEvents.PlayerReady,
       {
@@ -157,7 +161,6 @@ export const GameViewModelProvider = ({ children }) => {
         setPlayerReady(response);
       }
     );
-    return true;
   };
 
   return (

@@ -3,43 +3,26 @@ import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import { useContext } from "react";
 import { useGameViewModelContext } from "../game.viewModel";
+import { useRootViewModelContext } from "src/root.context";
 
 /**
  * PlayerDetail component
- * 
+ *
  * @param {string} side
  * @returns {JSX.Element}
  */
 export default function PlayerDetail({ side }) {
-  const { lobby } = useGameViewModelContext();
-
+  const { playerSide, opponentUsername } = useGameViewModelContext();
+  const { self } = useRootViewModelContext();
   return (
     <>
-      {side === lobby.player_side ? (
+      {side === playerSide ? (
         <Box>
-          <Box>
-            <Avatar
-              alt={lobby.player_username}
-              src={lobby.player_avatar}
-            />
-          </Box>
-
-          <Box>
-            <Typography>{lobby.player_username}</Typography>
-          </Box>
+          <Typography>{self.username}</Typography>
         </Box>
       ) : (
         <Box>
-          <Box>
-            <Avatar
-              alt={lobby.opponent_username}
-              src={lobby.opponent_avatar}
-            />
-          </Box>
-
-          <Box>
-            <Typography>{lobby.opponent_username}</Typography>
-          </Box>
+          <Typography>{opponentUsername}</Typography>
         </Box>
       )}
     </>
