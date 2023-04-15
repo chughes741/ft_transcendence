@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from "react";
+import React, { useState, useCallback, useEffect } from "react";
 import {
   Dialog,
   DialogTitle,
@@ -24,7 +24,7 @@ export const ChooseUsernameModal: React.FC<ChooseUsernameModalProps> = ({
 }) => {
   if (!showModal) return null;
 
-  const [username, setUsername] = useState<string>(null);
+  const [username, setUsername] = useState<string>("");
 
   const handleSubmit = useCallback(async () => {
     const trimmedUsername = username.trim();
@@ -32,8 +32,27 @@ export const ChooseUsernameModal: React.FC<ChooseUsernameModalProps> = ({
     pickUsername(
       trimmedUsername.length > 0 ? trimmedUsername : defaultUsername
     );
-    setUsername(null);
+    setUsername("");
   }, [username, setUsername]);
+
+  const handleKeyPress = useCallback(
+    (e: KeyboardEvent) => {
+      if (e.key === "Enter") {
+        handleSubmit();
+      }
+    },
+    [handleSubmit]
+  );
+
+  useEffect(() => {
+    if (showModal) {
+      window.addEventListener("keydown", handleKeyPress);
+    }
+
+    return () => {
+      window.removeEventListener("keydown", handleKeyPress);
+    };
+  }, [showModal, handleSubmit]);
 
   return (
     <Dialog
@@ -56,7 +75,7 @@ export const ChooseUsernameModal: React.FC<ChooseUsernameModalProps> = ({
         <TextField
           autoFocus
           margin="dense"
-          label={username ? "Username" : defaultUsername}
+          label={username.length > 0 ? "Username" : defaultUsername}
           type="text"
           fullWidth
           onChange={(e) => setUsername(e.target.value)}

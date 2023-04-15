@@ -35,8 +35,6 @@ export interface RootModelType {
   setShowConfirmationModal: (show: boolean) => void;
   confirmationMessage: string;
   setConfirmationMessage: (message: string) => void;
-  confirmationCallback: (confirmed: boolean) => void;
-  setConfirmationCallback: (callback: (confirmed: boolean) => void) => void;
 }
 
 /**
@@ -59,10 +57,6 @@ export const useRootModel = (): RootModelType => {
   const [showConfirmationModal, setShowConfirmationModal] =
     useState<boolean>(false);
   const [confirmationMessage, setConfirmationMessage] = useState<string>("");
-  const [confirmationCallback, setConfirmationCallback] = useState<
-    (confirmed: boolean) => void
-    // eslint-disable-next-line @typescript-eslint/no-empty-function
-  >(() => {});
 
   return {
     self,
@@ -76,8 +70,6 @@ export const useRootModel = (): RootModelType => {
     showConfirmationModal,
     setShowConfirmationModal,
     confirmationMessage,
-    setConfirmationMessage,
-    confirmationCallback,
-    setConfirmationCallback
+    setConfirmationMessage
   };
 };

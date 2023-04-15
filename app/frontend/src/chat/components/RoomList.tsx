@@ -23,16 +23,6 @@ import { useRootViewModelContext } from "../../root.context";
 const RoomList: React.FC = () => {
   const { rooms } = useRoomManager();
   const {
-    /* Choose Username Modal */
-    showChooseUsernameModal,
-    setShowChooseUsernameModal,
-    /* Confirmation Modal */
-    setConfirmationCallback,
-    setConfirmationMessage,
-    showConfirmationModal,
-    setShowConfirmationModal
-  } = useRootViewModelContext();
-  const {
     currentRoomName,
     /* Room fcts */
     createNewRoom,
@@ -105,41 +95,6 @@ const RoomList: React.FC = () => {
     setShowInviteUsersModal(true);
   };
 
-  const onConfirmation = useCallback(
-    (confirmed: boolean) => {
-      console.log(`Username confirmed?: ${confirmed ? "Yes" : "No"}`);
-      if (!confirmed) return;
-      setShowConfirmationModal(false);
-      // eslint-disable-next-line
-      setConfirmationMessage("");
-      setShowConfirmationModal(false);
-      setShowChooseUsernameModal(!!confirmed);
-    },
-    [showConfirmationModal]
-  );
-
-  useEffect(() => {
-    if (!username || username.length === 0) {
-      return;
-    }
-
-    console.log("Picking username: ", username);
-    socket.emit("pickUsername", username, (err: DevError | null) => {
-      if (handleSocketErrorResponse(err)) {
-        const error = err as DevError;
-        console.error(`RoomList: Error picking username: ${error.error}`);
-      }
-      console.log("Username picked successfully");
-    });
-    // FIXME: move these calls back up inside the socket callback once "pickUsername" is implemented in the backend
-    setConfirmationCallback(onConfirmation);
-    setConfirmationMessage(
-      `Are you sure you want to pick the username ${username}?
-        This action cannot be reverted`
-    );
-    setShowConfirmationModal(true);
-  }, [username]);
-
   /****************/
   /*   Snackbar   */
   /****************/
@@ -188,11 +143,6 @@ const RoomList: React.FC = () => {
         onInvitePeopleToRoom={handleInvitePeopleToRoom}
         onChangeRoomStatus={changeRoomStatus}
         onChangeRoomPassword={() => setShowPasswordModal(true)}
-      />
-      <ChooseUsernameModal
-        showModal={showChooseUsernameModal}
-        defaultUsername="schlurp"
-        pickUsername={(username: string) => setUsername(username)}
       />
       <RoomPasswordModal
         showModal={showPasswordModal}

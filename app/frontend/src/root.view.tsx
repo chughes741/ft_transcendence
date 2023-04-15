@@ -1,5 +1,5 @@
 /** Libraries */
-import { useEffect } from "react";
+import { useCallback, useEffect } from "react";
 import { Box, Container } from "@mui/material";
 
 /** Providers */
@@ -16,6 +16,7 @@ import { HelmetView } from "./components/Helmet";
 import SettingsView from "./components/settings/settings.view";
 import LoginWith42Button from "./components/Login42";
 import { ConfirmationModal } from "./components/ConfirmationModal";
+import { ChooseUsernameModal } from "./components/ChooseUsernameModal";
 
 /**
  * Root view content
@@ -69,12 +70,16 @@ export function RootView(): JSX.Element {
     /* Fullscreen */
     fullscreen,
     setFullscreen,
+    /* Username */
+    showChooseUsernameModal,
+    setShowChooseUsernameModal,
+    handlePickUsername,
     /* Confirmation modal */
     showConfirmationModal,
     setShowConfirmationModal,
     /* Confirmation modal data */
     confirmationMessage,
-    confirmationCallback
+    setConfirmationMessage
   } = useRootViewModelContext();
   const handleKeyDown = (event: KeyboardEvent) => {
     if (event.key === "Escape" && fullscreen) {
@@ -92,6 +97,17 @@ export function RootView(): JSX.Element {
       window.removeEventListener("keydown", handleKeyDown);
     };
   }, [fullscreen]);
+
+  const onConfirmation = useCallback(
+    (confirmed: boolean) => {
+      console.log(`Username confirmed?: ${confirmed ? "Yes" : "No"}`);
+      setShowConfirmationModal(false);
+      if (!confirmed) return;
+      setConfirmationMessage("");
+      setShowChooseUsernameModal(confirmed ? false : true);
+    },
+    [showConfirmationModal]
+  );
 
   return (
     <>
@@ -133,7 +149,12 @@ export function RootView(): JSX.Element {
         showModal={showConfirmationModal}
         message={confirmationMessage}
         closeModal={() => setShowConfirmationModal(false)}
-        onConfirmation={confirmationCallback}
+        onConfirmation={onConfirmation}
+      />
+      <ChooseUsernameModal
+        showModal={showChooseUsernameModal}
+        defaultUsername="schlurp" // FIXME: switch to actual username from 42
+        pickUsername={handlePickUsername}
       />
     </>
   );

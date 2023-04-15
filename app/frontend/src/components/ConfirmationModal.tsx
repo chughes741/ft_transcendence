@@ -23,11 +23,8 @@ export const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
   closeModal,
   onConfirmation
 }) => {
-  const {
-    // confirmationCallback: onConfirmation,
-    setShowConfirmationModal,
-    confirmationMessage
-  } = useRootViewModelContext();
+  const { setShowConfirmationModal, confirmationMessage } =
+    useRootViewModelContext();
 
   if (!showModal) return null;
   console.warn("onConfirmation", onConfirmation);
@@ -45,22 +42,26 @@ export const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
   };
 
   const handleCancel = () => {
+    console.warn("handleCancel");
     if (onConfirmation) {
       onConfirmation(false);
     }
   };
+  const handleKeyPress = useCallback(
+    (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        handleCancel();
+        closeModal();
+      } else if (e.key === "Enter") {
+        e.preventDefault();
+        handleConfirm();
+        closeModal();
+      }
+    },
+    [handleCancel, handleConfirm, closeModal]
+  );
 
   useEffect(() => {
-    const handleKeyPress = useCallback(
-      (e: KeyboardEvent) => {
-        if (e.key === "Escape") {
-          handleCancel();
-          closeModal();
-        }
-      },
-      [handleCancel, closeModal]
-    );
-
     if (showModal) {
       window.addEventListener("keydown", handleKeyPress);
     }
