@@ -4,9 +4,9 @@ import { SchedulerRegistry } from "@nestjs/schedule";
 import { GameConfig, PaddleConfig, BallConfig } from "./config/game.config";
 import { WebSocketServer, WebSocketGateway } from "@nestjs/websockets";
 import { Server } from "socket.io";
-import * as vec2 from "gl-vec2";
+import { Vec2 } from "./vector";
 import { GameData, BallData, gameLobby } from "./game.types";
-import { degToRad } from "./game.utils";
+import { degToRad, checkIntersect } from "./game.utils";
 import {
   ServerGameStateUpdateEvent,
   GameEvents,
@@ -74,7 +74,6 @@ export class GameLogic {
         GameConfig.serverUpdateRate
       );
     }
-   
   }
 
   /*************************************************************************************/
@@ -119,42 +118,94 @@ export class GameLogic {
 
   //Calculate ball position
   updateBall(gameData: GameData): BallData {
-    //Save previous ball data
-    const prev: BallData = gameData.ball;
-    const cur: BallData = new BallData();
+    //Save previous ball data, and create an object for new ball data
+    const prevBall: BallData = gameData.ball;
+    const curBall: BallData = new BallData();
 
-    //Current ball position is previous ball position + (direction * speed)
+    curBall.direction = prevBall.direction;
+    curBall.speed = prevBall.speed;
+    //Get a time difference between last update and this update
     const time_diff: number = (Date.now() - gameData.last_update_time) / 1000;
 
-    [cur.pos.x, cur.pos.y] = vec2.scaleAndAdd(
-      [cur.pos.x, cur.pos.y],
-      [prev.pos.x, prev.pos.y],
-      [prev.direction.x, prev.direction.y],
-      prev.speed * time_diff
+    //Find new ball position
+    curBall.pos = Vec2.scaleAndAdd(
+      prevBall.pos,
+      prevBall.direction,
+      prevBall.speed * time_diff
     );
-    cur.direction = prev.direction;
-    cur.speed = prev.speed;
 
-    //Check for collision with each wall
-    //hacky temporary solve
-    if (cur.pos.x >= GameConfig.playAreaWidth / 2 - 0.1) {
-      cur.direction.x = -cur.direction.x;
-    } else if (cur.pos.x <= -(GameConfig.playAreaWidth / 2) + 0.1) {
-      cur.direction.x = -cur.direction.x;
-    } else if (cur.pos.y >= GameConfig.playAreaHeight / 2 - 0.1) {
-      cur.direction.y = -cur.direction.y;
-    } else if (cur.pos.y <= -(GameConfig.playAreaHeight / 2) + 0.1) {
-      cur.direction.y = -cur.direction.y;
+    //Check if new ball position requires collision detection
+    if (curBall.pos.x >= GameConfig.playAreaWidth / 2 - BallConfig.radius) {
+      //Check collision between right wall and ball
+      //First get intersection
+      const intersect: Vec2 = checkIntersect(
+        prevBall.pos,
+        curBall.pos,
+        GameConfig.topRight,
+        GameConfig.botRight
+      );
+      //If return was not null there is an intersection
+      if (intersect) {
+        //Find the remaining of the vector that goes past the boundary
+        const remainder: Vec2 = Vec2.sub(curBall.pos, intersect);
+        //Add the remainder to the intersect point to get the new point
+        curBall.pos = Vec2.add(intersect, remainder);
+        //Invert the direction
+        curBall.direction.x = -curBall.direction.x;
+      }
+    } else if (
+      curBall.pos.x <= -(GameConfig.playAreaWidth / 2 + BallConfig.radius)
+    ) {
+      const intersect: Vec2 = checkIntersect(
+        prevBall.pos,
+        curBall.pos,
+        GameConfig.topLeft,
+        GameConfig.botLeft
+      );
+      if (intersect) {
+        const remainder: Vec2 = Vec2.sub(curBall.pos, intersect);
+        curBall.pos = Vec2.add(intersect, remainder);
+        curBall.direction.x = -curBall.direction.x;
+      }
+    } else if (
+      curBall.pos.y >=
+      GameConfig.playAreaHeight / 2 - BallConfig.radius
+    ) {
+      const intersect: Vec2 = checkIntersect(
+        prevBall.pos,
+        curBall.pos,
+        GameConfig.topLeft,
+        GameConfig.topRight
+      );
+      if (intersect) {
+        const remainder: Vec2 = Vec2.sub(curBall.pos, intersect);
+        curBall.pos = Vec2.add(intersect, remainder);
+        curBall.direction.y = -curBall.direction.y;
+      }
+    } else if (
+      curBall.pos.y <= -(GameConfig.playAreaHeight / 2 + BallConfig.radius)
+    ) {
+      const intersect: Vec2 = checkIntersect(
+        prevBall.pos,
+        curBall.pos,
+        GameConfig.botLeft,
+        GameConfig.botRight
+      );
+      if (intersect) {
+        const remainder: Vec2 = Vec2.sub(curBall.pos, intersect);
+        curBall.pos = Vec2.add(intersect, remainder);
+        curBall.direction.y = -curBall.direction.y;
+      }
     }
+    //If collision was with a paddle, increase ball speed
 
-    return cur;
+    return curBall;
   }
 
   //Get a new random ball direction and velocity
   getRandomBallDirection(gameData: GameData): BallData {
     const ballData: BallData = new BallData();
-    ballData.pos.x = 0;
-    ballData.pos.y = 0;
+    ballData.pos = new Vec2(0, 0);
     ballData.speed = BallConfig.initialSpeed;
 
     //Angle needs to be centered on x axis, so need to get offset from y-axis (half the remainder when angle is subracted from 180)
@@ -166,17 +217,12 @@ export class GameLogic {
       angle_offset;
 
     //Convert the angle to a vector
-    [ballData.direction.x, ballData.direction.y] = vec2.set(
-      [ballData.direction.x, ballData.direction.y],
+    ballData.direction = new Vec2(
       Math.sin(degToRad(angle)),
       Math.cos(degToRad(angle))
     );
-
     //Normalize the vector
-    [ballData.direction.x, ballData.direction.y] = vec2.normalize(
-      [ballData.direction.x, ballData.direction.y],
-      [ballData.direction.x, ballData.direction.y]
-    );
+    ballData.direction = Vec2.normalize(ballData.direction);
 
     //If last serve was to the right, invert x value to send left
     if (gameData.last_serve_side === "right") {
