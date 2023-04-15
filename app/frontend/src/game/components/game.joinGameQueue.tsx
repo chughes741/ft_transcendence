@@ -3,6 +3,9 @@ import { Button } from "@mui/material";
 import { socket } from "src/contexts/WebSocket.context";
 import Box from "@mui/material/Box";
 import CircularProgress from "@mui/material/CircularProgress";
+import { useRootViewModelContext } from "src/root.context";
+import { GameEvents } from "kingpong-lib";
+
 
 /**
  * This is a button that will join the game queue.
@@ -10,28 +13,32 @@ import CircularProgress from "@mui/material/CircularProgress";
  * @returns {JSX.Element} The button.
  */
 export default function JoinGameQueue() {
+  const { self } = useRootViewModelContext();
+
   const [inQueue, setInQueue] = React.useState<boolean>(false);
 
   /** Join game queue callback */
   const joinQueue = () => {
-    setInQueue(true);
     console.log("joinGameQueue event emitted");
-    socket.emit("joinGameQueue", {
-      client_id: "",
-      join_time: Date.now()
-    });
+
+    socket.emit(
+      GameEvents.JoinGameQueue,
+      {
+        username: self.username,
+        join_time: Date.now()
+      },
+      () => {
+        setInQueue(true);
+      }
+    );
   };
 
   /** Leave game queue callback */
   const leaveQueue = () => {
-    /** @todo emit leaveQueue message */
     setInQueue(false);
-  };
-
-  /** Invite player to lobby callback */
-  const invitePlayerToLobby = () => {
-    /** @todo player invite functionality  */
-    return;
+    socket.emit(GameEvents.LeaveGameQueue, {
+      username: self.username
+    });
   };
 
   return (
@@ -64,14 +71,6 @@ export default function JoinGameQueue() {
             color="success"
           >
             Join Queue
-          </Button>
-          <Button
-            onClick={invitePlayerToLobby}
-            sx={{ mt: 2 }}
-            variant="outlined"
-            color="success"
-          >
-            Invite Player
           </Button>
         </>
       )}

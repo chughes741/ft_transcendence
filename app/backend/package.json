@@ -38,6 +38,8 @@
     "@nestjs/websockets": "9.4.0",
     "@prisma/client": "4.12.0",
     "@types/multer": "^1.4.7",
+    "@typescript-eslint/eslint-plugin": "^5.57.0",
+    "@typescript-eslint/parser": "^5.57.0",
     "argon2": "^0.30.3",
     "class-transformer": "^0.5.1",
     "class-validator": "^0.14.0",
