@@ -21,8 +21,6 @@ import { MatchHistoryItem, ProfileEntity, UserStatus } from "kingpong-lib";
 
 /** View Model */
 import { useProfileViewModelContext } from "src/profile/profile.viewModel";
-import {useRootViewModelContext} from "../root.context";
-import {PageState} from "../root.model";
 import React from "react";
 
 type StyledBadgeProps = {
@@ -254,7 +252,6 @@ function FriendsList(): JSX.Element | null {
  * @returns {JSX.Element | null}
  */
 export default function ProfileView(): JSX.Element | null {
-  const {setPageState} = useRootViewModelContext();
   return (
     <>
       <Grid
@@ -282,9 +279,6 @@ export default function ProfileView(): JSX.Element | null {
           <FriendsList />
         </Grid>
       </Grid>
-      <button onClick={()=>{
-        setPageState(PageState.Loader);}
-      }>?Click</button>
     </>
   );
 }

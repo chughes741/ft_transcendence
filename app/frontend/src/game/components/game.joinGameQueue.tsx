@@ -1,7 +1,8 @@
 import * as React from "react";
-import { Button } from "@mui/material";
 import { socket } from "src/contexts/WebSocket.context";
 import GameLoader from "./GameLoader";
+import { Box } from "@mui/system";
+import "./GameQueue.css";
 
 /**
  * This is a button that will join the game queue.
@@ -21,35 +22,16 @@ export default function JoinGameQueue() {
     });
   };
 
-  /** Invite player to lobby callback */
-  const invitePlayerToLobby = () => {
-    /** @todo player invite functionality  */
-    return;
-  };
-
   return (
-     <>
+    <>
       {inQueue ? (
-        <>
-          <GameLoader setInQueue={setInQueue}/>
-        </>
+          <GameLoader setInQueue={setInQueue} />
       ) : (
         <>
-          <Button
-            onClick={joinQueue}
-            variant="outlined"
-            color="success"
-          >
-            Join Queue
-          </Button>
-          <Button
-            onClick={invitePlayerToLobby}
-            sx={{ mt: 2 }}
-            variant="outlined"
-            color="success"
-          >
-            Invite Player
-          </Button>
+          <Box className="body-page-queue">
+            <Box className="bottom-background" />
+            <Box className="join-queue" onClick={joinQueue}>Join Queue</Box>
+          </Box>
         </>
       )}
     </>
