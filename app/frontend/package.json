@@ -19,7 +19,7 @@
     "@mui/styles": "^5.12.0",
     "@mui/system": "^5.12.0",
     "@react-three/fiber": "^8.12.1",
-    "kingpong-lib": "^1.1.7",
+    "kingpong-lib": "1.1.8",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-error-boundary": "^4.0.3",
