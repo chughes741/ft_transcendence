@@ -1,26 +1,12 @@
-import Game from "src/game/GameWindow";
 import Box from "@mui/material/Box";
+
+import Game from "src/game/GameWindow";
 import GameActionBar from "./components/GameActionBar";
-import { socket } from "src/contexts/WebSocket.context";
 import JoinGameQueue from "./components/game.joinGameQueue";
-import { LobbyCreatedEvent } from "kingpong-lib";
 import { useGameViewModelContext } from "./game.viewModel";
-import { useRootViewModelContext } from "src/root.context";
 
 export default function GameWindow() {
-  const { displayQueue, lobby } = useGameViewModelContext();
-  const { self } = useRootViewModelContext();
-    
-  socket.on("lobbyCreated", (payload: LobbyCreatedEvent) => {
-    console.log(payload.lobby_id);
-    console.log("lobbyCreated event received");
-
-    lobby.lobby_id = payload.lobby_id;
-    lobby.player_username = self.username;
-    lobby.player_avatar = self.avatar;
-    lobby.player_side = payload.player_side;
-    lobby.opponent_username = payload.opponent_username;
-  });
+  const { displayQueue } = useGameViewModelContext();
 
   return (
     <>
