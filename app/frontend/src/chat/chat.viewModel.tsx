@@ -257,7 +257,7 @@ export const ChatViewModelProvider = ({ children }) => {
           firstName: "Schl",
           lastName: "urp",
           email: `${username}@schluuuuu.uuuuurp`,
-          avatar: `https://avatars.dicebear.com/api/human/${username}.svg`
+          avatar: `https://i.pravatar.cc/150?img=${username}`
         };
         const userCreated = await createUser(req);
         if (!userCreated) {

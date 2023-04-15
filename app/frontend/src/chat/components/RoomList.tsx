@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useCallback, useEffect } from "react";
 import "src/styles/chat/RoomList.css";
 import { CreateRoomModal } from "../modals/CreateRoomModal";
 import { Box, List } from "@mui/material";
@@ -17,9 +17,21 @@ import { JoinRoomModal } from "../modals/JoinRoomModal";
 import { handleSocketErrorResponse } from "../lib/helperFunctions";
 import { DevError, ListUsersRequest } from "../chat.types";
 import { RoomPasswordModal } from "../modals/RoomPasswordModal";
+import { ChooseUsernameModal } from "../../components/ChooseUsernameModal";
+import { useRootViewModelContext } from "../../root.context";
 
 const RoomList: React.FC = () => {
   const { rooms } = useRoomManager();
+  const {
+    /* Choose Username Modal */
+    showChooseUsernameModal,
+    setShowChooseUsernameModal,
+    /* Confirmation Modal */
+    setConfirmationCallback,
+    setConfirmationMessage,
+    showConfirmationModal,
+    setShowConfirmationModal
+  } = useRootViewModelContext();
   const {
     currentRoomName,
     /* Room fcts */
@@ -28,20 +40,25 @@ const RoomList: React.FC = () => {
     leaveRoom,
     changeRoomStatus,
     /* Context Menu */
-    contextMenuData,
-    contextMenuPosition,
     contextMenuRoomsVisible,
     setContextMenuRoomsVisible,
-    /* Modals */
+    /* Context Menu Data */
+    contextMenuData,
+    contextMenuPosition,
+    /* DM Modal */
     showDirectMessageModal,
-    showCreateRoomModal,
-    showJoinRoomModal,
-    showInviteUsersModal,
-    showPasswordModal,
     setShowDirectMessageModal,
+    /* Create Room Modal */
+    showCreateRoomModal,
     setShowCreateRoomModal,
+    /* Join Room Modal */
+    showJoinRoomModal,
     setShowJoinRoomModal,
+    /* Invite Users to Room Modal */
+    showInviteUsersModal,
     setShowInviteUsersModal,
+    /* Password prompt Modal */
+    showPasswordModal,
     setShowPasswordModal,
     /* Snackbar */
     showNewRoomSnackbar,
@@ -51,6 +68,7 @@ const RoomList: React.FC = () => {
     handleContextMenu
   } = useChatContext();
 
+  const [username, setUsername] = React.useState<string>(null);
   const [selectedUsers, setSelectedUsers] = React.useState<UserEntity[]>([]);
   const [availableUsers, setAvailableUsers] = React.useState<UserEntity[]>([]);
 
@@ -86,6 +104,41 @@ const RoomList: React.FC = () => {
     setContextMenuRoomsVisible(false);
     setShowInviteUsersModal(true);
   };
+
+  const onConfirmation = useCallback(
+    (confirmed: boolean) => {
+      console.log(`Username confirmed?: ${confirmed ? "Yes" : "No"}`);
+      if (!confirmed) return;
+      setShowConfirmationModal(false);
+      // eslint-disable-next-line
+      setConfirmationMessage("");
+      setShowConfirmationModal(false);
+      setShowChooseUsernameModal(!!confirmed);
+    },
+    [showConfirmationModal]
+  );
+
+  useEffect(() => {
+    if (!username || username.length === 0) {
+      return;
+    }
+
+    console.log("Picking username: ", username);
+    socket.emit("pickUsername", username, (err: DevError | null) => {
+      if (handleSocketErrorResponse(err)) {
+        const error = err as DevError;
+        console.error(`RoomList: Error picking username: ${error.error}`);
+      }
+      console.log("Username picked successfully");
+    });
+    // FIXME: move these calls back up inside the socket callback once "pickUsername" is implemented in the backend
+    setConfirmationCallback(onConfirmation);
+    setConfirmationMessage(
+      `Are you sure you want to pick the username ${username}?
+        This action cannot be reverted`
+    );
+    setShowConfirmationModal(true);
+  }, [username]);
 
   /****************/
   /*   Snackbar   */
@@ -135,6 +188,11 @@ const RoomList: React.FC = () => {
         onInvitePeopleToRoom={handleInvitePeopleToRoom}
         onChangeRoomStatus={changeRoomStatus}
         onChangeRoomPassword={() => setShowPasswordModal(true)}
+      />
+      <ChooseUsernameModal
+        showModal={showChooseUsernameModal}
+        defaultUsername="schlurp"
+        pickUsername={(username: string) => setUsername(username)}
       />
       <RoomPasswordModal
         showModal={showPasswordModal}

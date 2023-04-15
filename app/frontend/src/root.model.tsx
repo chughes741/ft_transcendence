@@ -21,10 +21,22 @@ export enum PageState {
 export interface RootModelType {
   self: ProfileEntity;
   setSelf: (self: ProfileEntity) => void;
+
   pageState: PageState;
   setPageState: (pageState: PageState) => void;
+
   fullscreen: boolean;
   setFullscreen: (fullscreen: boolean) => void;
+
+  showChooseUsernameModal: boolean;
+  setShowChooseUsernameModal: (fullscreen: boolean) => void;
+
+  showConfirmationModal: boolean;
+  setShowConfirmationModal: (show: boolean) => void;
+  confirmationMessage: string;
+  setConfirmationMessage: (message: string) => void;
+  confirmationCallback: (confirmed: boolean) => void;
+  setConfirmationCallback: (callback: (confirmed: boolean) => void) => void;
 }
 
 /**
@@ -42,6 +54,15 @@ export const useRootModel = (): RootModelType => {
   });
   const [pageState, setPageState] = useState<PageState>(PageState.Home);
   const [fullscreen, setFullscreen] = useState<boolean>(false);
+  const [showChooseUsernameModal, setShowChooseUsernameModal] =
+    useState<boolean>(false);
+  const [showConfirmationModal, setShowConfirmationModal] =
+    useState<boolean>(false);
+  const [confirmationMessage, setConfirmationMessage] = useState<string>("");
+  const [confirmationCallback, setConfirmationCallback] = useState<
+    (confirmed: boolean) => void
+    // eslint-disable-next-line @typescript-eslint/no-empty-function
+  >(() => {});
 
   return {
     self,
@@ -49,6 +70,14 @@ export const useRootModel = (): RootModelType => {
     pageState,
     setPageState,
     fullscreen,
-    setFullscreen
+    setFullscreen,
+    showChooseUsernameModal,
+    setShowChooseUsernameModal,
+    showConfirmationModal,
+    setShowConfirmationModal,
+    confirmationMessage,
+    setConfirmationMessage,
+    confirmationCallback,
+    setConfirmationCallback
   };
 };

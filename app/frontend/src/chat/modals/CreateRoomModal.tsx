@@ -42,14 +42,7 @@ export const CreateRoomModal: React.FC<CreateRoomModalProps> = ({
   closeModal,
   onCreateRoom
 }) => {
-  if (!showModal) {
-    return null;
-  }
-  // const classes = useStyles();
-  const [roomStatus, setRoomStatus] = useState<ChatRoomStatus>(
-    ChatRoomStatus.PUBLIC
-  ); // defaults to public
-
+  if (!showModal) return null;
   // Improves code re-usability btw Create and Join RoomModals
   const {
     roomName,
@@ -60,6 +53,9 @@ export const CreateRoomModal: React.FC<CreateRoomModalProps> = ({
     togglePasswordVisibility
   } = useRoomModal(showModal);
 
+  const [roomStatus, setRoomStatus] = useState<ChatRoomStatus>(
+    ChatRoomStatus.PUBLIC
+  ); // defaults to public
   const handleSubmit = useCallback(async () => {
     if (roomName.trim().length <= 0) {
       alert("Please enter a room name.");

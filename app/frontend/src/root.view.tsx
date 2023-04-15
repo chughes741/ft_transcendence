@@ -15,6 +15,7 @@ import ProfileView from "./profile/profile.view";
 import { HelmetView } from "./components/Helmet";
 import SettingsView from "./components/settings/settings.view";
 import LoginWith42Button from "./components/Login42";
+import { ConfirmationModal } from "./components/ConfirmationModal";
 
 /**
  * Root view content
@@ -64,7 +65,17 @@ function RootViewContent(): JSX.Element {
  * @returns {JSX.Element} - View model with dynamic content
  */
 export function RootView(): JSX.Element {
-  const { fullscreen, setFullscreen } = useRootViewModelContext();
+  const {
+    /* Fullscreen */
+    fullscreen,
+    setFullscreen,
+    /* Confirmation modal */
+    showConfirmationModal,
+    setShowConfirmationModal,
+    /* Confirmation modal data */
+    confirmationMessage,
+    confirmationCallback
+  } = useRootViewModelContext();
   const handleKeyDown = (event: KeyboardEvent) => {
     if (event.key === "Escape" && fullscreen) {
       console.log(`it worked! esc was pressed and fullscreen is ${fullscreen}`);
@@ -118,6 +129,12 @@ export function RootView(): JSX.Element {
           )}
         </Box>
       </Container>
+      <ConfirmationModal
+        showModal={showConfirmationModal}
+        message={confirmationMessage}
+        closeModal={() => setShowConfirmationModal(false)}
+        onConfirmation={confirmationCallback}
+      />
     </>
   );
 }
