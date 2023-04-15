@@ -11,7 +11,6 @@ import { GameService } from "./game.service";
 import { Logger } from "@nestjs/common";
 import { JoinGameInviteDto, JoinGameQueueDto } from "./dto/game.dto";
 import { GameStartEntity } from "./entities/game.entity";
-import { ClientUpdateEvent } from "kingpong-lib";
 import { ClientGameStateUpdate } from "./game.types";
 import { GameModuleData } from "./game.data";
 
