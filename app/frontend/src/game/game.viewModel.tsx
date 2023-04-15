@@ -3,6 +3,8 @@ import { GameModelType, useGameModel } from "./game.model";
 import { GameContext } from "./game.context";
 import * as GameTypes from "src/game/game.types";
 import { socket } from "src/contexts/WebSocket.context";
+import { GameEvents, GameStartedEvent, LobbyCreatedEvent } from "kingpong-lib";
+import { useRootViewModelContext } from "src/root.context";
 
 export interface GameViewModelType extends GameModelType {
   setPlayerReadyState: (state: boolean) => Promise<boolean>;
@@ -15,15 +17,33 @@ export const GameViewModelProvider = ({ children }) => {
   const gameModel = useGameModel();
 
   const {
+    lobby,
+    setLobby,
+    lobbyId,
+    matchId,
+    setMatchId,
+    setLobbyId,
+    playerSide,
+    setPlayerSide,
     playerReady,
     setPlayerReady,
-    setPlayerSide,
     displayQueue,
+    setDisplayQueue,
+    displayLobby,
+    setDisplayLobby,
+    displayReady,
+    setDisplayReady,
     displayGame,
     setDisplayGame,
-    lobby,
-    setLobby
+    displayScore,
+    setDisplayScore,
+    scoreLeft,
+    setScoreLeft,
+    scoreRight,
+    setScoreRight
   } = gameModel;
+
+  const { self } = useRootViewModelContext();
 
   /*******************/
   /*  Socket Calls   */
@@ -34,14 +54,13 @@ export const GameViewModelProvider = ({ children }) => {
    * @dependency playerReady
    */
   useEffect(() => {
-    socket.on("gameStarted", (payload: GameTypes.GameStartedDto) => {
-      // TODO: implement rest of the lobby logic
-      setPlayerSide(payload.player_side);
+    socket.on(GameEvents.GameStarted, (payload: GameStartedEvent) => {
+      setPlayerSide(payload.game_state.player_side);
       setDisplayGame(true);
     });
 
     return () => {
-      socket.off("gameStarted");
+      socket.off(GameEvents.LobbyCreated);
     };
   }, [playerReady]);
 
@@ -50,39 +69,38 @@ export const GameViewModelProvider = ({ children }) => {
    * @dependency displayQueue
    */
   useEffect(() => {
-    socket.on("lobbyCreated", (payload: GameTypes.LobbyCreatedDto) => {
+    socket.on(GameEvents.LobbyCreated, (payload: LobbyCreatedEvent) => {
       console.log("lobbyCreated event received. Payload:");
       console.log(payload);
 
       setLobby(new GameTypes.Lobby(payload.lobby_id, payload.player_side));
-      // Set the lobby display state to true
-      gameModel.setDisplayLobby(true);
+
+      setDisplayQueue(false);
+      setDisplayLobby(true);
     });
 
     return () => {
-      socket.off("lobbyCreated");
+      socket.off(GameEvents.LobbyCreated);
     };
   }, [displayQueue]);
 
   /**
    * Manage ready toggle
+   *
    * @param state
    * @returns
    */
   const setPlayerReadyState = async (state: boolean) => {
-    const payload: GameTypes.PlayerReadyDto = new GameTypes.PlayerReadyDto(
-      lobby.lobby_id,
-      state
-    );
     socket.emit(
-      "playerReady",
-      payload,
-      (response: boolean | { error: string }) => {
-        if (typeof response === "object") {
-          alert(response.error);
-        } else {
-          setPlayerReady(true);
-        }
+      GameEvents.PlayerReady,
+      {
+        match_id: matchId,
+        lobby_id: lobbyId,
+        username: self.username,
+        ready: true
+      },
+      (response: boolean) => {
+        setPlayerReady(response);
       }
     );
     return true;
