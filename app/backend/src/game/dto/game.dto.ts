@@ -21,10 +21,3 @@ export class JoinGameQueueDto {
   client_id: string;
   join_time: number;
 }
-
-/**
- *
- */
-export class PlayerReadyDto {
-  lobby_id: string;
-}

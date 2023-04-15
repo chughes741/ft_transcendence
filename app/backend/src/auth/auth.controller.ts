@@ -15,6 +15,7 @@ import { PrismaClientExceptionFilterHttp } from "../prisma-client-exception.filt
 import { AuthService } from "./auth.service";
 import { GetUser } from "./decorators";
 import { AuthRequest } from "./dto";
+import { Token } from "src/token-storage.service";
 
 const logger = new Logger("AuthController");
 
@@ -64,12 +65,13 @@ export class AuthController {
   @HttpCode(HttpStatus.OK)
   @Post("signin")
   signin(@Body() dto: AuthRequest) {
-    return this.authService.signin(dto);
+    return ;
+    //return this.authService.signin(dto);
   }
 
   @Post("refresh")
   @SubscribeMessage("refresh")
-  async refreshToken(@Body("refresh_token") refresh_token: string) {
+  async refreshToken(@Body("refresh_token") refresh_token: Token) {
     return this.authService.refreshToken(refresh_token);
   }
 

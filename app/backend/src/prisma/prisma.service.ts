@@ -161,7 +161,8 @@ export class PrismaService extends PrismaClient {
       lastName: req.lastName,
       avatar: req.avatar,
       email: req.email,
-      status: req.status
+      status: req.status,
+      id : req.id,
     };
     return this.user.create({ data });
   }
@@ -475,6 +476,12 @@ export class PrismaService extends PrismaClient {
     }
     return await this.user.findUnique({
       where: { username: getProfileRequest.username }
+    });
+  }
+
+  async GetProfilebyId(id: string): Promise<User> {
+    return await this.user.findUnique({
+      where: { id: id }
     });
   }
 

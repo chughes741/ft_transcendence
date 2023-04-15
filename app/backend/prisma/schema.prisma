@@ -17,7 +17,7 @@ model User {
   username String @unique // To prevent duplicates in the DB
 
   avatar String @default("default_avatar.png")
-  email  String @unique // To prevent duplicates in the DB
+  email  String?  // To prevent duplicates in the DB
 
   firstName String?
   lastName  String?
