@@ -8289,6 +8289,11 @@ kingpong-lib@1.1.6:
   resolved "https://registry.yarnpkg.com/kingpong-lib/-/kingpong-lib-1.1.6.tgz#2683660c339d341008778b2e543c441a781cd349"
   integrity sha512-qj6ppA8JOo/bnW/3Ngw3yDjHIIq4faLU7mf5KjerRdZFPf4hgb2EA2qEnowgmW9VvBl48gRobn4jse6yoC5FJA==
 
+kingpong-lib@1.1.7:
+  version "1.1.7"
+  resolved "https://registry.yarnpkg.com/kingpong-lib/-/kingpong-lib-1.1.7.tgz#64fc4d43b38c1f02ca467a450fbcea696fe74fc8"
+  integrity sha512-LMI2644C6m7lddeYMl9NDt15Ce3cz7vm6tE+w4aZw0pHqK46tHvVHW+SmvvL1yskzCIIqC60MqiglIcB2qUxdg==
+
 kleur@^3.0.3:
   version "3.0.3"
   resolved "https://registry.yarnpkg.com/kleur/-/kleur-3.0.3.tgz#a79c9ecc86ee1ce3fa6206d1216c501f147fc07e"
