@@ -15,6 +15,7 @@ import {
 import { useChatContext } from "../chat.context";
 import { Cancel, Shield, Star, VolumeOff } from "@mui/icons-material";
 import { Box } from "@mui/system";
+import { getRankIcon } from "../lib/helperFunctions";
 
 interface UserListItemProps {
   user: ChatMemberEntity;
@@ -66,14 +67,16 @@ const UserListItem: React.FC<UserListItemProps> = ({ user }) => {
             vertical: "bottom",
             horizontal: "right"
           }}
+          style={{ position: "absolute", top: -30, left: -30, zIndex: 1 }}
           overlap="circular"
-          badgeContent={
-            user.rank === ChatMemberRank.OWNER
-              ? ownerBadge
-              : user.rank === ChatMemberRank.ADMIN
-              ? adminBadge
-              : null
-          }
+          badgeContent={getRankIcon(user.rank, {
+            position: "absolute",
+            top: -30,
+            left: -30,
+            zIndex: 1,
+            backgroundColor: "#333",
+            borderRadius: "50%"
+          })}
         >
           <UserStatusBadge
             status={user.userStatus}

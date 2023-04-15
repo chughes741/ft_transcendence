@@ -52,7 +52,12 @@ const RoomListItem: React.FC<RoomListItemProps> = ({
         </ListItemIcon>
         <ListItemText
           style={{ overflowX: "hidden" }}
-          primary={room.name}
+          primary={
+            <>
+              {getRankIcon(room.rank, {})}
+              {room.name}
+            </>
+          }
           secondary={
             room.messages.length > 0
               ? truncateText(
@@ -62,9 +67,6 @@ const RoomListItem: React.FC<RoomListItemProps> = ({
               : ""
           }
         />
-        <span style={{ marginLeft: "auto", marginRight: "38px" }}>
-          {getRankIcon(room.rank)}
-        </span>
         <span style={{ marginLeft: "auto", marginRight: "16px" }}>
           {getStatusIcon(room.status)}
         </span>

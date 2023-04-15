@@ -22,18 +22,18 @@ export const handleSocketErrorResponse = (
   return (res as DevError).error !== undefined;
 };
 
-export const getRankIcon = (rank: ChatMemberRank) => {
+export const getRankIcon = (
+  rank: ChatMemberRank,
+  style: React.CSSProperties
+) => {
   switch (rank) {
     case ChatMemberRank.ADMIN:
       return (
         <Shield
           style={{
             fontSize: "1.1rem",
-            position: "absolute",
-            top: -30,
-            left: -30,
-            zIndex: 1,
-            borderRadius: "50%"
+            borderRadius: "50%",
+            ...style
           }}
         />
       );
@@ -42,11 +42,8 @@ export const getRankIcon = (rank: ChatMemberRank) => {
         <Star
           style={{
             fontSize: "1.1rem",
-            position: "absolute",
-            top: -30,
-            left: -30,
-            zIndex: 1,
-            borderRadius: "50%"
+            borderRadius: "50%",
+            ...style
           }}
         />
       );
