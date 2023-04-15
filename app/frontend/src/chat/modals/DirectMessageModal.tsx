@@ -138,7 +138,7 @@ export const DirectMessageModal: React.FC<DirectMessageModalProps> = ({
         <ButtonFunky
           icon={<Chat />}
           onClick={handleSendDirectMessage}
-          content={"Send Direct Message"}
+          content={"Send DM"}
           width={"50%"}
         />
       </DialogActions>
