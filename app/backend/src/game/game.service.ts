@@ -3,12 +3,16 @@ import { WebSocketServer, WebSocketGateway } from "@nestjs/websockets";
 import { Server, Socket } from "socket.io";
 import { Logger } from "@nestjs/common";
 import { SchedulerRegistry } from "@nestjs/schedule";
+import { v4 as uuidv4 } from "uuid";
+
 import { GameLogic } from "./game.logic";
 import { GameModuleData } from "./game.data";
 import * as GameTypes from "./game.types";
-// import * as GameDto from "./dto/game.dto";
-import { v4 as uuidv4 } from "uuid";
-import { JoinGameQueueRequest, LeaveGameQueueRequest } from "kingpong-lib";
+import {
+  ClientGameStateUpdateRequest,
+  JoinGameQueueRequest,
+  LeaveGameQueueRequest
+} from "kingpong-lib";
 
 const logger = new Logger("gameService");
 
@@ -17,11 +21,6 @@ export class PlayerQueue {
   join_time: number;
   client_mmr: number;
   socket_id: string; //Temporary
-}
-
-export class JoinGameQueueDto {
-  username: string;
-  join_time: number;
 }
 
 /**
@@ -47,6 +46,7 @@ export class GameService {
 
   /**
    * Creates a new game lobby with sender and invitee as players
+   *
    * @method sendGameInvite
    * @returns {}
    * @async
@@ -62,10 +62,10 @@ export class GameService {
 
   /**
    * Adds player to the game queue and tries to find a match
-   * @method joinGameQueue
-   * @param {GameDto.JoinGameQueueDto} player
-   * @returns {}
-   * @async
+   *
+   * @param {Socket} client
+   * @param {JoinGameQueueRequest} player
+   * @returns {Promise<void>}
    */
   async joinGameQueue(client: Socket, player: JoinGameQueueRequest) {
     logger.log("joinGameQueue() called");
@@ -91,19 +91,18 @@ export class GameService {
   }
 
   /**
-   * 
-   * @param player 
+   *
+   * @param player
    */
   async leaveGameQueue(player: LeaveGameQueueRequest) {
     logger.log("leaveGameQueue() called");
 
-
     //Check if player is in queue
-    
   }
 
   /**
    * Emit event to tell client that lobby has been successfully created
+   *
    * @method createLobby
    * @param {GameTypes.PlayerQueue[]} playerPair
    * @returns {}
@@ -143,6 +142,7 @@ export class GameService {
 
   /**
    * Start the game if both players are ready
+   *
    * @method gameStart
    * @returns {}
    * @async
@@ -165,11 +165,13 @@ export class GameService {
     }
   }
 
-
   /**
+   * Update the game state from the client
    *
+   * @method clientUpdate
+   * @param {ClientGameStateUpdateRequest} payload
    */
-  async clientUpdate(payload: GameTypes.ClientGameStateUpdate) {
+  async clientUpdate(payload: ClientGameStateUpdateRequest) {
     //Find the correct match using match_id and update paddle pos
     this.gameModuleData.setPaddlePosition(payload);
   }
