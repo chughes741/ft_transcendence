@@ -3,7 +3,13 @@ import { GameModelType, useGameModel } from "./game.model";
 import { GameContext } from "./game.context";
 import * as GameTypes from "src/game/game.types";
 import { socket } from "src/contexts/WebSocket.context";
-import { GameEvents, GameStartedEvent, LobbyCreatedEvent } from "kingpong-lib";
+import {
+  GameEndedEvent,
+  GameEvents,
+  GameStartedEvent,
+  LobbyCreatedEvent,
+  ServerGameStateUpdateEvent
+} from "kingpong-lib";
 import { useRootViewModelContext } from "src/root.context";
 
 export interface GameViewModelType extends GameModelType {
@@ -50,25 +56,12 @@ export const GameViewModelProvider = ({ children }) => {
   /*******************/
 
   /**
-   * @event "gameStarted"
-   * @dependency playerReady
-   */
-  useEffect(() => {
-    socket.on(GameEvents.GameStarted, (payload: GameStartedEvent) => {
-      setPlayerSide(payload.game_state.player_side);
-      setDisplayGame(true);
-    });
-
-    return () => {
-      socket.off(GameEvents.LobbyCreated);
-    };
-  }, [playerReady]);
-
-  /**
    * @event "lobbyCreated"
    * @dependency displayQueue
    */
   useEffect(() => {
+    if (!displayQueue) return;
+
     socket.on(GameEvents.LobbyCreated, (payload: LobbyCreatedEvent) => {
       console.log("lobbyCreated event received. Payload:");
       console.log(payload);
@@ -83,6 +76,68 @@ export const GameViewModelProvider = ({ children }) => {
       socket.off(GameEvents.LobbyCreated);
     };
   }, [displayQueue]);
+
+  /**
+   * @event "gameStarted"
+   * @dependency playerReady
+   */
+  useEffect(() => {
+    if (!playerReady) return;
+
+    socket.on(GameEvents.GameStarted, (payload: GameStartedEvent) => {
+      console.log("gameStarted event received. Payload:");
+      console.log(payload);
+
+      setPlayerSide(payload.player_side);
+      setDisplayGame(true);
+    });
+
+    return () => {
+      socket.off(GameEvents.LobbyCreated);
+    };
+  }, [playerReady]);
+
+  /**
+   * @event "serverGameStateUpdate"
+   * @dependency displayGame
+   */
+  useEffect(() => {
+    if (!displayGame) return;
+
+    socket.on(
+      GameEvents.ServerGameStateUpdate,
+      (payload: ServerGameStateUpdateEvent) => {
+        console.log("serverGameStateUpdate event received. Payload:");
+        console.log(payload);
+
+        lobby.game_state = payload.game_state;
+      }
+    );
+
+    return () => {
+      socket.off(GameEvents.ServerGameStateUpdate);
+    };
+  }, [displayGame]);
+
+  /**
+   * @event "gameEnded"
+   * @dependency displayGame
+   */
+  useEffect(() => {
+    if (!displayGame) return;
+
+    socket.on(GameEvents.GameEnded, (payload: GameEndedEvent) => {
+      console.log("gameEnded event received. Payload:");
+      console.log(payload);
+
+      setDisplayGame(false);
+      setDisplayLobby(true);
+    });
+
+    return () => {
+      socket.off(GameEvents.GameEnded);
+    };
+  }, [displayGame]);
 
   /**
    * Manage ready toggle
