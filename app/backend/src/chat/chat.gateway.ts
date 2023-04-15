@@ -17,7 +17,7 @@ import { Message } from "@prisma/client";
 import { ChatMember } from "@prisma/client";
 import { ChatMemberEntity, MessageEntity } from "./entities/message.entity";
 import { ChatMemberStatus, UserStatus } from "@prisma/client";
-import { kickMemberDto, UpdateChatMemberRequest } from "./dto/userlist.dto";
+import { KickMemberRequest, UpdateChatMemberRequest } from "./dto/userlist.dto";
 import { AuthRequest } from "../auth/dto";
 
 // FIXME: temporary error type until we can share btw back and frontend
@@ -643,12 +643,15 @@ export class ChatGateway
   }
 
   @SubscribeMessage("kickChatMember")
-  async kickChatMember(client: Socket, req: kickMemberDto): Promise<string> {
+  async kickChatMember(
+    client: Socket,
+    req: KickMemberRequest
+  ): Promise<string> {
     try {
       const response = await this.chatService.kickMember(req);
       if (
         response ===
-        "Chat Member " + req.ChatMemberToKickName + " kicked out successfully !"
+        "Chat Member " + req.memberToKickUsername + " kicked out successfully !"
       ) {
         const list: ChatMemberEntity[] = await this.chatService.getUserList(
           req.roomName

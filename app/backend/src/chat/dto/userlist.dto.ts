@@ -11,10 +11,10 @@ export class UpdateChatMemberRequest {
   duration?: number; // in minutes
 }
 
-export class kickMemberDto {
-  ChatMemberToKickId: number;
-  ChatMemberToKickName: string;
+export class KickMemberRequest {
+  memberToKickUUID?: number;
+  memberToKickUsername: string;
+  memberToKickRank: ChatMemberRank;
   roomName: string;
-  memberRequestingRank: ChatMemberRank;
-  memberToKickStatus: ChatMemberRank;
+  queryingMemberRank: ChatMemberRank;
 }

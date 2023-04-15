@@ -22,7 +22,7 @@ import {
   UpdateChatRoomRequest
 } from "./chat.gateway";
 import { MessageEntity } from "./entities/message.entity";
-import { kickMemberDto, UpdateChatMemberRequest } from "./dto/userlist.dto";
+import { KickMemberRequest, UpdateChatMemberRequest } from "./dto/userlist.dto";
 import { ChatMemberEntity } from "./entities/message.entity";
 import { AuthRequest, UserEntity } from "../auth/dto";
 
@@ -514,23 +514,34 @@ export class ChatService {
     }
   }
 
-  async kickMember(kickDto: kickMemberDto): Promise<string> {
+  async kickMember(
+    kickDto: KickMemberRequest
+  ): Promise<ChatMemberPrismaType | Error> {
     if (
-      kickDto.memberRequestingRank === ChatMemberRank.USER ||
-      kickDto.memberToKickStatus === ChatMemberRank.OWNER
+      kickDto.queryingMemberRank === ChatMemberRank.USER ||
+      kickDto.memberToKickRank === ChatMemberRank.OWNER
     )
       throw new Error("Wrong rank: Can't request operation");
     if (
-      kickDto.memberToKickStatus === ChatMemberRank.ADMIN &&
-      kickDto.memberRequestingRank === ChatMemberRank.ADMIN
+      kickDto.memberToKickRank === ChatMemberRank.ADMIN &&
+      kickDto.queryingMemberRank === ChatMemberRank.ADMIN
     )
       throw new Error("Wrong rank: Can't request operation");
-    this.prismaService.destroyChatMember(kickDto.ChatMemberToKickId);
-    return (
-      "Chat Member " +
-      kickDto.ChatMemberToKickName +
-      " kicked out successfully !"
-    );
+    try {
+      const chatMember = await this.prismaService.chatMember.delete({
+        where: {
+          id: kickDto.memberToKickUUID
+        },
+        include: {
+          member: true,
+          room: true
+        }
+      });
+      return chatMember;
+    } catch (error) {
+      logger.error("Error kicking chat member", error);
+      return error;
+    }
   }
 
   // inviteUsersToRoom takes in a InviteUsersToRoomRequest and returns a ChatMemberEntity[] if successful

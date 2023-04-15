@@ -149,28 +149,40 @@ export default function UserListView({ userList, handleClick }: UserListProps) {
     console.log("Invite to game");
     setPageState(PageState.Game);
     setCurrentRoomName("");
+    setContextMenuUsersVisible(false);
   };
 
   const onSendDirectMessage = () => {
     console.log("Send Direct Message");
+    setContextMenuUsersVisible(false);
   };
 
   const onAddFriend = () => {
     console.log("Add friend");
     addFriend(self.username, contextMenuUsersData.username);
+    setContextMenuUsersVisible(false);
   };
 
   const onKickUser = () => {
     console.log("Kick User");
+    socket.emit("kickUser", {
+      queryingUser: self.username,
+      usernameToKick: contextMenuUsersData.username,
+      roomName: currentRoomName,
+      queryingMemberRank: ownRank
+    });
+    setContextMenuUsersVisible(false);
   };
 
   const onPromoteToAdmin = () => {
     sendUpdateRequest(0, ChatMemberStatus.OK, ChatMemberRank.ADMIN);
+    setContextMenuUsersVisible(false);
   };
 
   const onDemoteToUser = () => {
     // emit a "updateChatMemberStatus" event to the server, with the username and the new rank
     sendUpdateRequest(0, ChatMemberStatus.OK, ChatMemberRank.USER);
+    setContextMenuUsersVisible(false);
   };
 
   return (
