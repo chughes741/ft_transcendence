@@ -575,7 +575,7 @@ export class ChatService {
         username: user.username,
         roomName: req.roomName,
         avatar: user.avatar,
-        chatMemberstatus: ChatMemberStatus.OK,
+        chatMemberStatus: ChatMemberStatus.OK,
         userStatus: user.status,
         rank: ChatMemberRank.USER
       };

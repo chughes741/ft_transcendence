@@ -63,7 +63,7 @@ export interface IChatMemberEntity {
   username: string;
   roomName: string;
   avatar: string;
-  chatMemberstatus: ChatMemberStatus;
+  chatMemberStatus: ChatMemberStatus;
   userStatus: UserStatus;
   rank: ChatMemberRank;
   endOfBan?: Date;
@@ -625,7 +625,7 @@ export class ChatGateway
         username: chatMember.member.username,
         roomName: req.roomName,
         avatar: chatMember.member.avatar,
-        chatMemberstatus: chatMember.status,
+        chatMemberStatus: chatMember.status,
         userStatus: chatMember.member.status,
         rank: chatMember.rank,
         endOfBan: chatMember.endOfBan,
