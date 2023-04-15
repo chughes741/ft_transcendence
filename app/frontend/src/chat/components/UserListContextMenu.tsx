@@ -52,25 +52,31 @@ const UserContextMenu: React.FC<UserContextMenuProps> = ({
   onDemoteToUser
 }) => {
   if (!contextMenuData) return null;
+  const { self } = useRootViewModelContext();
 
   const commonOptions = [
     {
       label: "View Profile",
       onClick: onViewProfile
-    },
-    {
-      label: "Invite to Game",
-      onClick: onInviteToGame
-    },
-    {
-      label: "Send Direct Message",
-      onClick: onSendDirectMessage
-    },
-    {
-      label: "Add friend",
-      onClick: onAddFriend
     }
   ];
+  let othersOptions = [];
+  if (contextMenuData.username !== self.username) {
+    othersOptions = [
+      {
+        label: "Invite to Game",
+        onClick: onInviteToGame
+      },
+      {
+        label: "Send Direct Message",
+        onClick: onSendDirectMessage
+      },
+      {
+        label: "Add friend",
+        onClick: onAddFriend
+      }
+    ];
+  }
 
   let adminOptions = [];
 
@@ -123,7 +129,12 @@ const UserContextMenu: React.FC<UserContextMenuProps> = ({
     ];
   }
 
-  const options = [...commonOptions, ...adminOptions, ...ownerOptions];
+  const options = [
+    ...commonOptions,
+    ...othersOptions,
+    ...adminOptions,
+    ...ownerOptions
+  ];
 
   return (
     <ContextMenu

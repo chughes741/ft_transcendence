@@ -43,9 +43,12 @@ export default function UserListView({ userList, handleClick }: UserListProps) {
   const { setUser, addFriend } = useProfileViewModelContext();
   const { self, setPageState } = useRootViewModelContext();
 
+  // Find your own rank by looking for your username in the userlist
+  const ownRank = userList[self.username]?.rank;
+
   // Render sorted users
   const renderSortedUsers = (users: ChatMemberEntity[]) => {
-    const sortedUsers = users.sort((a, b) => {
+    const sortedUsers = users.sort((a, b): number => {
       if (a.rank === "OWNER") return -1;
       if (b.rank === "OWNER") return 1;
       if (a.rank === "ADMIN") return -1;
@@ -64,7 +67,8 @@ export default function UserListView({ userList, handleClick }: UserListProps) {
   };
 
   const sendUpdateRequest = (
-    duration: number = 0,
+    // eslint-disable-next-line @typescript-eslint/no-inferrable-types
+    duration: number = -1,
     newStatus: ChatMemberStatus = contextMenuUsersData.chatMemberStatus,
     newRank: ChatMemberRank = contextMenuUsersData.rank
   ) => {
@@ -121,11 +125,11 @@ export default function UserListView({ userList, handleClick }: UserListProps) {
   };
 
   const onBanUser = (duration: number, status = ChatMemberStatus.BANNED) => {
-    sendUpdateRequest(duration, status);
+    sendUpdateRequest(duration, status, contextMenuUsersData.rank);
   };
 
   const onMuteUser = (duration: number, status = ChatMemberStatus.MUTED) => {
-    sendUpdateRequest(duration, status);
+    sendUpdateRequest(duration, status, contextMenuUsersData.rank);
   };
 
   const onPromoteToAdmin = () => {
@@ -136,9 +140,6 @@ export default function UserListView({ userList, handleClick }: UserListProps) {
     // emit a "updateChatMemberStatus" event to the server, with the username and the new rank
     sendUpdateRequest(0, ChatMemberStatus.OK, ChatMemberRank.USER);
   };
-
-  // Find your own rank by looking for your username in the userlist
-  const ownRank = userList[self.username]?.rank;
 
   return (
     <>
