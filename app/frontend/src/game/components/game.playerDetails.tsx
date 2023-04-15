@@ -2,7 +2,7 @@ import Avatar from "@mui/material/Avatar";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import { useContext } from "react";
-import { GameContext } from "../game.context";
+import { useGameViewModelContext } from "../game.viewModel";
 
 /**
  * PlayerDetail component
@@ -11,7 +11,7 @@ import { GameContext } from "../game.context";
  * @returns {JSX.Element}
  */
 export default function PlayerDetail({ side }) {
-  const { lobby } = useContext(GameContext);
+  const { lobby } = useGameViewModelContext();
 
   return (
     <>

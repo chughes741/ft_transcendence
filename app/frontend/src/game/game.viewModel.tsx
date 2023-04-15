@@ -1,6 +1,5 @@
 import React, { useEffect, createContext, useContext } from "react";
 import { GameModelType, useGameModel } from "./game.model";
-import { GameContext } from "./game.context";
 import * as GameTypes from "src/game/game.types";
 import { socket } from "src/contexts/WebSocket.context";
 import {
@@ -162,7 +161,7 @@ export const GameViewModelProvider = ({ children }) => {
   };
 
   return (
-    <GameContext.Provider
+    <GameViewModelContext.Provider
       value={{
         ...gameModel,
         setPlayerReadyState
@@ -171,7 +170,7 @@ export const GameViewModelProvider = ({ children }) => {
       }}
     >
       {children}
-    </GameContext.Provider>
+    </GameViewModelContext.Provider>
   );
 };
 

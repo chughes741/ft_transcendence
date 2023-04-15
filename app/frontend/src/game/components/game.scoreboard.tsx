@@ -1,17 +1,16 @@
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
-import { useContext } from "react";
-import { GameContext } from "src/game/game.context";
+import { useGameViewModelContext } from "../game.viewModel";
 
 /**
  * ScoreBoard component
- * 
+ *
  * @param {string} side
  * @returns {JSX.Element}
  */
 export default function ScoreBoard() {
-  const { scoreLeft, setScoreLeft } = useContext(GameContext);
-  const { scoreRight, setScoreRight } = useContext(GameContext);
+  const { scoreLeft, setScoreLeft, scoreRight, setScoreRight } =
+    useGameViewModelContext();
 
   return (
     <Box sx={{ flexGrow: 0, alignItems: "space-around" }}>
