@@ -1,6 +1,6 @@
 // ChatModel.tsx
 import { useState, MouseEvent } from "react";
-import { RoomType, MessageType, UserListItem } from "./chat.types";
+import { RoomType, MessageType, ChatMemberEntity } from "./chat.types";
 
 export interface ChatModelType {
   /* User */
@@ -21,11 +21,11 @@ export interface ChatModelType {
   handleContextMenu: (e: MouseEvent, roomData: { name: string }) => void;
 
   /* UserList Context Menu */
-  contextMenuUsersData: UserListItem | null;
+  contextMenuUsersData: ChatMemberEntity | null;
   contextMenuUsersPosition: { x: number; y: number };
   contextMenuUsersVisible: boolean;
   setContextMenuUsersVisible: (arg: boolean) => void;
-  handleContextMenuUsers: (e: MouseEvent, userData: UserListItem) => void;
+  handleContextMenuUsers: (e: MouseEvent, userData: ChatMemberEntity) => void;
 
   /* Modals */
   showDirectMessageModal: boolean;
@@ -87,7 +87,7 @@ export const useChatModel = (): ChatModelType => {
 
   const handleContextMenuUsers = (
     e: React.MouseEvent,
-    userData: UserListItem
+    userData: ChatMemberEntity
   ) => {
     e.preventDefault();
     console.log(

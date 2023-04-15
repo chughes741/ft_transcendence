@@ -13,7 +13,7 @@ import {
   ChatMemberStatus,
   DevError,
   UpdateChatMemberRequest,
-  UserListItem
+  ChatMemberEntity
 } from "../chat.types";
 import { useChatContext } from "../chat.context";
 import { useProfileViewModelContext } from "../../profile/profile.viewModel";
@@ -22,10 +22,12 @@ import { PageState } from "../../root.model";
 import { socket } from "../../contexts/WebSocket.context";
 import { handleSocketErrorResponse } from "../lib/helperFunctions";
 import { useRoomManager } from "../lib/roomManager";
+import UserListItem from "./UserListItem";
+import { UserEntity } from "../modals/InviteUsersModal";
 
 export interface UserListProps {
-  userList: { [key: string]: UserListItem };
-  handleClick: (e: React.MouseEvent, userData: UserListItem) => void;
+  userList: { [key: string]: ChatMemberEntity };
+  handleClick: (e: React.MouseEvent, userData: ChatMemberEntity) => void;
 }
 
 export default function UserListView({ userList, handleClick }: UserListProps) {
@@ -41,10 +43,29 @@ export default function UserListView({ userList, handleClick }: UserListProps) {
   const { setUser, addFriend } = useProfileViewModelContext();
   const { self, setPageState } = useRootViewModelContext();
 
+  // Render sorted users
+  const renderSortedUsers = (users: ChatMemberEntity[]) => {
+    const sortedUsers = users.sort((a, b) => {
+      if (a.rank === "OWNER") return -1;
+      if (b.rank === "OWNER") return 1;
+      if (a.rank === "ADMIN") return -1;
+      if (b.rank === "ADMIN") return 1;
+      return 0;
+    });
+
+    return sortedUsers.map((user) => (
+      <UserListItem
+        key={user.username}
+        user={user}
+      />
+    ));
+  };
+
   const onViewProfile = () => {
     console.log("View Profile");
     setUser(contextMenuUsersData.username);
     setPageState(PageState.Profile);
+    setContextMenuUsersVisible(false);
   };
 
   const onInviteToGame = () => {
@@ -66,11 +87,55 @@ export default function UserListView({ userList, handleClick }: UserListProps) {
   };
 
   const onBanUser = (duration: number) => {
-    console.log("Ban User");
+    // emit a "updateChatMemberStatus" event to the server, with the username and the new rank
+    const req: UpdateChatMemberRequest = {
+      queryingUser: self.username,
+      usernameToUpdate: contextMenuUsersData.username,
+      roomName: currentRoomName,
+      status: ChatMemberStatus.OK,
+      queryingMemberRank: ChatMemberRank.ADMIN,
+      memberToUpdateRank: ChatMemberRank.ADMIN,
+      duration
+    };
+    console.log(req);
+
+    socket.emit("updateChatMemberStatus", req, (res: DevError | any) => {
+      if (handleSocketErrorResponse(res)) return console.error(res);
+      console.log(`successfully updated user ${res}`);
+      updateRooms((newRooms) => {
+        newRooms[currentRoomName].users[
+          contextMenuUsersData.username
+        ].chatMemberStatus = ChatMemberStatus.MUTED;
+        return newRooms;
+      });
+    });
+    setContextMenuUsersVisible(false);
   };
 
-  const onMuteUser = (duration: number) => {
-    console.log("Mute User");
+  const onMuteUser = (duration: number, status = ChatMemberStatus.MUTED) => {
+    // emit a "updateChatMemberStatus" event to the server, with the username and the new rank
+    const req: UpdateChatMemberRequest = {
+      queryingUser: self.username,
+      usernameToUpdate: contextMenuUsersData.username,
+      roomName: currentRoomName,
+      status: status,
+      queryingMemberRank: ChatMemberRank.ADMIN,
+      memberToUpdateRank: contextMenuUsersData.rank,
+      duration
+    };
+    console.log(req);
+
+    socket.emit("updateChatMemberStatus", req, (res: DevError | any) => {
+      if (handleSocketErrorResponse(res)) return console.error(res);
+      console.log(`successfully updated user ${res}`);
+      updateRooms((newRooms) => {
+        newRooms[currentRoomName].users[
+          contextMenuUsersData.username
+        ].chatMemberStatus = ChatMemberStatus.MUTED;
+        return newRooms;
+      });
+    });
+    setContextMenuUsersVisible(false);
   };
 
   const onPromoteToAdmin = () => {
@@ -181,23 +246,26 @@ export default function UserListView({ userList, handleClick }: UserListProps) {
 
             <List>
               {userList &&
-                Object.entries(userList).map(([username, user]) => (
-                  <ListItemButton
-                    onContextMenu={(e) => handleClick(e, user)}
-                    key={user.username}
-                    onClick={(e) => {
-                      handleClick(e, user);
-                    }}
-                  >
-                    <ListItemIcon>
-                      <Avatar src={`https://i.pravatar.cc/150?u=${username}`} />
-                    </ListItemIcon>
-                    <ListItemText
-                      primary={username}
-                      secondary={user.userStatus}
-                    />
-                  </ListItemButton>
-                ))}
+                // Render the sorted users
+                renderSortedUsers(Object.values(userList))}
+
+              {/* Object.entries(userList).map(([username, user]) => (
+                 <ListItemButton
+                   onContextMenu={(e) => handleClick(e, user)}
+                   key={user.username}
+                   onClick={(e) => {
+                     handleClick(e, user);
+                   }}
+                 >
+                   <ListItemIcon>
+                     <Avatar src={`https://i.pravatar.cc/150?u=${username}`} />
+                   </ListItemIcon>
+                   <ListItemText
+                     primary={username}
+                     secondary={user.userStatus}
+                   />
+                 </ListItemButton>
+               ))} */}
             </List>
           </Box>
         </Box>

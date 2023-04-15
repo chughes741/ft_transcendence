@@ -123,15 +123,21 @@ const RoomList: React.FC = () => {
       <Box sx={{ overflow: "auto" }}>
         <List>
           {rooms &&
-            Object.entries(rooms).map(([roomName, room]) => (
-              <RoomListItem
-                key={roomName}
-                room={room}
-                isSelected={currentRoomName === roomName}
-                onRoomSelect={selectRoom}
-                onContextMenu={handleContextMenu}
-              />
-            ))}
+            Object.entries(rooms)
+              .sort(
+                ([, roomA], [, roomB]) =>
+                  new Date(roomB.lastActivity).getTime() -
+                  new Date(roomA.lastActivity).getTime()
+              )
+              .map(([roomName, room]) => (
+                <RoomListItem
+                  key={roomName}
+                  room={room}
+                  isSelected={currentRoomName === roomName}
+                  onRoomSelect={selectRoom}
+                  onContextMenu={handleContextMenu}
+                />
+              ))}
         </List>
       </Box>
       <RoomContextMenu

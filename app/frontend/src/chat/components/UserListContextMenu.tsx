@@ -4,14 +4,14 @@ import { PageState } from "src/root.model";
 import { Paper } from "@mui/material";
 import { useProfileViewModelContext } from "src/profile/profile.viewModel";
 import { useRootViewModelContext } from "src/root.context";
-import { ChatMemberRank, UserListItem } from "../chat.types";
+import { ChatMemberRank, ChatMemberEntity } from "../chat.types";
 
 interface UserContextMenuProps {
   ownRank: ChatMemberRank;
   contextMenuVisible: boolean;
   setContextMenuVisible: (visible: boolean) => void;
   position: { x: number; y: number };
-  contextMenuData: UserListItem | null;
+  contextMenuData: ChatMemberEntity | null;
   onViewProfile: () => void;
   onInviteToGame: () => void;
   onSendDirectMessage: () => void;

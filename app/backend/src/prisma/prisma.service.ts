@@ -567,7 +567,11 @@ export class PrismaService extends PrismaClient {
 
       const newRank: ChatMemberRank = updateDto.memberToUpdateRank;
       const newStatus: ChatMemberStatus = updateDto.status;
-      const futureDate = new Date(Date.now() + GLOBAL_T_IN_DAYS);
+      const futureDate = new Date(
+        updateDto.duration === -1
+          ? null
+          : Date.now() + updateDto.duration * 60000
+      );
 
       let updateData: Partial<ChatMember> = {
         status: newStatus,

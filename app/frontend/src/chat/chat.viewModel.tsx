@@ -83,6 +83,10 @@ export const ChatViewModelProvider = ({ children }) => {
     console.log(`selectRoom: Room ${roomName} selected! `, rooms[roomName]);
     setCurrentRoomName(roomName);
     setCurrentRoomMessages(rooms[roomName].messages);
+    updateRooms((newRooms) => {
+      newRooms[roomName].hasUnreadMessages = false;
+      newRooms[roomName].unreadMessagesCount = 0;
+    });
     setPageState(PageState.Chat);
   };
 
@@ -215,6 +219,7 @@ export const ChatViewModelProvider = ({ children }) => {
     addSocketListener("chatRoomMemberLeft", handleChatRoomMemberLeft);
     addSocketListener("chatRoomMemberKicked", handleChatRoomMemberKicked);
     addSocketListener("addedToNewChatRoom", handleAddedToNewChatRoom);
+    addSocketListener("chatMemberUpdated", handleNewChatRoomMember);
   };
 
   // Use effect for setting up and cleaning up listeners
@@ -227,6 +232,7 @@ export const ChatViewModelProvider = ({ children }) => {
       removeSocketListener("chatRoomMemberLeft");
       removeSocketListener("chatRoomMemberKicked");
       removeSocketListener("addedToNewChatRoom");
+      removeSocketListener("chatMemberUpdated");
     };
   }, []);
 

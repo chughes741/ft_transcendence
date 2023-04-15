@@ -45,11 +45,30 @@ const RoomListItem: React.FC<RoomListItemProps> = ({
             badgeContent={
               room.status !== ChatRoomStatus.DIALOGUE &&
               room.rank === "OWNER" ? (
-                <FaCrown size={16} />
+                <FaCrown
+                  size={20}
+                  style={{
+                    top: -15,
+                    left: -15,
+                    zIndex: 1
+                  }}
+                />
               ) : null
             }
           >
-            {renderAvatarGroup(room, tempUsername)}
+            <Badge
+              anchorOrigin={{
+                vertical: "top",
+                horizontal: "right"
+              }}
+              overlap="circular"
+              color="error"
+              badgeContent={
+                room.hasUnreadMessages ? room.unreadMessagesCount : null
+              }
+            >
+              {renderAvatarGroup(room, tempUsername)}
+            </Badge>
           </Badge>
         </ListItemIcon>
         <ListItemText

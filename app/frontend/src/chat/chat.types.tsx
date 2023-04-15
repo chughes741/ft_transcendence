@@ -35,7 +35,7 @@ export type MessageType = {
   avatar?: string;
 };
 
-export interface UserListItem {
+export interface ChatMemberEntity {
   username: string;
   roomName?: string;
   avatar: string;
@@ -48,7 +48,7 @@ export interface UserListItem {
 
 export type RoomMemberEntity = {
   roomName: string;
-  user: UserListItem;
+  user: ChatMemberEntity;
 };
 
 export type MessagePayload = {
@@ -76,8 +76,9 @@ export type RoomType = {
   latestMessage?: MessageType;
   lastActivity: Date;
   hasUnreadMessages: boolean;
+  unreadMessagesCount: number;
   avatars?: string[];
-  users: { [key: string]: UserListItem };
+  users: { [key: string]: ChatMemberEntity };
 };
 
 export type DevError = {

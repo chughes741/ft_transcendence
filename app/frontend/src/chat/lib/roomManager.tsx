@@ -1,7 +1,7 @@
 import { createContext, useContext, useState } from "react";
 import { socket } from "../../contexts/WebSocket.context";
 import {
-  UserListItem,
+  ChatMemberEntity,
   ChatRoomPayload,
   RoomType,
   MessageType,
@@ -41,7 +41,7 @@ export interface RoomManagerContextType {
   convertMessagePayloadToMessageType: (
     messagePayload: MessagePayload
   ) => MessageType;
-  addMemberToRoom: (roomName: string, member: UserListItem) => void;
+  addMemberToRoom: (roomName: string, member: ChatMemberEntity) => void;
   addChatRoom: (chatRoomPayload: ChatRoomPayload) => Promise<RoomType>;
   addMessageToRoom: (roomName: string, message: MessageType) => void;
 }
@@ -104,7 +104,7 @@ export const RoomManagerProvider = ({ children }) => {
   /**********************/
 
   // Add member to room
-  const addMemberToRoom = (roomName: string, member: UserListItem) => {
+  const addMemberToRoom = (roomName: string, member: ChatMemberEntity) => {
     setRooms((prevRooms) => {
       const newRooms = { ...prevRooms };
       if (!newRooms[roomName]) {
@@ -117,12 +117,12 @@ export const RoomManagerProvider = ({ children }) => {
   };
 
   const getRoomUserList = async (roomName: string) => {
-    return new Promise<{ [key: string]: UserListItem }>((resolve) => {
+    return new Promise<{ [key: string]: ChatMemberEntity }>((resolve) => {
       socket.emit(
         "listUsers",
         { chatRoomName: roomName },
-        (users: UserListItem[]) => {
-          const usersObj = users.reduce<{ [key: string]: UserListItem }>(
+        (users: ChatMemberEntity[]) => {
+          const usersObj = users.reduce<{ [key: string]: ChatMemberEntity }>(
             (acc, user) => {
               acc[user.username] = user;
               return acc;
@@ -168,6 +168,7 @@ export const RoomManagerProvider = ({ children }) => {
         messages: [],
         lastActivity,
         hasUnreadMessages: false,
+        unreadMessagesCount: 0,
         avatars,
         users: userList
       };
@@ -189,6 +190,7 @@ export const RoomManagerProvider = ({ children }) => {
       } else {
         newRooms[roomName].messages.push(message);
         newRooms[roomName].latestMessage = message;
+        newRooms[roomName].lastActivity = new Date(Date.now());
       }
     });
   };
@@ -200,6 +202,8 @@ export const RoomManagerProvider = ({ children }) => {
       } else {
         newRooms[roomName].messages.push(...messages);
         newRooms[roomName].latestMessage = messages[messages.length - 1];
+        newRooms[roomName].lastActivity =
+          newRooms[roomName].latestMessage.timestamp;
       }
     });
   };
