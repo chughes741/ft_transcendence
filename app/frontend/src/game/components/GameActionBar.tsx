@@ -20,10 +20,13 @@ export default function GameActionBar() {
       }}
     >
       {/* Left Player */}
-      <PlayerDetail side={"left"} />
-
+      <Box>
+        <PlayerDetail side={"left"} />
+      </Box>
       {/* ReadyButton component */}
-      <ReadyButton side={"left"} />
+      <Box>
+        <ReadyButton side={"left"} />
+      </Box>
 
       {/* Scoreboard Component */}
       <ScoreBoard />
