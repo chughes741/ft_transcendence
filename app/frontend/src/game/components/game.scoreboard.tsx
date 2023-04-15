@@ -4,10 +4,12 @@ import { useContext } from "react";
 import { GameContext } from "src/game/game.context";
 
 /**
- *
- * @returns
+ * ScoreBoard component
+ * 
+ * @param {string} side
+ * @returns {JSX.Element}
  */
-export default function scoreBoard() {
+export default function ScoreBoard() {
   const { scoreLeft, setScoreLeft } = useContext(GameContext);
   const { scoreRight, setScoreRight } = useContext(GameContext);
 

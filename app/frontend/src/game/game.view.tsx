@@ -2,22 +2,24 @@ import Game from "src/game/GameWindow";
 import Box from "@mui/material/Box";
 import GameActionBar from "./components/GameActionBar";
 import { socket } from "src/contexts/WebSocket.context";
-import * as GameTypes from "./game.types";
-import { useGameContext } from "src/game/game.context";
 import JoinGameQueue from "./components/game.joinGameQueue";
+import { LobbyCreatedEvent } from "kingpong-lib";
+import { useGameViewModelContext } from "./game.viewModel";
+import { useRootViewModelContext } from "src/root.context";
 
 export default function GameWindow() {
-  let lobby: GameTypes.LobbyCreatedDto = new GameTypes.LobbyCreatedDto("test");
-
-  const { displayQueue } = useGameContext();
-
-  socket.on("lobbyCreated", (payload: GameTypes.LobbyCreatedDto) => {
+  const { displayQueue, lobby } = useGameViewModelContext();
+  const { self } = useRootViewModelContext();
+    
+  socket.on("lobbyCreated", (payload: LobbyCreatedEvent) => {
     console.log(payload.lobby_id);
     console.log("lobbyCreated event received");
-    //Store lobby data
 
-    lobby = payload;
-    //Need to change views here
+    lobby.lobby_id = payload.lobby_id;
+    lobby.player_username = self.username;
+    lobby.player_avatar = self.avatar;
+    lobby.player_side = payload.player_side;
+    lobby.opponent_username = payload.opponent_username;
   });
 
   return (
@@ -50,7 +52,7 @@ export default function GameWindow() {
             }}
           >
             <Box sx={{ flexGrow: 1 }}>
-              <GameActionBar {...lobby} />
+              <GameActionBar />
             </Box>
           </Box>
         </Box>

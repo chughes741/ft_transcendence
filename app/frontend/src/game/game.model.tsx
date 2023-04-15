@@ -48,7 +48,6 @@ export const useGameModel = (): GameModelType => {
   const [playerReady, setPlayerReady] = useState<boolean>(false);
   
   //Display states
-  /** @todo displayQueue should be default true */
   const [displayQueue, setDisplayQueue] = useState<boolean>(true);
   const [displayLobby, setDisplayLobby] = useState<boolean>(false);
   const [displayReady, setDisplayReady] = useState<boolean>(false);

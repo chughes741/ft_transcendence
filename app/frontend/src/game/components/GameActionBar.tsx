@@ -1,13 +1,15 @@
-import { Avatar, ToggleButton, Typography } from "@mui/material";
 import Box from "@mui/material/Box";
-import CheckCircleIcon from "@mui/icons-material/CheckCircle";
-import { LobbyCreatedDto } from "../game.types";
-import { useContext } from "react";
-import { GameContext } from "src/game/game.context";
 
-export default function GameActionBar(lobby: LobbyCreatedDto) {
-  const { playerReady, setPlayerReadyState } = useContext(GameContext);
-  console.log(lobby);
+import ReadyButton from "./game.readyButton";
+import PlayerDetail from "./game.playerDetails";
+import ScoreBoard from "./game.scoreboard";
+
+/**
+ * GameActionBar component
+ *
+ * @returns {JSX.Element}
+ */
+export default function GameActionBar() {
   return (
     <Box
       sx={{
@@ -17,39 +19,20 @@ export default function GameActionBar(lobby: LobbyCreatedDto) {
         alignItems: "center"
       }}
     >
-      {/* Avatar component */}
-      <Box>
-        <Avatar></Avatar>
-      </Box>
-
-      <Box sx={{ ml: 1 }}>
-        <Typography>Joe Blow</Typography>
-      </Box>
+      {/* Left Player */}
+      <PlayerDetail side={"left"} />
 
       {/* ReadyButton component */}
-      <Box sx={{ ml: 2 }}>
-        <ToggleButton
-          value="check"
-          selected={playerReady}
-          onChange={() => setPlayerReadyState(!playerReady)}
-        >
-          <CheckCircleIcon />
-        </ToggleButton>
-      </Box>
+      <ReadyButton side={"left"} />
 
       {/* Scoreboard Component */}
-      <Box sx={{ flexGrow: 0, alignItems: "space-around" }}>
-        <Typography>Score: 2 | 0</Typography>
-      </Box>
+      <ScoreBoard />
 
-      {/* Avatar component */}
-      <Box sx={{}}>
-        <Avatar></Avatar>
-      </Box>
+      {/* ReadyButton component */}
+      <ReadyButton side={"right"} />
 
-      <Box sx={{ ml: 1 }}>
-        <Typography>Joe Blow</Typography>
-      </Box>
+      {/* Right Player */}
+      <PlayerDetail side={"right"} />
     </Box>
   );
 }

@@ -4,8 +4,14 @@ import Typography from "@mui/material/Typography";
 import { useContext } from "react";
 import { GameContext } from "../game.context";
 
-export default function playerDetail(side: string) {
-  const { lobby, setLobby } = useContext(GameContext);
+/**
+ * PlayerDetail component
+ * 
+ * @param {string} side
+ * @returns {JSX.Element}
+ */
+export default function PlayerDetail({ side }) {
+  const { lobby } = useContext(GameContext);
 
   return (
     <>
@@ -13,26 +19,26 @@ export default function playerDetail(side: string) {
         <Box>
           <Box>
             <Avatar
-              alt={lobby.player_name}
+              alt={lobby.player_username}
               src={lobby.player_avatar}
             />
           </Box>
 
           <Box>
-            <Typography>{lobby.player_name}</Typography>
+            <Typography>{lobby.player_username}</Typography>
           </Box>
         </Box>
       ) : (
         <Box>
           <Box>
             <Avatar
-              alt={lobby.opponent_name}
+              alt={lobby.opponent_username}
               src={lobby.opponent_avatar}
             />
           </Box>
 
           <Box>
-            <Typography>{lobby.opponent_name}</Typography>
+            <Typography>{lobby.opponent_username}</Typography>
           </Box>
         </Box>
       )}

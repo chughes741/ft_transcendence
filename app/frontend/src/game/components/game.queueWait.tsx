@@ -4,8 +4,9 @@ import Button from "@mui/material/Button";
 import { socket } from "src/contexts/WebSocket.context";
 
 /**
- *
- * @returns
+ * QueueWait component
+ * 
+ * @returns {JSX.Element}
  */
 export default function queueWait() {
   return (
