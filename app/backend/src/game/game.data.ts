@@ -1,6 +1,7 @@
 import * as GameTypes from "./game.types";
 import { Logger } from "@nestjs/common";
 import {PlayerReadyRequest, ClientGameStateUpdateRequest} from "kingpong-lib";
+
 const logger = new Logger("gameData");
 
 /**
@@ -10,24 +11,6 @@ export class GameModuleData {
   public static queue: GameTypes.PlayerQueue[] = [];
   public static games: GameTypes.GameData[] = [];
   public static lobbies: GameTypes.gameLobby[] = [];
-
-  /*************************************************************************************/
-  /**                                   Queue                                         **/
-  /*************************************************************************************/
-
-  /**
-   * Check if a given user is already in the queue
-   * @param username
-   * @returns
-   */
-  checkQueue(username: string): GameTypes.PlayerQueue {
-    GameModuleData.queue.forEach((element) => {
-      if (element.username === username) {
-        return element;
-      }
-    });
-    return null;
-  }
 
   /**
    * Adds player to game queue
@@ -40,7 +23,7 @@ export class GameModuleData {
   }
 
   /**
-   * Removes player from queue given a player object
+   * Removes player from game queue
    * @method removeQueue
    * @param {GameTypes.PlayerQueue} player
    * @returns {}
@@ -53,21 +36,11 @@ export class GameModuleData {
   }
 
   /**
-   * Removes a player from queue given a username
-   * @param player
-   */
-  removeQueueUsername(player: string) {
-    GameModuleData.queue = GameModuleData.queue.splice(
-      GameModuleData.queue.indexOf(this.checkQueue(player)),
-      1
-    );
-  }
-
-  /**
-   * Attempts to return a pair of players from the queue
+   *
    * @method  getPairQueue
    * @returns {GameTypes.PlayerQueue[]}
    *
+   * @todo Fix current match systems and implement actual MMR checks
    */
   getPairQueue(): GameTypes.PlayerQueue[] {
     if (GameModuleData.queue.length >= 2) {
@@ -79,10 +52,6 @@ export class GameModuleData {
       return null;
     }
   }
-
-  /*************************************************************************************/
-  /**                                   Gameplay                                      **/
-  /*************************************************************************************/
 
   /**
    *
@@ -105,10 +74,13 @@ export class GameModuleData {
    * Update the player ready status for a player in specified lobby
    * @param {GameTypes.PlayerReadyDto} payload
    */
-  updatePlayerReady(payload: PlayerReadyRequest) {
+  updatePlayerReady(payload: GameTypes.PlayerReadyDto) {
+    console.log("entered updatePlayerReady");
+    console.log(payload.lobby_id);
     GameModuleData.lobbies.forEach((element) => {
+      //If match_id is found then update paddle pos
       if (element.lobby_id === payload.lobby_id) {
-        if (payload.ready) {
+        if (payload.is_ready) {
           element.gamestate.players_ready++;
         } else {
           element.gamestate.players_ready--;
@@ -117,11 +89,6 @@ export class GameModuleData {
       }
     });
   }
-
-
-
-
-
 
   /**
    * Retrieve the lobby object that corresponds to the given lobby id

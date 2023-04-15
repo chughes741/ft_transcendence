@@ -8,6 +8,9 @@ export interface GameModelType {
   lobbyId: string;
   setLobbyId: (lobbyId: string) => void;
 
+  matchId: string;
+  setMatchId: (matchId: string) => void;
+
   playerSide: string;
   setPlayerSide: (playerSide: string) => void;
 
@@ -38,15 +41,12 @@ export interface GameModelType {
 }
 
 export const useGameModel = (): GameModelType => {
-  const [lobbyId, setLobbyId] = useState<string>(null);
-  const [playerSide, setPlayerSide] = useState<string>(null);
-  const [scoreLeft, setScoreLeft] = useState<number>(0);
-  const [scoreRight, setScoreRight] = useState<number>(0);
   const [lobby, setLobby] = useState<Lobby>(null);
-
-  //Toggle state of ready button
+  const [lobbyId, setLobbyId] = useState<string>(null);
+  const [matchId, setMatchId] = useState<string>(null);
+  const [playerSide, setPlayerSide] = useState<string>(null);
   const [playerReady, setPlayerReady] = useState<boolean>(false);
-
+  
   //Display states
   /** @todo displayQueue should be default true */
   const [displayQueue, setDisplayQueue] = useState<boolean>(true);
@@ -55,9 +55,14 @@ export const useGameModel = (): GameModelType => {
   const [displayGame, setDisplayGame] = useState<boolean>(false);
   const [displayScore, setDisplayScore] = useState<boolean>(false);
 
+  const [scoreLeft, setScoreLeft] = useState<number>(0);
+  const [scoreRight, setScoreRight] = useState<number>(0);
+  
   return {
     lobbyId,
     setLobbyId,
+    matchId,
+    setMatchId,
     playerSide,
     setPlayerSide,
     playerReady,
