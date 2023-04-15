@@ -9,7 +9,7 @@ import {
   ChatMemberEntity,
   ChatMemberStatus
 } from "../chat.types";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
 interface UserContextMenuProps {
   ownRank: ChatMemberRank;
@@ -31,19 +31,12 @@ interface UserContextMenuProps {
   onDemoteToUser: () => void;
 }
 
-const muteDurationOptions = [
-  { label: "1 minute", value: 1 },
-  { label: "5 minutes", value: 5 },
-  { label: "15 minutes", value: 15 },
-  { label: "1 hour", value: 60 },
-  { label: "12 hours", value: 720 },
-  { label: "1 day", value: 1440 },
-  { label: "3 days", value: 4320 },
-  { label: "1 week", value: 10080 },
-  { label: "Permanently", value: -1 }
-];
+export interface CMenuOption {
+  label: string;
+  value: number;
+}
 
-const banDurationOptions = [
+const muteDurationOptions: Array<CMenuOption> = [
   { label: "1 minute", value: 1 },
   { label: "5 minutes", value: 5 },
   { label: "15 minutes", value: 15 },
@@ -99,7 +92,6 @@ const UserContextMenu: React.FC<UserContextMenuProps> = ({
 
   let adminOptions = [];
 
-  // Define a mute option. If the user is already Muted, change it to Unban, with duration of -1
   const muteOption =
     contextMenuData.chatMemberStatus === ChatMemberStatus.MUTED
       ? {
@@ -114,15 +106,17 @@ const UserContextMenu: React.FC<UserContextMenuProps> = ({
         }
       : {
           label: "Mute User",
-          submenu: muteDurationOptions.map((option) => ({
-            label: option.label,
-            onClick: (duration: number) => {
-              console.log(`Muting user ${contextMenuData.username}...`);
-              const status = ChatMemberStatus.MUTED;
-              console.log("duration: " + duration + " status: " + status);
-              sendUpdateRequest(duration, status, contextMenuData.rank);
-            }
-          }))
+          submenu: JSON.parse(JSON.stringify(muteDurationOptions)).map(
+            (option) => ({
+              label: option.label,
+              onClick: () => {
+                console.log(`Muting user ${contextMenuData.username}...`);
+                const status = ChatMemberStatus.MUTED;
+                console.log("duration: " + option.value + " status: " + status);
+                sendUpdateRequest(option.value, status, contextMenuData.rank);
+              }
+            })
+          )
         };
 
   const banOption =
@@ -130,25 +124,26 @@ const UserContextMenu: React.FC<UserContextMenuProps> = ({
       ? {
           label: "Unban User",
           onClick: () => {
-            console.log(`Banning user ${contextMenuData.username}...`);
+            console.log(`Unbanning user ${contextMenuData.username}...`);
             const status = ChatMemberStatus.OK;
             const duration = -1;
             console.log("duration: " + duration + " status: " + status);
             sendUpdateRequest(duration, status, contextMenuData.rank);
           }
         }
-      : {
-          label: "Ban User",
-          submenu: banDurationOptions.map((option) => ({
-            label: option.label,
-            onClick: (duration: number) => {
-              console.log(`Banning user ${contextMenuData.username}...`);
-              const status = ChatMemberStatus.BANNED;
-              console.log("duration: " + duration + " status: " + status);
-              sendUpdateRequest(duration, status, contextMenuData.rank);
-            }
-          }))
-        };
+      : contextMenuData.chatMemberStatus === ChatMemberStatus.MUTED
+      ? {
+          label: "Ban User for duration of Mute",
+          onClick: () => {
+            console.log(
+              `Banning user ${contextMenuData.username} for the duration of mute...`
+            );
+            const status = ChatMemberStatus.BANNED;
+            const duration = 0;
+            sendUpdateRequest(duration, status, contextMenuData.rank);
+          }
+        }
+      : null;
 
   if (ownRank === ChatMemberRank.OWNER || ownRank === ChatMemberRank.ADMIN) {
     if (contextMenuData.rank !== ChatMemberRank.OWNER) {
@@ -156,7 +151,7 @@ const UserContextMenu: React.FC<UserContextMenuProps> = ({
         { label: "---" },
         {
           label: "Kick User",
-          onclick: onKickUser
+          onClick: onKickUser
         },
         muteOption,
         banOption
@@ -184,12 +179,24 @@ const UserContextMenu: React.FC<UserContextMenuProps> = ({
     ];
   }
 
-  const options = [
-    ...commonOptions,
-    ...othersOptions,
-    ...adminOptions,
-    ...ownerOptions
-  ];
+  // In the UserContextMenu component, add the following lines:
+  const [menuOptions, setMenuOptions] = useState<CMenuOption[]>([]);
+
+  useEffect(() => {
+    const updatedOptions = [
+      ...commonOptions,
+      ...othersOptions,
+      ...adminOptions,
+      ...ownerOptions
+    ];
+    setMenuOptions(updatedOptions);
+  }, [
+    contextMenuData,
+    commonOptions,
+    othersOptions,
+    adminOptions,
+    ownerOptions
+  ]);
 
   useEffect(() => {
     if (contextMenuVisible) {
@@ -203,7 +210,7 @@ const UserContextMenu: React.FC<UserContextMenuProps> = ({
       contextMenuVisible={contextMenuVisible}
       setContextMenuVisible={setContextMenuVisible}
       position={position}
-      options={options}
+      options={menuOptions}
     />
   );
 };

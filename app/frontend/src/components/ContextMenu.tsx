@@ -56,50 +56,53 @@ const ContextMenu: React.FC<ContextMenuProps> = ({
         setContextMenuVisible(false);
       }}
     >
-      {options.map((option, index) => {
-        if (option.label === "---") {
-          return <Divider key={index} />;
-        }
+      {options
+        .filter((option) => option !== null)
+        .map((option, index) => {
+          if (option.label === "---") {
+            return <Divider key={index} />;
+          }
 
-        return (
-          <MenuItem
-            key={index}
-            onClick={(e) => {
-              if (option.submenu) {
-                e.stopPropagation();
-                setAnchorEl(anchorEl ? null : e.currentTarget);
-              } else if (option.onClick) {
-                e.stopPropagation();
-                option.onClick();
-              }
-            }}
-          >
-            {option.label}
-            {option.submenu && (
-              <Menu
-                open={Boolean(anchorEl)}
-                anchorEl={anchorEl}
-                onClose={() => setAnchorEl(null)}
-                anchorOrigin={{ vertical: "top", horizontal: "right" }}
-                transformOrigin={{ vertical: "top", horizontal: "left" }}
-              >
-                {option.submenu.map((submenuOption, submenuIndex) => (
-                  <MenuItem
-                    key={submenuIndex}
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      setAnchorEl(null);
-                      submenuOption.onClick && submenuOption.onClick();
-                    }}
-                  >
-                    {submenuOption.label}
-                  </MenuItem>
-                ))}
-              </Menu>
-            )}
-          </MenuItem>
-        );
-      })}
+          return (
+            <MenuItem
+              key={index}
+              onClick={(e) => {
+                if (option.submenu) {
+                  e.stopPropagation();
+                  e.preventDefault();
+                  setAnchorEl(anchorEl ? null : e.currentTarget);
+                } else if (option.onClick) {
+                  e.stopPropagation();
+                  option.onClick();
+                }
+              }}
+            >
+              {option.label}
+              {option.submenu && (
+                <Menu
+                  open={Boolean(anchorEl)}
+                  anchorEl={anchorEl}
+                  onClose={() => setAnchorEl(null)}
+                  anchorOrigin={{ vertical: "top", horizontal: "right" }}
+                  transformOrigin={{ vertical: "top", horizontal: "left" }}
+                >
+                  {option.submenu.map((submenuOption, submenuIndex) => (
+                    <MenuItem
+                      key={submenuIndex}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setAnchorEl(null);
+                        submenuOption.onClick && submenuOption.onClick();
+                      }}
+                    >
+                      {submenuOption.label}
+                    </MenuItem>
+                  ))}
+                </Menu>
+              )}
+            </MenuItem>
+          );
+        })}
     </Menu>
   );
 };
