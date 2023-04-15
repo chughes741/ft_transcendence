@@ -1,8 +1,3 @@
-export enum GameEvents {
-  JoinGameQueue = "joinGameQueue",
-  LeaveGameQueue = "leaveGameQueue",
-}
-
 export class Vec2 {
   x: number;
   y: number;
@@ -32,9 +27,9 @@ export class GameData {
   ball: BallData = new BallData();
   paddle_left: PaddleData = new PaddleData();
   paddle_right: PaddleData = new PaddleData();
-  player_left_ready: boolean;
-  player_right_ready: boolean;
   players_ready: number;
+  players: string[];
+  score: number[];
 }
 
 export class PlayerQueue {
@@ -44,9 +39,6 @@ export class PlayerQueue {
   socket_id: string;
 }
 
-/**
- * Players and spectators are both arrays of clientIDs
- */
 export class gameLobby {
   players: string[];
   ready: number[];
@@ -63,34 +55,4 @@ export class ClientGameStateUpdate {
   lobby_id: string;
   player_side: string;
   paddle_pos: number;
-}
-
-export class GameStateDto {
-  match_id: string;
-  player_side: string;
-  ball_pos: {
-    x: number;
-    y: number;
-  };
-  paddle_left_pos: number;
-  paddle_right_pos: number;
-}
-
-export class LobbyCreatedDto {
-  lobby_id: string;
-  player_side: string;
-}
-
-export class JoinGameQueueDto {
-  username: string;
-  join_time: number;
-}
-
-export class LeaveGameQueueDto {
-  username: string;
-}
-
-export class PlayerReadyDto {
-  lobby_id: string;
-  is_ready: boolean;
 }

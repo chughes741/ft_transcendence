@@ -9,11 +9,9 @@ import { Server, Socket } from "socket.io";
 import { GameService } from "./game.service";
 import { Logger } from "@nestjs/common";
 import { ClientGameStateUpdateRequest, LeaveGameQueueRequest, PlayerReadyRequest } from "kingpong-lib";
-import { ClientGameStateUpdate } from "./game.types";
 import { GameModuleData } from "./game.data";
 import { JoinGameQueueRequest, GameEvents } from "kingpong-lib";
 
-// import * as GameTypes from "./game.types";
 /** Create logger for module */
 const logger = new Logger("gameGateway");
 

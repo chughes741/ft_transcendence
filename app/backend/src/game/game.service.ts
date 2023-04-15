@@ -6,7 +6,6 @@ import { SchedulerRegistry } from "@nestjs/schedule";
 import { GameLogic } from "./game.logic";
 import { GameModuleData } from "./game.data";
 import * as GameTypes from "./game.types";
-// import * as GameDto from "./dto/game.dto";
 import { v4 as uuidv4 } from "uuid";
 import {
   JoinGameQueueRequest,
@@ -75,22 +74,18 @@ export class GameService {
     this.server.in(playerPair[0].socket_id).socketsJoin(newLobby.lobby_id);
     this.server.in(playerPair[1].socket_id).socketsJoin(newLobby.lobby_id);
 
-    //Add the game init here instead of elsewhere (need player side)
-    // if (Math.round(Math.random()) === 0) gameData.last_serve_side = "left";
-    // else gameData.last_serve_side = "right";
-
-    newLobby.gamestate = this.gameLogic.initNewGame();
+    //Init new game object
+    newLobby.gamestate = this.gameLogic.initNewGame(newLobby.players);
 
     //Add lobby to map of lobbies
     //TODO: Swap this to a setter function in the data module
     GameModuleData.lobbies.push(newLobby);
 
-    
     //Create payload
     const payload: LobbyCreatedEvent = {
       lobby_id: newLobby.lobby_id,
       opponent_name: newLobby.players[0] === player.username ?  newLobby.players[1] : newLobby.players[0],
-      player_side: "left"
+      player_side: newLobby.players[0] === player.username ?  "left" : "right",
     };
 
     //Emit lobbyCreated event to room members
@@ -116,7 +111,7 @@ export class GameService {
       //Create new queue member & add to queue array
       const newPlayer: GameTypes.PlayerQueue = {
         username: player.username,
-        join_time: 0,
+        join_time: 0, //should be player.join_time. type needs to be swapped to number in kingpong-lib
         // client_mmr: getClientMMR;
         socket_id: client.id
       };
@@ -193,13 +188,7 @@ export class GameService {
     if (!lobby) return;
     //Check if both players are ready
     if (lobby.gamestate.players_ready === 2) {
-      try {
-        this.schedulerRegistry.getInterval("gameUpdateInterval");
-        logger.log("Error creating gameUpdateInterval");
-      } catch {
-        logger.log("Started game successfully");
-        this.gameLogic.createGame(this.gameState);
-      }
+      this.gameLogic.gameStart(lobby);
     }
   }
 
@@ -208,6 +197,6 @@ export class GameService {
    */
   async clientUpdate(payload: ClientGameStateUpdateRequest) {
     //Find the correct match using match_id and update paddle pos
-    // this.gameModuleData.setPaddlePosition(payload);
+    this.gameModuleData.setPaddlePosition(payload);
   }
 }

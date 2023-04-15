@@ -1,6 +1,6 @@
 import * as GameTypes from "./game.types";
 import { Logger } from "@nestjs/common";
-import {PlayerReadyRequest} from "kingpong-lib";
+import {PlayerReadyRequest, ClientGameStateUpdateRequest} from "kingpong-lib";
 const logger = new Logger("gameData");
 
 /**
@@ -87,15 +87,15 @@ export class GameModuleData {
   /**
    *
    */
-  setPaddlePosition(payload: GameTypes.ClientGameStateUpdate) {
+  setPaddlePosition(payload: ClientGameStateUpdateRequest) {
     //Find correct match
     GameModuleData.lobbies.forEach((element) => {
       //If match_id is found then update paddle pos
       if (element.match_id === payload.match_id) {
-        if (payload.player_side === "left") {
-          element.gamestate.paddle_left.pos.y = payload.paddle_pos;
+        if (payload.username === element.players[0]) {
+          element.gamestate.paddle_left.pos.y = payload.paddle_position;
         } else {
-          element.gamestate.paddle_right.pos.y = payload.paddle_pos;
+          element.gamestate.paddle_right.pos.y = payload.paddle_position;
         }
       }
     });

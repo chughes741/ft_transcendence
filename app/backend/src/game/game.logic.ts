@@ -5,8 +5,13 @@ import { GameConfig, PaddleConfig, BallConfig } from "./config/game.config";
 import { WebSocketServer, WebSocketGateway } from "@nestjs/websockets";
 import { Server } from "socket.io";
 import * as vec2 from "gl-vec2";
-import { GameData, BallData } from "./game.types";
+import { GameData, BallData, gameLobby } from "./game.types";
 import { degToRad } from "./game.utils";
+import {
+  ServerGameStateUpdateEvent,
+  GameEvents,
+  GameState
+} from "kingpong-lib";
 const logger = new Logger("gameLogic");
 
 @WebSocketGateway({
@@ -21,23 +26,79 @@ export class GameLogic {
   @WebSocketServer()
   public server: Server;
 
-  //Create a new game instance
-  async createGame(gameState: GameData) {
-    //Create new gameData object
-    gameState = this.initNewGame();
-    logger.log("New game object created");
+  /*************************************************************************************/
+  /**                                   Game Setup                                    **/
+  /*************************************************************************************/
 
-    //Add new interval to scheduler
-    this.addGameUpdateInterval(
-      "gameUpdateInterval",
-      GameConfig.serverUpdateRate
+  //Initialize new game
+  initNewGame(players: string[]): GameData {
+    const gameData: GameData = new GameData();
+
+    //Setup general game properties
+    gameData.is_new_round = true;
+    gameData.bounds.width = GameConfig.playAreaWidth;
+    gameData.bounds.height = GameConfig.playAreaHeight;
+    gameData.players_ready = 0;
+    gameData.players = [];
+    gameData.players[0] = players[0];
+    gameData.players[1] = players[1];
+
+    //Randomize serve side for initial serve
+    if (Math.round(Math.random()) === 0) gameData.last_serve_side = "left";
+    else gameData.last_serve_side = "right";
+
+    //Setup initial paddle state
+    gameData.paddle_left.pos.y = 0;
+    gameData.paddle_left.pos.x = -(
+      GameConfig.playAreaWidth / 2 -
+      PaddleConfig.borderOffset
     );
+    gameData.paddle_right.pos.y = 0;
+    gameData.paddle_right.pos.x =
+      GameConfig.playAreaWidth / 2 - PaddleConfig.borderOffset;
+
+    return gameData;
   }
 
+  //Create a new game instance
+  async gameStart(lobby: gameLobby) {
+    //Add new interval to scheduler
+
+    try {
+      this.schedulerRegistry.getInterval("gameUpdateInterval" + lobby.lobby_id);
+      logger.log("Error creating gameUpdateInterval");
+    } catch {
+      this.addGameUpdateInterval(
+        lobby,
+        "gameUpdateInterval" + lobby.lobby_id,
+        GameConfig.serverUpdateRate
+      );
+    }
+   
+  }
+
+  /*************************************************************************************/
+  /**                                 Gameplay Logic                                  **/
+  /*************************************************************************************/
+
   //Calculate game state and send server update
-  async sendServerUpdate(gameState: GameData) {
-    gameState = this.calculateGameState(gameState);
-    this.server.emit("serverUpdate", gameState);
+  async sendServerUpdate(lobby: gameLobby) {
+    lobby.gamestate = this.calculateGameState(lobby.gamestate);
+
+    //Build payload
+    const gamestate: GameState = {
+      ball_x: lobby.gamestate.ball.pos.x,
+      ball_y: lobby.gamestate.ball.pos.y,
+      paddle_left_y: lobby.gamestate.paddle_left.pos.y,
+      paddle_right_y: lobby.gamestate.paddle_right.pos.y,
+      score_left: lobby.gamestate.score[0],
+      score_right: lobby.gamestate.score[1]
+    };
+
+    //Send update to lobby websocket room
+    this.server
+      .to(lobby.lobby_id)
+      .emit(GameEvents.ServerGameStateUpdate, { gamestate });
   }
 
   //Calculate game state and return gamestate object
@@ -89,35 +150,6 @@ export class GameLogic {
     return cur;
   }
 
-  //Initialize new game
-  initNewGame(): GameData {
-    const gameData: GameData = new GameData();
-
-    //Setup general game properties
-    gameData.is_new_round = true;
-    gameData.bounds.width = GameConfig.playAreaWidth;
-    gameData.bounds.height = GameConfig.playAreaHeight;
-    // gameData.player_left_ready = false;
-    // gameData.player_right_ready = false;
-    gameData.players_ready = 0;
-
-    //Randomize serve side for initial serve
-    if (Math.round(Math.random()) === 0) gameData.last_serve_side = "left";
-    else gameData.last_serve_side = "right";
-
-    //Setup initial paddle state
-    gameData.paddle_left.pos.y = 0;
-    gameData.paddle_left.pos.x = -(
-      GameConfig.playAreaWidth / 2 -
-      PaddleConfig.borderOffset
-    );
-    gameData.paddle_right.pos.y = 0;
-    gameData.paddle_right.pos.x =
-      GameConfig.playAreaWidth / 2 - PaddleConfig.borderOffset;
-
-    return gameData;
-  }
-
   //Get a new random ball direction and velocity
   getRandomBallDirection(gameData: GameData): BallData {
     const ballData: BallData = new BallData();
@@ -155,8 +187,16 @@ export class GameLogic {
     return ballData;
   }
 
+  /*************************************************************************************/
+  /**                           Interval Management                                   **/
+  /*************************************************************************************/
+
   //Add new gameUpdateInterval
-  async addGameUpdateInterval(name: string, milliseconds: number) {
+  async addGameUpdateInterval(
+    lobby: gameLobby,
+    name: string,
+    milliseconds: number
+  ) {
     //Set callback function to gamestate
     const interval = setInterval(
       this.sendServerUpdate.bind(this),
