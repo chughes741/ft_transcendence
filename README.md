@@ -20,7 +20,7 @@ Your work has to comply with the following rules:
 - [x] Your website must be a [single-page application](https://en.wikipedia.org/wiki/Single-page_application). The user should be able to use the `Back` and `Forward` buttons of the browser.
 - [x] Your website must be compatible with the **latest stable up-to-date version** of *Google Chrome* and one additional web browser of your choice.
 - [ ] The user should encounter no unhandled errors and no warnings when browsing the website.
-- [ ] Everything has to be launched by a single call to: `docker-compose up --build`
+- [x] Everything has to be launched by a single call to: `docker-compose up --build`
 
 > When your computers in clusters run under Linux, you will use Docker in rootless mode for security reasons. This comes with 2 sideways: 1) your Docker runtime files must be located in /goinfre or /sgoinfre. 2) you can’t use so called “bind-mount volumes” between the host and the container if non-root UIDs are used in the container. Depending on the project, your situation and the context, several fallbacks exist: Docker in a VM, rebuild you container after your changes, craft your own docker image with root as unique UID.
 
@@ -36,7 +36,7 @@ have to tackle:
 > For obvious security reasons, any credentials, API keys, env variables etc... must be saved locally in a .env file and ignored by git. Publicly stored credentials will lead you directly to a failure of the project.
 
 ## II.3 User Account
-- [ ] The user must login using the `OAuth` system of 42 intranet.
+- [x] The user must login using the `OAuth` system of 42 intranet.
 - [ ] The user should be able to choose a unique name that will be displayed on the website.
 - [x] The user should be able to upload an avatar. If the user doesn’t upload an avatar, a default one must be set.
 - [ ] The user should be able to enable **two-factor authentication**. For instance, *Google Authenticator* or sending a text message to their phone.

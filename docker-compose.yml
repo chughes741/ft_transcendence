@@ -1,20 +1,7 @@
 services:
-  # load-balancer:
-  # container_name: nginx
-  # build: load-balancer/
-  # ports:
-  # - "443:443"
-  # networks:
-  # - frontend
-  # restart: unless-stopped
-  # depends_on:
-  # - app
-
   app:
     container_name: app
-    build:
-      context: app/
-      target: production
+    build: app/
     ports:
       - '80:3000'
     networks:
