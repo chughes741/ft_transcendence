@@ -128,7 +128,7 @@ export const ChatViewModelProvider = ({ children }) => {
           console.log(`Logged in user ${req.username} successfully!`);
           console.log("Success response from user login: ");
           console.log(response);
-          setTempUsername(req.username);
+          self.username = req.username;
           joinRoom("PublicRoom", "secret");
           joinRoom("PrivateRoom", "secret");
           joinRoom("PasswordProtectedRoom", "secret");
@@ -150,7 +150,7 @@ export const ChatViewModelProvider = ({ children }) => {
           resolve(false);
           // Try to log in instead
         } else {
-          setTempUsername(req.username);
+          self.username = req.username;
           setRooms(null);
           console.log(`Created user ${req.username} successfully!`);
 

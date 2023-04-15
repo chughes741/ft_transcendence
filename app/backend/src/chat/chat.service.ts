@@ -112,6 +112,63 @@ export class ChatService {
     }
   }
 
+  private isPast(date: Date): boolean {
+    const now = new Date();
+    return date.getTime() < now.getTime();
+  }
+
+  private async handleRoomCreation(
+    roomName: string,
+    user: string
+  ): Promise<ChatRoom> {
+    const createRoomReq: CreateChatRoomDto = {
+      name: roomName,
+      status: ChatRoomStatus.PUBLIC,
+      password: null,
+      owner: user
+    };
+
+    try {
+      const room = await this.prismaService.createChatRoom(createRoomReq);
+      return room;
+    } catch (e) {
+      logger.error(`Error creating room ${roomName}`, e);
+      throw Error(`Error creating room ${roomName}`);
+    }
+  }
+
+  private async handlePasswordVerification(
+    room: ChatRoom,
+    password: string
+  ): Promise<void> {
+    if (room.status === ChatRoomStatus.PASSWORD) {
+      const isPasswordCorrect = await argon2.verify(room.password, password);
+      if (!isPasswordCorrect) {
+        throw Error("Incorrect password");
+      }
+    }
+  }
+
+  private async handleChatMember(
+    user: string,
+    roomId: number
+  ): Promise<ChatMember> {
+    const userId = await this.prismaService.getUserIdByNick(user);
+    let chatMember = await this.prismaService.chatMember.findFirst({
+      where: { memberId: userId, roomId: roomId }
+    });
+
+    if (!chatMember) {
+      chatMember = await this.prismaService.addChatMember(
+        userId,
+        roomId,
+        ChatMemberRank.USER
+      );
+    }
+
+    return chatMember;
+  }
+
   /**
    * Join a chat room
    *
@@ -125,68 +182,38 @@ export class ChatService {
   async joinRoom(joinDto: JoinRoomDto): Promise<ChatRoomEntity | Error> {
     const { roomName, password, user } = joinDto;
     let room: ChatRoom;
-    const createRoomReq: CreateChatRoomDto = {
-      name: roomName,
-      status: ChatRoomStatus.PUBLIC,
-      password: null,
-      owner: user
-    };
-    const addRoom = async () => {
-      logger.warn(`Room ${roomName} does not exist, creating it`);
-      try {
-        room = await this.prismaService.createChatRoom(createRoomReq);
-      } catch (e) {
-        logger.error(`Error creating room ${roomName}`, e);
-        return Error(`Error creating room ${roomName}`);
-      }
-    };
 
     try {
       room = await this.prismaService.chatRoom.findUnique({
         where: { name: roomName }
       });
+
       if (!room) {
-        logger.warn(`Room ${roomName} does not exist, creating it`);
-        await addRoom();
-      } else {
-        logger.log(`Room ${roomName} exists, joining it`);
+        room = await this.handleRoomCreation(roomName, user);
       }
     } catch (e) {
-      // FIXME: Remove this behaviour after development is complete
-      logger.error(
-        `Error finding room ${roomName}: ${e.message}, attempting to create it`
-      );
-      await addRoom();
+      room = await this.handleRoomCreation(roomName, user);
     }
 
     try {
-      logger.warn(`Room status:`);
-      logger.warn(room.status);
-
-      if (room.status === ChatRoomStatus.PASSWORD) {
-        const isPasswordCorrect = await argon2.verify(room.password, password);
-        if (!isPasswordCorrect) {
-          return Error("Incorrect password");
-        }
-        await !argon2.verify(room.password, password);
-      }
+      await this.handlePasswordVerification(room, password);
     } catch (e) {
       logger.error(`Error verifying password for room ${roomName}`, e);
       return Error(`Error verifying password for room ${roomName}`);
     }
 
-    // Add the user as a chat member if they are not already a member
-    const userId = await this.prismaService.getUserIdByNick(user);
-    // This should really be a findUnique, but I can't figure out how to make it work
-    let chatMember = await this.prismaService.chatMember.findFirst({
-      where: { memberId: userId, roomId: room.id }
-    });
-    if (!chatMember) {
-      chatMember = await this.prismaService.addChatMember(
-        userId,
-        room.id,
-        ChatMemberRank.USER
-      );
+    let chatMember: ChatMember;
+
+    try {
+      chatMember = await this.handleChatMember(user, room.id);
+
+      // Check if the user is banned and the ban has not expired
+      if (chatMember.endOfBan && !this.isPast(chatMember.endOfBan)) {
+        throw Error("You are banned from this room.");
+      }
+    } catch (e) {
+      logger.error(`Error handling chat member for room ${roomName}`, e);
+      return Error(e.message);
     }
 
     return this.getChatRoomEntity(room, chatMember.rank);
