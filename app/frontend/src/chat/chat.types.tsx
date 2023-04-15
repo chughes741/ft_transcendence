@@ -115,3 +115,13 @@ export interface AuthRequest {
   lastName?: string;
   email?: string;
 }
+
+export class UpdateChatMemberRequest {
+  queryingUser: string;
+  usernameToUpdate: string;
+  roomName: string;
+  status: ChatMemberStatus;
+  queryingMemberRank: ChatMemberRank;
+  memberToUpdateRank: ChatMemberRank;
+  duration?: number;
+}

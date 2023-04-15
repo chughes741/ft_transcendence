@@ -105,7 +105,10 @@ const UserContextMenu: React.FC<UserContextMenuProps> = ({
 
   let ownerOptions = [];
 
-  if (ownRank === ChatMemberRank.OWNER) {
+  if (
+    ownRank === ChatMemberRank.OWNER &&
+    contextMenuData.rank !== ChatMemberRank.OWNER
+  ) {
     ownerOptions = [
       { label: "---" },
       contextMenuData.rank === ChatMemberRank.ADMIN

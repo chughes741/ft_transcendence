@@ -17,7 +17,7 @@ import { Message } from "@prisma/client";
 import { ChatMember } from "@prisma/client";
 import { ChatMemberEntity, MessageEntity } from "./entities/message.entity";
 import { ChatMemberStatus, UserStatus } from "@prisma/client";
-import { kickMemberDto, updateChatMemberStatusDto } from "./dto/userlist.dto";
+import { kickMemberDto, UpdateChatMemberRequest } from "./dto/userlist.dto";
 import { AuthRequest } from "../auth/dto";
 
 // FIXME: temporary error type until we can share btw back and frontend
@@ -599,15 +599,20 @@ export class ChatGateway
   @SubscribeMessage("updateChatMemberStatus")
   async updateChatMemberStatus(
     client: Socket,
-    data: updateChatMemberStatusDto
+    req: UpdateChatMemberRequest
   ): Promise<string> {
+    logger.log(
+      `Received updateChatMemberStatus request from ${req.queryingUser} for ${req.usernameToUpdate}  in room ${req.roomName}`
+    );
+    console.log(req);
+
     try {
-      const chatMember = await this.chatService.updateMemberStatus(data);
+      const chatMember = await this.chatService.updateMemberStatus(req);
       if (chatMember.status === "BANNED") {
         // TODO: implement this
         // Return this.kickChatMember, but with a different DTO
       }
-      this.listUsers(client, { chatRoomName: data.forRoomName });
+      this.listUsers(client, { chatRoomName: req.roomName });
       // TODO: implement a listener on the client side to handle this event
       //this.server.to(data.roomName).emit('chatMemberUpdated', chatMember);
 
@@ -618,19 +623,17 @@ export class ChatGateway
   }
 
   @SubscribeMessage("kickChatMember")
-  async kickChatMember(client: Socket, data: kickMemberDto): Promise<string> {
+  async kickChatMember(client: Socket, req: kickMemberDto): Promise<string> {
     try {
-      const response = await this.chatService.kickMember(data);
+      const response = await this.chatService.kickMember(req);
       if (
         response ===
-        "Chat Member " +
-          data.ChatMemberToKickName +
-          " kicked out successfully !"
+        "Chat Member " + req.ChatMemberToKickName + " kicked out successfully !"
       ) {
         const list: ChatMemberEntity[] = await this.chatService.getUserList(
-          data.roomName
+          req.roomName
         );
-        this.server.to(data.roomName).emit("userList", list);
+        this.server.to(req.roomName).emit("userList", list);
       }
       return response;
     } catch (error) {

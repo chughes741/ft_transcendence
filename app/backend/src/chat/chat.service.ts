@@ -21,7 +21,7 @@ import {
   UpdateChatRoomRequest
 } from "./chat.gateway";
 import { MessageEntity } from "./entities/message.entity";
-import { kickMemberDto, updateChatMemberStatusDto } from "./dto/userlist.dto";
+import { kickMemberDto, UpdateChatMemberRequest } from "./dto/userlist.dto";
 import { ChatMemberEntity } from "./entities/message.entity";
 import { AuthRequest, UserEntity } from "../auth/dto";
 
@@ -436,15 +436,15 @@ export class ChatService {
    * @returns ChatMember - The updated ChatMember object
    */
   async updateMemberStatus(
-    updateDto: updateChatMemberStatusDto
+    updateDto: UpdateChatMemberRequest
   ): Promise<ChatMember> {
     try {
       if (
-        updateDto.memberToUpdateRANK === ChatMemberRank.OWNER ||
-        updateDto.memberRequestRank === ChatMemberRank.USER
+        updateDto.memberToUpdateRank === ChatMemberRank.OWNER ||
+        updateDto.queryingMemberRank === ChatMemberRank.USER
       ) {
         const error =
-          updateDto.memberRequestRank === ChatMemberRank.USER
+          updateDto.queryingMemberRank === ChatMemberRank.USER
             ? "Wrong rank: Can't request operation"
             : "Wrong rank: Can't update owner";
         logger.error("Error updating chat member status", error);

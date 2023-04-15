@@ -8,11 +8,17 @@ import {
 } from "@mui/material";
 import GroupIcon from "@mui/icons-material/Group";
 import UserContextMenu from "./UserListContextMenu";
-import { UserListItem } from "../chat.types";
+import {
+  ChatMemberRank,
+  ChatMemberStatus,
+  UpdateChatMemberRequest,
+  UserListItem
+} from "../chat.types";
 import { useChatContext } from "../chat.context";
 import { useProfileViewModelContext } from "../../profile/profile.viewModel";
 import { useRootViewModelContext } from "../../root.context";
 import { PageState } from "../../root.model";
+import { socket } from "../../contexts/WebSocket.context";
 
 export interface UserListProps {
   userList: { [key: string]: UserListItem };
@@ -21,6 +27,7 @@ export interface UserListProps {
 
 export default function UserListView({ userList, handleClick }: UserListProps) {
   const {
+    currentRoomName,
     contextMenuUsersPosition,
     contextMenuUsersVisible,
     contextMenuUsersData,
@@ -63,11 +70,43 @@ export default function UserListView({ userList, handleClick }: UserListProps) {
   };
 
   const onPromoteToAdmin = () => {
+    // emit a "updateChatMemberStatus" event to the server, with the username and the new rank
+    const req: UpdateChatMemberRequest = {
+      queryingUser: self.username,
+      usernameToUpdate: contextMenuUsersData.username,
+      roomName: currentRoomName,
+      status: ChatMemberStatus.OK,
+      queryingMemberRank: ChatMemberRank.ADMIN,
+      memberToUpdateRank: ChatMemberRank.ADMIN,
+      duration: 0
+    };
+    console.log(req);
+
+    socket.emit("updateChatMemberStatus", req, (res: any) => {
+      console.log(res);
+    });
+    setContextMenuUsersVisible(false);
     console.log("Promote to Admin");
   };
 
   const onDemoteToUser = () => {
-    console.log("Demote to User");
+    // emit a "updateChatMemberStatus" event to the server, with the username and the new rank
+    const req: UpdateChatMemberRequest = {
+      queryingUser: self.username,
+      usernameToUpdate: contextMenuUsersData.username,
+      roomName: currentRoomName,
+      status: ChatMemberStatus.OK,
+      queryingMemberRank: ChatMemberRank.ADMIN,
+      memberToUpdateRank: ChatMemberRank.USER,
+      duration: 0
+    };
+    console.log(req);
+
+    socket.emit("updateChatMemberStatus", req, (res: any) => {
+      console.log(res);
+    });
+    setContextMenuUsersVisible(false);
+    console.log("Promote to Admin");
   };
 
   // Find your own rank by looking for your username in the userlist
