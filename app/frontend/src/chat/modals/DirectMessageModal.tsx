@@ -90,7 +90,7 @@ export const DirectMessageModal: React.FC<DirectMessageModalProps> = ({
         }
       }}
     >
-      <DialogTitle alignContent={"center"}>Send Direct Message</DialogTitle>
+      <DialogTitle alignContent={"center"}>Send DM</DialogTitle>
       <DialogContent>
         <Autocomplete
           id="user-autocomplete"

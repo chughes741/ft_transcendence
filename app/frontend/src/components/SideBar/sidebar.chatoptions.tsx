@@ -30,19 +30,19 @@ export default function SidebarChatOptions() {
       <ButtonFunky
         icon={<Chat />}
         content="Message a friend"
-        width={"95%"}
+        width={"100%"}
         onClick={() => setShowDirectMessageModal(true)}
       />
       <ButtonFunky
         icon={<AddCircleOutline />}
         content="Create a room"
-        width={"95%"}
+        width={"100%"}
         onClick={() => setShowCreateRoomModal(true)}
       />
       <ButtonFunky
         icon={<IoEnterOutline />}
         content="Join a room"
-        width={"95%"}
+        width={"100%"}
         onClick={() => setShowJoinRoomModal(true)}
       />
     </List>

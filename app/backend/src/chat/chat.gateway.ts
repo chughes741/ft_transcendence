@@ -495,21 +495,28 @@ export class ChatGateway
     client: Socket,
     req: LeaveRoomRequest
   ): Promise<DevError | string> {
+    logger.warn(`Received leaveRoom request from ${client.id}`);
+    console.log(req);
     const clientId = this.userConnectionsService.getUserBySocket(client.id);
     if (!clientId) {
       logger.error(`User ${client.id} not found`);
       return { error: "User not found" };
     }
-    const user = await this.prismaService.user.findUnique({
-      where: { username: clientId }
-    });
-    req.username = user.username;
-    const ret = await this.chatService.leaveRoom(req);
-    if (ret instanceof Error) return { error: ret.message };
-    client.leave(req.roomName);
-    this.server.to(req.roomName).emit("chatRoomMemberLeft", req);
-    logger.log(`User ${client.id} left room ${req.roomName}`);
-    return req.roomName;
+    try {
+      const user = await this.prismaService.user.findUnique({
+        where: { username: clientId }
+      });
+      req.username = user.username;
+      const ret = await this.chatService.leaveRoom(req);
+      if (ret instanceof Error) return { error: ret.message };
+      client.leave(req.roomName);
+      this.server.to(req.roomName).emit("chatRoomMemberLeft", req);
+      logger.log(`User ${client.id} left room ${req.roomName}`);
+      return req.roomName;
+    } catch (e) {
+      logger.error(`User ${clientId} not found`);
+      return { error: e.message };
+    }
   }
 
   /**

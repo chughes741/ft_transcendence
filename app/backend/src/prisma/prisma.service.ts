@@ -510,41 +510,47 @@ export class PrismaService extends PrismaClient {
    * @returns {Promise<Friend>}
    */
   async addFriend(addFriendRequest: AddFriendRequest): Promise<boolean> {
-    return await this.$transaction(async () => {
-      logger.log(addFriendRequest.username);
-
-      const userUpdated = await this.user.update({
-        where: { username: addFriendRequest.username },
-        data: {
-          friends: {
-            create: {
-              friend: {
-                connect: { username: addFriendRequest.friend }
+    logger.log(
+      `Adding friend ${addFriendRequest.friend} to ${addFriendRequest.username}`
+    );
+    try {
+      return await this.$transaction(async () => {
+        const userUpdated = await this.user.update({
+          where: { username: addFriendRequest.username },
+          data: {
+            friends: {
+              create: {
+                friend: {
+                  connect: { username: addFriendRequest.friend }
+                }
               }
             }
           }
-        }
-      });
+        });
 
-      const friendUpdated = await this.user.update({
-        where: { username: addFriendRequest.friend },
-        data: {
-          friends: {
-            create: {
-              friend: {
-                connect: { username: addFriendRequest.username }
+        const friendUpdated = await this.user.update({
+          where: { username: addFriendRequest.friend },
+          data: {
+            friends: {
+              create: {
+                friend: {
+                  connect: { username: addFriendRequest.username }
+                }
               }
             }
           }
+        });
+
+        if (userUpdated && friendUpdated) {
+          return true;
+        } else {
+          return false;
         }
       });
-
-      if (userUpdated && friendUpdated) {
-        return true;
-      } else {
-        return false;
-      }
-    });
+    } catch (error) {
+      logger.log(error);
+      return false;
+    }
   }
 
   /**

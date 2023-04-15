@@ -4,7 +4,12 @@ import { PageState } from "src/root.model";
 import { ChatModelType, useChatModel } from "./chat.model";
 import { ChatContext } from "src/chat/chat.context";
 import { useRootViewModelContext } from "../root.context";
-import { DevError, ChatRoomStatus, AuthRequest } from "./chat.types";
+import {
+  DevError,
+  ChatRoomStatus,
+  AuthRequest,
+  LeaveRoomRequest
+} from "./chat.types";
 import {
   handleChatRoomMemberLeftCreator,
   handleChatRoomMemberKickedCreator,
@@ -24,7 +29,7 @@ export interface ChatViewModelType extends ChatModelType {
     roomStatus: ChatRoomStatus,
     password: string
   ) => Promise<boolean>;
-  leaveRoom: () => Promise<boolean>;
+  leaveRoom: () => void;
   changeRoomStatus: (newStatus: ChatRoomStatus) => Promise<boolean>;
   selectRoom: (roomName: string) => void;
 }
@@ -60,7 +65,6 @@ export const ChatViewModelProvider = ({ children }) => {
     handleJoinRoom: joinRoom,
     handleSendRoomMessage: sendRoomMessage,
     handleCreateNewRoom: createNewRoom,
-    handleLeaveRoom: leaveRoom,
     handleChangeRoomStatus
   } = useRoomManager();
 
@@ -109,6 +113,33 @@ export const ChatViewModelProvider = ({ children }) => {
         return false;
     }
     return true;
+  };
+
+  const leaveRoom = async (): Promise<boolean> => {
+    const roomName = contextMenuData.name;
+
+    console.log("Leaving room: ", roomName);
+
+    return new Promise<boolean>((resolve) => {
+      setContextMenuRoomsVisible(false);
+      const req: LeaveRoomRequest = {
+        roomName: roomName,
+        username: self.username
+      };
+      console.log("Leaving room: ", req);
+      socket.emit("leaveRoom", req, (response: DevError | string) => {
+        if (handleSocketErrorResponse(response)) {
+          console.log("Error response from leave room: ", response.error);
+          resolve(false);
+        }
+      });
+      setRooms((prevRooms) => {
+        const newRooms = { ...prevRooms };
+        delete newRooms[roomName];
+        return newRooms;
+      });
+      resolve(true);
+    });
   };
 
   /**********************/

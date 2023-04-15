@@ -220,21 +220,26 @@ export class ChatService {
   }
 
   async leaveRoom(req: LeaveRoomRequest): Promise<ChatMember | Error> {
-    const userId = await this.prismaService.getUserIdByNick(req.username);
-    logger.log(`User ${req.username} is leaving room ${req.roomName}`);
-    const roomId = await this.prismaService.getChatRoomId(req.roomName);
-    if (!roomId) {
-      return Error("Room not found");
+    try {
+      const userId = await this.prismaService.getUserIdByNick(req.username);
+      logger.log(`User ${req.username} is leaving room ${req.roomName}`);
+      const roomId = await this.prismaService.getChatRoomId(req.roomName);
+      if (!roomId) {
+        return Error("Room not found");
+      }
+      const chatMember = await this.prismaService.chatMember.findFirst({
+        where: { memberId: userId, roomId: roomId }
+      });
+      if (!chatMember) {
+        return Error("User is not a member of this room");
+      }
+      return this.prismaService.chatMember.delete({
+        where: { id: chatMember.id }
+      });
+    } catch (e) {
+      logger.error("Error leaving room", e);
+      return Error("Error leaving room: " + e.message);
     }
-    const chatMember = await this.prismaService.chatMember.findFirst({
-      where: { memberId: userId, roomId: roomId }
-    });
-    if (!chatMember) {
-      return Error("User is not a member of this room");
-    }
-    return this.prismaService.chatMember.delete({
-      where: { id: chatMember.id }
-    });
   }
 
   /**

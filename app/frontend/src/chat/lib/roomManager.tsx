@@ -13,6 +13,7 @@ import {
 } from "../chat.types";
 import { handleSocketErrorResponse } from "./helperFunctions";
 import { useRootViewModelContext } from "../../root.context";
+import { LeaveRoomRequest } from "../chat.types";
 
 const RoomManagerContext = createContext(null);
 export type RoomMap = { [key: string]: RoomType };
@@ -30,7 +31,6 @@ export interface RoomManagerContextType {
     roomStatus: ChatRoomStatus,
     password: string
   ) => Promise<boolean>;
-  handleLeaveRoom: () => Promise<boolean>;
   handleChangeRoomStatus: (
     roomName: string,
     newStatus: ChatRoomStatus,
@@ -281,23 +281,6 @@ export const RoomManagerProvider = ({ children }) => {
     return true;
   };
 
-  const handleLeaveRoom = async (roomName: string): Promise<boolean> => {
-    return new Promise<boolean>((resolve) => {
-      socket.emit("leaveRoom", { roomName }, (response: DevError | string) => {
-        if (handleSocketErrorResponse(response)) {
-          console.log("Error response from leave room: ", response.error);
-          resolve(false);
-        }
-      });
-      setRooms((prevRooms) => {
-        const newRooms = { ...prevRooms };
-        delete newRooms[roomName];
-        return newRooms;
-      });
-      resolve(true);
-    });
-  };
-
   const handleSendRoomMessage = async (
     roomName: string,
     message: string
@@ -374,7 +357,6 @@ export const RoomManagerProvider = ({ children }) => {
         handleJoinRoom,
         handleSendRoomMessage,
         handleCreateNewRoom,
-        handleLeaveRoom,
         handleChangeRoomStatus
       }}
     >
