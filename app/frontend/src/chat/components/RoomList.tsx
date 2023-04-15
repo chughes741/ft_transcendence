@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect } from "react";
+import React, { useEffect } from "react";
 import "src/styles/chat/RoomList.css";
 import { CreateRoomModal } from "../modals/CreateRoomModal";
 import { Box, List } from "@mui/material";
@@ -17,8 +17,6 @@ import { JoinRoomModal } from "../modals/JoinRoomModal";
 import { handleSocketErrorResponse } from "../lib/helperFunctions";
 import { DevError, ListUsersRequest } from "../chat.types";
 import { RoomPasswordModal } from "../modals/RoomPasswordModal";
-import { ChooseUsernameModal } from "../../components/ChooseUsernameModal";
-import { useRootViewModelContext } from "../../root.context";
 
 const RoomList: React.FC = () => {
   const { rooms } = useRoomManager();

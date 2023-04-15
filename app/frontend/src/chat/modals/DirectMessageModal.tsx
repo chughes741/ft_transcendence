@@ -16,6 +16,8 @@ import { UserStatus } from "kingpong-lib";
 import { useChatContext } from "../chat.context";
 import UserStatusBadge from "../../components/UserStatusBadge";
 import { ListUsersRequest } from "../chat.types";
+import ButtonFunky from "../../components/ButtonFunky";
+import { Chat } from "@mui/icons-material";
 
 interface UserEntity {
   username: string;
@@ -132,12 +134,12 @@ export const DirectMessageModal: React.FC<DirectMessageModalProps> = ({
         >
           Cancel
         </Button>
-        <Button
+        <ButtonFunky
+          icon={<Chat />}
           onClick={handleSendDirectMessage}
-          color="primary"
-        >
-          Send
-        </Button>
+          content={"Send Direct Message"}
+          width={"50%"}
+        />
       </DialogActions>
     </Dialog>
   );

@@ -90,28 +90,6 @@ export const ChatViewModelProvider = ({ children }) => {
     setPageState(PageState.Chat);
   };
 
-  /***************************/
-  /*   User List Functions   */
-  /***************************/
-  const changeChatMemberStatus = (
-    username: string,
-    status: string,
-    duration?: number
-  ) => {
-    socket.emit(
-      "updateChatMemberStatus",
-      {
-        username,
-        status,
-        duration
-      },
-      (response: DevError | string) => {
-        if (handleSocketErrorResponse(response))
-          alert("Error changing chat member status: " + response);
-      }
-    );
-  };
-
   /**********************/
   /*   Room Functions   */
   /**********************/

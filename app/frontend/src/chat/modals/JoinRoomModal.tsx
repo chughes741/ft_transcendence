@@ -23,6 +23,7 @@ import { useChatContext } from "../chat.context";
 import { Public, VpnKey } from "@mui/icons-material";
 import UserStatusBadge from "../../components/UserStatusBadge";
 import { ChatRoomStatus } from "../chat.types";
+import { IoEnterOutline } from "react-icons/io5";
 
 interface JoinRoomModalProps {
   showModal: boolean;
@@ -205,6 +206,7 @@ export const JoinRoomModal: React.FC<JoinRoomModalProps> = ({
           Cancel
         </Button>
         <ButtonFunky
+          icon={<IoEnterOutline />}
           onClick={handleSubmit}
           content="Join Room"
           width="50%"

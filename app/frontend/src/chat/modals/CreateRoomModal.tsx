@@ -26,6 +26,7 @@ import ButtonFunky from "../../components/ButtonFunky";
 import "src/styles/chat/ChatPage.css";
 import { useRoomModal } from "./useRoomModal";
 import { ChatRoomStatus } from "../chat.types";
+import { AddCircleOutline, Chat } from "@mui/icons-material";
 
 interface CreateRoomModalProps {
   showModal: boolean;
@@ -101,7 +102,6 @@ export const CreateRoomModal: React.FC<CreateRoomModalProps> = ({
     >
       <DialogTitle alignContent={"center"}>Create New Chat Room</DialogTitle>
       <DialogContent
-        // FIXME: add to global theme as dialogContent
         sx={{
           "& > *:not(:last-child)": {
             marginBottom: 2
@@ -166,6 +166,7 @@ export const CreateRoomModal: React.FC<CreateRoomModalProps> = ({
           Cancel
         </Button>
         <ButtonFunky
+          icon={<AddCircleOutline />}
           onClick={handleSubmit}
           content="Create Room"
           width="50%"

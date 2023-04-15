@@ -12,7 +12,7 @@
   position: relative;
   display: flex;
   padding: 0.5rem 1rem;
-  margin: 1rem 0;
+  margin: 0.5rem 0;
   justify-content: center;
   align-items: center;
   align-self: center;
@@ -20,11 +20,11 @@
 }
 
 .button-funky:before {
-  background: linear-gradient(130deg,
+  background: linear-gradient(150deg,
       transparent 0% 33%,
       var(--g1) 66%,
       var(--g2) 83.5%,
-      var(--g3) 100%) 66% 66%;
+      var(--g3) 100%) 30% 30%;
   background-size: 300% 300%;
   border-radius: 2rem;
   content: "";
@@ -80,10 +80,16 @@
   font-weight: 400;
   margin: 0;
   transition: 600ms ease;
+  align-content: center;
+  align-items: center;
+  align-self: center;
+  justify-content: center;
+  justify-items: center;
+  justify-self: center;
   text-align: center;
   z-index: 3;
   padding: 8px 20px;
   width: 100%;
   height: 100%;
-  translate: -5%;
+  translate: -8%;
 }
