@@ -50,7 +50,9 @@ export default function UserListView({ userList, handleClick }: UserListProps) {
       if (b.rank === "OWNER") return 1;
       if (a.rank === "ADMIN") return -1;
       if (b.rank === "ADMIN") return 1;
-      return 0;
+      if (a.chatMemberStatus === ChatMemberStatus.MUTED) return 1;
+      if (b.chatMemberStatus === ChatMemberStatus.MUTED) return -1;
+      return a.username.localeCompare(b.username);
     });
 
     return sortedUsers.map((user) => (
@@ -59,6 +61,38 @@ export default function UserListView({ userList, handleClick }: UserListProps) {
         user={user}
       />
     ));
+  };
+
+  const sendUpdateRequest = (
+    duration: number = 0,
+    newStatus: ChatMemberStatus = contextMenuUsersData.chatMemberStatus,
+    newRank: ChatMemberRank = contextMenuUsersData.rank
+  ) => {
+    const req: UpdateChatMemberRequest = {
+      queryingUser: self.username,
+      usernameToUpdate: contextMenuUsersData.username,
+      roomName: currentRoomName,
+      status: newStatus,
+      queryingMemberRank: ownRank,
+      memberToUpdateRank: newRank,
+      duration
+    };
+    console.log(req);
+
+    socket.emit("updateChatMemberStatus", req, (res: DevError | any) => {
+      if (handleSocketErrorResponse(res)) return console.error(res);
+      console.log(`successfully updated user ${res}`);
+      updateRooms((newRooms) => {
+        const newUser =
+          newRooms[currentRoomName].users[contextMenuUsersData.username];
+        newUser.chatMemberStatus = newStatus;
+        newUser.rank = newRank;
+        newRooms[currentRoomName].users[contextMenuUsersData.username] =
+          newUser;
+        return newRooms;
+      });
+    });
+    setContextMenuUsersVisible(false);
   };
 
   const onViewProfile = () => {
@@ -86,106 +120,21 @@ export default function UserListView({ userList, handleClick }: UserListProps) {
     console.log("Kick User");
   };
 
-  const onBanUser = (duration: number) => {
-    // emit a "updateChatMemberStatus" event to the server, with the username and the new rank
-    const req: UpdateChatMemberRequest = {
-      queryingUser: self.username,
-      usernameToUpdate: contextMenuUsersData.username,
-      roomName: currentRoomName,
-      status: ChatMemberStatus.OK,
-      queryingMemberRank: ChatMemberRank.ADMIN,
-      memberToUpdateRank: ChatMemberRank.ADMIN,
-      duration
-    };
-    console.log(req);
-
-    socket.emit("updateChatMemberStatus", req, (res: DevError | any) => {
-      if (handleSocketErrorResponse(res)) return console.error(res);
-      console.log(`successfully updated user ${res}`);
-      updateRooms((newRooms) => {
-        newRooms[currentRoomName].users[
-          contextMenuUsersData.username
-        ].chatMemberStatus = ChatMemberStatus.MUTED;
-        return newRooms;
-      });
-    });
-    setContextMenuUsersVisible(false);
+  const onBanUser = (duration: number, status = ChatMemberStatus.BANNED) => {
+    sendUpdateRequest(duration, status);
   };
 
   const onMuteUser = (duration: number, status = ChatMemberStatus.MUTED) => {
-    // emit a "updateChatMemberStatus" event to the server, with the username and the new rank
-    const req: UpdateChatMemberRequest = {
-      queryingUser: self.username,
-      usernameToUpdate: contextMenuUsersData.username,
-      roomName: currentRoomName,
-      status: status,
-      queryingMemberRank: ChatMemberRank.ADMIN,
-      memberToUpdateRank: contextMenuUsersData.rank,
-      duration
-    };
-    console.log(req);
-
-    socket.emit("updateChatMemberStatus", req, (res: DevError | any) => {
-      if (handleSocketErrorResponse(res)) return console.error(res);
-      console.log(`successfully updated user ${res}`);
-      updateRooms((newRooms) => {
-        newRooms[currentRoomName].users[
-          contextMenuUsersData.username
-        ].chatMemberStatus = ChatMemberStatus.MUTED;
-        return newRooms;
-      });
-    });
-    setContextMenuUsersVisible(false);
+    sendUpdateRequest(duration, status);
   };
 
   const onPromoteToAdmin = () => {
-    // emit a "updateChatMemberStatus" event to the server, with the username and the new rank
-    const req: UpdateChatMemberRequest = {
-      queryingUser: self.username,
-      usernameToUpdate: contextMenuUsersData.username,
-      roomName: currentRoomName,
-      status: ChatMemberStatus.OK,
-      queryingMemberRank: ChatMemberRank.ADMIN,
-      memberToUpdateRank: ChatMemberRank.ADMIN,
-      duration: 0
-    };
-    console.log(req);
-
-    socket.emit("updateChatMemberStatus", req, (res: DevError | any) => {
-      if (handleSocketErrorResponse(res)) return console.error(res);
-      console.log(`successfully updated user ${res}`);
-      updateRooms((newRooms) => {
-        newRooms[currentRoomName].users[contextMenuUsersData.username].rank =
-          ChatMemberRank.ADMIN;
-        return newRooms;
-      });
-    });
-    setContextMenuUsersVisible(false);
+    sendUpdateRequest(0, ChatMemberStatus.OK, ChatMemberRank.ADMIN);
   };
 
   const onDemoteToUser = () => {
     // emit a "updateChatMemberStatus" event to the server, with the username and the new rank
-    const req: UpdateChatMemberRequest = {
-      queryingUser: self.username,
-      usernameToUpdate: contextMenuUsersData.username,
-      roomName: currentRoomName,
-      status: ChatMemberStatus.OK,
-      queryingMemberRank: ChatMemberRank.ADMIN,
-      memberToUpdateRank: ChatMemberRank.USER,
-      duration: 0
-    };
-    console.log(req);
-
-    socket.emit("updateChatMemberStatus", req, (res: DevError | any) => {
-      if (handleSocketErrorResponse(res)) return console.error(res);
-      console.log(`successfully updated user ${res}`);
-      updateRooms((newRooms) => {
-        newRooms[currentRoomName].users[contextMenuUsersData.username].rank =
-          ChatMemberRank.USER;
-        return newRooms;
-      });
-    });
-    setContextMenuUsersVisible(false);
+    sendUpdateRequest(0, ChatMemberStatus.OK, ChatMemberRank.USER);
   };
 
   // Find your own rank by looking for your username in the userlist
