@@ -22,7 +22,9 @@ export interface ChatModelType {
 
   /* UserList Context Menu */
   contextMenuUsersData: ChatMemberEntity | null;
+  setContextMenuUsersData: (userData: ChatMemberEntity) => void;
   contextMenuUsersPosition: { x: number; y: number };
+  setContextMenuUsersPosition: (position: { x: number; y: number }) => void;
   contextMenuUsersVisible: boolean;
   setContextMenuUsersVisible: (arg: boolean) => void;
   handleContextMenuUsers: (e: MouseEvent, userData: ChatMemberEntity) => void;
@@ -106,15 +108,17 @@ export const useChatModel = (): ChatModelType => {
     currentRoomMessages,
     setCurrentRoomMessages,
     contextMenuData,
-    contextMenuUsersData,
     contextMenuPosition,
+    contextMenuUsersData,
+    setContextMenuUsersData,
     contextMenuUsersPosition,
-    handleContextMenu,
-    handleContextMenuUsers,
-    contextMenuRoomsVisible,
+    setContextMenuUsersPosition,
     contextMenuUsersVisible,
-    setContextMenuRoomsVisible,
     setContextMenuUsersVisible,
+    handleContextMenuUsers,
+    handleContextMenu,
+    contextMenuRoomsVisible,
+    setContextMenuRoomsVisible,
     showDirectMessageModal,
     setShowDirectMessageModal,
     showCreateRoomModal,

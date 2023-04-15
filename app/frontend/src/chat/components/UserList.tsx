@@ -8,8 +8,7 @@ import {
   ChatMemberStatus,
   DevError,
   UpdateChatMemberRequest,
-  ChatMemberEntity,
-  UNBAN_USER
+  ChatMemberEntity
 } from "../chat.types";
 import { useChatContext } from "../chat.context";
 import { useProfileViewModelContext } from "../../profile/profile.viewModel";
@@ -32,6 +31,9 @@ export default function UserListView({ userList, handleClick }: UserListProps) {
     contextMenuUsersPosition,
     contextMenuUsersVisible,
     contextMenuUsersData,
+    setCurrentRoomName,
+    setContextMenuUsersPosition,
+    setContextMenuUsersData,
     setContextMenuUsersVisible
   } = useChatContext();
   const { updateRooms } = useRoomManager();
@@ -69,6 +71,7 @@ export default function UserListView({ userList, handleClick }: UserListProps) {
       />
     ));
   };
+
   const renderBannedUsersSection = () => {
     const bannedUsers = Object.values(userList).filter(
       (user) => user.chatMemberStatus === ChatMemberStatus.BANNED
@@ -131,6 +134,8 @@ export default function UserListView({ userList, handleClick }: UserListProps) {
       });
     });
     setContextMenuUsersVisible(false);
+    setContextMenuUsersData({} as ChatMemberEntity);
+    setContextMenuUsersPosition({ x: 0, y: 0 });
   };
 
   const onViewProfile = () => {
@@ -143,6 +148,7 @@ export default function UserListView({ userList, handleClick }: UserListProps) {
   const onInviteToGame = () => {
     console.log("Invite to game");
     setPageState(PageState.Game);
+    setCurrentRoomName("");
   };
 
   const onSendDirectMessage = () => {
@@ -154,28 +160,8 @@ export default function UserListView({ userList, handleClick }: UserListProps) {
     addFriend(self.username, contextMenuUsersData.username);
   };
 
-  const onKickUser = (duration: number) => {
+  const onKickUser = () => {
     console.log("Kick User");
-  };
-
-  const onBanUser = (duration: number, status = ChatMemberStatus.BANNED) => {
-    console.log("Ban User");
-    console.log(`Current status: ${contextMenuUsersData.chatMemberStatus}`);
-    contextMenuUsersData.chatMemberStatus === ChatMemberStatus.BANNED
-      ? ((status = ChatMemberStatus.OK), duration === -1)
-      : (status = ChatMemberStatus.BANNED);
-    console.log("duration: " + duration + " status: " + status);
-    sendUpdateRequest(duration, status, contextMenuUsersData.rank);
-  };
-
-  const onMuteUser = (duration: number, status = ChatMemberStatus.MUTED) => {
-    console.log(`Muting user ${contextMenuUsersData.username}...`);
-    console.log(`Current status: ${contextMenuUsersData.chatMemberStatus}`);
-    contextMenuUsersData.chatMemberStatus === ChatMemberStatus.MUTED
-      ? ((status = ChatMemberStatus.OK), duration === -1)
-      : (status = ChatMemberStatus.MUTED);
-    console.log("duration: " + duration + " status: " + status);
-    sendUpdateRequest(duration, status, contextMenuUsersData.rank);
   };
 
   const onPromoteToAdmin = () => {
@@ -275,8 +261,7 @@ export default function UserListView({ userList, handleClick }: UserListProps) {
         onSendDirectMessage={onSendDirectMessage}
         onAddFriend={onAddFriend}
         onKickUser={onKickUser}
-        onBanUser={onBanUser}
-        onMuteUser={onMuteUser}
+        sendUpdateRequest={sendUpdateRequest}
         onPromoteToAdmin={onPromoteToAdmin}
         onDemoteToUser={onDemoteToUser}
       />

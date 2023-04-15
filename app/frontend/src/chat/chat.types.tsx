@@ -1,5 +1,3 @@
-export const UNBAN_USER = -2;
-
 export enum ChatMemberStatus {
   OK = "OK",
   MUTED = "MUTED",

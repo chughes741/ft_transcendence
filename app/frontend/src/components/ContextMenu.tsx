@@ -27,18 +27,25 @@ const ContextMenu: React.FC<ContextMenuProps> = ({
     const handleClick = (e: MouseEvent) => {
       if (contextMenuVisible) {
         const target = e.target as HTMLElement;
-        if (!target.closest(".MuiMenu-paper")) {
+        const isOutsideMenu = !target.closest(".MuiMenu-paper");
+        const isOutsideSubmenu = !target.closest(
+          ".MuiMenu-paper.MuiMenu-paper"
+        );
+
+        if (isOutsideMenu) {
           console.log("click outside, closing context menu");
           setContextMenuVisible(false);
         }
+        if (isOutsideSubmenu && anchorEl) {
+          setAnchorEl(null);
+        }
       }
     };
-
     document.addEventListener("mousedown", handleClick);
     return () => {
       document.removeEventListener("mousedown", handleClick);
     };
-  }, [contextMenuVisible]);
+  }, [contextMenuVisible, anchorEl]);
 
   return (
     <Menu

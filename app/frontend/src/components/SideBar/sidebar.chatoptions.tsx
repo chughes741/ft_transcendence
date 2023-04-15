@@ -15,6 +15,7 @@ import {
 } from "@mui/icons-material";
 import DynamicIconButton from "../DynamicIconButton";
 import { useRootViewModelContext } from "src/root.context";
+import { IoEnterOutline } from "react-icons/io5";
 
 export default function SidebarChatOptions() {
   const { setPageState } = useRootViewModelContext();
@@ -63,7 +64,7 @@ export default function SidebarChatOptions() {
       />
       <DynamicIconButton
         text="Join a room"
-        icon={<MeetingRoom style={{ fontSize: "2rem", color: "white" }} />}
+        icon={<IoEnterOutline style={{ fontSize: "2rem", color: "white" }} />}
         onClick={() => setShowJoinRoomModal(true)}
       />
 
