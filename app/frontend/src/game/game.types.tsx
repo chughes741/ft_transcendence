@@ -1,3 +1,4 @@
+import { GameState } from "kingpong-lib";
 import { PaddleConfig, BallConfig, GameConfig } from "./game.config";
 
 export class Vec2 {
@@ -90,10 +91,11 @@ export class Lobby {
   constructor(Lobby_ID: string, Player_Side: string) {
     this.lobby_id = Lobby_ID;
     this.player_side = Player_Side;
-    this.game.ball_x = 0;
-    this.game.ball_y = 0;
-    this.game.paddle_left_y = 0;
-    this.game.paddle_right_y = 0;
+    this.game_state = new GameState();
+    this.game_state.ball_x = 0;
+    this.game_state.ball_y = 0;
+    this.game_state.paddle_left_y = 0;
+    this.game_state.paddle_right_y = 0;
   }
   player_side: string;
   lobby_id: string;
@@ -103,13 +105,5 @@ export class Lobby {
   opponent_avatar: string;
   player_ready: boolean;
   opponent_ready: boolean;
-
-  game: {
-    ball_x: number;
-    ball_y: number;
-    paddle_left_y: number;
-    paddle_right_y: number;
-    score_left: number;
-    score_right: number;
-  };
+  game_state: GameState;
 }
