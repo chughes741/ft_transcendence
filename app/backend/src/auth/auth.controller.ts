@@ -6,14 +6,17 @@ import {
   HttpCode,
   HttpStatus,
   Post,
-  UseFilters
+  UseFilters,
+  Logger
 } from "@nestjs/common";
 import { ApiTags } from "@nestjs/swagger";
 import { SubscribeMessage } from "@nestjs/websockets";
 import { PrismaClientExceptionFilterHttp } from "../prisma-client-exception.filter";
 import { AuthService } from "./auth.service";
 import { GetUser } from "./decorators";
-import { AuthDto } from "./dto";
+import { AuthRequest } from "./dto";
+
+const logger = new Logger("AuthController");
 
 @UseFilters(new PrismaClientExceptionFilterHttp())
 @Controller("auth")
@@ -24,10 +27,10 @@ export class AuthController {
 
   @HttpCode(HttpStatus.CREATED)
   @Post("signup")
-  signup(@Body() dto: AuthDto) {
+  signup(@Body() dto: AuthRequest) {
     // The barren export pattern in ./dto/index.ts allows automatic exposition
 
-    console.log({
+    logger.log({
       dto
     }); // Creates an object and assigns it
 
@@ -35,10 +38,10 @@ export class AuthController {
   }
 
   @Get("signup")
-  signup_ft(@Body() dto: AuthDto) {
-    console.log("Succesfully redirected!");
+  signup_ft(@Body() dto: AuthRequest) {
+    logger.log("Succesfully redirected!");
 
-    console.log({
+    logger.log({
       dto
     }); // Creates an object and assigns it
 
@@ -49,9 +52,9 @@ export class AuthController {
   signin_ft(@GetUser() user) {
     // The barren export pattern in ./dto/index.ts allows automatic exposition
 
-    console.log("Succesfully signed in!");
+    logger.log("Succesfully signed in!");
 
-    console.log({
+    logger.log({
       user
     }); // Creates an object and assigns it
 
@@ -60,7 +63,7 @@ export class AuthController {
 
   @HttpCode(HttpStatus.OK)
   @Post("signin")
-  signin(@Body() dto: AuthDto) {
+  signin(@Body() dto: AuthRequest) {
     return this.authService.signin(dto);
   }
 
@@ -71,10 +74,14 @@ export class AuthController {
   }
 
   @Get("token")
-  async generate42Token(@Query("code") authorizationCode: string) {
-    console.log("Inside Generate42Token");
-    console.log("Authorisation code : " + authorizationCode);
-    const token = await this.authService.getAuht42(authorizationCode);
+  async generate42Token(
+    @Query("code") authorizationCode: string,
+    @Query("socketId") socketId: string
+  ) {
+    logger.log("Inside Generate42Token");
+    logger.log("Authorisation code : ", authorizationCode);
+    logger.log("Socket ID: ", authorizationCode);
+    const token = await this.authService.getAuht42(socketId, authorizationCode);
     return { token };
   }
 

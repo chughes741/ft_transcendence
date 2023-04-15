@@ -1,14 +1,16 @@
 import { ForbiddenException, Get, Injectable, Logger } from "@nestjs/common";
 import { PrismaService } from "../prisma/prisma.service";
-import { AuthDto } from "./dto";
+import { AuthRequest, UserEntity } from "./dto";
 import * as argon from "argon2";
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
 import { JwtService } from "@nestjs/jwt";
 import { ConfigService } from "@nestjs/config";
 import { WsException } from "@nestjs/websockets";
+import { Socket } from "socket.io";
 import speakeasy from "speakeasy";
-import qrcode from "qrcode"
+import qrcode from "qrcode";
 import axios from "axios";
+import { Token, TokenStorageService } from "../token-storage.service";
 
 const logger = new Logger("AuthService");
 
@@ -17,23 +19,23 @@ export class AuthService {
   constructor(
     private prisma: PrismaService, // create(), findUnique()
     private jwt: JwtService, // signAsync()
-    private config: ConfigService // JWT_SECRET
+    private config: ConfigService, // JWT_SECRET
+    private tokenStorage: TokenStorageService
   ) {}
 
   async signup(
-    dto: AuthDto
+    req: AuthRequest
   ): Promise<
     { access_token: string } | { errorCode: number; errorMessage: string }
   > {
     try {
-      // Generate the password hash
-      const hash = await argon.hash(dto.password);
-
       // Save the new user in the db
       const user = await this.prisma.user.create({
         data: {
-          username: dto.username,
-          hash
+          username: req.username,
+          firstName: req.firstName,
+          lastName: req.lastName,
+          email: req.email
         }
       });
 
@@ -54,14 +56,14 @@ export class AuthService {
     }
   }
 
-  async callToSignup(dto: AuthDto) {
-    const ret = await this.signup(dto);
-    if (ret) throw new WsException(" invalid credentials");
+  async callToSignup(req: AuthRequest) {
+    //const ret = await this.signup(req);
+    //if (ret) throw new WsException(" invalid credentials");
 
-    return dto;
+    return req;
   }
 
-  async signin(dto: AuthDto) {
+  async signin(dto: AuthRequest) {
     // Find the user by username
     if (!dto.username) {
       logger.error("signin: username is required");
@@ -78,13 +80,6 @@ export class AuthService {
     // If user does not exist, throw exception
     if (!user)
       throw new ForbiddenException("Credentials incorrect, user not found");
-
-    // Compare password
-    const passMatches = await argon.verify(user.hash, dto.password);
-
-    // If password incorrect, throw exception
-    if (!passMatches)
-      throw new ForbiddenException("Credentials incorrect, bad pass");
 
     // Return the signed token for the user
     return this.signToken(user.id, user.username);
@@ -173,7 +168,7 @@ export class AuthService {
     });
 
     const code = qrcode.toDataURL(secret.otpath_url, function (err, data) {
-      console.log(data);
+      logger.log(data);
     });
     return { secret: secret, qrcode: code };
   }
@@ -188,7 +183,7 @@ export class AuthService {
     return { validated: false };
   }
 
-  async getAuht42(authorization_code: string) {
+  async getAuht42(clientId: string, authorization_code: string) {
     const UID =
       "u-s4t2ud-51fb382cccb5740fc1b9129a3ddacef8324a59dc4c449e3e8ba5f62acb2079b6";
     const SECRET =
@@ -203,33 +198,57 @@ export class AuthService {
       client_id: UID,
       client_secret: SECRET,
     });*/
-    const response = await axios.post("https://api.intra.42.fr/oauth/token", {
-      grant_type: "authorization_code",
-      client_id: UID,
-      client_secret: SECRET,
-      redirect_uri: REDIRECT_URI,
-      code: authorization_code
-    });
+    const fuckedUpResponse = await axios.post(
+      "https://api.intra.42.fr/oauth/token",
+      {
+        grant_type: "authorization_code",
+        client_id: UID,
+        client_secret: SECRET,
+        redirect_uri: REDIRECT_URI,
+        code: authorization_code
+      }
+    );
+    const response = fuckedUpResponse.data;
 
-    console.log("CLIENT here TOKEN ", response);
+    logger.log("CLIENT here TOKEN ");
+    console.log(response);
     // Get an access token
 
-    console.log("HERE IS MY TOKEN FROM 42:", response.data.access_token);
+    const token = new Token(
+      response.access_token,
+      response.refresh_token,
+      response.token_type,
+      response.expires_in,
+      response.scope,
+      response.created_at
+    );
+
+    logger.log("HERE IS MY TOKEN FROM 42:", token.access_token);
 
     const response2 = await axios.get(`${API_42_URL}/v2/me`, {
       headers: {
-        Authorization: `Bearer ${response.data.access_token}`
+        Authorization: `Bearer ${token.access_token}`
       }
     });
 
-    console.log("Cursus 42", response2);
+    logger.log("Cursus 42");
+    console.log(response2);
 
-    return response.data.access_token;
+    this.tokenStorage.addToken(clientId, token);
+
+    return token.access_token;
   }
 
-  async TokenIsVerified(UserName : string, token : string) : Promise<boolean>
-  {
-    return (this.prisma.checkToken(UserName, token));
+  async TokenIsVerified(
+    clientId: string,
+    clientToken: string
+  ): Promise<boolean> {
+    // Check if token is valid
+    const token = this.tokenStorage.getToken(clientId);
+    if (!token || token.access_token !== clientToken) {
+      logger.error("Who TF is that?", clientId);
+      return false;
+    }
+    return true;
   }
-
 }

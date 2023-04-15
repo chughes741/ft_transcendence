@@ -4,7 +4,7 @@ import { PageState } from "src/root.model";
 import { ChatModelType, useChatModel } from "./chat.model";
 import { ChatContext } from "src/chat/chat.context";
 import { useRootViewModelContext } from "../root.context";
-import { DevError, ChatRoomStatus } from "./chat.types";
+import { DevError, ChatRoomStatus, AuthRequest } from "./chat.types";
 import {
   handleChatRoomMemberLeftCreator,
   handleChatRoomMemberKickedCreator,
@@ -112,19 +112,20 @@ export const ChatViewModelProvider = ({ children }) => {
   /*   User Functions   */
   /**********************/
 
-  const userLogin = async (username: string): Promise<boolean> => {
-    if (username === "" || username === undefined)
+  const userLogin = async (req: AuthRequest): Promise<boolean> => {
+    if (!req || !req.username || req.username === "")
       return Promise.resolve(false);
+
     return new Promise<boolean>((resolve) => {
-      socket.emit("userLogin", username, (response: DevError | string) => {
+      socket.emit("userLogin", req, (response: DevError | string) => {
         if (typeof response === "object") {
           console.log("Error response from user login: ", response.error);
           resolve(false);
         } else {
-          console.log(`Logged in user ${username} successfully!`);
+          console.log(`Logged in user ${req.username} successfully!`);
           console.log("Success response from user login: ");
           console.log(response);
-          setTempUsername(username);
+          setTempUsername(req.username);
           joinRoom("PublicRoom", "secret");
           joinRoom("PrivateRoom", "secret");
           joinRoom("PasswordProtectedRoom", "secret");
@@ -136,19 +137,19 @@ export const ChatViewModelProvider = ({ children }) => {
     });
   };
 
-  const createUser = async (username: string): Promise<boolean> => {
-    if (username === "" || username === undefined)
+  const createUser = async (req: AuthRequest): Promise<boolean> => {
+    if (!req || !req.username || req.username === "")
       return Promise.resolve(false);
     return new Promise<boolean>((resolve) => {
-      socket.emit("userCreation", username, (response: DevError | string) => {
+      socket.emit("userCreation", req, (response: DevError | string) => {
         if (typeof response === "object") {
           console.log("Error response from user creation: ", response.error);
           resolve(false);
           // Try to log in instead
         } else {
-          setTempUsername(username);
+          setTempUsername(req.username);
           setRooms(null);
-          console.log(`Created user ${username} successfully!`);
+          console.log(`Created user ${req.username} successfully!`);
 
           // FIXME: For testing purposes only
           // Join three separate rooms on connection
@@ -226,11 +227,19 @@ export const ChatViewModelProvider = ({ children }) => {
       setRooms(() => {
         return {};
       });
+
       const createTempUser = async (username: string): Promise<void> => {
-        const userCreated = await createUser(username);
+        const req: AuthRequest = {
+          username,
+          firstName: "Schl",
+          lastName: "urp",
+          email: `${username}@schluuuuu.uuuuurp`,
+          avatar: `https://avatars.dicebear.com/api/human/${username}.svg`
+        };
+        const userCreated = await createUser(req);
         if (!userCreated) {
           // Try to login instead
-          const userLogged = await userLogin(username);
+          const userLogged = await userLogin(req);
           if (!userLogged) {
             console.log("Failed to create or login to user", username);
           }

@@ -18,6 +18,7 @@ import { ImgTransferController } from "./imgtransfer/imgtransfer.controller";
 import { ImgTransferService } from "./imgtransfer/imgtransfer.service";
 import { AuthController } from "./auth/auth.controller";
 import { AuthService } from "./auth/auth.service";
+import { TokenStorageService } from "./token-storage.service";
 
 /** Used for src/... import paths */
 require("tsconfig-paths");
@@ -46,6 +47,7 @@ require("tsconfig-paths");
     AppService,
     PrismaService,
     UserConnectionsService,
+    TokenStorageService,
     ImgTransferService
   ]
 })

@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { Button } from "@mui/material";
+import { socket } from "../contexts/WebSocket.context";
 
 const CLIENT_ID =
   "u-s4t2ud-51fb382cccb5740fc1b9129a3ddacef8324a59dc4c449e3e8ba5f62acb2079b6";
@@ -15,53 +16,53 @@ interface LoginWith42ButtonProps {
 function LoginWith42Button({ onSuccess, onFailure }: LoginWith42ButtonProps) {
   const [isLoading, setIsLoading] = useState(false);
 
-
   // Step 2: Handle the authorization code and exchange it for an access token
-    const handleAuthorizationCode = async () => {
-      const searchParams = new URLSearchParams(window.location.search);
-      const authorizationCode = searchParams.get("code");
+  const handleAuthorizationCode = async () => {
+    const searchParams = new URLSearchParams(window.location.search);
+    const authorizationCode = searchParams.get("code");
 
-      if (!authorizationCode) {
-        onFailure(new Error("Authorization code not found"));
+    if (!authorizationCode) {
+      onFailure(new Error("Authorization code not found"));
+      return;
+    }
+
+    try {
+      console.log("Before Trying to get token");
+      const socketId = socket.id;
+      const url = `http://localhost:3000/auth/token?code=${authorizationCode}&socketId=${socketId}`;
+      const response = await fetch(url, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json"
+        }
+      });
+      console.log("Response from 42 auth:", response);
+
+      if (!response.ok) {
+        const error = await response.json();
+        onFailure(new Error(error.error_description));
         return;
       }
 
-      try {
-        console.log("Before Trying to get token");
-        const url = `http://localhost:3000/auth/token?code=${authorizationCode}`;
-        const response = await fetch(url, {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json"
-          }
-        });
-        console.log(response);
+      const data = await response.json();
+      onSuccess(data.access_token);
+    } catch (error) {
+      onFailure(error);
+    }
+  };
 
-        if (!response.ok) {
-          const error = await response.json();
-          onFailure(new Error(error.error_description));
-          return;
-        }
+  const handleLoginClick = () => {
+    setIsLoading(true);
 
-        const data = await response.json();
-        onSuccess(data.access_token);
-      } catch (error) {
-        onFailure(error);
-      }
-    };
-
-    const handleLoginClick = () => {
-      setIsLoading(true);
-  
-      // Step 1: Redirect the user to the 42 OAuth authorization endpoint
-      const authorizationUrl = `https://api.intra.42.fr/oauth/authorize?client_id=${CLIENT_ID}&redirect_uri=${REDIRECT_URI}&response_type=code`;
-      window.location.href = authorizationUrl;
-      handleAuthorizationCode();
-    };
+    // Step 1: Redirect the user to the 42 OAuth authorization endpoint
+    const authorizationUrl = `https://api.intra.42.fr/oauth/authorize?client_id=${CLIENT_ID}&redirect_uri=${REDIRECT_URI}&response_type=code`;
+    window.location.href = authorizationUrl;
+    handleAuthorizationCode();
+  };
 
   return (
     <>
-      <span>Log in only option :    </span>
+      <span>Log in only option : </span>
       <Button
         onClick={handleLoginClick}
         disabled={isLoading}

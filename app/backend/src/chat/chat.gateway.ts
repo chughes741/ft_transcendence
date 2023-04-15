@@ -18,6 +18,7 @@ import { ChatMember } from "@prisma/client";
 import { ChatMemberEntity, MessageEntity } from "./entities/message.entity";
 import { ChatMemberStatus, UserStatus } from "@prisma/client";
 import { kickMemberDto, updateChatMemberStatusDto } from "./dto/userlist.dto";
+import { AuthRequest } from "../auth/dto";
 
 // FIXME: temporary error type until we can share btw back and frontend
 export type DevError = {
@@ -29,6 +30,14 @@ export type DevError = {
 /******************/
 export interface ListUsersRequest {
   chatRoomName: string;
+}
+
+export interface CreateUserRequest {
+  username: string;
+  avatar: string;
+  firstName?: string;
+  lastName?: string;
+  email?: string;
 }
 
 export interface MessagePrismaType extends Message {
@@ -312,19 +321,20 @@ export class ChatGateway
   @SubscribeMessage("userCreation")
   async createTempUser(
     client: Socket,
-    username: string
-  ): Promise<DevError | string> {
+    req: AuthRequest
+  ): Promise<DevError | UserEntity> {
     logger.log(
-      `Received createUser request from ${client.id} for user ${username}`
+      `Received createUser request from ${client.id} for user ${req.username}`
     );
-    const userWasCreated = await this.chatService.createTempUser(
-      client.id,
-      username
-    );
+    const userWasCreated = await this.chatService.createTempUser(req);
     if (userWasCreated instanceof Error) {
       return { error: userWasCreated.message };
     }
-    return username;
+    this.userConnectionsService.addUserConnection(
+      userWasCreated.username,
+      client.id
+    );
+    return userWasCreated;
   }
 
   /**
@@ -338,13 +348,17 @@ export class ChatGateway
   @SubscribeMessage("userLogin")
   async devUserLogin(
     client: Socket,
-    username: string
+    req: AuthRequest
   ): Promise<{ error: string } | string> {
+    if (!req || !req.username) {
+      return { error: "Invalid request: username must be provided" };
+    }
+    const username = req.username;
     logger.log(
-      `Received createUser request from ${client.id} for user ${username}`
+      `Received devUserLogin request from ${client.id} for user ${username}`
     );
 
-    const userWasLoggedIn = await this.chatService.devUserLogin(username);
+    const userWasLoggedIn = await this.chatService.devUserLogin(req);
     if (userWasLoggedIn instanceof Error) {
       console.log(userWasLoggedIn);
       return { error: userWasLoggedIn.message };

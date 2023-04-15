@@ -1,18 +1,25 @@
 import { ApiProperty } from "@nestjs/swagger";
+import { UserStatus } from "@prisma/client";
 import { IsNotEmpty, IsString } from "class-validator";
 
-export class AuthDto {
-  @IsString()
-  @IsNotEmpty()
-  @ApiProperty({
-    description: "Login username"
-  })
+export class UserEntity {
   username: string;
+  avatar: string;
+  firstName?: string;
+  lastName?: string;
+  email?: string;
+  status: UserStatus;
+}
 
-  @IsString()
-  @IsNotEmpty()
-  @ApiProperty({
-    description: "Login password"
-  })
-  password: string;
+export class AuthRequest {
+  username: string;
+  avatar: string;
+  firstName?: string;
+  lastName?: string;
+  email?: string;
+}
+
+export class AuthEntity {
+  token: string;
+  user: UserEntity;
 }
