@@ -258,11 +258,14 @@ export class ChatGateway
    * @param username username of the user requesting the list
    * @returns list of chat rooms
    */
+
   @SubscribeMessage("listAvailableChatRooms")
   async listAvailableChatRooms(
     client: Socket,
-    username: string
-  ): Promise<AvailableRoomEntity[]> {
+    username: string,
+    roomName: string // Add roomName parameter
+  ): Promise<AvailableRoomEntity[] | UserEntity[]> {
+    // Update the return type
     const userId = await this.prismaService.getUserIdByNick(username);
     logger.log(
       `Received listAvailableChatRooms request from ${userId}, name ${username}`
@@ -270,6 +273,21 @@ export class ChatGateway
     if (!userId) {
       return [];
     }
+
+    // If roomName is empty, return available users
+    if (!roomName) {
+      const availableUsers = await this.prismaService.getAvailableUsers(
+        userId,
+        null
+      );
+      return availableUsers.map((user) => ({
+        username: user.username,
+        avatar: user.avatar,
+        status: user.status
+      }));
+    }
+
+    // Otherwise, return available rooms
     const availableRooms = await this.prismaService.getAvailableChatRooms(
       userId
     );
