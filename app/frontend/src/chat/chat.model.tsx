@@ -85,8 +85,14 @@ export const useChatModel = (): ChatModelType => {
     y: 0
   });
 
-  const handleContextMenuUsers = (e: MouseEvent, userData: UserListItem) => {
+  const handleContextMenuUsers = (
+    e: React.MouseEvent,
+    userData: UserListItem
+  ) => {
     e.preventDefault();
+    console.log(
+      `handleContextMenuUsers: ${userData.username}, event: ${e.button}`
+    );
     setContextMenuUsersVisible(true);
     setContextMenuUsersPosition({ x: e.clientX, y: e.clientY });
     setContextMenuUsersData(userData);

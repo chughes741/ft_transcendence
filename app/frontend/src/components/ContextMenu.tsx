@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Menu, MenuItem } from "@mui/material";
+import { Divider, Menu, MenuItem } from "@mui/material";
 
 type ContextMenuOption = {
   label: string;
@@ -28,14 +28,15 @@ const ContextMenu: React.FC<ContextMenuProps> = ({
       if (contextMenuVisible) {
         const target = e.target as HTMLElement;
         if (!target.closest(".MuiMenu-paper")) {
+          console.log("click outside, closing context menu");
           setContextMenuVisible(false);
         }
       }
     };
 
-    document.addEventListener("click", handleClick);
+    document.addEventListener("mousedown", handleClick);
     return () => {
-      document.removeEventListener("click", handleClick);
+      document.removeEventListener("mousedown", handleClick);
     };
   }, [contextMenuVisible]);
 
@@ -48,43 +49,49 @@ const ContextMenu: React.FC<ContextMenuProps> = ({
         setContextMenuVisible(false);
       }}
     >
-      {options.map((option, index) => (
-        <MenuItem
-          key={index}
-          onClick={(e) => {
-            if (option.submenu) {
-              e.stopPropagation();
-              setAnchorEl(anchorEl ? null : e.currentTarget);
-            } else if (option.onClick) {
-              e.stopPropagation();
-              option.onClick();
-            }
-          }}
-        >
-          {option.label}
-          {option.submenu && (
-            <Menu
-              open={Boolean(anchorEl)}
-              anchorEl={anchorEl}
-              onClose={() => setAnchorEl(null)}
-              anchorOrigin={{ vertical: "top", horizontal: "right" }}
-              transformOrigin={{ vertical: "top", horizontal: "left" }}
-            >
-              {option.submenu.map((submenuOption, submenuIndex) => (
-                <MenuItem
-                  key={submenuIndex}
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    submenuOption.onClick && submenuOption.onClick();
-                  }}
-                >
-                  {submenuOption.label}
-                </MenuItem>
-              ))}
-            </Menu>
-          )}
-        </MenuItem>
-      ))}
+      {options.map((option, index) => {
+        if (option.label === "---") {
+          return <Divider key={index} />;
+        }
+
+        return (
+          <MenuItem
+            key={index}
+            onClick={(e) => {
+              if (option.submenu) {
+                e.stopPropagation();
+                setAnchorEl(anchorEl ? null : e.currentTarget);
+              } else if (option.onClick) {
+                e.stopPropagation();
+                option.onClick();
+              }
+            }}
+          >
+            {option.label}
+            {option.submenu && (
+              <Menu
+                open={Boolean(anchorEl)}
+                anchorEl={anchorEl}
+                onClose={() => setAnchorEl(null)}
+                anchorOrigin={{ vertical: "top", horizontal: "right" }}
+                transformOrigin={{ vertical: "top", horizontal: "left" }}
+              >
+                {option.submenu.map((submenuOption, submenuIndex) => (
+                  <MenuItem
+                    key={submenuIndex}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      submenuOption.onClick && submenuOption.onClick();
+                    }}
+                  >
+                    {submenuOption.label}
+                  </MenuItem>
+                ))}
+              </Menu>
+            )}
+          </MenuItem>
+        );
+      })}
     </Menu>
   );
 };
