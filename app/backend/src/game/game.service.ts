@@ -1,31 +1,23 @@
-import { Injectable } from "@nestjs/common";
+import { Logger, Injectable } from "@nestjs/common";
 import { WebSocketServer, WebSocketGateway } from "@nestjs/websockets";
-import { Server, Socket } from "socket.io";
-import { Logger } from "@nestjs/common";
 import { SchedulerRegistry } from "@nestjs/schedule";
+import { Server, Socket } from "socket.io";
+import { v4 as uuidv4 } from "uuid";
+
 import { GameLogic } from "./game.logic";
 import { GameModuleData } from "./game.data";
 import * as GameTypes from "./game.types";
-import { v4 as uuidv4 } from "uuid";
 import {
   JoinGameQueueRequest,
   LeaveGameQueueRequest,
   PlayerReadyRequest,
-  ClientGameStateUpdateRequest
+  ClientGameStateUpdateRequest,
+  JoinGameInviteRequest,
+  LobbyCreatedEvent,
+  GameEvents
 } from "kingpong-lib";
 
 const logger = new Logger("gameService");
-
-export enum GameEvents {
-  LobbyCreatedEvent = "lobbyCreatedEvent",
-}
-
-
-export class LobbyCreatedEvent {
-  lobby_id: string;
-  opponent_name: string;
-  player_side: string;
-}
 
 /**
  * GameService class
@@ -48,18 +40,22 @@ export class GameService {
   public server: Server;
   private gameState: GameTypes.GameData;
 
-  /*************************************************************************************/
-  /**                                  Lobby                                          **/
-  /*************************************************************************************/
+  /****************************************************************************/
+  /**                                     Lobby                              **/
+  /****************************************************************************/
 
   /**
    * Emit event to tell client that lobby has been successfully created
+   * 
    * @method createLobby
    * @param {GameTypes.PlayerQueue[]} playerPair
    * @returns {}
    * @async
    */
-  async createLobby(playerPair: GameTypes.PlayerQueue[], player: JoinGameQueueRequest) {
+  async createLobby(
+    playerPair: GameTypes.PlayerQueue[],
+    player: JoinGameQueueRequest
+  ) {
     logger.log("createLobby() called");
 
     //Create a new lobby
@@ -84,26 +80,33 @@ export class GameService {
     //Create payload
     const payload: LobbyCreatedEvent = {
       lobby_id: newLobby.lobby_id,
-      opponent_name: newLobby.players[0] === player.username ?  newLobby.players[1] : newLobby.players[0],
-      player_side: newLobby.players[0] === player.username ?  "left" : "right",
+      opponent_username:
+        newLobby.players[0] === player.username
+          ? newLobby.players[1]
+          : newLobby.players[0],
+      player_side: newLobby.players[0] === player.username ? "left" : "right"
     };
 
     //Emit lobbyCreated event to room members
-    this.server.to(newLobby.lobby_id).emit(GameEvents.LobbyCreatedEvent, payload);
+    this.server.to(newLobby.lobby_id).emit(GameEvents.LobbyCreated, payload);
   }
 
-  /*************************************************************************************/
-  /**                              Queue & Invite                                     **/
-  /*************************************************************************************/
+  /****************************************************************************/
+  /**                                Queue & Invite                          **/
+  /****************************************************************************/
 
   /**
    * Adds player to the game queue and tries to find a match
+   * 
    * @method joinGameQueue
    * @param {JoinGameQueueRequest} player
-   * @returns {}
+   * @returns {Promise<boolean>}
    * @async
    */
-  async joinGameQueue(client: Socket, player: JoinGameQueueRequest) {
+  async joinGameQueue(
+    client: Socket,
+    player: JoinGameQueueRequest
+  ): Promise<boolean> {
     logger.log("joinGameQueue() called");
 
     //Check if player is already in queue
@@ -126,10 +129,13 @@ export class GameService {
     if (playerPair) {
       this.createLobby(playerPair, player);
     }
+
+    return true;
   }
 
   /**
-   *
+   * Removes player from the game queue
+   * 
    * @param player
    * @returns Return bool on success?
    */
@@ -144,38 +150,43 @@ export class GameService {
 
   /**
    * Creates a new game lobby with sender and invitee as players
+   * 
    * @method sendGameInvite
-   * @returns {}
+   * @returns {Promise<LobbyCreatedEvent>}
    * @async
-   *
-   * @todo add timeout for response
-   * @todo pass both players data to createLobby
    */
-  async sendGameInvite() {
+  async sendGameInvite(
+    payload: JoinGameInviteRequest
+  ): Promise<LobbyCreatedEvent> {
     logger.log("joinGameInvite() called");
 
     //If the invited client responds then create lobby
+    /** @todo  */
+    return new LobbyCreatedEvent();
   }
 
-  /*************************************************************************************/
-  /**                                   Game                                          **/
-  /*************************************************************************************/
+  /****************************************************************************/
+  /**                                     Game                               **/
+  /****************************************************************************/
 
   /**
    * Handle player readiness
    * @param {PlayerReadyRequest} payload
+   * @returns {Promise<boolean>}
    */
-  async playerReady(payload: PlayerReadyRequest) {
+  async playerReady(payload: PlayerReadyRequest): Promise<boolean> {
     logger.log("playerReady() called");
     //If the lobby exists update ready and attempt to start game
     if (this.gameModuleData.getLobby(payload.lobby_id)) {
       this.gameModuleData.updatePlayerReady(payload);
       this.gameStart(payload.lobby_id);
     }
+    return true;
   }
 
   /**
    * Start the game if both players are ready
+   * 
    * @method gameStart
    * @returns {}
    * @async
@@ -194,6 +205,11 @@ export class GameService {
 
   /**
    * Handle game state updates from the client to update paddle positions
+   * 
+   * @method clientUpdate
+   * @param {ClientGameStateUpdateRequest} payload
+   * @returns {}
+   * @async
    */
   async clientUpdate(payload: ClientGameStateUpdateRequest) {
     //Find the correct match using match_id and update paddle pos

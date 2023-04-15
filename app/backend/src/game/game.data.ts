@@ -37,6 +37,7 @@ export class GameModuleData {
    */
   addQueue(player: GameTypes.PlayerQueue) {
     GameModuleData.queue.push(player);
+    console.log("size of queue: " + GameModuleData.queue.length);
   }
 
   /**
@@ -46,9 +47,8 @@ export class GameModuleData {
    * @returns {}
    */
   removeQueue(player: GameTypes.PlayerQueue) {
-    GameModuleData.queue = GameModuleData.queue.splice(
-      GameModuleData.queue.indexOf(player),
-      1
+    GameModuleData.queue = GameModuleData.queue.filter(
+      (element) => element !== player
     );
   }
 
@@ -57,10 +57,13 @@ export class GameModuleData {
    * @param player
    */
   removeQueueUsername(player: string) {
-    GameModuleData.queue = GameModuleData.queue.splice(
-      GameModuleData.queue.indexOf(this.checkQueue(player)),
-      1
+    console.log("size of queue before: " + GameModuleData.queue.length);
+
+    GameModuleData.queue = GameModuleData.queue.filter(
+      (element) => element.username !== player
     );
+
+    console.log("size of queue after: " + GameModuleData.queue.length);
   }
 
   /**

@@ -8,7 +8,13 @@ import {
 import { Server, Socket } from "socket.io";
 import { GameService } from "./game.service";
 import { Logger } from "@nestjs/common";
-import { ClientGameStateUpdateRequest, LeaveGameQueueRequest, PlayerReadyRequest } from "kingpong-lib";
+import {
+  ClientGameStateUpdateRequest,
+  JoinGameInviteRequest,
+  LeaveGameQueueRequest,
+  LobbyCreatedEvent,
+  PlayerReadyRequest
+} from "kingpong-lib";
 import { GameModuleData } from "./game.data";
 import { JoinGameQueueRequest, GameEvents } from "kingpong-lib";
 
@@ -33,34 +39,36 @@ export class GameGateway {
   @WebSocketServer()
   server: Server;
 
-  /*************************************************************************************/
-  /**                                 Queue & Invite                                  **/
-  /*************************************************************************************/
+  /****************************************************************************/
+  /**                              Queue & Invite                            **/
+  /****************************************************************************/
 
   /**
    * Handle direct game invite event
    * @param {JoinGameInviteDto} joinGameInviteDto
-   * @returns {}
+   * @returns {Promise<LobbyCreatedEvent>}
    * @listens sendGameInvite
    */
-  @SubscribeMessage("sendGameInvite")
-  async sendGameInvite(@MessageBody() payload) {
-    this.gameService.sendGameInvite();
+  @SubscribeMessage(GameEvents.SendGameInvite)
+  async sendGameInvite(
+    @MessageBody() payload: JoinGameInviteRequest
+  ): Promise<LobbyCreatedEvent> {
+    return this.gameService.sendGameInvite(payload);
   }
 
   /**
    * Handle the join queue event
    * @param {JoinGameQueueRequest} payload
    * @param {Socket} client
-   * @returns {}
+   * @returns {Promise<boolean>}
    * @listens GameEvents.JoinGameQueue
    */
   @SubscribeMessage(GameEvents.JoinGameQueue)
   async joinGameQueue(
     @ConnectedSocket() client: Socket,
     @MessageBody() payload: JoinGameQueueRequest
-  ) {
-    this.gameService.joinGameQueue(client, payload);
+  ): Promise<boolean> {
+    return this.gameService.joinGameQueue(client, payload);
   }
 
   /**
@@ -77,18 +85,21 @@ export class GameGateway {
     this.gameService.leaveGameQueue(payload);
   }
 
-  /*************************************************************************************/
-  /**                                      Game                                       **/
-  /*************************************************************************************/
+  /****************************************************************************/
+  /**                                    Game                                **/
+  /****************************************************************************/
 
   /**
    * Handle playerReady event and start game when both players ready
    * @param {PlayerReadyRequest} payload
+   * @returns {Promise<boolean>}
    * @listens GameEvents.PlayerReady
    */
   @SubscribeMessage(GameEvents.PlayerReady)
-  async playerReady(@MessageBody() payload: PlayerReadyRequest) {
-    this.gameService.playerReady(payload);
+  async playerReady(
+    @MessageBody() payload: PlayerReadyRequest
+  ): Promise<boolean> {
+    return this.gameService.playerReady(payload);
   }
 
   /**
