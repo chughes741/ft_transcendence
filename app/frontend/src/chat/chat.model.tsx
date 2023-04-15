@@ -3,10 +3,6 @@ import { useState, MouseEvent } from "react";
 import { RoomType, MessageType, ChatMemberEntity } from "./chat.types";
 
 export interface ChatModelType {
-  /* User */
-  tempUsername: string;
-  setTempUsername: (username: string) => void;
-
   /* Room List Information */
   currentRoomName: string;
   setCurrentRoomName: (roomName: string) => void;
@@ -47,9 +43,6 @@ export interface ChatModelType {
 }
 
 export const useChatModel = (): ChatModelType => {
-  /* User */
-  const [tempUsername, setTempUsername] = useState("");
-
   /* Room List Information */
   const [currentRoomName, setCurrentRoomName] = useState("");
   const [currentRoomMessages, setCurrentRoomMessages] = useState([]);
@@ -101,8 +94,6 @@ export const useChatModel = (): ChatModelType => {
   };
 
   return {
-    tempUsername,
-    setTempUsername,
     currentRoomName,
     setCurrentRoomName,
     currentRoomMessages,

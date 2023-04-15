@@ -18,6 +18,7 @@ import UserStatusBadge from "../../components/UserStatusBadge";
 import { ListUsersRequest } from "../chat.types";
 import ButtonFunky from "../../components/ButtonFunky";
 import { Chat } from "@mui/icons-material";
+import { useRootViewModelContext } from "../../root.context";
 
 interface UserEntity {
   username: string;
@@ -38,7 +39,7 @@ export const DirectMessageModal: React.FC<DirectMessageModalProps> = ({
     return null;
   }
 
-  const { tempUsername } = useChatContext();
+  const { self } = useRootViewModelContext();
   const [availableUsers, setAvailableUsers] = useState<UserEntity[]>([]);
   const [selectedUser, setSelectedUser] = useState<UserEntity | null>(null);
 
@@ -64,7 +65,7 @@ export const DirectMessageModal: React.FC<DirectMessageModalProps> = ({
   };
 
   useEffect(() => {
-    if (!showModal || !tempUsername) {
+    if (!showModal || !self.username) {
       return;
     }
     const req: ListUsersRequest = { chatRoomName: "" };
@@ -74,7 +75,7 @@ export const DirectMessageModal: React.FC<DirectMessageModalProps> = ({
       setAvailableUsers(users);
       setSelectedUser(null);
     });
-  }, [tempUsername, showModal]);
+  }, [self.username, showModal]);
 
   return (
     <Dialog

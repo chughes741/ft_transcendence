@@ -24,7 +24,8 @@ export default function SidebarChatOptions() {
       component="nav"
     >
       <div>
-        <h3></h3>
+        {/* lol */}
+        <h3> {"‾"}</h3>
       </div>
       <ButtonFunky
         icon={<Chat />}

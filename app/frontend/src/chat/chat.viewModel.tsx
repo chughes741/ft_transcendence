@@ -35,8 +35,6 @@ export const ChatViewModelProvider = ({ children }) => {
   /***********************/
   const chatModel = useChatModel();
   const {
-    tempUsername,
-    setTempUsername,
     currentRoomName,
     setCurrentRoomName,
     setCurrentRoomMessages,
@@ -46,7 +44,7 @@ export const ChatViewModelProvider = ({ children }) => {
     setShowPasswordModal
   } = chatModel;
 
-  const { pageState, setPageState } = useRootViewModelContext();
+  const { self, pageState, setPageState } = useRootViewModelContext();
 
   /**********************/
   /*   Room Variables   */
@@ -221,8 +219,8 @@ export const ChatViewModelProvider = ({ children }) => {
   // FIXME: temporary addition for dev build to test user creation
   // TODO: remove this when user creation is implemented
   useEffect(() => {
-    if (socket && !tempUsername) {
-      setTempUsername("schlurp");
+    if (socket && !self.username) {
+      self.username = "schlurp";
     }
   }, [socket, ""]);
 
@@ -230,7 +228,7 @@ export const ChatViewModelProvider = ({ children }) => {
   // If no user is logged in, try to create a temporary user
   useEffect(() => {
     // Try to create a temporary user
-    if (tempUsername) {
+    if (self.username) {
       setRooms(() => {
         return {};
       });
@@ -253,9 +251,9 @@ export const ChatViewModelProvider = ({ children }) => {
         }
       };
 
-      createTempUser(tempUsername);
+      createTempUser(self.username);
     }
-  }, [tempUsername, ""]);
+  }, [self.username, ""]);
 
   return (
     <ChatContext.Provider

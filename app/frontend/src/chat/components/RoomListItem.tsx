@@ -6,7 +6,6 @@ import {
   ListItemIcon,
   ListItemText
 } from "@mui/material";
-import { useChatContext } from "../chat.context";
 import {
   getRankIcon,
   getStatusIcon,
@@ -14,6 +13,7 @@ import {
   truncateText
 } from "../lib/helperFunctions";
 import { RoomType } from "../chat.types";
+import { useRootViewModelContext } from "../../root.context";
 
 interface RoomListItemProps {
   room: RoomType;
@@ -28,7 +28,7 @@ const RoomListItem: React.FC<RoomListItemProps> = ({
   onRoomSelect,
   onContextMenu
 }) => {
-  const { tempUsername } = useChatContext();
+  const { self } = useRootViewModelContext();
   return (
     <ListItem
       onClick={() => onRoomSelect(room.name)}
@@ -47,7 +47,7 @@ const RoomListItem: React.FC<RoomListItemProps> = ({
               room.hasUnreadMessages ? room.unreadMessagesCount : null
             }
           >
-            {renderAvatarGroup(room, tempUsername)}
+            {renderAvatarGroup(room, self.username)}
           </Badge>
         </ListItemIcon>
         <ListItemText
