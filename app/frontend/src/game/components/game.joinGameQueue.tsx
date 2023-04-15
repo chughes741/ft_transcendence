@@ -1,8 +1,7 @@
 import * as React from "react";
 import { Button } from "@mui/material";
 import { socket } from "src/contexts/WebSocket.context";
-import Box from "@mui/material/Box";
-import CircularProgress from "@mui/material/CircularProgress";
+import GameLoader from "./GameLoader";
 
 /**
  * This is a button that will join the game queue.
@@ -22,12 +21,6 @@ export default function JoinGameQueue() {
     });
   };
 
-  /** Leave game queue callback */
-  const leaveQueue = () => {
-    /** @todo emit leaveQueue message */
-    setInQueue(false);
-  };
-
   /** Invite player to lobby callback */
   const invitePlayerToLobby = () => {
     /** @todo player invite functionality  */
@@ -35,26 +28,10 @@ export default function JoinGameQueue() {
   };
 
   return (
-    <Box
-      sx={{
-        flexDirection: "column",
-        width: "100vw",
-        height: "100vh",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center"
-      }}
-    >
+     <>
       {inQueue ? (
         <>
-          <Button
-            onClick={leaveQueue}
-            variant="outlined"
-            color="error"
-          >
-            Leave Queue
-          </Button>
-          <CircularProgress sx={{ mt: 2 }} />
+          <GameLoader setInQueue={setInQueue}/>
         </>
       ) : (
         <>
@@ -75,6 +52,6 @@ export default function JoinGameQueue() {
           </Button>
         </>
       )}
-    </Box>
+    </>
   );
 }

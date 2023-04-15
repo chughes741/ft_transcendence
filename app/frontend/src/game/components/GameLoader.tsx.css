@@ -1,6 +1,9 @@
 .body-page {
-  height: 85vh;
+  height: 100%;
   width:100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 }
 
 .body-text {
@@ -90,6 +93,7 @@ h2 {
   white-space: nowrap;
   font-weight: 400;
   opacity: 0.1;
+  user-select: none;
 }
 
 h2::before {
@@ -103,6 +107,26 @@ h2::before {
   -webkit-text-stroke: 0 rgba(0,0,0,0.2);
   overflow: hidden;
   animation: animate 5s linear infinite;
+}
+
+.leave-queue-container {
+  height: 5vh;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
+.leave-queue-button {
+  display: flex;
+  justify-content: center;
+  width: 20vw;
+  font-size: 2rem;
+  font-family: Raleway, sans-serif;
+  color: #333333;
+  cursor: pointer;
+  user-select: none;
+  border: 2.5px solid rgba(0,0,0,0.2);
+  align-items: center;
 }
 
 @keyframes animate{
