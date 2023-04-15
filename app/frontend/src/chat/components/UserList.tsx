@@ -13,7 +13,8 @@ import {
   ChatMemberStatus,
   DevError,
   UpdateChatMemberRequest,
-  ChatMemberEntity
+  ChatMemberEntity,
+  UNBAN_USER
 } from "../chat.types";
 import { useChatContext } from "../chat.context";
 import { useProfileViewModelContext } from "../../profile/profile.viewModel";
@@ -129,6 +130,9 @@ export default function UserListView({ userList, handleClick }: UserListProps) {
   };
 
   const onMuteUser = (duration: number, status = ChatMemberStatus.MUTED) => {
+    duration === UNBAN_USER
+      ? (status = ChatMemberStatus.OK)
+      : (status = ChatMemberStatus.MUTED);
     sendUpdateRequest(duration, status, contextMenuUsersData.rank);
   };
 

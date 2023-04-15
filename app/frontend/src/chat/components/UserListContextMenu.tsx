@@ -4,7 +4,12 @@ import { PageState } from "src/root.model";
 import { Paper } from "@mui/material";
 import { useProfileViewModelContext } from "src/profile/profile.viewModel";
 import { useRootViewModelContext } from "src/root.context";
-import { ChatMemberRank, ChatMemberEntity } from "../chat.types";
+import {
+  ChatMemberRank,
+  ChatMemberEntity,
+  ChatMemberStatus,
+  UNBAN_USER
+} from "../chat.types";
 
 interface UserContextMenuProps {
   ownRank: ChatMemberRank;
@@ -24,10 +29,10 @@ interface UserContextMenuProps {
 }
 
 const durationOptions = [
+  { label: "1 minute", value: 1 },
   { label: "5 minutes", value: 5 },
   { label: "15 minutes", value: 15 },
   { label: "1 hour", value: 60 },
-  { label: "6 hours", value: 360 },
   { label: "12 hours", value: 720 },
   { label: "1 day", value: 1440 },
   { label: "3 days", value: 4320 },
@@ -80,6 +85,23 @@ const UserContextMenu: React.FC<UserContextMenuProps> = ({
 
   let adminOptions = [];
 
+  // Define a mute option. If the user is already Muted, change it to Unban, with duration of -1
+  let muteOption;
+  if (contextMenuData.chatMemberStatus === ChatMemberStatus.MUTED) {
+    muteOption = {
+      label: "Unmute User",
+      onClick: () => onMuteUser(UNBAN_USER)
+    };
+  } else {
+    muteOption = {
+      label: "Mute User",
+      submenu: durationOptions.map(({ label, value }) => ({
+        label,
+        onClick: () => onMuteUser(value)
+      }))
+    };
+  }
+
   if (ownRank === ChatMemberRank.OWNER || ownRank === ChatMemberRank.ADMIN) {
     if (contextMenuData.rank !== ChatMemberRank.OWNER) {
       adminOptions = [
@@ -98,13 +120,7 @@ const UserContextMenu: React.FC<UserContextMenuProps> = ({
             onClick: () => onBanUser(value)
           }))
         },
-        {
-          label: "Mute User",
-          submenu: durationOptions.map(({ label, value }) => ({
-            label,
-            onClick: () => onMuteUser(value)
-          }))
-        }
+        muteOption
       ];
     }
   }

@@ -1,8 +1,11 @@
+export const UNBAN_USER = -2;
+
 export enum ChatMemberStatus {
   OK = "OK",
   MUTED = "MUTED",
   BANNED = "BANNED"
 }
+
 export enum ChatMemberRank {
   USER = "USER",
   ADMIN = "ADMIN",
