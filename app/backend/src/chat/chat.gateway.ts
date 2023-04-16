@@ -24,6 +24,9 @@ import { AuthRequest } from "../auth/dto";
 export type DevError = {
   error: string;
 };
+export type DevSuccess = {
+  success: string;
+};
 
 /******************/
 /*    Requests    */
@@ -145,6 +148,11 @@ export class LeaveRoomRequest {
   username: string;
 }
 
+export class BlockUserRequest {
+  blocker: string;
+  blockee: string;
+}
+
 // FIXME: uncomment the following line to enable authentication
 // @UseGuards(JwtWsAuthGuard)
 @WebSocketGateway()
@@ -170,7 +178,21 @@ export class ChatGateway
 
   handleDisconnect(client: Socket) {
     // Remove the user connection
-    this.userConnectionsService.removeUserConnection(client.id, client.id);
+    const connections = this.userConnectionsService.removeUserConnection(
+      client.id,
+      client.id
+    );
+    if (typeof connections === "string") {
+      logger.log(
+        `Client ${client.id} has no more active connections, updating user status to OFFLINE`
+      );
+
+      this.prismaService.user.update({
+        where: { username: connections },
+        data: { status: UserStatus.OFFLINE }
+      });
+      this.userConnectionsService.removeUserEntries(connections);
+    }
 
     logger.log(`Client disconnected: ${client.id}`);
   }
@@ -399,8 +421,34 @@ export class ChatGateway
       return { error: userWasLoggedIn.message };
     }
 
+    // Update the user status to online
+    this.prismaService.user.update({
+      where: { username },
+      data: { status: UserStatus.ONLINE }
+    });
+
     // Add the user connection to the UserConnections map
     this.userConnectionsService.addUserConnection(username, client.id);
+
+    // Load the list of blocked users and users blocking the logged-in user
+    const [blockedUsers, blockingUsers] = await Promise.all([
+      this.prismaService.getUsersBlockedBy(username),
+      this.prismaService.getUsersBlocking(username)
+    ]);
+
+    blockedUsers.forEach((blockedUser) =>
+      this.userConnectionsService.addUserToBlocked(
+        username,
+        blockedUser.username
+      )
+    );
+    blockingUsers.forEach((blockingUser) =>
+      this.userConnectionsService.addUserToBlocked(
+        blockingUser.username,
+        username
+      )
+    );
+
     return username;
   }
 
@@ -721,9 +769,32 @@ export class ChatGateway
     const ret = await this.chatService.sendDirectMessage(req);
     if (ret instanceof Error) return { error: ret.message };
     const room = ret as ChatRoomEntity;
-    // bind all of both users' socket to the room
+    // bind all of both users' socket to the room, notify the new user of the room
     this.bindAllUserSocketsToRoom(req.sender, room.name);
     this.bindAllUserSocketsToRoom(req.recipient, room.name);
+    this.sendEventToAllUserSockets(req.recipient, "addedToNewChatRoom", room);
+
     return room;
+  }
+
+  /**
+   * Block a user from sending you direct messages
+   * @param {Socket} client
+   * @param {BlockUserRequest} req
+   * @returns {Promise<DevError | BlockedUserEntity>}
+   * @memberof ChatGateway
+   */
+  @SubscribeMessage("blockUser")
+  async blockUser(
+    client: Socket,
+    req: BlockUserRequest
+  ): Promise<DevError | { success: string }> {
+    logger.log(
+      `Received blockUser request from ${req.blocker} to block ${req.blockee}`
+    );
+    console.log(req);
+    const ret = await this.chatService.blockUser(req);
+    if (ret instanceof Error) return { error: ret.message };
+    return { success: "User blocked successfully" };
   }
 }

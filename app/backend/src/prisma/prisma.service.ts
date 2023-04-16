@@ -1,5 +1,6 @@
 import { Injectable, Logger } from "@nestjs/common";
 import {
+  BlockedUser,
   ChatMember,
   ChatMemberRank,
   ChatMemberStatus,
@@ -881,5 +882,104 @@ export class PrismaService extends PrismaClient {
     });
 
     return newRoom;
+  }
+
+  /**
+   * Adds a blocked user relationship between two users.
+   *
+   * @param {string} blockingId - The ID of the user doing the blocking.
+   * @param {string} blockedId - The ID of the user being blocked.
+   * @async
+   * @returns {Promise<BlockedUser>}
+   */
+  async addBlockedUser(
+    blockingId: string,
+    blockedId: string
+  ): Promise<BlockedUser> {
+    return await this.blockedUser.create({
+      data: {
+        blocker: {
+          connect: { id: blockingId }
+        },
+        blocked: {
+          connect: { id: blockedId }
+        }
+      }
+    });
+  }
+
+  /**
+   * Removes a blocked user relationship between two users.
+   *
+   * @param {string} blockingId - The ID of the user who did the blocking.
+   * @param {string} blockedId - The ID of the user who was blocked.
+   * @async
+   * @returns {Promise<void>}
+   */
+  async removeBlockedUser(
+    blockingId: string,
+    blockedId: string
+  ): Promise<void> {
+    await this.blockedUser.delete({
+      where: {
+        blockerId_blockedUserId: {
+          blockerId: blockingId,
+          blockedUserId: blockedId
+        }
+      }
+    });
+  }
+
+  /**
+   * Retrieves the users blocked by a user.
+   *
+   * @param {string} userId - The ID of the user who did the blocking.
+   * @async
+   * @returns {Promise<User[]>}
+   */
+  async getUsersBlockedBy(userId: string): Promise<User[]> {
+    const blockedUserRelations = await this.blockedUser.findMany({
+      where: {
+        blockerId: userId
+      },
+      select: {
+        blocked: true
+      }
+    });
+
+    const blockedUsers = blockedUserRelations.map(
+      (relation) => relation.blocked
+    );
+    return blockedUsers;
+  }
+
+  async getUsersBlocking(userId: string): Promise<User[]> {
+    const blockingUserRelations = await this.blockedUser.findMany({
+      where: {
+        blockedUserId: userId
+      },
+      select: {
+        blocker: true
+      }
+    });
+
+    const blockingUsers = blockingUserRelations.map(
+      (relation) => relation.blocker
+    );
+    return blockingUsers;
+  }
+
+  async checkIfBlocked(
+    blockerId: string,
+    blockedUserId: string
+  ): Promise<boolean> {
+    const blockedUser = await this.blockedUser.findFirst({
+      where: {
+        blockerId: blockerId,
+        blockedUserId: blockedUserId
+      }
+    });
+
+    return !!blockedUser;
   }
 }
