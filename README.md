@@ -40,8 +40,8 @@ have to tackle:
 - [ ] The user should be able to choose a unique name that will be displayed on the website.
 - [x] The user should be able to upload an avatar. If the user doesn’t upload an avatar, a default one must be set.
 - [ ] The user should be able to enable **two-factor authentication**. For instance, *Google Authenticator* or sending a text message to their phone.
-- [ ] The user should be able to add other users as friends and see their current status (online, offline, in a game, and so forth).
-- [ ] Stats (such as: wins and losses, ladder level, achievements, and so forth) have to be displayed on the user profile.
+- [x] The user should be able to add other users as friends and see their current status (online, offline, in a game, and so forth).
+- [x] Stats (such as: wins and losses, ladder level, achievements, and so forth) have to be displayed on the user profile.
 - [x] Each user should have a **Match History** including 1v1 games, ladder, and anything else useful. Anyone who is logged in should be able to consult it.
 
 ## II.4 Chat
@@ -49,11 +49,11 @@ You also have to create a chat for your users:
 
 - [x] The user should be able to create **channels** (chat rooms) that can be either public, or private, or protected by a password.
 - [x] The user should be able to send **direct messages** to other users.
-- [ ] The user should be able to block other users. This way, they will see no more messages from the account they blocked.
+- [x] The user should be able to block other users. This way, they will see no more messages from the account they blocked.
 - [x] The user who has created a new channel is automatically set as the **channel owner** until they leave it.
   - [x] The channel owner can set a password required to access the channel, change it, and also remove it.
-  - [ ] The channel owner is a channel **administrator**. They can set other users as administrators.
-  - [ ] The administrators of a channel can ban or mute users for a limited time.
+  - [x] The channel owner is a channel **administrator**. They can set other users as administrators.
+  - [x] The administrators of a channel can ban or mute users for a limited time.
 - [ ] The user should be able to invite other users to play a Pong game through the chat interface.
 - [X] The user should be able to access other players profiles through the chat interface.
 

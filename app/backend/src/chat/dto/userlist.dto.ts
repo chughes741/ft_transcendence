@@ -1,18 +1,20 @@
 import { ChatMemberRank, ChatMemberStatus } from "@prisma/client";
 
-export class updateChatMemberStatusDto {
-  memberRequestRank: ChatMemberRank;
-  memberToUpdateID: number;
-  memberToUpdateRANK: ChatMemberRank;
-  changeStatusTo: ChatMemberStatus;
-  forRoomName: string;
-  Penitence?: Date;
+export class UpdateChatMemberRequest {
+  queryingUser: string;
+  usernameToUpdate: string;
+  memberToUpdateUuid?: number;
+  roomName: string;
+  status: ChatMemberStatus;
+  queryingMemberRank: ChatMemberRank;
+  memberToUpdateRank: ChatMemberRank;
+  duration?: number; // in minutes
 }
 
-export class kickMemberDto {
-  ChatMemberToKickId: number;
-  ChatMemberToKickName: string;
+export class KickMemberRequest {
+  memberToKickUUID?: number;
+  memberToKickUsername: string;
+  memberToKickRank: ChatMemberRank;
   roomName: string;
-  memberRequestingRank: ChatMemberRank;
-  memberToKickStatus: ChatMemberRank;
+  queryingMemberRank: ChatMemberRank;
 }

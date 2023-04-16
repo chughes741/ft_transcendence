@@ -15,6 +15,7 @@ import { UserStatus } from "kingpong-lib";
 import ButtonFunky from "../../components/ButtonFunky";
 import { socket } from "../../contexts/WebSocket.context";
 import UserStatusBadge from "../../components/UserStatusBadge";
+import { AddCircleOutline, PersonAdd } from "@mui/icons-material";
 
 export interface UserEntity {
   username: string;
@@ -135,6 +136,7 @@ export const InviteUsersModal: React.FC<InviteUsersToRoomProps> = ({
           Cancel
         </Button>
         <ButtonFunky
+          icon={<PersonAdd />}
           onClick={handleInvite}
           content="Invite to Room"
           width="50%"

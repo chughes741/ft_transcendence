@@ -21,6 +21,7 @@ import { MatchHistoryItem, ProfileEntity, UserStatus } from "kingpong-lib";
 
 /** View Model */
 import { useProfileViewModelContext } from "src/profile/profile.viewModel";
+import React from "react";
 
 type StyledBadgeProps = {
   status: UserStatus;
@@ -50,7 +51,8 @@ const StyledBadge = styled(Badge)<StyledBadgeProps>(({ theme, status }) => ({
  * @returns {JSX.Element | null}
  */
 function ProfileHeader(): JSX.Element | null {
-  const { profile } = useProfileViewModelContext();
+  const { profile, matchHistory, getWinPercentage, getLossPercentage } =
+    useProfileViewModelContext();
 
   return (
     <>
@@ -62,7 +64,12 @@ function ProfileHeader(): JSX.Element | null {
           >
             <Grid
               item
-              xs={4}
+              xs={6}
+              sx={{
+                display: "flex",
+                justifyContent: "end",
+                paddingRight: "1vw"
+              }}
             >
               <StyledBadge
                 overlap="circular"
@@ -72,14 +79,14 @@ function ProfileHeader(): JSX.Element | null {
               >
                 <Avatar
                   src={profile.avatar}
-                  sx={{ width: "4rem", height: "4rem" }}
+                  sx={{ width: "7rem", height: "7rem" }}
                 ></Avatar>
               </StyledBadge>
             </Grid>
             <Grid
               container
               item
-              xs={8}
+              xs={6}
             >
               <Grid
                 item
@@ -92,6 +99,24 @@ function ProfileHeader(): JSX.Element | null {
                 xs={12}
               >
                 <Typography>Joined: {profile.createdAt}</Typography>
+              </Grid>
+              <Grid
+                item
+                xs={12}
+              >
+                <Typography>Matches played: {matchHistory.length !== null ? matchHistory.length : "0"}</Typography>
+              </Grid>
+              <Grid
+                item
+                xs={12}
+              >
+                <Typography>Win percentage: {getWinPercentage()}%</Typography>
+              </Grid>
+              <Grid
+                item
+                xs={12}
+              >
+                <Typography>Loss percentage: {getLossPercentage()}%</Typography>
               </Grid>
             </Grid>
           </Grid>

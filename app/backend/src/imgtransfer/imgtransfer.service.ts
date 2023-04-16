@@ -2,7 +2,7 @@ import { Injectable } from "@nestjs/common";
 import { PrismaService } from "src/prisma/prisma.service";
 import * as fs from "fs";
 import * as path from "path";
-import { dataTransfer} from "./dto/imgtransfer.dto";
+import { dataTransfer } from "./dto/imgtransfer.dto";
 
 const isUrlValid = (url: string) => {
   // Regular expression for checking if the url is valid
@@ -14,7 +14,10 @@ const isUrlValid = (url: string) => {
 export class ImgTransferService {
   constructor(private prismaService: PrismaService) {}
 
-  async updateProfilePic(userName: string, data: dataTransfer): Promise<string> {
+  async updateProfilePic(
+    userName: string,
+    data: dataTransfer
+  ): Promise<string> {
     const users = this.prismaService.GetProfile({ username: userName });
     const imageUrl = (await users).avatar;
     console.log("URL: " + imageUrl);
@@ -22,7 +25,8 @@ export class ImgTransferService {
       const imgPth = path
         .join(__dirname, "/img", path.basename(imageUrl))
         .replace("/dist/src/imgtransfer", "");
-      fs.unlinkSync(imgPth);
+        if (fs.existsSync(imgPth))
+          fs.unlinkSync(imgPth);
     }
     this.prismaService.updateAvatar(userName, data.URL);
     return;

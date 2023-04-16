@@ -15,14 +15,14 @@ model User {
   id String @id @default(uuid())
 
   username String @unique // To prevent duplicates in the DB
-  hash     String
 
-  avatar String  @default("default_avatar.png")
-  email  String? @unique // To prevent duplicates in the DB
+  avatar String @default("default_avatar.png")
+  email  String @unique // To prevent duplicates in the DB
 
   firstName String?
   lastName  String?
   status    UserStatus @default(OFFLINE)
+  // is2faEnabled Boolean    @default(false)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

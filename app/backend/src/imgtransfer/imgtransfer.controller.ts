@@ -1,9 +1,4 @@
-import {
-  Body,
-  Controller,
-  Injectable,
-  UploadedFile
-} from "@nestjs/common";
+import { Body, Controller, Injectable, UploadedFile } from "@nestjs/common";
 import { Post } from "@nestjs/common";
 import { Express } from "express";
 import { FileInterceptor } from "@nestjs/platform-express";

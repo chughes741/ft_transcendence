@@ -6,16 +6,16 @@
     align-items: center;
 }
 
-.button-funky {
+.dynamic-icon-button {
     --g1: rgb(34, 170, 186);
     --g2: rgb(206, 106, 12);
     --g3: rgb(242, 68, 4);
-    border-radius: 2rem;
+    border-radius: 1rem;
     cursor: pointer;
     color: white;
     position: relative;
     display: flex;
-    padding: 0.5rem 1rem;
+    padding: 0rem 0.5rem;
     margin: 1rem 0;
     justify-content: center;
     align-items: center;
@@ -23,7 +23,7 @@
     translate: 5% 0;
 }
 
-.button-funky:before {
+.dynamic-icon-button:before {
     background: linear-gradient(150deg,
             transparent 0% 33%,
             var(--g1) 66%,
@@ -42,25 +42,20 @@
     z-index: 1;
 }
 
-.button-funky:active {
+.dynamic-icon-button:active {
     transform: scale(0.95);
 }
 
-.button-funky:hover:before {
+.dynamic-icon-button:hover:before {
     background-position: 100% 100%;
     transform: scale(1.07);
 }
 
-.button-funky:hover .button-funky-bg {
+.dynamic-icon-button:hover .dynamic-icon-button-bg {
     background-position: -10% 0;
 }
 
-.button-funky:hover .button-funky-content {
-    opacity: 1;
-    transform: translateX(-2%);
-}
-
-.button-funky-bg {
+.dynamic-icon-button-bg {
     background-image: radial-gradient(rgba(255, 255, 255, 0.2) 8%,
             transparent 8%);
     background-position: 0;
@@ -76,7 +71,7 @@
     width: 90%;
 }
 
-.button-funky-content {
+.dynamic-icon-button-content {
     position: relative;
     font-size: 18px;
     color: white;
@@ -89,7 +84,6 @@
     justify-content: center;
     justify-items: center;
     justify-self: center;
-    text-align: center;
     text-align: center;
     z-index: 3;
     padding: 8px 20px;

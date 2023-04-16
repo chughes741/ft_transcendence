@@ -5,14 +5,11 @@ import ChatAreaView from "./components/ChatArea";
 import { useChatContext } from "./chat.context";
 import UserListView from "./components/UserList";
 import { useRoomManager } from "./lib/roomManager";
+import { useRootViewModelContext } from "../root.context";
 
 export const ChatView: React.FC = () => {
-  const {
-    currentRoomName,
-    tempUsername,
-    setTempUsername,
-    handleContextMenuUsers
-  } = useChatContext();
+  const { currentRoomName, handleContextMenuUsers } = useChatContext();
+  const { self } = useRootViewModelContext();
   const { rooms } = useRoomManager();
 
   return (
@@ -30,9 +27,9 @@ export const ChatView: React.FC = () => {
           style={{ width: "100%" }}
         >
           <DevLoginBanner
-            username={tempUsername}
+            username={self.username}
             onLoginAsSomeoneElse={(username) => {
-              setTempUsername(username);
+              self.username = username;
             }}
           />
         </Box>
