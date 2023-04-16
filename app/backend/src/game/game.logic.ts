@@ -5,7 +5,7 @@ import { GameConfig, PaddleConfig, BallConfig } from "./config/game.config";
 import { WebSocketServer, WebSocketGateway } from "@nestjs/websockets";
 import { Server } from "socket.io";
 import { Vec2 } from "./vector";
-import { GameData, BallData, gameLobby } from "./game.types";
+import { GameData, BallData, gameLobby, PaddleData } from "./game.types";
 import { degToRad, checkIntersect } from "./game.utils";
 import {
   ServerGameStateUpdateEvent,
@@ -125,6 +125,9 @@ export class GameLogic {
     //Get a time difference between last update and this update
     const time_diff: number = (Date.now() - gamestate.last_update_time) / 1000;
 
+    // console.log("padleft: " + gamestate.paddle_left.pos.y);
+    // console.log("padright: " + gamestate.paddle_right.pos.y);
+    console.log("score: " + gamestate.score[0] + " | " + gamestate.score[1]);
     //Find new ball position
     curBall.pos = Vec2.scaleAndAdd(
       prevBall.pos,
@@ -132,9 +135,50 @@ export class GameLogic {
       prevBall.speed * time_diff
     );
 
-
+    //First need to check for paddle collision
+    if (curBall.direction.x > 0) {
+      //Check for collision with right side paddle
+      const intersect: Vec2 = checkIntersect(
+        prevBall.pos,
+        curBall.pos,
+        new Vec2(
+          (GameConfig.playAreaWidth / 2) - PaddleConfig.borderOffset,
+          gamestate.paddle_right.pos.y + (PaddleConfig.height / 2)
+        ),
+        new Vec2(
+          (GameConfig.playAreaWidth / 2) - PaddleConfig.borderOffset,
+          gamestate.paddle_right.pos.y - (PaddleConfig.height / 2)
+        )
+      );
+      if (intersect) {
+        const remainder: Vec2 = Vec2.sub(curBall.pos, intersect);
+        curBall.pos = Vec2.add(intersect, remainder);
+        curBall.direction.x = -curBall.direction.x;
+        return curBall;
+      }
+    } else if (curBall.direction.x < 0) {
+      //Check for collisions with left side paddle
+      const intersect: Vec2 = checkIntersect(
+        prevBall.pos,
+        curBall.pos,
+        new Vec2(
+          -(GameConfig.playAreaWidth / 2) + PaddleConfig.borderOffset,
+          gamestate.paddle_left.pos.y + (PaddleConfig.height / 2)
+        ),
+        new Vec2(
+          - (GameConfig.playAreaWidth / 2) + PaddleConfig.borderOffset,
+          gamestate.paddle_left.pos.y - (PaddleConfig.height / 2)
+        )
+      );
+      if (intersect) {
+        const remainder: Vec2 = Vec2.sub(curBall.pos, intersect);
+        curBall.pos = Vec2.add(intersect, remainder);
+        curBall.direction.x = -curBall.direction.x;
+        return curBall;
+      }
+    }
     // Check if new ball position requires collision detection
-    if (curBall.pos.x >= GameConfig.playAreaWidth / 2 - BallConfig.radius) {
+    if (curBall.pos.x >= GameConfig.playAreaWidth / 2) {
       //Check collision between right wall and ball
       //First get intersection
       const intersect: Vec2 = checkIntersect(
@@ -144,32 +188,26 @@ export class GameLogic {
         GameConfig.botRight
       );
 
-      // If return was not null there is an intersection
+      // If Intersect reset game round and set a point for left player
       if (intersect) {
-        const remainder: Vec2 = Vec2.sub(curBall.pos, intersect); //Find the remaining of the vector that goes past the boundary
-        console.log("Remainder: " + remainder.x + remainder.y);
-        curBall.pos = Vec2.add(intersect, remainder); //Add the remainder to the intersect point to get the new point
-        curBall.direction.x = -curBall.direction.x; //Invert the direction
+        gamestate.is_new_round = true;
+        gamestate.score[0]++;
+        return curBall;
       }
-    } else if (
-      curBall.pos.x <= -(GameConfig.playAreaWidth / 2 + BallConfig.radius)
-    ) {
+    } else if (curBall.pos.x <= -(GameConfig.playAreaWidth / 2)) {
       const intersect: Vec2 = checkIntersect(
         prevBall.pos,
         curBall.pos,
         GameConfig.topLeft,
         GameConfig.botLeft
       );
+      // If Intersect reset game round and set a point for right player
       if (intersect) {
-        const remainder: Vec2 = Vec2.sub(curBall.pos, intersect);
-        console.log("Remainder: " + remainder.x + remainder.y);
-        curBall.pos = Vec2.add(intersect, remainder);
-        curBall.direction.x = -curBall.direction.x;
+        gamestate.is_new_round = true;
+        gamestate.score[1]++;
+        return curBall;
       }
-    } else if (
-      curBall.pos.y >=
-      GameConfig.playAreaHeight / 2 - BallConfig.radius
-    ) {
+    } else if (curBall.pos.y >= GameConfig.playAreaHeight / 2) {
       const intersect: Vec2 = checkIntersect(
         prevBall.pos,
         curBall.pos,
@@ -178,13 +216,10 @@ export class GameLogic {
       );
       if (intersect) {
         const remainder: Vec2 = Vec2.sub(curBall.pos, intersect);
-        console.log("Remainder: " + remainder.x + remainder.y);
         curBall.pos = Vec2.add(intersect, remainder);
         curBall.direction.y = -curBall.direction.y;
       }
-    } else if (
-      curBall.pos.y <= -(GameConfig.playAreaHeight / 2 + BallConfig.radius)
-    ) {
+    } else if (curBall.pos.y <= -(GameConfig.playAreaHeight / 2)) {
       const intersect: Vec2 = checkIntersect(
         prevBall.pos,
         curBall.pos,
@@ -193,12 +228,12 @@ export class GameLogic {
       );
       if (intersect) {
         const remainder: Vec2 = Vec2.sub(curBall.pos, intersect);
-        console.log("Remainder: " + remainder.x + remainder.y);
         curBall.pos = Vec2.add(intersect, remainder);
         curBall.direction.y = -curBall.direction.y;
       }
     }
 
+    //Janky simple collision
     // if (curBall.pos.x >= GameConfig.playAreaWidth / 2 - BallConfig.radius) {
     //   curBall.direction.x = -curBall.direction.x;
     // } else if (
@@ -215,7 +250,7 @@ export class GameLogic {
     // ) {
     //   curBall.direction.y = -curBall.direction.y;
     // }
-    //If collision was with a paddle, increase ball speed
+    //TODO: If collision was with a paddle, increase ball speed!!!
 
     return curBall;
   }

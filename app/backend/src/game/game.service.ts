@@ -72,7 +72,6 @@ export class GameService {
 
     //Init new game object
     newLobby.gamestate = this.gameLogic.initNewGame(newLobby.players);
-
     //Add lobby to map of lobbies
     //TODO: Swap this to a setter function in the data module
     this.gameModuleData.addLobby(newLobby);

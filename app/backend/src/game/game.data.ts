@@ -94,7 +94,7 @@ export class GameModuleData {
     //Find correct match
     GameModuleData.lobbies.forEach((element) => {
       //If match_id is found then update paddle pos
-      if (element.match_id === payload.match_id) {
+      if (element.lobby_id === payload.lobby_id) {
         if (payload.username === element.players[0]) {
           element.gamestate.paddle_left.pos.y = payload.paddle_position;
         } else {

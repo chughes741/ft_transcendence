@@ -26,7 +26,7 @@ function Ball() {
   return (
     <mesh ref={mesh}>
       <sphereGeometry args={[BallConfig.radius]} />
-      <meshPhongMaterial color={GameColours.ball} />
+      <meshStandardMaterial emissive={"orange"} emissiveIntensity={50} />
     </mesh>
   );
 }
@@ -56,7 +56,7 @@ function PaddleLeft() {
         match_id: lobbyId,
         lobby_id: lobbyId,
         username: self.username,
-        paddle_position: state.pointer.y
+        paddle_position: state.pointer.y * 4,
       });
     } else {
       ref.current.position.y = gameState.paddle_left_y;
@@ -92,7 +92,7 @@ function PaddleRight() {
         match_id: lobbyId,
         lobby_id: lobbyId,
         username: self.username,
-        paddle_position: state.pointer.y
+        paddle_position: state.pointer.y * 4,
       });
     } else {
       ref.current.position.y = gameState.paddle_right_y;
