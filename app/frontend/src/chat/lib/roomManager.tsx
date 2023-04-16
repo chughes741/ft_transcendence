@@ -200,8 +200,9 @@ export const RoomManagerProvider = ({ children }) => {
       } else {
         newRooms[roomName].messages.push(...messages);
         newRooms[roomName].latestMessage = messages[messages.length - 1];
-        newRooms[roomName].lastActivity =
-          newRooms[roomName].latestMessage.timestamp;
+        newRooms[roomName].lastActivity = newRooms[roomName].latestMessage
+          ? new Date(Date.now())
+          : undefined;
       }
     });
   };
