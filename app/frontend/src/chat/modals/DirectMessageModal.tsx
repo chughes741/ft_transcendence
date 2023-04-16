@@ -39,6 +39,7 @@ export const DirectMessageModal: React.FC<DirectMessageModalProps> = ({
     return null;
   }
 
+  const { sendDirectMessage } = useChatContext();
   const { self } = useRootViewModelContext();
   const [availableUsers, setAvailableUsers] = useState<UserEntity[]>([]);
   const [selectedUser, setSelectedUser] = useState<UserEntity | null>(null);
@@ -53,6 +54,7 @@ export const DirectMessageModal: React.FC<DirectMessageModalProps> = ({
 
     setSelectedUser(null);
     closeModal();
+    sendDirectMessage(selectedUser.username);
   };
 
   const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {

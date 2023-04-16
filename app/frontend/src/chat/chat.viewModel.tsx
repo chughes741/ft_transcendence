@@ -8,7 +8,9 @@ import {
   DevError,
   ChatRoomStatus,
   AuthRequest,
-  LeaveRoomRequest
+  LeaveRoomRequest,
+  SendDirectMessageRequest,
+  ChatRoomPayload
 } from "./chat.types";
 import {
   handleChatRoomMemberLeftCreator,
@@ -23,6 +25,7 @@ import { handleSocketErrorResponse } from "./lib/helperFunctions";
 
 export interface ChatViewModelType extends ChatModelType {
   joinRoom: (roomName: string, password: string) => Promise<boolean>;
+  sendDirectMessage: (username: string) => Promise<boolean>;
   sendRoomMessage: (roomName: string, message: string) => Promise<boolean>;
   createNewRoom: (
     roomName: string,
@@ -139,6 +142,41 @@ export const ChatViewModelProvider = ({ children }) => {
         return newRooms;
       });
       resolve(true);
+    });
+  };
+
+  // Create a function sendDirectMessage that will take in a username, and check
+  // if a direct message room exists with that user. If it does, it will select
+  // that room. If it doesn't, it will create a new room with that user by sending
+  // a request to the server. The server will send back a response with the room name
+  const sendDirectMessage = async (username: string): Promise<boolean> => {
+    return new Promise<boolean>((resolve) => {
+      const req: SendDirectMessageRequest = {
+        username: username,
+        sender: self.username
+      };
+      console.log("Sending direct message: ", req);
+
+      socket.emit(
+        "sendDirectMessage",
+        req,
+        (response: ChatRoomPayload | DevError) => {
+          if (handleSocketErrorResponse(response)) {
+            console.log(
+              "Error response from send direct message: ",
+              response.error
+            );
+            resolve(false);
+          } else {
+            console.log(
+              "Success response from send direct message: ",
+              response
+            );
+            addChatRoom(response);
+            resolve(true);
+          }
+        }
+      );
     });
   };
 
@@ -292,6 +330,7 @@ export const ChatViewModelProvider = ({ children }) => {
         ...chatModel,
         joinRoom,
         sendRoomMessage,
+        sendDirectMessage,
         createNewRoom,
         leaveRoom,
         changeRoomStatus,

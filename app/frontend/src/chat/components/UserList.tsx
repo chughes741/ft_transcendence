@@ -35,10 +35,13 @@ export default function UserListView({ userList, handleClick }: UserListProps) {
     setCurrentRoomName,
     setContextMenuUsersPosition,
     setContextMenuUsersData,
-    setContextMenuUsersVisible
-  } = useChatContext();
-  const { updateRooms } = useRoomManager();
+    setContextMenuUsersVisible,
 
+    sendRoomMessage
+  } = useChatContext();
+
+  const { sendDirectMessage } = useChatContext();
+  const { updateRooms } = useRoomManager();
   const { setUser, addFriend } = useProfileViewModelContext();
   const { self, setPageState } = useRootViewModelContext();
 
@@ -179,6 +182,7 @@ export default function UserListView({ userList, handleClick }: UserListProps) {
   const onSendDirectMessage = () => {
     console.log("Send Direct Message");
     setContextMenuUsersVisible(false);
+    sendDirectMessage(contextMenuUsersData.username);
   };
 
   const onAddFriend = () => {

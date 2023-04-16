@@ -114,6 +114,11 @@ export interface LeaveRoomRequest {
   username: string;
 }
 
+export interface SendDirectMessageRequest {
+  username: string;
+  sender: string;
+}
+
 export interface UpdateChatRoomRequest {
   username: string;
   roomName: string;
