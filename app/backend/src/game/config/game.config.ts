@@ -1,8 +1,8 @@
 import { Vec2 } from "../vector";
 
 export class GameConfig {
-  static readonly playAreaWidth: number = 6;
-  static readonly playAreaHeight: number = 4;
+  static readonly playAreaWidth: number = 15.5;
+  static readonly playAreaHeight: number = 7.5;
   static readonly serverUpdateRate: number = 17;
   static readonly topLeft: Vec2 = {x: -(GameConfig.playAreaWidth / 2), y: GameConfig.playAreaHeight / 2};
   static readonly topRight: Vec2 = {x: GameConfig.playAreaWidth / 2, y: GameConfig.playAreaHeight / 2};
@@ -22,8 +22,8 @@ export class PaddleConfig {
 }
 
 export class BallConfig {
-  static readonly initialSpeed: number = 0.75;
-  static readonly maxSpeed: number = 2;
+  static readonly initialSpeed: number = 2.5;
+  static readonly maxSpeed: number = 10;
   static readonly maxServeAngle: number = 120;
   static readonly radius: number = 0.1;
 }

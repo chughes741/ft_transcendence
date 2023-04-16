@@ -6,17 +6,20 @@ import { GameStateDto } from "./game.types";
 import { BallConfig, GameColours, PaddleConfig } from "./game.config";
 import { Mesh } from "three";
 import { ServerGameStateUpdateEvent, GameEvents, GameState} from "kingpong-lib"
+import { useGameViewModelContext } from "./game.viewModel";
+import { useRootViewModelContext } from "src/root.context";
 /**
  *
  * @param gameState
  * @returns
  */
-function Ball(gameState: GameStateDto) {
+function Ball() {
   const mesh = useRef<Mesh>();
-
+  const { gameState } = useGameViewModelContext();
   useFrame(() => {
-    mesh.current.position.x = gameState.ball_pos_x;
-    mesh.current.position.y = gameState.ball_pos_y;
+    console.log(gameState);
+    mesh.current.position.x = gameState.ball_x;
+    mesh.current.position.y = gameState.ball_y;
     mesh.current.position.z = 0;
   });
 
@@ -28,26 +31,35 @@ function Ball(gameState: GameStateDto) {
   );
 }
 
+// export declare class ClientGameStateUpdateRequest {
+//   match_id: string;
+//   lobby_id: string;
+//   username: string;
+//   paddle_position: number;
+// }
+
 /**
  *
  * @param gameState
  * @returns
  */
-function PaddleLeft(gameState: GameStateDto) {
+function PaddleLeft() {
   const ref = useRef<Mesh>(null!);
-
+  const {playerSide, lobbyId, gameState} = useGameViewModelContext();
+  const { self } = useRootViewModelContext();
   // Update paddle position based on mouse position
   // state.pointer gives a value between -1 and 1, so need to multiply by the gamePlayArea / 2 to get proper position
   useFrame((state) => {
-    if (gameState.player_side === "left") {
+    if (playerSide === "left") {
       ref.current.position.y = state.pointer.y * 4;
       socket.emit(GameEvents.ClientGameStateUpdate, {
-        match_id: gameState.match_id,
-        player_side: gameState.player_side,
-        paddle_pos: state.pointer.y
+        match_id: lobbyId,
+        lobby_id: lobbyId,
+        username: self.username,
+        paddle_position: state.pointer.y
       });
     } else {
-      ref.current.position.y = gameState.paddle_left_pos;
+      ref.current.position.y = gameState.paddle_left_y;
     }
   });
   return (
@@ -68,20 +80,22 @@ function PaddleLeft(gameState: GameStateDto) {
  * @param gameState
  * @returns
  */
-function PaddleRight(gameState: GameStateDto) {
+function PaddleRight() {
   const ref = useRef<Mesh>(null!);
-  const get = useThree((state) => state.get);
+  const {playerSide, lobbyId, gameState} = useGameViewModelContext();
+  const { self } = useRootViewModelContext();
 
-  useFrame(() => {
-    if (gameState.player_side === "right") {
-      ref.current.position.y = get().pointer.y * 4;
+  useFrame((state) => {
+    if (playerSide === "right") {
+      ref.current.position.y = state.pointer.y * 4;
       socket.emit(GameEvents.ClientGameStateUpdate, {
-        match_id: gameState.match_id,
-        player_side: gameState.player_side,
-        paddle_pos: ref.current.position.y
+        match_id: lobbyId,
+        lobby_id: lobbyId,
+        username: self.username,
+        paddle_position: state.pointer.y
       });
     } else {
-      ref.current.position.y = gameState.paddle_right_pos;
+      ref.current.position.y = gameState.paddle_right_y;
     }
   });
   return (
@@ -168,23 +182,12 @@ function OuterFrameRight() {
  * @returns
  */
 export default function Game() {
-  const gamestate: GameStateDto | null = new GameStateDto(
-    "",
-    "right",
-    0,
-    0,
-    0,
-    0
-  );
+
+  const { gameState, setGameState } = useGameViewModelContext();
 
   socket.on(GameEvents.ServerGameStateUpdate, (payload: GameState) => {
-    gamestate.ball_pos_x = payload.ball_x;
-    gamestate.ball_pos_y = payload.ball_y;
-    // gameState.match_id = payload.game_state.match_id;
-    gamestate.paddle_left_pos = payload.paddle_left_y;
-    gamestate.paddle_right_pos = payload.paddle_right_y;
+    setGameState(payload);
   });
-
   // useEffect(() => {
   //   socket.on(GameEvents.ServerGameStateUpdate, (payload: GameState) => {
   //     gamestate.ball_pos_x = payload.ball_x;
@@ -199,21 +202,21 @@ export default function Game() {
   //   };
   // }, [gamestate]);
 
-  if (!gamestate) return <div>Loading...</div>;
+  if (!gameState) return <div>Loading...</div>;
 
   return (
     <Canvas>
       {/* Gameplay Objects */}
-      <Ball {...gamestate} />
-      <PaddleLeft {...gamestate} />
-      <PaddleRight {...gamestate} />
+      <Ball />
+      <PaddleLeft />
+      <PaddleRight />
 
       {/* Scene Objects */}
       <Floor />
-      <OuterFrameTop />
+      {/* <OuterFrameTop />
       <OuterFrameBottom />
       <OuterFrameLeft />
-      <OuterFrameRight />
+      <OuterFrameRight /> */}
 
       {/* Lighting */}
       <ambientLight
@@ -227,3 +230,12 @@ export default function Game() {
     </Canvas>
   );
 }
+
+
+  //Get local copy of socket
+  // const socket = useContext(WebSocketContext);
+  // let gameState: GameData = new GameData();
+  // socket.on("serverUpdate", (GameState: GameData) => {
+  //   console.log(GameState);
+  //   gameState = GameState;
+  // });

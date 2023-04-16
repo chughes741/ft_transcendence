@@ -47,7 +47,9 @@ export const GameViewModelProvider = ({ children }) => {
     scoreLeft,
     setScoreLeft,
     scoreRight,
-    setScoreRight
+    setScoreRight, 
+    gameState,
+    setGameState
   } = gameModel;
 
   const { self } = useRootViewModelContext();
