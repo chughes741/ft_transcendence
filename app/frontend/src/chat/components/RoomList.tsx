@@ -1,7 +1,14 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import "src/styles/chat/RoomList.css";
 import { CreateRoomModal } from "../modals/CreateRoomModal";
-import { Box, List } from "@mui/material";
+import {
+  Box,
+  Collapse,
+  List,
+  ListItemButton,
+  ListItemText,
+  Typography
+} from "@mui/material";
 import { useChatContext } from "../chat.context";
 
 import { Snackbar } from "@mui/material";
@@ -19,10 +26,12 @@ import {
   ChatMemberRank,
   ChatRoomStatus,
   DevError,
-  ListUsersRequest
+  ListUsersRequest,
+  RoomType
 } from "../chat.types";
 import { RoomPasswordModal } from "../modals/RoomPasswordModal";
 import { useRootViewModelContext } from "../../root.context";
+import { ExpandLess, ExpandMore } from "@mui/icons-material";
 
 const RoomList: React.FC = () => {
   const { rooms } = useRoomManager();
@@ -63,20 +72,18 @@ const RoomList: React.FC = () => {
   } = useChatContext();
   const { self } = useRootViewModelContext();
 
-  const [username, setUsername] = React.useState<string>(null);
-  const [selectedUsers, setSelectedUsers] = React.useState<UserEntity[]>([]);
-  const [availableUsers, setAvailableUsers] = React.useState<UserEntity[]>([]);
+  const [username, setUsername] = useState<string>(null);
+  const [selectedUsers, setSelectedUsers] = useState<UserEntity[]>([]);
+  const [availableUsers, setAvailableUsers] = useState<UserEntity[]>([]);
 
-  const [directMessagesVisible, setDirectMessagesVisible] =
-    React.useState(false);
-  const [unreadMessagesVisible, setUnreadMessagesVisible] =
-    React.useState(false);
-  const [ownedRoomsVisible, setOwnedRoomsVisible] = React.useState(false);
-  const [adminRoomsVisible, setAdminRoomsVisible] = React.useState(false);
+  const [directMessagesVisible, setDirectMessagesVisible] = useState(false);
+  const [adminRoomsVisible, setAdminRoomsVisible] = useState(false);
+  const [ownedRoomsVisible, setOwnedRoomsVisible] = useState(false);
+  const [userRoomsVisible, setUserRoomsVisible] = useState(false);
 
   const directMessages = Object.entries(rooms)
     .filter(([, room]) => room.status === ChatRoomStatus.DIALOGUE)
-    .map(([name, room]) => {
+    .map<[string, RoomType]>(([name, room]) => {
       const otherUser = Object.entries(room.users).find(
         ([, member]) => member.username !== self.username
       );
@@ -93,11 +100,41 @@ const RoomList: React.FC = () => {
     ([, room]) => room.rank === ChatMemberRank.USER
   );
 
-  console.warn("RoomList: ", rooms);
-  console.warn("directMessages: ", directMessages);
-  console.warn("ownedRooms: ", ownedRooms);
-  console.warn("adminRooms: ", adminRooms);
-  console.warn("userRooms: ", userRooms);
+  const renderSection = (
+    showSection: boolean,
+    setShowSection: React.Dispatch<React.SetStateAction<boolean>>,
+    title: string,
+    roomsArray: [string, RoomType][]
+  ) => (
+    <>
+      <ListItemButton onClick={() => setShowSection(!showSection)}>
+        <ListItemText primary={title} />
+        {showSection ? <ExpandLess /> : <ExpandMore />}
+      </ListItemButton>
+      {Object.entries(roomsArray).length > 0 && (
+        <Collapse
+          in={showSection}
+          timeout="auto"
+          unmountOnExit
+        >
+          <List
+            component="div"
+            disablePadding
+          >
+            {roomsArray.map(([roomName, room]) => (
+              <RoomListItem
+                key={roomName}
+                room={room}
+                isSelected={currentRoomName === roomName}
+                onRoomSelect={selectRoom}
+                onContextMenu={handleContextMenu}
+              />
+            ))}
+          </List>
+        </Collapse>
+      )}
+    </>
+  );
 
   // Emit a "listAvailableUsers" socket event when the roomName changes
   useEffect(() => {
@@ -135,7 +172,7 @@ const RoomList: React.FC = () => {
   /****************/
   /*   Snackbar   */
   /****************/
-  const [addedRoomName, setAddedRoomName] = React.useState("");
+  const [addedRoomName, setAddedRoomName] = useState("");
 
   useEffect(() => {
     socket.on("addedToNewChatRoom", (room) => {
@@ -159,22 +196,34 @@ const RoomList: React.FC = () => {
     <div className="room-list">
       <Box sx={{ overflow: "auto" }}>
         <List>
-          {rooms &&
-            Object.entries(rooms)
-              .sort(
-                ([, roomA], [, roomB]) =>
-                  new Date(roomB.lastActivity).getTime() -
-                  new Date(roomA.lastActivity).getTime()
-              )
-              .map(([roomName, room]) => (
-                <RoomListItem
-                  key={roomName}
-                  room={room}
-                  isSelected={currentRoomName === roomName}
-                  onRoomSelect={selectRoom}
-                  onContextMenu={handleContextMenu}
-                />
-              ))}
+          {rooms && (
+            <>
+              {renderSection(
+                directMessagesVisible,
+                setDirectMessagesVisible,
+                "Direct Messages",
+                directMessages
+              )}
+              {renderSection(
+                ownedRoomsVisible,
+                setOwnedRoomsVisible,
+                "Owned Rooms",
+                ownedRooms
+              )}
+              {renderSection(
+                adminRoomsVisible,
+                setAdminRoomsVisible,
+                "Admin Rooms",
+                adminRooms
+              )}
+              {renderSection(
+                userRoomsVisible,
+                setUserRoomsVisible,
+                "User Rooms",
+                userRooms
+              )}
+            </>
+          )}
         </List>
       </Box>
       <RoomContextMenu
