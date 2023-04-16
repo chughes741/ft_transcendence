@@ -90,16 +90,20 @@ export default function TopBar() {
             onClick={() => setPageState(PageState.Game)}
           />
         </Box>
-
         {/* User menu */}
         <Box>
           <IconButton
             onClick={handleOpenUserMenu}
             sx={{ p: 0, mr: "1rem", ml: "1rem" }}
+            disableRipple={true}
+            disableFocusRipple={true}
           >
+            <Box sx={{ marginRight:"0.5vw", fontWeight:"600"}}>
+              {self.username}
+            </Box>
             <Avatar
               src={self.avatar}
-              sx={{ width: "4rem", height: "4rem" }}
+              sx={{ width: "4rem", height: "4rem"  }}
             />
           </IconButton>
           <Menu
