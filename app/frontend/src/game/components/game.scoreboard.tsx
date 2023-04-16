@@ -1,8 +1,7 @@
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import { useGameViewModelContext } from "../game.viewModel";
-import SportsTennisIcon from "@mui/icons-material/SportsTennis";
-import { Icon } from "@mui/material";
+import { Divider, Icon } from "@mui/material";
 /**
  * ScoreBoard component
  *
@@ -14,17 +13,32 @@ export default function ScoreBoard() {
     useGameViewModelContext();
 
   return (
-    <Box
-      sx={{ flexGrow: 0, flexDirection: "row", alignContent: "space-around" }}
-    >
-      <Box sx={{display: "flex", flexGrow: 1}}>
-        <Typography>{scoreLeft}</Typography>
-      </Box>
-      <Icon sx={{display: "flex", flexGrow: 1}}>
-        <SportsTennisIcon />
-      </Icon>
-      <Box sx={{display: "flex", flexGrow: 1}}>
-        <Typography>{scoreRight}</Typography>
+    <Box sx={{ flexGrow: 0 }}>
+      <Box
+        sx={{
+          display: "flex",
+          flexDirection: "row",
+          alignContent: "space-around",
+          alignItems: "center",
+          border: 1,
+          borderColor: "primary.main",
+          borderRadius: 1
+        }}
+      >
+        <Box sx={{ display: "flex", flexGrow: 1, ml: 2}}>
+          <Typography>{scoreLeft}</Typography>
+        </Box>
+        <Box sx={{ display: "flex", flexGrow: 1, ml: 2 }}>
+          <Divider
+            orientation="vertical"
+            flexItem
+          >
+            <Typography color={"orange"}>SCORE</Typography>
+          </Divider>
+        </Box>
+        <Box sx={{ display: "flex", flexGrow: 1, ml: 2, mr: 2 }}>
+          <Typography >{scoreRight}</Typography>
+        </Box>
       </Box>
     </Box>
   );

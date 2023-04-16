@@ -17,25 +17,45 @@ export default function GameActionBar() {
         display: "flex",
         flexDirection: "row",
         alignItems: "center",
-        alignContent: "space-between"
+        alignContent: "space-between",
       }}
     >
       {/* Left Player */}
-      <Box sx={{display: "flex", flexGrow: 1}}>
+      <Box
+        sx={{
+          display: "flex",
+          flexGrow: 1,
+          border: 1,
+          borderColor: "primary.main",
+          borderRadius: 1,
+          alignItems: "center",
+          alignContent: "space-around"
+        }}
+      >
         <PlayerDetail side={"left"} />
       </Box>
       {/* ReadyButton component */}
-      <Box sx={{display: "flex", flexGrow: 1}}>
+      <Box sx={{ display: "flex", flexGrow: 1 }}>
         <ReadyButton />
       </Box>
 
       {/* Scoreboard Component */}
-      <Box sx={{display: "flex", flexGrow: 1}}>
+      <Box sx={{ display: "flex", flexGrow: 1 }}>
         <ScoreBoard />
       </Box>
 
       {/* Right Player */}
-      <Box sx={{display: "flex", flexGrow: 1}}>
+      <Box
+        sx={{
+          display: "flex",
+          flexGrow: 1,
+          border: 1,
+          borderColor: "primary.main",
+          borderRadius: 1,
+          alignItems: "center",
+          alignContent: "space-around"
+        }}
+      >
         <PlayerDetail side={"right"} />
       </Box>
     </Box>

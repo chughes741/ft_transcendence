@@ -227,7 +227,7 @@ export class GameLogic {
         gamestate.score[1]++;
         return curBall;
       }
-    } else if (curBall.pos.y >= GameConfig.playAreaHeight / 2) {
+    } else if (curBall.pos.y >= (GameConfig.playAreaHeight / 2))  {
       const intersect: Vec2 = checkIntersect(
         prevBall.pos,
         curBall.pos,
