@@ -97,7 +97,6 @@ export class GameLogic {
 
     //Send update to lobby websocket room
     this.server
-      .to(lobby.lobby_id)
       .emit(GameEvents.ServerGameStateUpdate, { gamestate });
   }
 

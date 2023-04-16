@@ -5,7 +5,7 @@ import { socket } from "src/contexts/WebSocket.context";
 import { GameStateDto } from "./game.types";
 import { BallConfig, GameColours, PaddleConfig } from "./game.config";
 import { Mesh } from "three";
-import { ServerGameStateUpdateEvent, GameEvents} from "kingpong-lib"
+import { ServerGameStateUpdateEvent, GameEvents, GameState} from "kingpong-lib"
 /**
  *
  * @param gameState
@@ -177,21 +177,27 @@ export default function Game() {
     0
   );
 
-  useEffect(() => {
-    socket.on(GameEvents.ServerGameStateUpdate, (payload: ServerGameStateUpdateEvent) => {
-      console.log(payload);
-      gamestate.ball_pos_x = payload.game_state.ball_x;
-      gamestate.ball_pos_y = payload.game_state.ball_y;
-      // gameState.match_id = payload.game_state.match_id;
-      gamestate.paddle_left_pos = payload.game_state.paddle_left_y;
+  socket.on(GameEvents.ServerGameStateUpdate, (payload: GameState) => {
+    gamestate.ball_pos_x = payload.ball_x;
+    gamestate.ball_pos_y = payload.ball_y;
+    // gameState.match_id = payload.game_state.match_id;
+    gamestate.paddle_left_pos = payload.paddle_left_y;
+    gamestate.paddle_right_pos = payload.paddle_right_y;
+  });
 
+  // useEffect(() => {
+  //   socket.on(GameEvents.ServerGameStateUpdate, (payload: GameState) => {
+  //     gamestate.ball_pos_x = payload.ball_x;
+  //     gamestate.ball_pos_y = payload.ball_y;
+  //     // gameState.match_id = payload.game_state.match_id;
+  //     gamestate.paddle_left_pos = payload.paddle_left_y;
+  //     gamestate.paddle_right_pos = payload.paddle_right_y;
+  //   });
 
-    });
-
-    return () => {
-      socket.off(GameEvents.ServerGameStateUpdate);
-    };
-  }, [gamestate]);
+  //   return () => {
+  //     socket.off(GameEvents.ServerGameStateUpdate);
+  //   };
+  // }, [gamestate]);
 
   if (!gamestate) return <div>Loading...</div>;
 
