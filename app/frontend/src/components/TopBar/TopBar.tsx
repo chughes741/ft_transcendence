@@ -55,7 +55,6 @@ export default function TopBar() {
     handleCloseUserMenu();
   };
 
-
   return (
     <AppBar
       position="static"

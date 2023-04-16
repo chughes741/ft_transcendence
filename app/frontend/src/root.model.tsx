@@ -70,11 +70,11 @@ import { ProfileEntity, UserStatus } from "kingpong-lib";
  * @enum {string}
  */
 export enum PageState {
-    Home = "Home",
-    Game = "Game",
-    Chat = "Chat",
-    Profile = "Profile",
-    Loader = "Loader",
+  Home = "Home",
+  Game = "Game",
+  Chat = "Chat",
+  Profile = "Profile",
+  Loader = "Loader"
 }
 
 /**
@@ -83,14 +83,14 @@ export enum PageState {
  * @interface RootModelType
  */
 export interface RootModelType {
-    self: ProfileEntity;
-    setSelf: (self: ProfileEntity) => void;
-    pageState: PageState;
-    setPageState: (pageState: PageState) => void;
-    fullscreen: boolean;
-    setFullscreen: (fullscreen: boolean) => void;
-    sessionToken?: string;
-    setSessionToken?: (sessionToken: string) => void;
+  self: ProfileEntity;
+  setSelf: (self: ProfileEntity) => void;
+  pageState: PageState;
+  setPageState: (pageState: PageState) => void;
+  fullscreen: boolean;
+  setFullscreen: (fullscreen: boolean) => void;
+  sessionToken?: string;
+  setSessionToken?: (sessionToken: string) => void;
 }
 
 /**
@@ -99,25 +99,25 @@ export interface RootModelType {
  * @returns {RootModelType} - Root view model
  */
 export const useRootModel = (): RootModelType => {
-    /** @todo null until logged in */
-    const [self, setSelf] = useState<ProfileEntity>({
-        username: "schlurp",
-        avatar: "https://i.pravatar.cc/150",
-        status: UserStatus.ONLINE,
-        createdAt: new Date().toDateString(),
-    });
-    const [pageState, setPageState] = useState<PageState>(PageState.Home);
-    const [fullscreen, setFullscreen] = useState<boolean>(false);
-    const [sessionToken, setSessionToken] = useState<string>("");
+  /** @todo null until logged in */
+  const [self, setSelf] = useState<ProfileEntity>({
+    username: "schlurp",
+    avatar: "https://i.pravatar.cc/150",
+    status: UserStatus.ONLINE,
+    createdAt: new Date().toDateString()
+  });
+  const [pageState, setPageState] = useState<PageState>(PageState.Home);
+  const [fullscreen, setFullscreen] = useState<boolean>(false);
+  const [sessionToken, setSessionToken] = useState<string>("");
 
-    return {
-        self,
-        setSelf,
-        pageState,
-        setPageState,
-        fullscreen,
-        setFullscreen,
-        sessionToken,
-        setSessionToken,
-    };
+  return {
+    self,
+    setSelf,
+    pageState,
+    setPageState,
+    fullscreen,
+    setFullscreen,
+    sessionToken,
+    setSessionToken
+  };
 };
