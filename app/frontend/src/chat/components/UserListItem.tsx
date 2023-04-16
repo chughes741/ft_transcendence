@@ -21,8 +21,6 @@ interface UserListItemProps {
 }
 
 const UserListItem: React.FC<UserListItemProps> = ({ user }) => {
-  console.warn("UserListItem.tsx: ", user);
-
   const ownerBadge = (
     <Star
       style={{

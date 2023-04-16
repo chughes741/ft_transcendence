@@ -844,4 +844,46 @@ export class PrismaService extends PrismaClient {
     });
     return userToUpdate;
   }
+
+  /**
+   * Adds a new Direct Message chat room between two users
+   * @param {string} senderId
+   * @param {string} recipientId
+   * @async
+   * @returns {Promise<ChatRoom>}
+   * @throws {Error} If the chat room already exists
+   */
+  async createDirectMessageRoom(
+    senderId: string,
+    recipientId: string,
+    roomName: string
+  ): Promise<ChatRoom> {
+    const newRoom = await this.chatRoom.create({
+      data: {
+        name: roomName,
+        status: ChatRoomStatus.DIALOGUE,
+        members: {
+          create: [
+            {
+              member: {
+                connect: { id: senderId }
+              },
+              rank: ChatMemberRank.USER,
+              status: ChatMemberStatus.OK
+            },
+            {
+              member: {
+                connect: { id: recipientId }
+              },
+              rank: ChatMemberRank.USER,
+              status: ChatMemberStatus.OK
+            }
+          ]
+        }
+      },
+      include: { members: true }
+    });
+
+    return newRoom;
+  }
 }

@@ -10,7 +10,8 @@ import {
   AuthRequest,
   LeaveRoomRequest,
   SendDirectMessageRequest,
-  ChatRoomPayload
+  ChatRoomPayload,
+  ChatMemberRank
 } from "./chat.types";
 import {
   handleChatRoomMemberLeftCreator,
@@ -153,7 +154,8 @@ export const ChatViewModelProvider = ({ children }) => {
     return new Promise<boolean>((resolve) => {
       const req: SendDirectMessageRequest = {
         sender: self.username,
-        recipient: username
+        recipient: username,
+        senderRank: ChatMemberRank.USER
       };
       console.log("Sending direct message: ", req);
 

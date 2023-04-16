@@ -652,20 +652,11 @@ export class ChatService {
     }
 
     // Create a new dialogue room and add both the sender and the recipient as members
-    const newRoom = await this.prismaService.chatRoom.create({
-      data: {
-        name: `${sender}-${recipient}-${Date.now()}`,
-        status: ChatRoomStatus.DIALOGUE,
-        members: {
-          create: [
-            { memberId: senderId, rank: ChatMemberRank.USER },
-            { memberId: recipientId, rank: ChatMemberRank.USER }
-          ]
-        }
-      },
-      include: { members: true }
-    });
-
-    return this.getChatRoomEntity(newRoom);
+    const newRoom = await this.prismaService.createDirectMessageRoom(
+      senderId,
+      recipientId,
+      `${sender}-${recipient}-${Date.now()}`
+    );
+    return this.getChatRoomEntity(newRoom, ChatMemberRank.USER);
   }
 }

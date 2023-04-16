@@ -15,8 +15,14 @@ import { DirectMessageModal } from "../modals/DirectMessageModal";
 import { UserEntity, InviteUsersModal } from "../modals/InviteUsersModal";
 import { JoinRoomModal } from "../modals/JoinRoomModal";
 import { handleSocketErrorResponse } from "../lib/helperFunctions";
-import { DevError, ListUsersRequest } from "../chat.types";
+import {
+  ChatMemberRank,
+  ChatRoomStatus,
+  DevError,
+  ListUsersRequest
+} from "../chat.types";
 import { RoomPasswordModal } from "../modals/RoomPasswordModal";
+import { useRootViewModelContext } from "../../root.context";
 
 const RoomList: React.FC = () => {
   const { rooms } = useRoomManager();
@@ -55,10 +61,43 @@ const RoomList: React.FC = () => {
     selectRoom,
     handleContextMenu
   } = useChatContext();
+  const { self } = useRootViewModelContext();
 
   const [username, setUsername] = React.useState<string>(null);
   const [selectedUsers, setSelectedUsers] = React.useState<UserEntity[]>([]);
   const [availableUsers, setAvailableUsers] = React.useState<UserEntity[]>([]);
+
+  const [directMessagesVisible, setDirectMessagesVisible] =
+    React.useState(false);
+  const [unreadMessagesVisible, setUnreadMessagesVisible] =
+    React.useState(false);
+  const [ownedRoomsVisible, setOwnedRoomsVisible] = React.useState(false);
+  const [adminRoomsVisible, setAdminRoomsVisible] = React.useState(false);
+
+  const directMessages = Object.entries(rooms)
+    .filter(([, room]) => room.status === ChatRoomStatus.DIALOGUE)
+    .map(([name, room]) => {
+      const otherUser = Object.entries(room.users).find(
+        ([, member]) => member.username !== self.username
+      );
+      return otherUser ? [otherUser[1].username, room] : [name, room];
+    });
+
+  const ownedRooms = Object.entries(rooms).filter(
+    ([, room]) => room.rank === ChatMemberRank.OWNER
+  );
+  const adminRooms = Object.entries(rooms).filter(
+    ([, room]) => room.rank === ChatMemberRank.ADMIN
+  );
+  const userRooms = Object.entries(rooms).filter(
+    ([, room]) => room.rank === ChatMemberRank.USER
+  );
+
+  console.warn("RoomList: ", rooms);
+  console.warn("directMessages: ", directMessages);
+  console.warn("ownedRooms: ", ownedRooms);
+  console.warn("adminRooms: ", adminRooms);
+  console.warn("userRooms: ", userRooms);
 
   // Emit a "listAvailableUsers" socket event when the roomName changes
   useEffect(() => {
