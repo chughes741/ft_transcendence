@@ -74,8 +74,8 @@ const RoomList: React.FC = () => {
   const [selectedUsers, setSelectedUsers] = useState<UserEntity[]>([]);
   const [availableUsers, setAvailableUsers] = useState<UserEntity[]>([]);
 
-  const [directMessagesVisible, setDirectMessagesVisible] = useState(false);
-  const [chatRoomsVisible, setChatRoomsVisible] = useState(false);
+  const [directMessagesVisible, setDirectMessagesVisible] = useState(true);
+  const [chatRoomsVisible, setChatRoomsVisible] = useState(true);
 
   const directMessages = Object.entries(rooms)
     .filter(([, room]) => room.status === ChatRoomStatus.DIALOGUE)

@@ -56,7 +56,7 @@ export class UserConnectionsService {
         `Removed ${socketId} from ${username}. Now has ${connections.length} connections`
       );
     }
-    return connections.length ? connections.length : username;
+    return connections && connections.length ? connections.length : username;
   }
 
   userIsBlockedBy(blockedUsername: string, blockingUsername: string): boolean {
