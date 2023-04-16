@@ -1,6 +1,11 @@
 // ChatModel.tsx
 import { useState, MouseEvent } from "react";
-import { RoomType, MessageType, ChatMemberEntity } from "./chat.types";
+import {
+  RoomType,
+  MessageType,
+  ChatMemberEntity,
+  ChatRoomStatus
+} from "./chat.types";
 
 export interface ChatModelType {
   /* Room List Information */
@@ -8,6 +13,8 @@ export interface ChatModelType {
   setCurrentRoomName: (roomName: string) => void;
   currentRoomMessages: Array<MessageType>;
   setCurrentRoomMessages: (messages: Array<MessageType>) => void;
+  newRoomStatus: ChatRoomStatus;
+  setNewRoomStatus: (status: ChatRoomStatus) => void;
 
   /* Room Context Menu */
   contextMenuData: RoomType | null;
@@ -46,6 +53,7 @@ export const useChatModel = (): ChatModelType => {
   /* Room List Information */
   const [currentRoomName, setCurrentRoomName] = useState("");
   const [currentRoomMessages, setCurrentRoomMessages] = useState([]);
+  const [newRoomStatus, setNewRoomStatus] = useState(null);
 
   /* Modals */
   const [showDirectMessageModal, setShowDirectMessageModal] = useState(false);
@@ -98,6 +106,8 @@ export const useChatModel = (): ChatModelType => {
     setCurrentRoomName,
     currentRoomMessages,
     setCurrentRoomMessages,
+    newRoomStatus,
+    setNewRoomStatus,
     contextMenuData,
     contextMenuPosition,
     contextMenuUsersData,

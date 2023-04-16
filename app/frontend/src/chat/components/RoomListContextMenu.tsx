@@ -1,6 +1,7 @@
 import React from "react";
 import ContextMenu from "../../components/ContextMenu";
 import { RoomType, ChatRoomStatus } from "../chat.types";
+import { useChatContext } from "../chat.context";
 
 interface RoomContextMenuProps {
   contextMenuVisible: boolean;

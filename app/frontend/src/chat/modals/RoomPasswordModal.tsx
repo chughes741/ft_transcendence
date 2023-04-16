@@ -14,6 +14,8 @@ import { useRoomModal } from "./useRoomModal";
 import { useRoomManager } from "../lib/roomManager";
 import { useChatContext } from "../chat.context";
 import { ChatRoomStatus } from "../chat.types";
+import FunkyIconButton from "../../components/FunkyIconButton";
+import { VpnKey, VpnKeyOff } from "@mui/icons-material";
 
 interface RoomPasswordModalProps {
   showModal: boolean;
@@ -30,6 +32,8 @@ export const RoomPasswordModal: React.FC<RoomPasswordModalProps> = ({
 
   const { password, setPassword, showPassword, togglePasswordVisibility } =
     useRoomModal(showModal);
+
+  const { newRoomStatus, setNewRoomStatus } = useChatContext();
 
   const { handleChangeRoomStatus } = useRoomManager();
   const { contextMenuData: room } = useChatContext();
@@ -117,47 +121,51 @@ export const RoomPasswordModal: React.FC<RoomPasswordModalProps> = ({
             }}
           />
         )}
-        <DialogContentText>Enter new password:</DialogContentText>
-        <TextField
-          margin="dense"
-          label="New Password"
-          type={showNewPassword ? "text" : "password"}
-          fullWidth
-          value={newPassword}
-          onChange={(e) => setNewPassword(e.target.value)}
-          onKeyDown={handleKeyPress}
-          InputProps={{
-            endAdornment: (
-              <IconButton
-                edge="end"
-                onClick={() => setShowNewPassword(!showNewPassword)}
-              >
-                {showNewPassword ? <FiEye /> : <FiEyeOff />}
-              </IconButton>
-            )
-          }}
-        />
-        <TextField
-          margin="dense"
-          label="Confirm New Password"
-          type={showNewPasswordConfirm ? "text" : "password"}
-          fullWidth
-          value={newPasswordConfirm}
-          onChange={(e) => setNewPasswordConfirm(e.target.value)}
-          onKeyDown={handleKeyPress}
-          InputProps={{
-            endAdornment: (
-              <IconButton
-                edge="end"
-                onClick={() =>
-                  setShowNewPasswordConfirm(!showNewPasswordConfirm)
-                }
-              >
-                {showNewPasswordConfirm ? <FiEye /> : <FiEyeOff />}
-              </IconButton>
-            )
-          }}
-        />
+        {newRoomStatus === ChatRoomStatus.PASSWORD && (
+          <>
+            <DialogContentText>Enter new password:</DialogContentText>
+            <TextField
+              margin="dense"
+              label="New Password"
+              type={showNewPassword ? "text" : "password"}
+              fullWidth
+              value={newPassword}
+              onChange={(e) => setNewPassword(e.target.value)}
+              onKeyDown={handleKeyPress}
+              InputProps={{
+                endAdornment: (
+                  <IconButton
+                    edge="end"
+                    onClick={() => setShowNewPassword(!showNewPassword)}
+                  >
+                    {showNewPassword ? <FiEye /> : <FiEyeOff />}
+                  </IconButton>
+                )
+              }}
+            />
+            <TextField
+              margin="dense"
+              label="Confirm New Password"
+              type={showNewPasswordConfirm ? "text" : "password"}
+              fullWidth
+              value={newPasswordConfirm}
+              onChange={(e) => setNewPasswordConfirm(e.target.value)}
+              onKeyDown={handleKeyPress}
+              InputProps={{
+                endAdornment: (
+                  <IconButton
+                    edge="end"
+                    onClick={() =>
+                      setShowNewPasswordConfirm(!showNewPasswordConfirm)
+                    }
+                  >
+                    {showNewPasswordConfirm ? <FiEye /> : <FiEyeOff />}
+                  </IconButton>
+                )
+              }}
+            />
+          </>
+        )}
       </DialogContent>
       <DialogActions>
         <Button
@@ -166,12 +174,18 @@ export const RoomPasswordModal: React.FC<RoomPasswordModalProps> = ({
         >
           Cancel
         </Button>
-        <Button
+        <FunkyIconButton
+          icon={
+            newRoomStatus === ChatRoomStatus.PASSWORD ? (
+              <VpnKey />
+            ) : (
+              <VpnKeyOff />
+            )
+          }
           onClick={handleSubmit}
-          color="secondary"
-        >
-          Change Password
-        </Button>
+          content="Change Status"
+          width="50%"
+        ></FunkyIconButton>
       </DialogActions>
     </Dialog>
   );

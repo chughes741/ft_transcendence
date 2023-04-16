@@ -50,7 +50,8 @@ export const ChatViewModelProvider = ({ children }) => {
     contextMenuData,
     setContextMenuRoomsVisible,
     setShowNewRoomSnackbar,
-    setShowPasswordModal
+    setShowPasswordModal,
+    setNewRoomStatus
   } = chatModel;
 
   const { self, pageState, setPageState } = useRootViewModelContext();
@@ -106,11 +107,11 @@ export const ChatViewModelProvider = ({ children }) => {
     const roomName = contextMenuData.name;
 
     if (roomName === "" || roomName === undefined) return false;
-
     if (
       newStatus === ChatRoomStatus.PASSWORD ||
       contextMenuData.status === ChatRoomStatus.PASSWORD
     ) {
+      setNewRoomStatus(newStatus);
       setShowPasswordModal(true);
     } else {
       if ((await handleChangeRoomStatus(roomName, newStatus)) === false)

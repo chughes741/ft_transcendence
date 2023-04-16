@@ -58,8 +58,6 @@ export default function UserListView({ userList, handleClick }: UserListProps) {
   const sortUsers = () => {
     if (Object.values(userList).length === 0) return [];
     const users = Object.values(userList);
-    console.log(`renderSortedUsers: ${users.length} users`);
-    console.log(users);
     if (users.length === 0) return null;
 
     const filteredUsers = users.filter(
@@ -148,7 +146,7 @@ export default function UserListView({ userList, handleClick }: UserListProps) {
       memberToUpdateRank: newRank,
       duration
     };
-    console.log("Updating chat member...", req);
+    console.log("Updating chat member...");
 
     socket.emit(
       "updateChatMemberStatus",
