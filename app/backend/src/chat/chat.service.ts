@@ -18,6 +18,7 @@ import {
   InviteUsersToRoomRequest,
   JoinRoomDto,
   LeaveRoomRequest,
+  SendDirectMessageRequest,
   SendMessageDto,
   UpdateChatRoomRequest
 } from "./chat.gateway";
@@ -612,5 +613,59 @@ export class ChatService {
         rank: ChatMemberRank.USER
       };
     });
+  }
+
+  /**
+   * Send a Direct Message to a user
+   * @param {SendDirectMessageRequest} req - The users in the Direct Message
+   * @returns {Promise<ChatRoomEntity | Error>} - The created ChatMessageEntity
+   * @memberof ChatService
+   */
+  async sendDirectMessage(
+    req: SendDirectMessageRequest
+  ): Promise<ChatRoomEntity | Error> {
+    const { sender, recipient } = req;
+
+    // Check if sender and recipient exist
+    const [senderId, recipientId] = await Promise.all([
+      this.prismaService.getUserIdByNick(sender),
+      this.prismaService.getUserIdByNick(recipient)
+    ]);
+
+    if (!senderId || !recipientId) {
+      return new Error("Invalid sender or recipient username");
+    }
+
+    // Check if a dialogue room between the sender and the recipient already exists
+    const existingRoom = await this.prismaService.chatRoom.findFirst({
+      where: {
+        AND: [
+          { status: ChatRoomStatus.DIALOGUE },
+          { members: { some: { memberId: senderId } } },
+          { members: { some: { memberId: recipientId } } }
+        ]
+      }
+    });
+
+    if (existingRoom) {
+      return this.getChatRoomEntity(existingRoom, req.senderRank);
+    }
+
+    // Create a new dialogue room and add both the sender and the recipient as members
+    const newRoom = await this.prismaService.chatRoom.create({
+      data: {
+        name: `${sender}-${recipient}-${Date.now()}`,
+        status: ChatRoomStatus.DIALOGUE,
+        members: {
+          create: [
+            { memberId: senderId, rank: ChatMemberRank.USER },
+            { memberId: recipientId, rank: ChatMemberRank.USER }
+          ]
+        }
+      },
+      include: { members: true }
+    });
+
+    return this.getChatRoomEntity(newRoom);
   }
 }

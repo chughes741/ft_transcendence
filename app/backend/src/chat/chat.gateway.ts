@@ -32,6 +32,12 @@ export interface ListUsersRequest {
   chatRoomName: string;
 }
 
+export interface SendDirectMessageRequest {
+  recipient: string;
+  sender: string;
+  senderRank: ChatMemberRank;
+}
+
 export interface CreateUserRequest {
   username: string;
   avatar: string;
@@ -258,7 +264,6 @@ export class ChatGateway
    * @param username username of the user requesting the list
    * @returns list of chat rooms
    */
-
   @SubscribeMessage("listAvailableChatRooms")
   async listAvailableChatRooms(
     client: Socket,
@@ -696,5 +701,29 @@ export class ChatGateway
       this.server.to(req.roomName).emit("chatMemberKicked", user);
       return { roomName: req.roomName, user };
     }
+  }
+
+  /**
+   * Send a Direct Message to a user, if the user is not blocked
+   * @param {Socket} client
+   * @param {SendDirectMessageRequest} req
+   * @returns {Promise<DevError | ChatRoomEntity>}
+   */
+  @SubscribeMessage("sendDirectMessage")
+  async sendDirectMessage(
+    client: Socket,
+    req: SendDirectMessageRequest
+  ): Promise<DevError | ChatRoomEntity> {
+    logger.log(
+      `Received sendDirectMessage request from ${req.sender} to ${req.recipient}`
+    );
+    console.log(req);
+    const ret = await this.chatService.sendDirectMessage(req);
+    if (ret instanceof Error) return { error: ret.message };
+    const room = ret as ChatRoomEntity;
+    // bind all of both users' socket to the room
+    this.bindAllUserSocketsToRoom(req.sender, room.name);
+    this.bindAllUserSocketsToRoom(req.recipient, room.name);
+    return room;
   }
 }

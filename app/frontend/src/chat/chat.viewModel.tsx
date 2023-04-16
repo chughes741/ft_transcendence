@@ -152,8 +152,8 @@ export const ChatViewModelProvider = ({ children }) => {
   const sendDirectMessage = async (username: string): Promise<boolean> => {
     return new Promise<boolean>((resolve) => {
       const req: SendDirectMessageRequest = {
-        username: username,
-        sender: self.username
+        sender: self.username,
+        recipient: username
       };
       console.log("Sending direct message: ", req);
 

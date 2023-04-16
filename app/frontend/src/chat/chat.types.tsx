@@ -76,6 +76,7 @@ export interface ChatRoomPayload {
   name: string;
   status: ChatRoomStatus;
   queryingUserRank: ChatMemberRank;
+  members: ChatMemberEntity[];
   latestMessage?: MessagePayload;
   lastActivity: Date;
   avatars?: string[];
@@ -115,8 +116,9 @@ export interface LeaveRoomRequest {
 }
 
 export interface SendDirectMessageRequest {
-  username: string;
+  recipient: string;
   sender: string;
+  senderRank: ChatMemberRank;
 }
 
 export interface UpdateChatRoomRequest {
