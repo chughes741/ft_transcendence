@@ -1,11 +1,10 @@
-import { ForbiddenException, Get, Injectable, Logger } from "@nestjs/common";
+import { Injectable, Logger } from "@nestjs/common";
 import { PrismaService } from "../prisma/prisma.service";
-import { AuthRequest, UserEntity } from "./dto";
+import { AuthEntity, AuthRequest, UserEntity } from "./dto";
 import { JwtService } from "@nestjs/jwt";
 import { ConfigService } from "@nestjs/config";
-import { WsException } from "@nestjs/websockets";
-import speakeasy from "speakeasy";
-import qrcode from "qrcode";
+import * as speakeasy from 'speakeasy';
+import * as qrcode from 'qrcode';
 import axios from "axios";
 import { Token, TokenStorageService } from "../token-storage.service";
 import { UserStatus } from "@prisma/client";
@@ -42,8 +41,6 @@ export class AuthService {
   async signin(data : UserEntity) : Promise<UserEntity> {
 
     console.log ("SIGNIN USER ENTITY: " , data);
-
-    
     const user = await this.prisma.getUserbyMail(data.email);
     
     //IF THERE IS NO USER
@@ -67,10 +64,17 @@ export class AuthService {
       name: "42authentification"
     });
 
-    const code = qrcode.toDataURL(secret.otpath_url, function (err, data) {
-      logger.log(data);
+    const code = await qrcode.toDataURL(secret.otpauth_url);
+    console.log("QRCODE MAYBE :", code)
+    return { secret: secret.base32, qrcode: code};
+  }
+
+  generateToken(secret) {
+    const token = speakeasy.totp({
+      secret: secret,
+      encoding: "base32",
     });
-    return { secret: secret, qrcode: code };
+    return token;
   }
 
   async verifyQrCode(base32secret: string, enteredToken: string) {
@@ -79,11 +83,14 @@ export class AuthService {
       encoding: "base32",
       token: enteredToken
     });
+    console.log("VERIFICATION : ", verified)
     if (verified) return { validated: true };
     return { validated: false };
   }
 
-  async getAuht42(clientId: string, authorization_code: string) {
+
+
+  async getAuht42(clientId: string, authorization_code: string) : Promise<AuthEntity> {
     const UID =
       "u-s4t2ud-51fb382cccb5740fc1b9129a3ddacef8324a59dc4c449e3e8ba5f62acb2079b6";
     const SECRET =
@@ -119,16 +126,10 @@ export class AuthService {
         Authorization: `Bearer ${token.access_token}`
       }
     });
-
-    
-   // console.log("CONFIG" ,response2.config);
-   // console.log("Data" ,response2.data);
-    
-    //console.log(response2);
     const userName = response2.data.login + response2.data.id;
 
     this.tokenStorage.addToken(clientId, token);
-    this.signin({
+    const theuser = await this.signin({
       username: userName,
       avatar: response2.data.image.link,
       firstName : response2.data.first_name,
@@ -136,7 +137,11 @@ export class AuthService {
       email: response2.data.email,
       status: UserStatus.ONLINE,
     })
-    return token.access_token;
+    const authEntity : AuthEntity = {
+      user :theuser,
+      token : token.access_token,
+    }
+    return authEntity;
   }
 
   async TokenIsVerified(

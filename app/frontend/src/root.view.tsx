@@ -125,7 +125,7 @@ import { HelmetView } from "./components/Helmet";
 import SettingsView from "./components/settings/settings.view";
 import LoginWith42Button from "./components/Login42";
 import GameWindow from "./game/game.view";
-
+import VerifyQRCode from "./components/QrCodeElement";
 
 /**
  * Root view content
@@ -149,10 +149,14 @@ function RootViewContent(): JSX.Element {
   switch (pageState) {
     case PageState.Home: {
       return (
-        <LoginWith42Button
-          onSuccess={handleLoginSuccess}
-          onFailure={handleLoginFailure}
-        />
+        <>
+
+          <LoginWith42Button
+            onSuccess={handleLoginSuccess}
+            onFailure={handleLoginFailure}
+          />
+          <VerifyQRCode />
+        </>
       );
     }
     case PageState.Game: {

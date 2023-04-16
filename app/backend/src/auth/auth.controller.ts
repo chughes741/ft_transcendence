@@ -82,10 +82,28 @@ export class AuthController {
   ) {
     logger.log("Inside Generate42Token");
     logger.log("Authorisation code : ", authorizationCode);
-    logger.log("Socket ID: ", authorizationCode);
-    const token = await this.authService.getAuht42(socketId, authorizationCode);
-    return { token };
+    logger.log("Socket ID: ", socketId);
+    return await this.authService.getAuht42(socketId, authorizationCode);
   }
+
+  @Get("qrCode")
+  async generateQrCode() 
+  {
+    console.log("INSIDE QRCODE FUNCTION");
+    return await this.authService.enableTwoFactorAuth();
+  }
+
+  @Get("verifyQrCode")
+  async verifyQrCode(
+    @Query("secret") secret: string,
+    @Query("code") code: string
+  ) 
+  {
+    console.log("INSIDE QRCODE  VERIFYFUNCTION", secret, code);
+    return await this.authService.verifyQrCode(secret, code);
+  }
+
+
 
   @Get("authorisationURL")
   async generateAuth42Url() {

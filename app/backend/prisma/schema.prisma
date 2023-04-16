@@ -19,6 +19,8 @@ model User {
   avatar String @default("default_avatar.png")
   email  String @unique// To prevent duplicates in the DB
 
+  enable2fa Boolean @default(false)
+
   firstName String?
   lastName  String?
   status    UserStatus @default(OFFLINE)

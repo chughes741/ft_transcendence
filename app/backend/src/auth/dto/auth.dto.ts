@@ -4,6 +4,7 @@ import { IsNotEmpty, IsString } from "class-validator";
 
 export class UserEntity {
   username: string;
+  enable2fa? : boolean;
   avatar: string;
   firstName?: string;
   lastName?: string;
