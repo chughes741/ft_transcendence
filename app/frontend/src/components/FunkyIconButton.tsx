@@ -19,12 +19,12 @@ export default function FunkyIconButton({
 }: FunkyIconButtonProps) {
   return (
     <Box
-      className="funky-icon-button"
+      className="button-funky"
       onClick={onClick}
       sx={{ ...sx, width }}
     >
-      <div className="funky-icon-button-bg"></div>
-      <div className="funky-icon-button-content">
+      <div className="button-funky-bg"></div>
+      <div className="button-funky-content">
         {icon}
         <span>{content}</span>
       </div>

@@ -3,6 +3,7 @@ import { useChatContext } from "../../chat/chat.context";
 import { AddCircleOutline, Chat } from "@mui/icons-material";
 import { IoEnterOutline } from "react-icons/io5";
 import ButtonFunky from "../ButtonFunky";
+import FunkyIconButton from "../FunkyIconButton";
 
 export default function SidebarChatOptions() {
   const {
@@ -23,19 +24,19 @@ export default function SidebarChatOptions() {
       }}
       component="nav"
     >
-      <ButtonFunky
+      <FunkyIconButton
         icon={<Chat />}
         content="Message a friend"
         width={"100%"}
         onClick={() => setShowDirectMessageModal(true)}
       />
-      <ButtonFunky
+      <FunkyIconButton
         icon={<AddCircleOutline />}
         content="Create a room"
         width={"100%"}
         onClick={() => setShowCreateRoomModal(true)}
       />
-      <ButtonFunky
+      <FunkyIconButton
         icon={<IoEnterOutline />}
         content="Join a room"
         width={"100%"}
