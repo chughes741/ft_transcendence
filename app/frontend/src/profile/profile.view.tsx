@@ -104,7 +104,7 @@ function ProfileHeader(): JSX.Element | null {
                 item
                 xs={12}
               >
-                <Typography>Matches played: {matchHistory.length}</Typography>
+                <Typography>Matches played: {matchHistory.length !== null ? matchHistory.length : "0"}</Typography>
               </Grid>
               <Grid
                 item
