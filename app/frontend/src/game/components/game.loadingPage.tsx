@@ -22,12 +22,6 @@ export default function LoadingPage() {
             <Box className="table" />
           </Box>
         </Box>
-        <Box className="leave-queue-container">
-          <Box className="leave-queue-button">
-            Leave queue
-          </Box>
-
-        </Box>
       </Box>
     </>
   );
