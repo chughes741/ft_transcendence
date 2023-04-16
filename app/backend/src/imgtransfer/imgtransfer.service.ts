@@ -25,7 +25,8 @@ export class ImgTransferService {
       const imgPth = path
         .join(__dirname, "/img", path.basename(imageUrl))
         .replace("/dist/src/imgtransfer", "");
-      fs.unlinkSync(imgPth);
+        if (fs.existsSync(imgPth))
+          fs.unlinkSync(imgPth);
     }
     this.prismaService.updateAvatar(userName, data.URL);
     return;

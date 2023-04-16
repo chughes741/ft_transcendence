@@ -1,8 +1,8 @@
 import * as React from "react";
-import { Button } from "@mui/material";
 import { socket } from "src/contexts/WebSocket.context";
-import Box from "@mui/material/Box";
-import CircularProgress from "@mui/material/CircularProgress";
+import GameLoader from "./GameLoader";
+import { Box } from "@mui/system";
+import "./GameQueue.css";
 
 /**
  * This is a button that will join the game queue.
@@ -22,59 +22,18 @@ export default function JoinGameQueue() {
     });
   };
 
-  /** Leave game queue callback */
-  const leaveQueue = () => {
-    /** @todo emit leaveQueue message */
-    setInQueue(false);
-  };
-
-  /** Invite player to lobby callback */
-  const invitePlayerToLobby = () => {
-    /** @todo player invite functionality  */
-    return;
-  };
-
   return (
-    <Box
-      sx={{
-        flexDirection: "column",
-        width: "100vw",
-        height: "100vh",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center"
-      }}
-    >
+    <>
       {inQueue ? (
-        <>
-          <Button
-            onClick={leaveQueue}
-            variant="outlined"
-            color="error"
-          >
-            Leave Queue
-          </Button>
-          <CircularProgress sx={{ mt: 2 }} />
-        </>
+          <GameLoader setInQueue={setInQueue} />
       ) : (
         <>
-          <Button
-            onClick={joinQueue}
-            variant="outlined"
-            color="success"
-          >
-            Join Queue
-          </Button>
-          <Button
-            onClick={invitePlayerToLobby}
-            sx={{ mt: 2 }}
-            variant="outlined"
-            color="success"
-          >
-            Invite Player
-          </Button>
+          <Box className="body-page-queue">
+            <Box className="bottom-background" />
+            <Box className="join-queue" onClick={joinQueue}>Join Queue</Box>
+          </Box>
         </>
       )}
-    </Box>
+    </>
   );
 }

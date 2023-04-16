@@ -23,7 +23,7 @@ export default function SidebarChatOptions() {
   return (
     <List
       sx={{
-        pt: 2,
+        pt: 6,
         width: "100%",
         maxWidth: 360,
         bgcolor: "background.paper",
@@ -32,13 +32,6 @@ export default function SidebarChatOptions() {
       }}
       component="nav"
     >
-      <ListItemButton onClick={() => setPageState(PageState.Chat)}>
-        <ListItemIcon>
-          <GroupAddIcon />
-        </ListItemIcon>
-        <ListItemText>Chat Page</ListItemText>
-      </ListItemButton>
-
       <DynamicIconButton
         text="Message a friend"
         icon={<Chat style={{ fontSize: "2rem", color: "white" }} />}

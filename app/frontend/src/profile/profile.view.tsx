@@ -21,6 +21,7 @@ import { MatchHistoryItem, ProfileEntity, UserStatus } from "kingpong-lib";
 
 /** View Model */
 import { useProfileViewModelContext } from "src/profile/profile.viewModel";
+import React from "react";
 
 type StyledBadgeProps = {
   status: UserStatus;
