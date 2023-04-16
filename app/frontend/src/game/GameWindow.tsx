@@ -24,7 +24,7 @@ function Ball() {
   });
 
   return (
-    <mesh ref={mesh}>
+    <mesh ref={mesh} >
       <sphereGeometry args={[BallConfig.radius]} />
       <meshStandardMaterial emissive={"orange"} emissiveIntensity={50} />
     </mesh>
@@ -183,24 +183,17 @@ function OuterFrameRight() {
  */
 export default function Game() {
 
-  const { gameState, setGameState } = useGameViewModelContext();
+  const { gameState, setGameState, setScoreLeft, setScoreRight } = useGameViewModelContext();
 
-  socket.on(GameEvents.ServerGameStateUpdate, (payload: GameState) => {
-    setGameState(payload);
-  });
-  // useEffect(() => {
-  //   socket.on(GameEvents.ServerGameStateUpdate, (payload: GameState) => {
-  //     gamestate.ball_pos_x = payload.ball_x;
-  //     gamestate.ball_pos_y = payload.ball_y;
-  //     // gameState.match_id = payload.game_state.match_id;
-  //     gamestate.paddle_left_pos = payload.paddle_left_y;
-  //     gamestate.paddle_right_pos = payload.paddle_right_y;
-  //   });
+  socket.on(
+    GameEvents.ServerGameStateUpdate,
+    (payload: GameState) => {
+      console.log("GameState update received. Payload: " + payload);
 
-  //   return () => {
-  //     socket.off(GameEvents.ServerGameStateUpdate);
-  //   };
-  // }, [gamestate]);
+      setGameState(payload);
+      setScoreLeft(payload.score_left);
+      setScoreRight(payload.score_right);
+    });
 
   if (!gameState) return <div>Loading...</div>;
 

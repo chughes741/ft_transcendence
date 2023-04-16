@@ -7,7 +7,8 @@ import {
   GameEvents,
   GameStartedEvent,
   LobbyCreatedEvent,
-  ServerGameStateUpdateEvent
+  ServerGameStateUpdateEvent,
+  GameState
 } from "kingpong-lib";
 import { useRootViewModelContext } from "src/root.context";
 
@@ -105,28 +106,6 @@ export const GameViewModelProvider = ({ children }) => {
       socket.off(GameEvents.LobbyCreated);
     };
   }, [playerReady]);
-
-  /**
-   * @event "serverGameStateUpdate"
-   * @dependency displayGame
-   */
-  useEffect(() => {
-    if (!displayGame) return;
-
-    socket.on(
-      GameEvents.ServerGameStateUpdate,
-      (payload: ServerGameStateUpdateEvent) => {
-        console.log("serverGameStateUpdate event received. Payload:");
-        console.log(payload);
-
-        lobby.game_state = payload.game_state;
-      }
-    );
-
-    return () => {
-      socket.off(GameEvents.ServerGameStateUpdate);
-    };
-  }, [displayGame]);
 
   /**
    * @event "gameEnded"
