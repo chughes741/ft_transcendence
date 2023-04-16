@@ -10,12 +10,12 @@
     --g1: rgb(34, 170, 186);
     --g2: rgb(206, 106, 12);
     --g3: rgb(242, 68, 4);
-    border-radius: 2rem;
+    border-radius: 1rem;
     cursor: pointer;
     color: white;
     position: relative;
     display: flex;
-    padding: 0.5rem 1rem;
+    padding: 0rem 0.5rem;
     margin: 1rem 0;
     justify-content: center;
     align-items: center;
