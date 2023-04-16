@@ -4,6 +4,7 @@ import { UserStatus } from "@prisma/client";
 export class UserEntity {
   username: string;
   enable2fa? : boolean;
+  firstConnection? : boolean;
   avatar: string;
   firstName?: string;
   lastName?: string;

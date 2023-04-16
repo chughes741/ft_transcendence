@@ -104,6 +104,14 @@ export class AuthController {
     return await this.authService.enableTwoFactorAuth();
   }
 
+  @Get("changeUsername")
+  async changeUsername(
+    @Query("current") currentName: string,
+    @Query("newname") newName: string
+  ) {
+    return await this.authService.changeName(currentName, newName);
+  }
+
   @Get("verifyQrCode")
   async verifyQrCode(
     @Query("secret") secret: string,

@@ -17,9 +17,9 @@ import LoginWith42Button from "./components/Login42";
 
 import { ConfirmationModal } from "./components/ConfirmationModal";
 import { ChooseUsernameModal } from "./components/ChooseUsernameModal";
-
 import GameWindow from "./game/game.view";
 import VerifyQRCode from "./components/QrCodeElement";
+import { ProfileEntity } from "kingpong-lib";
 
 /**
  * Root view content
@@ -27,11 +27,20 @@ import VerifyQRCode from "./components/QrCodeElement";
  * @returns {JSX.Element} - Root view content
  */
 
-function RootViewContent(): JSX.Element {
-  const { pageState } = useRootViewModelContext();
+export interface dataResponse {
+  user: ProfileEntity,
+  token: string,
+}
 
-  const handleLoginSuccess = (accessToken: string) => {
-    //setAccessToken(accessToken);
+function RootViewContent(): JSX.Element {
+  const { pageState, setPageState, history, self, setSelf, setSessionToken, setFullscreen } = useRootViewModelContext();
+
+  const handleLoginSuccess = (data : dataResponse) => {
+    setSessionToken(data.token);
+    console.log(data);
+    setFullscreen(false);
+    setPageState(PageState.Home);
+    history.push("/"); 
     // setError(null);
   };
 
@@ -41,16 +50,17 @@ function RootViewContent(): JSX.Element {
   };
 
   switch (pageState) {
+    case PageState.Auth: {
+      return (
+        <LoginWith42Button
+          onSuccess={handleLoginSuccess}
+          onFailure={handleLoginFailure}
+        />
+        )
+    }
     case PageState.Home: {
       return (
-        <>
-
-          <LoginWith42Button
-            onSuccess={handleLoginSuccess}
-            onFailure={handleLoginFailure}
-          />
-          <VerifyQRCode />
-        </>
+        <></>
       );
     }
     case PageState.Game: {
@@ -87,7 +97,8 @@ export function RootView(): JSX.Element {
     setShowConfirmationModal,
     /* Confirmation modal data */
     confirmationMessage,
-    setConfirmationMessage
+    setConfirmationMessage,
+    self
   } = useRootViewModelContext();
 
   const handleKeyDown = (event: KeyboardEvent) => {
@@ -162,7 +173,7 @@ export function RootView(): JSX.Element {
       />
       <ChooseUsernameModal
         showModal={showChooseUsernameModal}
-        defaultUsername="schlurp" // FIXME: switch to actual username from 42
+        defaultUsername={self?.username}
         pickUsername={handlePickUsername}
       />
     </>

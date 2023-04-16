@@ -7,6 +7,7 @@ import { ProfileEntity, UserStatus } from "kingpong-lib";
  * @enum {string}
  */
 export enum PageState {
+  Auth = "Auth",
   Home = "Home",
   Game = "Game",
   Chat = "Chat",
@@ -47,20 +48,21 @@ export interface RootModelType {
  */
 export const useRootModel = (): RootModelType => {
   /** @todo null until logged in */
-  const [self, setSelf] = useState<ProfileEntity>({
-    username: "schlurp",
-    avatar: "https://i.pravatar.cc/150",
-    status: UserStatus.ONLINE,
-    createdAt: new Date().toDateString()
-  });
-  const [pageState, setPageState] = useState<PageState>(PageState.Home);
-  const [fullscreen, setFullscreen] = useState<boolean>(false);
+  const [self, setSelf] = useState<ProfileEntity>(null);
+  const [pageState, setPageState] = useState<PageState>(PageState.Auth);
+  const [fullscreen, setFullscreen] = useState<boolean>(true);
   const [showChooseUsernameModal, setShowChooseUsernameModal] =
     useState<boolean>(false);
   const [showConfirmationModal, setShowConfirmationModal] =
     useState<boolean>(false);
   const [confirmationMessage, setConfirmationMessage] = useState<string>("");
   const [sessionToken, setSessionToken] = useState<string>("");
+// {
+//     username: "schlurp",
+//     avatar: "https://i.pravatar.cc/148",
+//     status: UserStatus.ONLINE,
+//     createdAt: new Date().toDateString()
+//   }
 
   return {
     self,

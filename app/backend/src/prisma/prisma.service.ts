@@ -93,6 +93,36 @@ export class PrismaService extends PrismaClient {
     }
   }
 
+  async userNameExists(username: string): Promise<boolean> {
+    if (!username) {
+      logger.error("userExists: User username is required");
+      return false;
+    }
+
+    try {
+      const user = await this.user.findUnique({ where: { username: username } });
+      return !!user;
+    } catch (err) {
+      return false;
+    }
+  }
+
+  async changeUserName(userName : string, newUsername : string) : Promise<boolean>{
+    
+    const nameExists = await this.userNameExists(newUsername);
+    if (nameExists)
+      return false;
+    await this.user.update({
+      where : {
+        username : userName
+      },
+      data: {
+        username : newUsername
+      }
+    })
+    return true;
+  }
+
   /**
    * Gets the user id of a user with the specified nick.
    * @param {string} nick - The user's nick.

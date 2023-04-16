@@ -3,31 +3,27 @@ import { Button, InputLabel } from '@mui/material';
 import { Box } from '@mui/system';
 import React, { useState } from 'react';
 
-type VerifyQRCodeProps = {
-  endpoint: string;
-};
-
 type VerifyQRCodeResponse = {
   message: string;
   success: boolean;
 };
 
-function VerifyQRCode () {
+function VerifyQRCode() {
   const [qrCode, setQRCode] = useState<string | null>(null);
   const [code, setCode] = useState<string>('');
   const [errorMessage, setErrorMessage] = useState<string>('');
-    const [secret, setSecret] = useState<string | null>(null);
+  const [secret, setSecret] = useState<string | null>(null);
 
   const handleGetQRCode = async () => {
-      try {
-        const url = "/auth/qrCode";
-        console.log("Click to get QRCODE wtf")
-    const response = await fetch(url, {
-        method : 'GET',
+    try {
+      const url = "/auth/qrCode";
+      console.log("Click to get QRCODE wtf")
+      const response = await fetch(url, {
+        method: 'GET',
         headers: {
-            "Content-Type": "application/json"
-          }
-    } ) ;
+          "Content-Type": "application/json"
+        }
+      });
       const data = await response.json();
       setQRCode(data['qrcode']);
       setSecret(data['secret']);
@@ -37,16 +33,17 @@ function VerifyQRCode () {
   };
 
   const handleVerifyQRCode = async () => {
-      try {
-        console.log("Secret:" , secret);
-        const url = `/auth/verifyQrCode?secret=${secret}&code=${code}`;
-        const response = await fetch(url, {
+    try {
+      console.log("Secret:", secret);
+      const url = `/auth/verifyQrCode?secret=${secret}&code=${code}`;
+      const response = await fetch(url, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
         },
       });
-      const data: VerifyQRCodeResponse = await response.json();
+      const data = await response.json();
+      
       if (data.success) {
         setErrorMessage('');
         alert('QR code verified!');

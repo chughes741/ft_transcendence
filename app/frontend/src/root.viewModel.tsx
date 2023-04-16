@@ -3,7 +3,7 @@ import { RootViewModelContext } from "./root.context";
 import { socket } from "./contexts/WebSocket.context";
 import { DevError } from "./chat/chat.types";
 import { handleSocketErrorResponse } from "./chat/lib/helperFunctions";
-import { createBrowserHistory } from "history";
+import { createBrowserHistory, BrowserHistory } from "history";
 import { useEffect } from "react";
 
 /**
@@ -15,6 +15,7 @@ import { useEffect } from "react";
 export interface RootViewModelType extends RootModelType {
   handlePickUsername: (username: string) => void;
   getSessionToken: () => void;
+  history: BrowserHistory;
 }
 
 /**
@@ -26,32 +27,37 @@ export interface RootViewModelType extends RootModelType {
 export const RootViewModelProvider = ({ children }) => {
   const rootModel = useRootModel();
 
-  const handlePickUsername = (username: string) => {
+  const handlePickUsername = async (username: string): Promise<boolean> => {
     if (!username || username.length === 0) {
       return;
     }
 
     console.log("Picking username: ", username);
-    socket.emit("pickUsername", username, (err: DevError | null) => {
-      if (handleSocketErrorResponse(err)) {
-        const error = `RoomList: Error picking username: ${
-          (err as DevError).error
-        }`;
-        alert(error);
-        console.error(error);
-      }
-      console.log("Username picked successfully");
-    });
-    // FIXME: move these calls back up inside the socket callback once "pickUsername" is implemented in the backend
-    rootModel.self.username = username;
-    rootModel.setConfirmationMessage(
-      `Are you sure you want to pick the username ${username}?
-      This action cannot be reverted`
-    );
-    rootModel.setShowConfirmationModal(true);
+    
+
+    return new Promise<boolean>((resolve) => {
+      socket.emit("pickUsername", username, (err: DevError | null) => {
+        if (handleSocketErrorResponse(err)) {
+          const error = `RoomList: Error picking username: ${
+            (err as DevError).error
+          }`;
+          alert(error);
+          console.error(error);
+        }
+        console.log("Username picked successfully");
+        // FIXME: move these calls back up inside the socket callback once "pickUsername" is implemented in the backend
+        rootModel.self.username = username;
+        rootModel.setConfirmationMessage(
+          `Are you sure you want to pick the username ${username}?
+          This action cannot be reverted`
+        );
+        rootModel.setShowConfirmationModal(true);
+      });
+  
+    })
   };
 
-  const { pageState, setPageState } = useRootModel();
+  const { pageState, setPageState, setFullscreen } = useRootModel();
 
   /**
    * Redirect to 42Auth
@@ -76,6 +82,10 @@ export const RootViewModelProvider = ({ children }) => {
       ({ location: location, action: action }) => {
         console.log(action, location);
         switch (location.pathname) {
+          case "/auth":
+            setFullscreen(false);
+            setPageState(PageState.Auth);
+            break;
           case "/":
             setPageState(PageState.Home);
             break;
@@ -107,6 +117,11 @@ export const RootViewModelProvider = ({ children }) => {
    */
   useEffect(() => {
     switch (pageState) {
+      case PageState.Auth:
+        if (history.location.pathname !== '/auth') {
+        history.push("/auth")
+        }
+        break;
       case PageState.Home:
         if (history.location.pathname !== "/") {
           history.push("/");
@@ -139,7 +154,8 @@ export const RootViewModelProvider = ({ children }) => {
       value={{
         ...rootModel,
         getSessionToken,
-        handlePickUsername
+        handlePickUsername,
+        history
       }}
     >
       {children}

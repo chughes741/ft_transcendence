@@ -37,13 +37,16 @@ export class AuthService {
   async signin(data : UserEntity) : Promise<UserEntity> {
 
     logger.log ("Signin USER ENTITY: " , data);
-    const user = await this.prisma.getUserbyMail(data.email);
+    const user : UserEntity = await this.prisma.getUserbyMail(data.email);
     //IF THERE IS NO USER
     if(!user)
     {
-      const newuser = await this.prisma.addUser(data)
+
+      const newuser : UserEntity = await this.prisma.addUser(data)
+      newuser.firstConnection = true;
       return newuser;
     }
+    user.firstConnection = false;
     return user;
   }
 
@@ -136,6 +139,7 @@ export class AuthService {
       user :theuser,
       token : token.access_token,
     }
+    console.log("AUTHENTITY" ,authEntity)
     return authEntity;
   }
 
@@ -151,4 +155,9 @@ export class AuthService {
     }
     return true;
   }
+
+  async changeName(current : string, newName : string) : Promise<boolean>{
+    return this.prisma.changeUserName(current, newName);
+  }
+
 }
