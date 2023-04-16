@@ -74,10 +74,8 @@ const RoomList: React.FC = () => {
   const [selectedUsers, setSelectedUsers] = useState<UserEntity[]>([]);
   const [availableUsers, setAvailableUsers] = useState<UserEntity[]>([]);
 
-  const [directMessagesVisible, setDirectMessagesVisible] = useState(false);
-  const [adminRoomsVisible, setAdminRoomsVisible] = useState(false);
-  const [ownedRoomsVisible, setOwnedRoomsVisible] = useState(false);
-  const [userRoomsVisible, setUserRoomsVisible] = useState(false);
+  const [directMessagesVisible, setDirectMessagesVisible] = useState(true);
+  const [chatRoomsVisible, setChatRoomsVisible] = useState(true);
 
   const directMessages = Object.entries(rooms)
     .filter(([, room]) => room.status === ChatRoomStatus.DIALOGUE)
@@ -88,14 +86,8 @@ const RoomList: React.FC = () => {
       return otherUser ? [otherUser[1].username, room] : [name, room];
     });
 
-  const ownedRooms = Object.entries(rooms).filter(
-    ([, room]) => room.rank === ChatMemberRank.OWNER
-  );
-  const adminRooms = Object.entries(rooms).filter(
-    ([, room]) => room.rank === ChatMemberRank.ADMIN
-  );
-  const userRooms = Object.entries(rooms).filter(
-    ([, room]) => room.rank === ChatMemberRank.USER
+  const chatRooms = Object.entries(rooms).filter(
+    ([, room]) => room.status !== ChatRoomStatus.DIALOGUE
   );
 
   const renderSection = (
@@ -203,22 +195,10 @@ const RoomList: React.FC = () => {
                 directMessages
               )}
               {renderSection(
-                ownedRoomsVisible,
-                setOwnedRoomsVisible,
-                "Owned Rooms",
-                ownedRooms
-              )}
-              {renderSection(
-                adminRoomsVisible,
-                setAdminRoomsVisible,
-                "Admin Rooms",
-                adminRooms
-              )}
-              {renderSection(
-                userRoomsVisible,
-                setUserRoomsVisible,
-                "User Rooms",
-                userRooms
+                chatRoomsVisible,
+                setChatRoomsVisible,
+                "Chat Rooms",
+                chatRooms
               )}
             </>
           )}
