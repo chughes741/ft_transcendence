@@ -23,10 +23,6 @@ export default function SidebarChatOptions() {
       }}
       component="nav"
     >
-      <div>
-        {/* lol */}
-        <h3> {"‾"}</h3>
-      </div>
       <ButtonFunky
         icon={<Chat />}
         content="Message a friend"
