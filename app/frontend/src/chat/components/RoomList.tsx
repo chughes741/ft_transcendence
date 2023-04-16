@@ -6,8 +6,7 @@ import {
   Collapse,
   List,
   ListItemButton,
-  ListItemText,
-  Typography
+  ListItemText
 } from "@mui/material";
 import { useChatContext } from "../chat.context";
 
@@ -72,7 +71,6 @@ const RoomList: React.FC = () => {
   } = useChatContext();
   const { self } = useRootViewModelContext();
 
-  const [username, setUsername] = useState<string>(null);
   const [selectedUsers, setSelectedUsers] = useState<UserEntity[]>([]);
   const [availableUsers, setAvailableUsers] = useState<UserEntity[]>([]);
 

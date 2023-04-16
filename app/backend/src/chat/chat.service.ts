@@ -397,7 +397,7 @@ export class ChatService {
     console.log(req);
 
     try {
-      const userExists = await this.prismaService.getUserIdByNick(username);
+      await this.prismaService.getUserIdByNick(username);
     } catch (e) {
       logger.log(`UserCreation error: User ${username} already exists`);
       return Error("User already exists");

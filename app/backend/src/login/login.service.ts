@@ -6,8 +6,6 @@ import {
   ValidationPipe
 } from "@nestjs/common";
 import { PrismaService } from "../prisma/prisma.service";
-import { LoginDto } from "./dto/login.dto";
-import * as argon from "argon2";
 import { WsException } from "@nestjs/websockets";
 import { AuthRequest } from "../auth/dto";
 

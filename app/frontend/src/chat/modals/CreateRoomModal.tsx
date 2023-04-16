@@ -26,7 +26,7 @@ import ButtonFunky from "../../components/ButtonFunky";
 import "src/styles/chat/ChatPage.css";
 import { useRoomModal } from "./useRoomModal";
 import { ChatRoomStatus } from "../chat.types";
-import { AddCircleOutline, Chat } from "@mui/icons-material";
+import { AddCircleOutline } from "@mui/icons-material";
 
 interface CreateRoomModalProps {
   showModal: boolean;

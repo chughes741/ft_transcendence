@@ -7,8 +7,6 @@ import {
   DialogActions,
   Button
 } from "@mui/material";
-import { useRootViewModelContext } from "../root.context";
-import { useRootModel } from "../root.model";
 
 interface ConfirmationModalProps {
   showModal: boolean;
@@ -23,9 +21,6 @@ export const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
   closeModal,
   onConfirmation
 }) => {
-  const { setShowConfirmationModal, confirmationMessage } =
-    useRootViewModelContext();
-
   if (!showModal) return null;
   if (!onConfirmation) {
     // setShowConfirmationModal(false);

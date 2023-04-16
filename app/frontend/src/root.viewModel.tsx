@@ -1,6 +1,5 @@
 import { PageState, RootModelType, useRootModel } from "./root.model";
 import { RootViewModelContext } from "./root.context";
-import { useCallback } from "react";
 import { socket } from "./contexts/WebSocket.context";
 import { DevError } from "./chat/chat.types";
 import { handleSocketErrorResponse } from "./chat/lib/helperFunctions";
@@ -52,16 +51,7 @@ export const RootViewModelProvider = ({ children }) => {
     rootModel.setShowConfirmationModal(true);
   };
 
-  const {
-    self,
-    setSelf,
-    pageState,
-    setPageState,
-    fullscreen,
-    setFullscreen,
-    sessionToken,
-    setSessionToken
-  } = useRootModel();
+  const { pageState, setPageState } = useRootModel();
 
   /**
    * Redirect to 42Auth

@@ -13,7 +13,6 @@ import {
 } from "../chat.types";
 import { handleSocketErrorResponse } from "./helperFunctions";
 import { useRootViewModelContext } from "../../root.context";
-import { LeaveRoomRequest } from "../chat.types";
 
 const RoomManagerContext = createContext(null);
 export type RoomMap = { [key: string]: RoomType };

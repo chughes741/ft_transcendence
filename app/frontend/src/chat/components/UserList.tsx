@@ -9,7 +9,8 @@ import {
   DevError,
   UpdateChatMemberRequest,
   ChatMemberEntity,
-  KickMemberRequest
+  KickMemberRequest,
+  RoomMemberEntity
 } from "../chat.types";
 import { useChatContext } from "../chat.context";
 import { useProfileViewModelContext } from "../../profile/profile.viewModel";
@@ -26,6 +27,7 @@ export interface UserListProps {
   handleClick: (e: React.MouseEvent, userData: ChatMemberEntity) => void;
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export default function UserListView({ userList, handleClick }: UserListProps) {
   const {
     currentRoomName,
@@ -35,9 +37,7 @@ export default function UserListView({ userList, handleClick }: UserListProps) {
     setCurrentRoomName,
     setContextMenuUsersPosition,
     setContextMenuUsersData,
-    setContextMenuUsersVisible,
-
-    sendRoomMessage
+    setContextMenuUsersVisible
   } = useChatContext();
 
   const { sendDirectMessage } = useChatContext();
@@ -147,19 +147,23 @@ export default function UserListView({ userList, handleClick }: UserListProps) {
     };
     console.log("Updating chat member...", req);
 
-    socket.emit("updateChatMemberStatus", req, (res: DevError | any) => {
-      if (handleSocketErrorResponse(res)) return console.error(res);
-      console.log(`successfully updated user ${res}`);
-      updateRooms((newRooms) => {
-        const newUser =
-          newRooms[currentRoomName].users[contextMenuUsersData.username];
-        newUser.chatMemberStatus = newStatus;
-        newUser.rank = newRank;
-        newRooms[currentRoomName].users[contextMenuUsersData.username] =
-          newUser;
-        return newRooms;
-      });
-    });
+    socket.emit(
+      "updateChatMemberStatus",
+      req,
+      (res: DevError | RoomMemberEntity) => {
+        if (handleSocketErrorResponse(res)) return console.error(res);
+        console.log(`successfully updated user ${res}`);
+        updateRooms((newRooms) => {
+          const newUser =
+            newRooms[currentRoomName].users[contextMenuUsersData.username];
+          newUser.chatMemberStatus = newStatus;
+          newUser.rank = newRank;
+          newRooms[currentRoomName].users[contextMenuUsersData.username] =
+            newUser;
+          return newRooms;
+        });
+      }
+    );
     setContextMenuUsersVisible(false);
     setContextMenuUsersData({} as ChatMemberEntity);
     setContextMenuUsersPosition({ x: 0, y: 0 });
@@ -200,6 +204,7 @@ export default function UserListView({ userList, handleClick }: UserListProps) {
       queryingMemberRank: ownRank
     };
 
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     socket.emit("kickUser", req, (res: DevError | any) => {
       if (handleSocketErrorResponse(res)) return console.error(res);
       console.log(`successfully kicked user ${res}`);

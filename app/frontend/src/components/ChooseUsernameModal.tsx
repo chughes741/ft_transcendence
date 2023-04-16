@@ -8,8 +8,6 @@ import {
   Button,
   DialogActions
 } from "@mui/material";
-import { DevError } from "../chat/chat.types";
-import { handleSocketErrorResponse } from "../chat/lib/helperFunctions";
 
 interface ChooseUsernameModalProps {
   showModal: boolean;

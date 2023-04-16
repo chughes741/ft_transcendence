@@ -10,7 +10,7 @@ import {
   PrismaClient,
   User
 } from "@prisma/client";
-import { ChatRoomDto, UserDto, MessageDto } from "../auth/dto/prisma.dto";
+import { ChatRoomDto, MessageDto } from "../auth/dto/prisma.dto";
 import {
   ChatMemberPrismaType,
   MessagePrismaType,
@@ -26,11 +26,7 @@ import {
   GetProfileRequest
 } from "kingpong-lib";
 import { UpdateChatMemberRequest } from "src/chat/dto/userlist.dto";
-import { AuthRequest, UserEntity } from "../auth/dto";
-
-/*End of Mute and End of Ban:  */
-//Is added to the current date (now)
-const GLOBAL_T_IN_DAYS = 5 /*DAYS*/ * (24 * 60 * 60 * 1000); // One day in milliseconds
+import { UserEntity } from "../auth/dto";
 
 const logger = new Logger("PrismaService");
 
@@ -585,7 +581,7 @@ export class PrismaService extends PrismaClient {
           : Date.now() + updateDto.duration * 60000
       );
 
-      let updateData: Partial<ChatMember> = {
+      const updateData: Partial<ChatMember> = {
         status: newStatus,
         rank: newRank
       };

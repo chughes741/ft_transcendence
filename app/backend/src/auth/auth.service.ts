@@ -1,12 +1,10 @@
-import { ForbiddenException, Get, Injectable, Logger } from "@nestjs/common";
+import { ForbiddenException, Injectable, Logger } from "@nestjs/common";
 import { PrismaService } from "../prisma/prisma.service";
-import { AuthRequest, UserEntity } from "./dto";
-import * as argon from "argon2";
+import { AuthRequest } from "./dto";
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
 import { JwtService } from "@nestjs/jwt";
 import { ConfigService } from "@nestjs/config";
 import { WsException } from "@nestjs/websockets";
-import { Socket } from "socket.io";
 import speakeasy from "speakeasy";
 import qrcode from "qrcode";
 import axios from "axios";

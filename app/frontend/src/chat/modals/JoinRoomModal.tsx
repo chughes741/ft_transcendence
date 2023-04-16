@@ -19,7 +19,6 @@ import { useRoomModal } from "./useRoomModal";
 import ButtonFunky from "../../components/ButtonFunky";
 import { UserStatus } from "kingpong-lib";
 import { socket } from "../../contexts/WebSocket.context";
-import { useChatContext } from "../chat.context";
 import { Public, VpnKey } from "@mui/icons-material";
 import UserStatusBadge from "../../components/UserStatusBadge";
 import { ChatRoomStatus } from "../chat.types";
