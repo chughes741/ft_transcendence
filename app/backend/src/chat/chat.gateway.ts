@@ -24,6 +24,9 @@ import { AuthRequest } from "../auth/dto";
 export type DevError = {
   error: string;
 };
+export type DevSuccess = {
+  success: string;
+};
 
 /******************/
 /*    Requests    */
@@ -143,6 +146,11 @@ export class JoinRoomDto {
 export class LeaveRoomRequest {
   roomName: string;
   username: string;
+}
+
+export class BlockUserRequest {
+  blocker: string;
+  blockee: string;
 }
 
 // FIXME: uncomment the following line to enable authentication
@@ -725,5 +733,26 @@ export class ChatGateway
     this.bindAllUserSocketsToRoom(req.sender, room.name);
     this.bindAllUserSocketsToRoom(req.recipient, room.name);
     return room;
+  }
+
+  /**
+   * Block a user from sending you direct messages
+   * @param {Socket} client
+   * @param {BlockUserRequest} req
+   * @returns {Promise<DevError | BlockedUserEntity>}
+   * @memberof ChatGateway
+   */
+  @SubscribeMessage("blockUser")
+  async blockUser(
+    client: Socket,
+    req: BlockUserRequest
+  ): Promise<DevError | { success: string }> {
+    logger.log(
+      `Received blockUser request from ${req.blocker} to block ${req.blockee}`
+    );
+    console.log(req);
+    const ret = await this.chatService.blockUser(req);
+    if (ret instanceof Error) return { error: ret.message };
+    return { success: "User blocked successfully" };
   }
 }
