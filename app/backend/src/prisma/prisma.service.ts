@@ -953,6 +953,22 @@ export class PrismaService extends PrismaClient {
     return blockedUsers;
   }
 
+  async getUsersBlocking(userId: string): Promise<User[]> {
+    const blockingUserRelations = await this.blockedUser.findMany({
+      where: {
+        blockedUserId: userId
+      },
+      select: {
+        blocker: true
+      }
+    });
+
+    const blockingUsers = blockingUserRelations.map(
+      (relation) => relation.blocker
+    );
+    return blockingUsers;
+  }
+
   async checkIfBlocked(
     blockerId: string,
     blockedUserId: string

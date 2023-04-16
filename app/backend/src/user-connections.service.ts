@@ -92,4 +92,9 @@ export class UserConnectionsService {
     const blockedList = this.blockedUsers.get(blockingUsername);
     return blockedList ? Array.from(blockedList) : [];
   }
+
+  removeUserEntries(username: string): void {
+    this.userConnections.delete(username);
+    this.blockedUsers.delete(username);
+  }
 }

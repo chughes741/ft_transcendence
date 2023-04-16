@@ -191,6 +191,7 @@ export class ChatGateway
         where: { username: connections },
         data: { status: UserStatus.OFFLINE }
       });
+      this.userConnectionsService.removeUserEntries(connections);
     }
 
     logger.log(`Client disconnected: ${client.id}`);
@@ -428,6 +429,26 @@ export class ChatGateway
 
     // Add the user connection to the UserConnections map
     this.userConnectionsService.addUserConnection(username, client.id);
+
+    // Load the list of blocked users and users blocking the logged-in user
+    const [blockedUsers, blockingUsers] = await Promise.all([
+      this.prismaService.getUsersBlockedBy(username),
+      this.prismaService.getUsersBlocking(username)
+    ]);
+
+    blockedUsers.forEach((blockedUser) =>
+      this.userConnectionsService.addUserToBlocked(
+        username,
+        blockedUser.username
+      )
+    );
+    blockingUsers.forEach((blockingUser) =>
+      this.userConnectionsService.addUserToBlocked(
+        blockingUser.username,
+        username
+      )
+    );
+
     return username;
   }
 
