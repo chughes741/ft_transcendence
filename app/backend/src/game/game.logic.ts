@@ -26,8 +26,8 @@ export class GameLogic {
     //Create new gameData object
     gameState = this.initNewGame();
     logger.log("New game object created");
-    //Add the gameUpdateInterval
-    // if (!this.schedulerRegistry.getInterval('gameUpdateInterval'))
+
+    //Add new interval to scheduler
     this.addGameUpdateInterval(
       "gameUpdateInterval",
       GameConfig.serverUpdateRate
@@ -97,8 +97,9 @@ export class GameLogic {
     gameData.is_new_round = true;
     gameData.bounds.width = GameConfig.playAreaWidth;
     gameData.bounds.height = GameConfig.playAreaHeight;
-    gameData.player_left_ready = false;
-    gameData.player_right_ready = false;
+    // gameData.player_left_ready = false;
+    // gameData.player_right_ready = false;
+    gameData.players_ready = 0;
 
     //Randomize serve side for initial serve
     if (Math.round(Math.random()) === 0) gameData.last_serve_side = "left";

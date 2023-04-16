@@ -10,7 +10,8 @@ export enum PageState {
   Home = "Home",
   Game = "Game",
   Chat = "Chat",
-  Profile = "Profile"
+  Profile = "Profile",
+  Loader = "Loader"
 }
 
 /**
@@ -35,6 +36,8 @@ export interface RootModelType {
   setShowConfirmationModal: (show: boolean) => void;
   confirmationMessage: string;
   setConfirmationMessage: (message: string) => void;
+  sessionToken?: string;
+  setSessionToken?: (sessionToken: string) => void;
 }
 
 /**
@@ -57,6 +60,7 @@ export const useRootModel = (): RootModelType => {
   const [showConfirmationModal, setShowConfirmationModal] =
     useState<boolean>(false);
   const [confirmationMessage, setConfirmationMessage] = useState<string>("");
+  const [sessionToken, setSessionToken] = useState<string>("");
 
   return {
     self,
@@ -70,6 +74,8 @@ export const useRootModel = (): RootModelType => {
     showConfirmationModal,
     setShowConfirmationModal,
     confirmationMessage,
-    setConfirmationMessage
+    setConfirmationMessage,
+    sessionToken,
+    setSessionToken
   };
 };

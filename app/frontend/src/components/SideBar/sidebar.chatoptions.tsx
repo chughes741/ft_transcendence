@@ -14,7 +14,7 @@ export default function SidebarChatOptions() {
   return (
     <List
       sx={{
-        pt: 2,
+        pt: 6,
         width: "100%",
         maxWidth: 360,
         bgcolor: "background.paper",
