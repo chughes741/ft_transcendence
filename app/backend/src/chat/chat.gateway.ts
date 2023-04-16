@@ -729,9 +729,11 @@ export class ChatGateway
     const ret = await this.chatService.sendDirectMessage(req);
     if (ret instanceof Error) return { error: ret.message };
     const room = ret as ChatRoomEntity;
-    // bind all of both users' socket to the room
+    // bind all of both users' socket to the room, notify the new user of the room
     this.bindAllUserSocketsToRoom(req.sender, room.name);
     this.bindAllUserSocketsToRoom(req.recipient, room.name);
+    this.sendEventToAllUserSockets(req.recipient, "addedToNewChatRoom", room);
+
     return room;
   }
 
