@@ -1,21 +1,22 @@
 import React, { useRef, useContext, useEffect } from "react";
 import { Canvas, useFrame, ThreeElements, useThree } from "@react-three/fiber";
-import { socket } from "src/contexts/WebSocket.context";
-//Local includes
-import { GameStateDto } from "./game.types";
-import { BallConfig, GameColours, PaddleConfig } from "./game.config";
 import { Mesh } from "three";
-import { ServerGameStateUpdateEvent, GameEvents, GameState} from "kingpong-lib"
-import { useGameViewModelContext } from "./game.viewModel";
+
+import { socket } from "src/contexts/WebSocket.context";
 import { useRootViewModelContext } from "src/root.context";
+import { useGameViewModelContext } from "./game.viewModel";
+import { BallConfig, GameColours, PaddleConfig } from "./game.config";
+import { GameEndedEvent, GameEvents, GameState } from "kingpong-lib";
+
 /**
+ * Render the game display object
  *
- * @param gameState
- * @returns
+ * @returns {JSX.Element}
  */
 function Ball() {
   const mesh = useRef<Mesh>();
   const { gameState } = useGameViewModelContext();
+
   useFrame(() => {
     console.log(gameState);
     mesh.current.position.x = gameState.ball_x;
@@ -24,31 +25,30 @@ function Ball() {
   });
 
   return (
-    <mesh ref={mesh} >
+    <mesh ref={mesh}>
       <sphereGeometry args={[BallConfig.radius]} />
-      <meshStandardMaterial emissive={"orange"} emissiveIntensity={50} />
+      <meshStandardMaterial
+        emissive={"orange"}
+        emissiveIntensity={50}
+      />
     </mesh>
   );
 }
 
-// export declare class ClientGameStateUpdateRequest {
-//   match_id: string;
-//   lobby_id: string;
-//   username: string;
-//   paddle_position: number;
-// }
-
 /**
+ * Render the game display object
  *
- * @param gameState
- * @returns
+ * @returns {JSX.Element}
  */
 function PaddleLeft() {
-  const ref = useRef<Mesh>(null!);
-  const {playerSide, lobbyId, gameState} = useGameViewModelContext();
   const { self } = useRootViewModelContext();
-  // Update paddle position based on mouse position
-  // state.pointer gives a value between -1 and 1, so need to multiply by the gamePlayArea / 2 to get proper position
+  const { playerSide, lobbyId, gameState } = useGameViewModelContext();
+
+  const ref = useRef<Mesh>(null!);
+
+  /** Update paddle position based on mouse position
+   *    state.pointer gives a value between -1 and 1,
+   *    so need to multiply by the gamePlayArea / 2 to get proper position */
   useFrame((state) => {
     if (playerSide === "left") {
       ref.current.position.y = state.pointer.y * 4;
@@ -56,12 +56,13 @@ function PaddleLeft() {
         match_id: lobbyId,
         lobby_id: lobbyId,
         username: self.username,
-        paddle_position: state.pointer.y * 4,
+        paddle_position: state.pointer.y * 4
       });
     } else {
       ref.current.position.y = gameState.paddle_left_y;
     }
   });
+
   return (
     <mesh
       ref={ref}
@@ -76,14 +77,15 @@ function PaddleLeft() {
 }
 
 /**
+ * Render the game display object
  *
- * @param gameState
- * @returns
+ * @returns {JSX.Element}
  */
 function PaddleRight() {
-  const ref = useRef<Mesh>(null!);
-  const {playerSide, lobbyId, gameState} = useGameViewModelContext();
   const { self } = useRootViewModelContext();
+  const { playerSide, lobbyId, gameState } = useGameViewModelContext();
+  
+  const ref = useRef<Mesh>(null!);
 
   useFrame((state) => {
     if (playerSide === "right") {
@@ -92,12 +94,13 @@ function PaddleRight() {
         match_id: lobbyId,
         lobby_id: lobbyId,
         username: self.username,
-        paddle_position: state.pointer.y * 4,
+        paddle_position: state.pointer.y * 4
       });
     } else {
       ref.current.position.y = gameState.paddle_right_y;
     }
   });
+
   return (
     <mesh
       ref={ref}
@@ -111,9 +114,14 @@ function PaddleRight() {
   );
 }
 
-//Create window border object
+/**
+ * Render the game display object
+ *
+ * @returns {JSX.Element}
+ */
 function Floor() {
   const mesh = useRef<Mesh>(null!);
+
   return (
     <mesh
       ref={mesh}
@@ -125,8 +133,14 @@ function Floor() {
   );
 }
 
+/**
+ * Render the game display object
+ *
+ * @returns {JSX.Element}
+ */
 function OuterFrameTop() {
   const mesh = useRef<Mesh>(null!);
+  
   return (
     <mesh
       ref={mesh}
@@ -138,8 +152,14 @@ function OuterFrameTop() {
   );
 }
 
+/**
+ * Render the game display object
+ *
+ * @returns {JSX.Element}
+ */
 function OuterFrameBottom() {
   const mesh = useRef<Mesh>(null!);
+  
   return (
     <mesh
       ref={mesh}
@@ -151,8 +171,14 @@ function OuterFrameBottom() {
   );
 }
 
+/**
+ * Render the game display object
+ *
+ * @returns {JSX.Element}
+ */
 function OuterFrameLeft() {
   const mesh = useRef<Mesh>(null!);
+  
   return (
     <mesh
       ref={mesh}
@@ -164,8 +190,14 @@ function OuterFrameLeft() {
   );
 }
 
+/**
+ * Render the game display object
+ *
+ * @returns {JSX.Element}
+ */
 function OuterFrameRight() {
   const mesh = useRef<Mesh>(null!);
+  
   return (
     <mesh
       ref={mesh}
@@ -179,21 +211,31 @@ function OuterFrameRight() {
 
 /**
  * Render the game display object
- * @returns
+ *
+ * @returns {JSX.Element}
  */
 export default function Game() {
+  const { gameState, setGameState, setScoreLeft, setScoreRight, displayLobby } =
+    useGameViewModelContext();
 
-  const { gameState, setGameState, setScoreLeft, setScoreRight } = useGameViewModelContext();
-
-  socket.on(
-    GameEvents.ServerGameStateUpdate,
-    (payload: GameState) => {
-      console.log("GameState update received. Payload: " + payload);
-
+  useEffect(() => {
+    socket.on(GameEvents.ServerGameStateUpdate, (payload: GameState) => {
       setGameState(payload);
       setScoreLeft(payload.score_left);
       setScoreRight(payload.score_right);
     });
+
+    socket.on(GameEvents.GameEnded, (payload: GameEndedEvent) => {
+      setGameState(payload.game_state);
+      setScoreLeft(payload.game_state.score_left);
+      setScoreRight(payload.game_state.score_right);
+    });
+
+    return () => {
+      socket.off(GameEvents.ServerGameStateUpdate);
+      socket.off(GameEvents.GameEnded);
+    }
+  }, [displayLobby]);
 
   if (!gameState) return <div>Loading...</div>;
 
@@ -223,12 +265,3 @@ export default function Game() {
     </Canvas>
   );
 }
-
-
-  //Get local copy of socket
-  // const socket = useContext(WebSocketContext);
-  // let gameState: GameData = new GameData();
-  // socket.on("serverUpdate", (GameState: GameData) => {
-  //   console.log(GameState);
-  //   gameState = GameState;
-  // });

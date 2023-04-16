@@ -130,7 +130,7 @@ export const GameViewModelProvider = ({ children }) => {
   /**
    * Manage ready toggle
    *
-   * @returns
+   * @async
    */
   const setPlayerReadyState = async () => {
     if (playerReady) return;
@@ -151,7 +151,7 @@ export const GameViewModelProvider = ({ children }) => {
   /**
    * Manage joining the queue
    * 
-   * 
+   * @async
    */
   const joinGameQueue = async () => {
     console.log("Joining queue");

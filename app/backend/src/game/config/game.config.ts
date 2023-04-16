@@ -8,6 +8,7 @@ export class GameConfig {
   static readonly topRight: Vec2 = {x: GameConfig.playAreaWidth / 2, y: GameConfig.playAreaHeight / 2};
   static readonly botLeft: Vec2 = {x: -(GameConfig.playAreaWidth / 2), y: -(GameConfig.playAreaHeight / 2)};
   static readonly botRight: Vec2 = {x: GameConfig.playAreaWidth / 2, y: -(GameConfig.playAreaHeight / 2)};
+  static readonly maxScore: number = 11;
 
 }
 export class PaddleConfig {
@@ -24,11 +25,10 @@ export class PaddleConfig {
 export class BallConfig {
   static readonly initialSpeed: number = 2.5;
   static readonly maxSpeed: number = 10;
+  static readonly speedIncreaseInterval: number = 1.1;
   static readonly maxServeAngle: number = 120;
   static readonly radius: number = 0.1;
 }
-
-
 
 //Colours
 export class GameColours {

@@ -10,7 +10,9 @@ import { degToRad, checkIntersect } from "./game.utils";
 import {
   ServerGameStateUpdateEvent,
   GameEvents,
-  GameState
+  GameState,
+  GameEndedEvent,
+  Ball
 } from "kingpong-lib";
 const logger = new Logger("gameLogic");
 
@@ -94,8 +96,23 @@ export class GameLogic {
       score_right: lobby.gamestate.score[1]
     };
 
+    if (
+      lobby.gamestate.score[0] >= GameConfig.maxScore ||
+      lobby.gamestate.score[1] >= GameConfig.maxScore
+    ) {
+      this.server.to(lobby.lobby_id).emit(GameEvents.GameEnded, {
+        match_id: lobby.lobby_id,
+        lobby_id: lobby.lobby_id,
+        game_state: gamestate
+      });
+      this.deleteInterval("gameUpdateInterval" + lobby.lobby_id);
+      return;
+    }
+
     //Send update to lobby websocket room
-    this.server.emit(GameEvents.ServerGameStateUpdate, gamestate);
+    this.server
+      .to(lobby.lobby_id)
+      .emit(GameEvents.ServerGameStateUpdate, gamestate);
   }
 
   //Calculate game state and return gamestate object
@@ -143,18 +160,19 @@ export class GameLogic {
         prevBall.pos,
         curBall.pos,
         new Vec2(
-          (GameConfig.playAreaWidth / 2) - PaddleConfig.borderOffset,
-          gamestate.paddle_right.pos.y + (PaddleConfig.height / 2)
+          GameConfig.playAreaWidth / 2 - PaddleConfig.borderOffset,
+          gamestate.paddle_right.pos.y + PaddleConfig.height / 2
         ),
         new Vec2(
-          (GameConfig.playAreaWidth / 2) - PaddleConfig.borderOffset,
-          gamestate.paddle_right.pos.y - (PaddleConfig.height / 2)
+          GameConfig.playAreaWidth / 2 - PaddleConfig.borderOffset,
+          gamestate.paddle_right.pos.y - PaddleConfig.height / 2
         )
       );
       if (intersect) {
         const remainder: Vec2 = Vec2.sub(curBall.pos, intersect);
         curBall.pos = Vec2.add(intersect, remainder);
         curBall.direction.x = -curBall.direction.x;
+        curBall.speed = curBall.speed * BallConfig.speedIncreaseInterval;
         return curBall;
       }
     } else if (curBall.direction.x < 0) {
@@ -164,17 +182,18 @@ export class GameLogic {
         curBall.pos,
         new Vec2(
           -(GameConfig.playAreaWidth / 2) + PaddleConfig.borderOffset,
-          gamestate.paddle_left.pos.y + (PaddleConfig.height / 2)
+          gamestate.paddle_left.pos.y + PaddleConfig.height / 2
         ),
         new Vec2(
-          - (GameConfig.playAreaWidth / 2) + PaddleConfig.borderOffset,
-          gamestate.paddle_left.pos.y - (PaddleConfig.height / 2)
+          -(GameConfig.playAreaWidth / 2) + PaddleConfig.borderOffset,
+          gamestate.paddle_left.pos.y - PaddleConfig.height / 2
         )
       );
       if (intersect) {
         const remainder: Vec2 = Vec2.sub(curBall.pos, intersect);
         curBall.pos = Vec2.add(intersect, remainder);
         curBall.direction.x = -curBall.direction.x;
+        curBall.speed = curBall.speed * BallConfig.speedIncreaseInterval;
         return curBall;
       }
     }
