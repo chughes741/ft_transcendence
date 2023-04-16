@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { IconButton as MuiIconButton } from "@mui/material";
 import { Box, SxProps, Theme } from "@mui/system";
 import { CSSProperties } from "@mui/styles";
-import "./DynamicIconButton.css";
+import "./DynamicIconButton.tsx.css";
 
 type DynamicIconButtonProps = {
   text: string;
@@ -43,15 +43,15 @@ export default function DynamicIconButton({
 
   return (
     <Box
-      className="button-funky"
+      className="dynamic-icon-button"
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
       onClick={onClick}
       // style={{ width: width }}
       sx={{ ...sx, width }}
     >
-      <div className="button-funky-bg"></div>
-      <div className="button-funky-content">
+      <div className="dynamic-icon-button-bg"></div>
+      <div className="dynamic-icon-button-content">
         <MuiIconButton
           size="large"
           disableRipple

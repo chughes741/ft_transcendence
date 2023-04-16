@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Menu, MenuItem } from "@mui/material";
+import { Divider, Menu, MenuItem } from "@mui/material";
 
 type ContextMenuOption = {
   label: string;
@@ -27,17 +27,25 @@ const ContextMenu: React.FC<ContextMenuProps> = ({
     const handleClick = (e: MouseEvent) => {
       if (contextMenuVisible) {
         const target = e.target as HTMLElement;
-        if (!target.closest(".MuiMenu-paper")) {
+        const isOutsideMenu = !target.closest(".MuiMenu-paper");
+        const isOutsideSubmenu = !target.closest(
+          ".MuiMenu-paper.MuiMenu-paper"
+        );
+
+        if (isOutsideMenu) {
+          console.log("click outside, closing context menu");
           setContextMenuVisible(false);
+        }
+        if (isOutsideSubmenu && anchorEl) {
+          setAnchorEl(null);
         }
       }
     };
-
-    document.addEventListener("click", handleClick);
+    document.addEventListener("mousedown", handleClick);
     return () => {
-      document.removeEventListener("click", handleClick);
+      document.removeEventListener("mousedown", handleClick);
     };
-  }, [contextMenuVisible]);
+  }, [contextMenuVisible, anchorEl]);
 
   return (
     <Menu
@@ -48,43 +56,53 @@ const ContextMenu: React.FC<ContextMenuProps> = ({
         setContextMenuVisible(false);
       }}
     >
-      {options.map((option, index) => (
-        <MenuItem
-          key={index}
-          onClick={(e) => {
-            if (option.submenu) {
-              e.stopPropagation();
-              setAnchorEl(anchorEl ? null : e.currentTarget);
-            } else if (option.onClick) {
-              e.stopPropagation();
-              option.onClick();
-            }
-          }}
-        >
-          {option.label}
-          {option.submenu && (
-            <Menu
-              open={Boolean(anchorEl)}
-              anchorEl={anchorEl}
-              onClose={() => setAnchorEl(null)}
-              anchorOrigin={{ vertical: "top", horizontal: "right" }}
-              transformOrigin={{ vertical: "top", horizontal: "left" }}
+      {options
+        .filter((option) => option !== null)
+        .map((option, index) => {
+          if (option.label === "---") {
+            return <Divider key={index} />;
+          }
+
+          return (
+            <MenuItem
+              key={index}
+              onClick={(e) => {
+                if (option.submenu) {
+                  e.stopPropagation();
+                  e.preventDefault();
+                  setAnchorEl(anchorEl ? null : e.currentTarget);
+                } else if (option.onClick) {
+                  e.stopPropagation();
+                  option.onClick();
+                }
+              }}
             >
-              {option.submenu.map((submenuOption, submenuIndex) => (
-                <MenuItem
-                  key={submenuIndex}
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    submenuOption.onClick && submenuOption.onClick();
-                  }}
+              {option.label}
+              {option.submenu && (
+                <Menu
+                  open={Boolean(anchorEl)}
+                  anchorEl={anchorEl}
+                  onClose={() => setAnchorEl(null)}
+                  anchorOrigin={{ vertical: "top", horizontal: "right" }}
+                  transformOrigin={{ vertical: "top", horizontal: "left" }}
                 >
-                  {submenuOption.label}
-                </MenuItem>
-              ))}
-            </Menu>
-          )}
-        </MenuItem>
-      ))}
+                  {option.submenu.map((submenuOption, submenuIndex) => (
+                    <MenuItem
+                      key={submenuIndex}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setAnchorEl(null);
+                        submenuOption.onClick && submenuOption.onClick();
+                      }}
+                    >
+                      {submenuOption.label}
+                    </MenuItem>
+                  ))}
+                </Menu>
+              )}
+            </MenuItem>
+          );
+        })}
     </Menu>
   );
 };

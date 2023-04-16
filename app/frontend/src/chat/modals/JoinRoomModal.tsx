@@ -19,10 +19,11 @@ import { useRoomModal } from "./useRoomModal";
 import ButtonFunky from "../../components/ButtonFunky";
 import { UserStatus } from "kingpong-lib";
 import { socket } from "../../contexts/WebSocket.context";
-import { useChatContext } from "../chat.context";
 import { Public, VpnKey } from "@mui/icons-material";
 import UserStatusBadge from "../../components/UserStatusBadge";
 import { ChatRoomStatus } from "../chat.types";
+import { IoEnterOutline } from "react-icons/io5";
+import { useRootViewModelContext } from "../../root.context";
 
 interface JoinRoomModalProps {
   showModal: boolean;
@@ -51,7 +52,7 @@ export const JoinRoomModal: React.FC<JoinRoomModalProps> = ({
   if (!showModal) {
     return null;
   }
-  const { tempUsername } = useChatContext();
+  const { self } = useRootViewModelContext();
 
   const { password, setPassword, showPassword, togglePasswordVisibility } =
     useRoomModal(showModal);
@@ -87,13 +88,13 @@ export const JoinRoomModal: React.FC<JoinRoomModalProps> = ({
     // Send a socket event to get the list of available rooms
     socket.emit(
       "listAvailableChatRooms",
-      tempUsername,
+      self.username,
       (rooms: AvailableRoomEntity[]) => {
         console.log("Received available rooms: ", rooms);
         setAvailableRooms(rooms);
       }
     );
-  }, [tempUsername, showModal]);
+  }, [self.username, showModal]);
 
   return (
     <Dialog
@@ -205,6 +206,7 @@ export const JoinRoomModal: React.FC<JoinRoomModalProps> = ({
           Cancel
         </Button>
         <ButtonFunky
+          icon={<IoEnterOutline />}
           onClick={handleSubmit}
           content="Join Room"
           width="50%"

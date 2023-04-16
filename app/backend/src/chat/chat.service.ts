@@ -1,27 +1,31 @@
 import * as argon2 from "argon2";
 import { Injectable, Logger } from "@nestjs/common";
 import {
+  User,
   ChatMember,
   ChatMemberRank,
   ChatMemberStatus,
   ChatRoom,
   ChatRoomStatus,
-  User
+  UserStatus
 } from "@prisma/client";
 import { PrismaService } from "../prisma/prisma.service";
 import { UserConnectionsService } from "../user-connections.service";
 import {
+  ChatMemberPrismaType,
   ChatRoomEntity,
   CreateChatRoomDto,
   InviteUsersToRoomRequest,
   JoinRoomDto,
   LeaveRoomRequest,
+  SendDirectMessageRequest,
   SendMessageDto,
   UpdateChatRoomRequest
 } from "./chat.gateway";
 import { MessageEntity } from "./entities/message.entity";
-import { kickMemberDto, updateChatMemberStatusDto } from "./dto/userlist.dto";
+import { KickMemberRequest, UpdateChatMemberRequest } from "./dto/userlist.dto";
 import { ChatMemberEntity } from "./entities/message.entity";
+import { AuthRequest, UserEntity } from "../auth/dto";
 
 const logger = new Logger("ChatService");
 
@@ -88,6 +92,8 @@ export class ChatService {
 
     // Add the room to the database
     try {
+      if (createDto.status === ChatRoomStatus.PASSWORD)
+        createDto.password = await argon2.hash(createDto.password);
       const room = await this.prismaService.createChatRoom(createDto);
       logger.log(`Room ${createDto.name} successfully added to the database: `);
       console.log(room);
@@ -107,6 +113,63 @@ export class ChatService {
     }
   }
 
+  private isPast(date: Date): boolean {
+    const now = new Date();
+    return date.getTime() < now.getTime();
+  }
+
+  private async handleRoomCreation(
+    roomName: string,
+    user: string
+  ): Promise<ChatRoom> {
+    const createRoomReq: CreateChatRoomDto = {
+      name: roomName,
+      status: ChatRoomStatus.PUBLIC,
+      password: null,
+      owner: user
+    };
+
+    try {
+      const room = await this.prismaService.createChatRoom(createRoomReq);
+      return room;
+    } catch (e) {
+      logger.error(`Error creating room ${roomName}`, e);
+      throw Error(`Error creating room ${roomName}`);
+    }
+  }
+
+  private async handlePasswordVerification(
+    room: ChatRoom,
+    password: string
+  ): Promise<void> {
+    if (room.status === ChatRoomStatus.PASSWORD) {
+      const isPasswordCorrect = await argon2.verify(room.password, password);
+      if (!isPasswordCorrect) {
+        throw Error("Incorrect password");
+      }
+    }
+  }
+
+  private async handleChatMember(
+    user: string,
+    roomId: number
+  ): Promise<ChatMember> {
+    const userId = await this.prismaService.getUserIdByNick(user);
+    let chatMember = await this.prismaService.chatMember.findFirst({
+      where: { memberId: userId, roomId: roomId }
+    });
+
+    if (!chatMember) {
+      chatMember = await this.prismaService.addChatMember(
+        userId,
+        roomId,
+        ChatMemberRank.USER
+      );
+    }
+
+    return chatMember;
+  }
+
   /**
    * Join a chat room
    *
@@ -120,68 +183,64 @@ export class ChatService {
   async joinRoom(joinDto: JoinRoomDto): Promise<ChatRoomEntity | Error> {
     const { roomName, password, user } = joinDto;
     let room: ChatRoom;
+
     try {
       room = await this.prismaService.chatRoom.findUnique({
         where: { name: roomName }
       });
-    } catch (e) {
-      // FIXME: Remove this behaviour after development is complete
-      logger.error(
-        `Error finding room ${roomName}: ${e.message}, attempting to create it`
-      );
-      try {
-        room = await this.prismaService.createChatRoom({
-          name: roomName,
-          status: ChatRoomStatus.PUBLIC,
-          owner: user
-        });
-        logger.log(`Room ${roomName} created: `);
-        console.log(room);
-      } catch (e) {
-        logger.error(`Error creating room ${roomName}: ${e}`);
-        return e;
+
+      if (!room) {
+        room = await this.handleRoomCreation(roomName, user);
       }
+    } catch (e) {
+      room = await this.handleRoomCreation(roomName, user);
     }
 
-    if (
-      room.status === ChatRoomStatus.PASSWORD &&
-      !argon2.verify(room.password, password)
-    )
-      return Error("Incorrect password");
+    try {
+      await this.handlePasswordVerification(room, password);
+    } catch (e) {
+      logger.error(`Error verifying password for room ${roomName}`, e);
+      return Error(`Error verifying password for room ${roomName}`);
+    }
 
-    // Add the user as a chat member if they are not already a member
-    const userId = await this.prismaService.getUserIdByNick(user);
-    // This should really be a findUnique, but I can't figure out how to make it work
-    let chatMember = await this.prismaService.chatMember.findFirst({
-      where: { memberId: userId, roomId: room.id }
-    });
-    if (!chatMember) {
-      chatMember = await this.prismaService.addChatMember(
-        userId,
-        room.id,
-        ChatMemberRank.USER
-      );
+    let chatMember: ChatMember;
+
+    try {
+      chatMember = await this.handleChatMember(user, room.id);
+
+      // Check if the user is banned and the ban has not expired
+      if (chatMember.endOfBan && !this.isPast(chatMember.endOfBan)) {
+        throw Error("You are banned from this room.");
+      }
+    } catch (e) {
+      logger.error(`Error handling chat member for room ${roomName}`, e);
+      return Error(e.message);
     }
 
     return this.getChatRoomEntity(room, chatMember.rank);
   }
 
   async leaveRoom(req: LeaveRoomRequest): Promise<ChatMember | Error> {
-    const userId = await this.prismaService.getUserIdByNick(req.username);
-    logger.log(`User ${req.username} is leaving room ${req.roomName}`);
-    const roomId = await this.prismaService.getChatRoomId(req.roomName);
-    if (!roomId) {
-      return Error("Room not found");
+    try {
+      const userId = await this.prismaService.getUserIdByNick(req.username);
+      logger.log(`User ${req.username} is leaving room ${req.roomName}`);
+      const roomId = await this.prismaService.getChatRoomId(req.roomName);
+      if (!roomId) {
+        return Error("Room not found");
+      }
+      const chatMember = await this.prismaService.chatMember.findFirst({
+        where: { memberId: userId, roomId: roomId }
+      });
+      if (!chatMember) {
+        return Error("User is not a member of this room");
+      }
+      return this.prismaService.chatMember.delete({
+        where: { id: chatMember.id }
+      });
+    } catch (e) {
+      logger.error("Error leaving room", e);
+      return Error("Error leaving room: " + e.message);
     }
-    const chatMember = await this.prismaService.chatMember.findFirst({
-      where: { memberId: userId, roomId: roomId }
-    });
-    if (!chatMember) {
-      return Error("User is not a member of this room");
-    }
-    return this.prismaService.chatMember.delete({
-      where: { id: chatMember.id }
-    });
   }
 
   /**
@@ -279,13 +338,27 @@ export class ChatService {
   async sendMessage(sendDto: SendMessageDto): Promise<Error | MessageEntity> {
     if (!sendDto.content) return;
 
+    // Try to get the user database ID
+    const userId = await this.prismaService.getUserIdByNick(sendDto.sender);
+    if (!userId) return Error("User not found");
+
     // Try to get the room database ID
     const roomId = await this.prismaService.getChatRoomId(sendDto.roomName);
     if (!roomId) return Error("Room not found");
 
-    // Try to get the user database ID
-    const userId = await this.prismaService.getUserIdByNick(sendDto.sender);
-    if (!userId) return Error("User not found");
+    // Check and update the user's status
+    const userStatus = await this.checkAndUpdateUserStatus(
+      userId,
+      sendDto.roomName
+    );
+
+    // If the user is muted or banned, do not allow them to send a message
+    if (
+      userStatus === ChatMemberStatus.MUTED ||
+      userStatus === ChatMemberStatus.BANNED
+    ) {
+      return Error("User is muted or banned");
+    }
 
     // Add the message to the database
     try {
@@ -317,35 +390,48 @@ export class ChatService {
    * @param username
    * @returns Error or username
    */
-  async createTempUser(
-    clientId: string,
-    username: string
-  ): Promise<Error | string> {
+  async createTempUser(req: AuthRequest): Promise<UserEntity | Error> {
     // Check if the user already exists
-    const userExists = await this.prismaService.getUserIdByNick(username);
-    if (userExists) {
-      // Warn the client that the user already exists
+    const { username, avatar, email, firstName, lastName } = req;
+    logger.warn(`User ${username} is trying to create a user`);
+    console.log(req);
+
+    try {
+      await this.prismaService.getUserIdByNick(username);
+    } catch (e) {
       logger.log(`UserCreation error: User ${username} already exists`);
       return Error("User already exists");
-    } else {
-      // If the user does not exist, create it
-      try {
-        const prismaReturn = await this.prismaService.addUser({
-          username,
-          password: "secret",
-          avatar: `https://i.pravatar.cc/150?u=${username}`
-        });
-        logger.log(`User ${username} added to the database: `);
-        console.log(prismaReturn);
-      } catch (e) {
-        logger.error("User already exists", "User already exists", e);
-        return Error("User already exists");
-      }
-      // Add the user connection to the UserConnections map
-      this.userConnectionsService.addUserConnection(username, clientId);
-      // client.emit("userCreated", username);
-      return username;
     }
+
+    // Create the temp user
+    try {
+      const userData: UserEntity = {
+        username,
+        avatar,
+        email,
+        firstName,
+        lastName,
+        status: UserStatus.ONLINE
+      };
+      const prismaReturn = await this.prismaService.addUser(userData);
+      logger.log(`User ${username} added to the database: `);
+      console.log(prismaReturn);
+    } catch (e) {
+      logger.error("User already exists", "User already exists", e);
+      return Error("User already exists");
+    }
+    // Add the user connection to the UserConnections map
+
+    // client.emit("userCreated", username);
+    const userEntity: UserEntity = {
+      username,
+      avatar: `https://i.pravatar.cc/150?u=${username}`, //FIXME: remove this when avatars are properly uploaded
+      email,
+      firstName,
+      lastName,
+      status: UserStatus.ONLINE
+    };
+    return userEntity;
   }
 
   /**
@@ -356,8 +442,9 @@ export class ChatService {
    * @param username
    * @returns DevError or username
    */
-  async devUserLogin(username: string): Promise<Error | string> {
+  async devUserLogin(req: AuthRequest): Promise<Error | string> {
     // Check if the user already exists
+    const username = req.username;
     const userExists = await this.prismaService.getUserIdByNick(username);
     if (!userExists) {
       // Warn the client that the user already exists
@@ -389,6 +476,45 @@ export class ChatService {
     }
   }
 
+  async checkAndUpdateUserStatus(
+    uuid: string,
+    roomName: string
+  ): Promise<ChatMemberStatus> {
+    const userStatus = await this.prismaService.checkChatMemberStatus(
+      uuid,
+      roomName
+    );
+
+    if (
+      userStatus.status === ChatMemberStatus.MUTED &&
+      userStatus.expiration &&
+      userStatus.expiration < new Date()
+    ) {
+      const updatedStatus = ChatMemberStatus.OK;
+      const usernameToUpdate = await this.prismaService.getChatMemberByUUID(
+        roomName,
+        uuid
+      );
+      try {
+        const updateData: Partial<ChatMember> = {
+          status: updatedStatus,
+          rank: usernameToUpdate.rank,
+          endOfMute: null
+        };
+        await this.prismaService.chatMember.update({
+          where: { id: usernameToUpdate.id },
+          data: updateData
+        });
+        return updatedStatus;
+      } catch (e) {
+        logger.error("Error updating chat member status", e);
+        return userStatus.status;
+      }
+    }
+
+    return userStatus.status;
+  }
+
   /**
    * Update the status of a chat member
    * If the member to update is the owner, return an error
@@ -397,15 +523,15 @@ export class ChatService {
    * @returns ChatMember - The updated ChatMember object
    */
   async updateMemberStatus(
-    updateDto: updateChatMemberStatusDto
-  ): Promise<ChatMember> {
+    updateDto: UpdateChatMemberRequest
+  ): Promise<ChatMemberPrismaType> {
     try {
       if (
-        updateDto.memberToUpdateRANK === ChatMemberRank.OWNER ||
-        updateDto.memberRequestRank === ChatMemberRank.USER
+        updateDto.memberToUpdateRank === ChatMemberRank.OWNER ||
+        updateDto.queryingMemberRank === ChatMemberRank.USER
       ) {
         const error =
-          updateDto.memberRequestRank === ChatMemberRank.USER
+          updateDto.queryingMemberRank === ChatMemberRank.USER
             ? "Wrong rank: Can't request operation"
             : "Wrong rank: Can't update owner";
         logger.error("Error updating chat member status", error);
@@ -421,23 +547,35 @@ export class ChatService {
     }
   }
 
-  async kickMember(kickDto: kickMemberDto): Promise<string> {
+  async kickMember(
+    kickDto: KickMemberRequest
+  ): Promise<ChatMemberEntity | Error> {
     if (
-      kickDto.memberRequestingRank === ChatMemberRank.USER ||
-      kickDto.memberToKickStatus === ChatMemberRank.OWNER
+      kickDto.queryingMemberRank === ChatMemberRank.USER ||
+      kickDto.memberToKickRank === ChatMemberRank.OWNER
     )
       throw new Error("Wrong rank: Can't request operation");
     if (
-      kickDto.memberToKickStatus === ChatMemberRank.ADMIN &&
-      kickDto.memberRequestingRank === ChatMemberRank.ADMIN
+      kickDto.memberToKickRank === ChatMemberRank.ADMIN &&
+      kickDto.queryingMemberRank === ChatMemberRank.ADMIN
     )
       throw new Error("Wrong rank: Can't request operation");
-    this.prismaService.destroyChatMember(kickDto.ChatMemberToKickId);
-    return (
-      "Chat Member " +
-      kickDto.ChatMemberToKickName +
-      " kicked out successfully !"
-    );
+    try {
+      const chatMember = await this.prismaService.chatMember.delete({
+        where: {
+          id: kickDto.memberToKickUUID
+        },
+        include: {
+          member: true,
+          room: true
+        }
+      });
+      const entity: ChatMemberEntity = new ChatMemberEntity(chatMember);
+      return entity;
+    } catch (error) {
+      logger.error("Error kicking chat member", error);
+      return error;
+    }
   }
 
   // inviteUsersToRoom takes in a InviteUsersToRoomRequest and returns a ChatMemberEntity[] if successful
@@ -470,10 +608,55 @@ export class ChatService {
         username: user.username,
         roomName: req.roomName,
         avatar: user.avatar,
-        chatMemberstatus: ChatMemberStatus.OK,
+        chatMemberStatus: ChatMemberStatus.OK,
         userStatus: user.status,
         rank: ChatMemberRank.USER
       };
     });
+  }
+
+  /**
+   * Send a Direct Message to a user
+   * @param {SendDirectMessageRequest} req - The users in the Direct Message
+   * @returns {Promise<ChatRoomEntity | Error>} - The created ChatMessageEntity
+   * @memberof ChatService
+   */
+  async sendDirectMessage(
+    req: SendDirectMessageRequest
+  ): Promise<ChatRoomEntity | Error> {
+    const { sender, recipient } = req;
+
+    // Check if sender and recipient exist
+    const [senderId, recipientId] = await Promise.all([
+      this.prismaService.getUserIdByNick(sender),
+      this.prismaService.getUserIdByNick(recipient)
+    ]);
+
+    if (!senderId || !recipientId) {
+      return new Error("Invalid sender or recipient username");
+    }
+
+    // Check if a dialogue room between the sender and the recipient already exists
+    const existingRoom = await this.prismaService.chatRoom.findFirst({
+      where: {
+        AND: [
+          { status: ChatRoomStatus.DIALOGUE },
+          { members: { some: { memberId: senderId } } },
+          { members: { some: { memberId: recipientId } } }
+        ]
+      }
+    });
+
+    if (existingRoom) {
+      return this.getChatRoomEntity(existingRoom, req.senderRank);
+    }
+
+    // Create a new dialogue room and add both the sender and the recipient as members
+    const newRoom = await this.prismaService.createDirectMessageRoom(
+      senderId,
+      recipientId,
+      `${sender}-${recipient}-${Date.now()}`
+    );
+    return this.getChatRoomEntity(newRoom, ChatMemberRank.USER);
   }
 }

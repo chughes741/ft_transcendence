@@ -6,9 +6,8 @@ import {
   ValidationPipe
 } from "@nestjs/common";
 import { PrismaService } from "../prisma/prisma.service";
-import { LoginDto } from "./dto/login.dto";
-import * as argon from "argon2";
 import { WsException } from "@nestjs/websockets";
+import { AuthRequest } from "../auth/dto";
 
 @Injectable()
 export class LoginService {
@@ -19,15 +18,17 @@ export class LoginService {
    * @param loginDto
    */
   @UsePipes(new ValidationPipe({ transform: true }))
-  async login(@Body() dto: LoginDto) {
+  async login(@Body() dto: AuthRequest) {
     console.log(dto);
 
     try {
-      const hash = await argon.hash(dto.password);
       const user = await this.prismaService.user.create({
         data: {
           username: dto.username,
-          hash
+          lastName: dto.lastName,
+          firstName: dto.firstName,
+          email: dto.email,
+          avatar: dto.avatar
         }
       });
       Logger.log("Successfully created user " + user.username + ".");

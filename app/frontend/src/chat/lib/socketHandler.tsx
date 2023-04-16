@@ -24,7 +24,8 @@ export const handleNewMessageCreator =
 
 export const handleNewChatRoomMemberCreator =
   (updateRooms) => (member: RoomMemberEntity) => {
-    console.log("New room member: ", member.user);
+    console.log("New room member: ", member);
+    console.log(member.user);
     updateRooms((newRooms) => {
       if (!newRooms || !newRooms[member.roomName]) return;
       newRooms[member.roomName].users[member.user.username] = member.user;

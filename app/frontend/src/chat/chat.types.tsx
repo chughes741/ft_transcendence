@@ -3,6 +3,7 @@ export enum ChatMemberStatus {
   MUTED = "MUTED",
   BANNED = "BANNED"
 }
+
 export enum ChatMemberRank {
   USER = "USER",
   ADMIN = "ADMIN",
@@ -22,6 +23,10 @@ export enum ChatRoomStatus {
   PASSWORD = "PASSWORD"
 }
 
+/******************************************************************************/
+/***                           Chat Context Types                           ***/
+/******************************************************************************/
+
 export type MessageType = {
   username: string;
   roomId: string;
@@ -35,7 +40,15 @@ export type MessageType = {
   avatar?: string;
 };
 
-export interface UserListItem {
+/******************************************************************************/
+/***                            Returned Entities                           ***/
+/******************************************************************************/
+
+export type DevError = {
+  error: string;
+};
+
+export interface ChatMemberEntity {
   username: string;
   roomName?: string;
   avatar: string;
@@ -48,7 +61,7 @@ export interface UserListItem {
 
 export type RoomMemberEntity = {
   roomName: string;
-  user: UserListItem;
+  user: ChatMemberEntity;
 };
 
 export type MessagePayload = {
@@ -63,6 +76,7 @@ export interface ChatRoomPayload {
   name: string;
   status: ChatRoomStatus;
   queryingUserRank: ChatMemberRank;
+  members: ChatMemberEntity[];
   latestMessage?: MessagePayload;
   lastActivity: Date;
   avatars?: string[];
@@ -76,13 +90,14 @@ export type RoomType = {
   latestMessage?: MessageType;
   lastActivity: Date;
   hasUnreadMessages: boolean;
+  unreadMessagesCount: number;
   avatars?: string[];
-  users: { [key: string]: UserListItem };
+  users: { [key: string]: ChatMemberEntity };
 };
 
-export type DevError = {
-  error: string;
-};
+/******************************************************************************/
+/***                              Request Types                             ***/
+/******************************************************************************/
 
 export type CreateRoomRequest = {
   name: string;
@@ -100,10 +115,42 @@ export interface LeaveRoomRequest {
   username: string;
 }
 
-export class UpdateChatRoomRequest {
+export interface SendDirectMessageRequest {
+  recipient: string;
+  sender: string;
+  senderRank: ChatMemberRank;
+}
+
+export interface UpdateChatRoomRequest {
   username: string;
   roomName: string;
   status: ChatRoomStatus;
   oldPassword?: string;
   newPassword?: string;
+}
+
+export interface AuthRequest {
+  username: string;
+  avatar: string;
+  firstName?: string;
+  lastName?: string;
+  email?: string;
+}
+
+export interface UpdateChatMemberRequest {
+  queryingUser: string;
+  usernameToUpdate: string;
+  roomName: string;
+  status: ChatMemberStatus;
+  queryingMemberRank: ChatMemberRank;
+  memberToUpdateRank: ChatMemberRank;
+  duration?: number;
+}
+
+export interface KickMemberRequest {
+  memberToKickUUID?: number;
+  memberToKickUsername: string;
+  memberToKickRank: ChatMemberRank;
+  roomName: string;
+  queryingMemberRank: ChatMemberRank;
 }

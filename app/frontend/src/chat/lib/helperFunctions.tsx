@@ -1,7 +1,18 @@
 import React from "react";
 import { Avatar, AvatarGroup } from "@mui/material";
-import { VpnKey, Public, VisibilityOff } from "@mui/icons-material";
-import { ChatRoomStatus, DevError, RoomType } from "../chat.types";
+import {
+  VpnKey,
+  Public,
+  VisibilityOff,
+  Shield,
+  Star
+} from "@mui/icons-material";
+import {
+  ChatMemberRank,
+  ChatRoomStatus,
+  DevError,
+  RoomType
+} from "../chat.types";
 
 // Helper function to handle errors
 export const handleSocketErrorResponse = (
@@ -9,6 +20,36 @@ export const handleSocketErrorResponse = (
   res: DevError | any
 ): res is DevError => {
   return (res as DevError).error !== undefined;
+};
+
+export const getRankIcon = (
+  rank: ChatMemberRank,
+  style: React.CSSProperties
+) => {
+  switch (rank) {
+    case ChatMemberRank.ADMIN:
+      return (
+        <Shield
+          style={{
+            fontSize: "1.1rem",
+            borderRadius: "50%",
+            ...style
+          }}
+        />
+      );
+    case ChatMemberRank.OWNER:
+      return (
+        <Star
+          style={{
+            fontSize: "1.1rem",
+            borderRadius: "50%",
+            ...style
+          }}
+        />
+      );
+    default:
+      return <> </>;
+  }
 };
 
 export const getStatusIcon = (status: ChatRoomStatus) => {
