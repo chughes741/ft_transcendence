@@ -2,33 +2,29 @@ import { ToggleButton } from "@mui/material";
 import { Box } from "@mui/material";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import { useGameViewModelContext } from "../game.viewModel";
-
-export default function readyButton(side: string) {
-  const { playerReady, setPlayerReadyState, lobby, setLobby } =
+import TripOriginIcon from '@mui/icons-material/TripOrigin';
+/**
+ * ReadyButton component
+ * 
+ * @param {string} side
+ * @returns {JSX.Element}
+ */
+export default function ReadyButton() {
+  const { playerReady, setPlayerReadyState } =
     useGameViewModelContext();
 
   return (
     <>
-      {side === lobby.player_side ? (
-        <Box>
-          <ToggleButton
-            value="check"
-            selected={lobby.player_ready}
-            onChange={() => setPlayerReadyState(!playerReady)}
-          >
-            <CheckCircleIcon />
-          </ToggleButton>
-        </Box>
-      ) : (
-        <Box>
-          <ToggleButton
-            value="check"
-            selected={lobby.opponent_ready}
-          >
-            <CheckCircleIcon />
-          </ToggleButton>
-        </Box>
-      )}
+      <Box sx={{ ml: 2, mr: 2}}>
+        <ToggleButton
+          value="Ready"
+          selected={playerReady}
+          onChange={setPlayerReadyState}
+          sx={{ color: !playerReady ? 'white' : 'success.main' }}
+         >
+          <CheckCircleIcon sx={{ color: !playerReady ? 'white' : 'success.main' }}/>
+        </ToggleButton>
+      </Box>
     </>
   );
 }

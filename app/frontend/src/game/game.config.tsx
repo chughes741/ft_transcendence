@@ -2,7 +2,7 @@ export class PaddleConfig {
   static readonly height: number = 2;
   static readonly width: number = 0.25;
   static readonly depth: number = 0.0;
-  static readonly borderOffset: number = 0.1;
+  static readonly borderOffset: number = 1;
 }
 
 export class BallConfig {

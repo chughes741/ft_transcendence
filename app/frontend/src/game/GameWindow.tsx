@@ -1,55 +1,68 @@
 import React, { useRef, useContext, useEffect } from "react";
 import { Canvas, useFrame, ThreeElements, useThree } from "@react-three/fiber";
-import { socket } from "src/contexts/WebSocket.context";
-//Local includes
-import { GameStateDto } from "./game.types";
-import { BallConfig, GameColours, PaddleConfig } from "./game.config";
 import { Mesh } from "three";
 
+import { socket } from "src/contexts/WebSocket.context";
+import { useRootViewModelContext } from "src/root.context";
+import { useGameViewModelContext } from "./game.viewModel";
+import { BallConfig, GameColours, PaddleConfig } from "./game.config";
+import { GameEndedEvent, GameEvents, GameState } from "kingpong-lib";
+
 /**
+ * Render the game display object
  *
- * @param gameState
- * @returns
+ * @returns {JSX.Element}
  */
-function Ball(gameState: GameStateDto) {
+function Ball() {
   const mesh = useRef<Mesh>();
+  const { gameState } = useGameViewModelContext();
 
   useFrame(() => {
-    mesh.current.position.x = gameState.ball_pos_x;
-    mesh.current.position.y = gameState.ball_pos_y;
+    console.log(gameState);
+    mesh.current.position.x = gameState.ball_x;
+    mesh.current.position.y = gameState.ball_y;
     mesh.current.position.z = 0;
   });
 
   return (
     <mesh ref={mesh}>
       <sphereGeometry args={[BallConfig.radius]} />
-      <meshPhongMaterial color={GameColours.ball} />
+      <meshStandardMaterial
+        emissive={"orange"}
+        emissiveIntensity={50}
+      />
     </mesh>
   );
 }
 
 /**
+ * Render the game display object
  *
- * @param gameState
- * @returns
+ * @returns {JSX.Element}
  */
-function PaddleLeft(gameState: GameStateDto) {
+function PaddleLeft() {
+  const { self } = useRootViewModelContext();
+  const { playerSide, lobbyId, gameState } = useGameViewModelContext();
+
   const ref = useRef<Mesh>(null!);
 
-  // Update paddle position based on mouse position
-  // state.pointer gives a value between -1 and 1, so need to multiply by the gamePlayArea / 2 to get proper position
+  /** Update paddle position based on mouse position
+   *    state.pointer gives a value between -1 and 1,
+   *    so need to multiply by the gamePlayArea / 2 to get proper position */
   useFrame((state) => {
-    if (gameState.player_side === "left") {
+    if (playerSide === "left") {
       ref.current.position.y = state.pointer.y * 4;
-      socket.emit("clientGameStateUpdate", {
-        match_id: gameState.match_id,
-        player_side: gameState.player_side,
-        paddle_pos: state.pointer.y
+      socket.emit(GameEvents.ClientGameStateUpdate, {
+        match_id: lobbyId,
+        lobby_id: lobbyId,
+        username: self.username,
+        paddle_position: state.pointer.y * 4
       });
     } else {
-      ref.current.position.y = gameState.paddle_left_pos;
+      ref.current.position.y = gameState.paddle_left_y;
     }
   });
+
   return (
     <mesh
       ref={ref}
@@ -64,26 +77,30 @@ function PaddleLeft(gameState: GameStateDto) {
 }
 
 /**
+ * Render the game display object
  *
- * @param gameState
- * @returns
+ * @returns {JSX.Element}
  */
-function PaddleRight(gameState: GameStateDto) {
+function PaddleRight() {
+  const { self } = useRootViewModelContext();
+  const { playerSide, lobbyId, gameState } = useGameViewModelContext();
+  
   const ref = useRef<Mesh>(null!);
-  const get = useThree((state) => state.get);
 
-  useFrame(() => {
-    if (gameState.player_side === "right") {
-      ref.current.position.y = get().pointer.y * 4;
-      socket.emit("clientGameStateUpdate", {
-        match_id: gameState.match_id,
-        player_side: gameState.player_side,
-        paddle_pos: ref.current.position.y
+  useFrame((state) => {
+    if (playerSide === "right") {
+      ref.current.position.y = state.pointer.y * 4;
+      socket.emit(GameEvents.ClientGameStateUpdate, {
+        match_id: lobbyId,
+        lobby_id: lobbyId,
+        username: self.username,
+        paddle_position: state.pointer.y * 4
       });
     } else {
-      ref.current.position.y = gameState.paddle_right_pos;
+      ref.current.position.y = gameState.paddle_right_y;
     }
   });
+
   return (
     <mesh
       ref={ref}
@@ -97,9 +114,14 @@ function PaddleRight(gameState: GameStateDto) {
   );
 }
 
-//Create window border object
+/**
+ * Render the game display object
+ *
+ * @returns {JSX.Element}
+ */
 function Floor() {
   const mesh = useRef<Mesh>(null!);
+
   return (
     <mesh
       ref={mesh}
@@ -111,8 +133,14 @@ function Floor() {
   );
 }
 
+/**
+ * Render the game display object
+ *
+ * @returns {JSX.Element}
+ */
 function OuterFrameTop() {
   const mesh = useRef<Mesh>(null!);
+  
   return (
     <mesh
       ref={mesh}
@@ -124,8 +152,14 @@ function OuterFrameTop() {
   );
 }
 
+/**
+ * Render the game display object
+ *
+ * @returns {JSX.Element}
+ */
 function OuterFrameBottom() {
   const mesh = useRef<Mesh>(null!);
+  
   return (
     <mesh
       ref={mesh}
@@ -137,8 +171,14 @@ function OuterFrameBottom() {
   );
 }
 
+/**
+ * Render the game display object
+ *
+ * @returns {JSX.Element}
+ */
 function OuterFrameLeft() {
   const mesh = useRef<Mesh>(null!);
+  
   return (
     <mesh
       ref={mesh}
@@ -150,8 +190,14 @@ function OuterFrameLeft() {
   );
 }
 
+/**
+ * Render the game display object
+ *
+ * @returns {JSX.Element}
+ */
 function OuterFrameRight() {
   const mesh = useRef<Mesh>(null!);
+  
   return (
     <mesh
       ref={mesh}
@@ -165,44 +211,47 @@ function OuterFrameRight() {
 
 /**
  * Render the game display object
- * @returns
+ *
+ * @returns {JSX.Element}
  */
 export default function Game() {
-  let gameState: GameStateDto | null = new GameStateDto(
-    "",
-    "right",
-    0,
-    0,
-    0,
-    0
-  );
+  const { gameState, setGameState, setScoreLeft, setScoreRight, displayLobby } =
+    useGameViewModelContext();
 
   useEffect(() => {
-    socket.on("serverUpdate", (GameState: GameStateDto) => {
-      console.log(GameState);
-      gameState = GameState;
+    socket.on(GameEvents.ServerGameStateUpdate, (payload: GameState) => {
+      setGameState(payload);
+      setScoreLeft(payload.score_left);
+      setScoreRight(payload.score_right);
+    });
+
+    socket.on(GameEvents.GameEnded, (payload: GameEndedEvent) => {
+      setGameState(payload.game_state);
+      setScoreLeft(payload.game_state.score_left);
+      setScoreRight(payload.game_state.score_right);
     });
 
     return () => {
-      socket.off("serverUpdate");
-    };
-  }, [gameState]);
+      socket.off(GameEvents.ServerGameStateUpdate);
+      socket.off(GameEvents.GameEnded);
+    }
+  }, [displayLobby]);
 
   if (!gameState) return <div>Loading...</div>;
 
   return (
     <Canvas>
       {/* Gameplay Objects */}
-      <Ball {...gameState} />
-      <PaddleLeft {...gameState} />
-      <PaddleRight {...gameState} />
+      <Ball />
+      <PaddleLeft />
+      <PaddleRight />
 
       {/* Scene Objects */}
       <Floor />
-      <OuterFrameTop />
+      {/* <OuterFrameTop />
       <OuterFrameBottom />
       <OuterFrameLeft />
-      <OuterFrameRight />
+      <OuterFrameRight /> */}
 
       {/* Lighting */}
       <ambientLight
