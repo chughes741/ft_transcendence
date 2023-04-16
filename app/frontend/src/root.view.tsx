@@ -159,8 +159,7 @@ function RootViewContent(): JSX.Element {
  * @returns {JSX.Element} - View model with dynamic content
  */
 export function RootView(): JSX.Element {
-  const { fullscreen, setFullscreen } =
-    useRootViewModelContext();
+  const { fullscreen, setFullscreen } = useRootViewModelContext();
 
   const handleKeyDown = (event: KeyboardEvent) => {
     if (event.key === "Escape" && fullscreen) {

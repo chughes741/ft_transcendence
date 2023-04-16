@@ -20,7 +20,6 @@ import { GameViewModelProvider } from "./game/game.viewModel";
 const root = ReactDOM.createRoot(document.getElementById("root"));
 const theme = customTheme();
 
-
 root.render(
   <ErrorBoundary FallbackComponent={Fallback}>
     <React.StrictMode>

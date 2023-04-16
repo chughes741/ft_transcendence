@@ -14,13 +14,18 @@
 
 .join-queue {
     display: flex;
+    height: 5vh;
     justify-content: center;
-    width: 20vw;
-    font-size: 2rem;
+    width: 15vw;
+    font-size: 1.7rem;
     font-family: Raleway, sans-serif;
     color: #fff;
     cursor: pointer;
     user-select: none;
     border: 2.5px solid #333333;
     align-items: center;
+    border-radius: 13px;
+    text-transform: uppercase;
+    font-weight: 400 ;
+
 }
