@@ -1,7 +1,13 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import "src/styles/chat/RoomList.css";
 import { CreateRoomModal } from "../modals/CreateRoomModal";
-import { Box, List } from "@mui/material";
+import {
+  Box,
+  Collapse,
+  List,
+  ListItemButton,
+  ListItemText
+} from "@mui/material";
 import { useChatContext } from "../chat.context";
 
 import { Snackbar } from "@mui/material";
@@ -15,8 +21,16 @@ import { DirectMessageModal } from "../modals/DirectMessageModal";
 import { UserEntity, InviteUsersModal } from "../modals/InviteUsersModal";
 import { JoinRoomModal } from "../modals/JoinRoomModal";
 import { handleSocketErrorResponse } from "../lib/helperFunctions";
-import { DevError, ListUsersRequest } from "../chat.types";
+import {
+  ChatMemberRank,
+  ChatRoomStatus,
+  DevError,
+  ListUsersRequest,
+  RoomType
+} from "../chat.types";
 import { RoomPasswordModal } from "../modals/RoomPasswordModal";
+import { useRootViewModelContext } from "../../root.context";
+import { ExpandLess, ExpandMore } from "@mui/icons-material";
 
 const RoomList: React.FC = () => {
   const { rooms } = useRoomManager();
@@ -28,20 +42,25 @@ const RoomList: React.FC = () => {
     leaveRoom,
     changeRoomStatus,
     /* Context Menu */
-    contextMenuData,
-    contextMenuPosition,
     contextMenuRoomsVisible,
     setContextMenuRoomsVisible,
-    /* Modals */
+    /* Context Menu Data */
+    contextMenuData,
+    contextMenuPosition,
+    /* DM Modal */
     showDirectMessageModal,
-    showCreateRoomModal,
-    showJoinRoomModal,
-    showInviteUsersModal,
-    showPasswordModal,
     setShowDirectMessageModal,
+    /* Create Room Modal */
+    showCreateRoomModal,
     setShowCreateRoomModal,
+    /* Join Room Modal */
+    showJoinRoomModal,
     setShowJoinRoomModal,
+    /* Invite Users to Room Modal */
+    showInviteUsersModal,
     setShowInviteUsersModal,
+    /* Password prompt Modal */
+    showPasswordModal,
     setShowPasswordModal,
     /* Snackbar */
     showNewRoomSnackbar,
@@ -50,9 +69,70 @@ const RoomList: React.FC = () => {
     selectRoom,
     handleContextMenu
   } = useChatContext();
+  const { self } = useRootViewModelContext();
 
-  const [selectedUsers, setSelectedUsers] = React.useState<UserEntity[]>([]);
-  const [availableUsers, setAvailableUsers] = React.useState<UserEntity[]>([]);
+  const [selectedUsers, setSelectedUsers] = useState<UserEntity[]>([]);
+  const [availableUsers, setAvailableUsers] = useState<UserEntity[]>([]);
+
+  const [directMessagesVisible, setDirectMessagesVisible] = useState(false);
+  const [adminRoomsVisible, setAdminRoomsVisible] = useState(false);
+  const [ownedRoomsVisible, setOwnedRoomsVisible] = useState(false);
+  const [userRoomsVisible, setUserRoomsVisible] = useState(false);
+
+  const directMessages = Object.entries(rooms)
+    .filter(([, room]) => room.status === ChatRoomStatus.DIALOGUE)
+    .map<[string, RoomType]>(([name, room]) => {
+      const otherUser = Object.entries(room.users).find(
+        ([, member]) => member.username !== self.username
+      );
+      return otherUser ? [otherUser[1].username, room] : [name, room];
+    });
+
+  const ownedRooms = Object.entries(rooms).filter(
+    ([, room]) => room.rank === ChatMemberRank.OWNER
+  );
+  const adminRooms = Object.entries(rooms).filter(
+    ([, room]) => room.rank === ChatMemberRank.ADMIN
+  );
+  const userRooms = Object.entries(rooms).filter(
+    ([, room]) => room.rank === ChatMemberRank.USER
+  );
+
+  const renderSection = (
+    showSection: boolean,
+    setShowSection: React.Dispatch<React.SetStateAction<boolean>>,
+    title: string,
+    roomsArray: [string, RoomType][]
+  ) => (
+    <>
+      <ListItemButton onClick={() => setShowSection(!showSection)}>
+        <ListItemText primary={title} />
+        {showSection ? <ExpandLess /> : <ExpandMore />}
+      </ListItemButton>
+      {Object.entries(roomsArray).length > 0 && (
+        <Collapse
+          in={showSection}
+          timeout="auto"
+          unmountOnExit
+        >
+          <List
+            component="div"
+            disablePadding
+          >
+            {roomsArray.map(([roomName, room]) => (
+              <RoomListItem
+                key={roomName}
+                room={room}
+                isSelected={currentRoomName === roomName}
+                onRoomSelect={selectRoom}
+                onContextMenu={handleContextMenu}
+              />
+            ))}
+          </List>
+        </Collapse>
+      )}
+    </>
+  );
 
   // Emit a "listAvailableUsers" socket event when the roomName changes
   useEffect(() => {
@@ -90,7 +170,7 @@ const RoomList: React.FC = () => {
   /****************/
   /*   Snackbar   */
   /****************/
-  const [addedRoomName, setAddedRoomName] = React.useState("");
+  const [addedRoomName, setAddedRoomName] = useState("");
 
   useEffect(() => {
     socket.on("addedToNewChatRoom", (room) => {
@@ -114,16 +194,34 @@ const RoomList: React.FC = () => {
     <div className="room-list">
       <Box sx={{ overflow: "auto" }}>
         <List>
-          {rooms &&
-            Object.entries(rooms).map(([roomName, room]) => (
-              <RoomListItem
-                key={roomName}
-                room={room}
-                isSelected={currentRoomName === roomName}
-                onRoomSelect={selectRoom}
-                onContextMenu={handleContextMenu}
-              />
-            ))}
+          {rooms && (
+            <>
+              {renderSection(
+                directMessagesVisible,
+                setDirectMessagesVisible,
+                "Direct Messages",
+                directMessages
+              )}
+              {renderSection(
+                ownedRoomsVisible,
+                setOwnedRoomsVisible,
+                "Owned Rooms",
+                ownedRooms
+              )}
+              {renderSection(
+                adminRoomsVisible,
+                setAdminRoomsVisible,
+                "Admin Rooms",
+                adminRooms
+              )}
+              {renderSection(
+                userRoomsVisible,
+                setUserRoomsVisible,
+                "User Rooms",
+                userRooms
+              )}
+            </>
+          )}
         </List>
       </Box>
       <RoomContextMenu

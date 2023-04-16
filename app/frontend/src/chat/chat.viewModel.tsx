@@ -4,7 +4,15 @@ import { PageState } from "src/root.model";
 import { ChatModelType, useChatModel } from "./chat.model";
 import { ChatContext } from "src/chat/chat.context";
 import { useRootViewModelContext } from "../root.context";
-import { DevError, ChatRoomStatus, AuthRequest } from "./chat.types";
+import {
+  DevError,
+  ChatRoomStatus,
+  AuthRequest,
+  LeaveRoomRequest,
+  SendDirectMessageRequest,
+  ChatRoomPayload,
+  ChatMemberRank
+} from "./chat.types";
 import {
   handleChatRoomMemberLeftCreator,
   handleChatRoomMemberKickedCreator,
@@ -14,16 +22,18 @@ import {
   handleAddedToNewChatRoomCreator
 } from "./lib/socketHandler";
 import { useRoomManager } from "./lib/roomManager";
+import { handleSocketErrorResponse } from "./lib/helperFunctions";
 
 export interface ChatViewModelType extends ChatModelType {
   joinRoom: (roomName: string, password: string) => Promise<boolean>;
+  sendDirectMessage: (username: string) => Promise<boolean>;
   sendRoomMessage: (roomName: string, message: string) => Promise<boolean>;
   createNewRoom: (
     roomName: string,
     roomStatus: ChatRoomStatus,
     password: string
   ) => Promise<boolean>;
-  leaveRoom: () => Promise<boolean>;
+  leaveRoom: () => void;
   changeRoomStatus: (newStatus: ChatRoomStatus) => Promise<boolean>;
   selectRoom: (roomName: string) => void;
 }
@@ -34,8 +44,6 @@ export const ChatViewModelProvider = ({ children }) => {
   /***********************/
   const chatModel = useChatModel();
   const {
-    tempUsername,
-    setTempUsername,
     currentRoomName,
     setCurrentRoomName,
     setCurrentRoomMessages,
@@ -45,7 +53,7 @@ export const ChatViewModelProvider = ({ children }) => {
     setShowPasswordModal
   } = chatModel;
 
-  const { pageState, setPageState } = useRootViewModelContext();
+  const { self, pageState, setPageState } = useRootViewModelContext();
 
   /**********************/
   /*   Room Variables   */
@@ -61,7 +69,6 @@ export const ChatViewModelProvider = ({ children }) => {
     handleJoinRoom: joinRoom,
     handleSendRoomMessage: sendRoomMessage,
     handleCreateNewRoom: createNewRoom,
-    handleLeaveRoom: leaveRoom,
     handleChangeRoomStatus
   } = useRoomManager();
 
@@ -82,6 +89,10 @@ export const ChatViewModelProvider = ({ children }) => {
     console.log(`selectRoom: Room ${roomName} selected! `, rooms[roomName]);
     setCurrentRoomName(roomName);
     setCurrentRoomMessages(rooms[roomName].messages);
+    updateRooms((newRooms) => {
+      newRooms[roomName].hasUnreadMessages = false;
+      newRooms[roomName].unreadMessagesCount = 0;
+    });
     setPageState(PageState.Chat);
   };
 
@@ -108,6 +119,69 @@ export const ChatViewModelProvider = ({ children }) => {
     return true;
   };
 
+  const leaveRoom = async (): Promise<boolean> => {
+    const roomName = contextMenuData.name;
+
+    console.log("Leaving room: ", roomName);
+
+    return new Promise<boolean>((resolve) => {
+      setContextMenuRoomsVisible(false);
+      const req: LeaveRoomRequest = {
+        roomName: roomName,
+        username: self.username
+      };
+      console.log("Leaving room: ", req);
+      socket.emit("leaveRoom", req, (response: DevError | string) => {
+        if (handleSocketErrorResponse(response)) {
+          console.log("Error response from leave room: ", response.error);
+          resolve(false);
+        }
+      });
+      setRooms((prevRooms) => {
+        const newRooms = { ...prevRooms };
+        delete newRooms[roomName];
+        return newRooms;
+      });
+      resolve(true);
+    });
+  };
+
+  // Create a function sendDirectMessage that will take in a username, and check
+  // if a direct message room exists with that user. If it does, it will select
+  // that room. If it doesn't, it will create a new room with that user by sending
+  // a request to the server. The server will send back a response with the room name
+  const sendDirectMessage = async (username: string): Promise<boolean> => {
+    return new Promise<boolean>((resolve) => {
+      const req: SendDirectMessageRequest = {
+        sender: self.username,
+        recipient: username,
+        senderRank: ChatMemberRank.USER
+      };
+      console.log("Sending direct message: ", req);
+
+      socket.emit(
+        "sendDirectMessage",
+        req,
+        (response: ChatRoomPayload | DevError) => {
+          if (handleSocketErrorResponse(response)) {
+            console.log(
+              "Error response from send direct message: ",
+              response.error
+            );
+            resolve(false);
+          } else {
+            console.log(
+              "Success response from send direct message: ",
+              response
+            );
+            addChatRoom(response);
+            resolve(true);
+          }
+        }
+      );
+    });
+  };
+
   /**********************/
   /*   User Functions   */
   /**********************/
@@ -125,7 +199,7 @@ export const ChatViewModelProvider = ({ children }) => {
           console.log(`Logged in user ${req.username} successfully!`);
           console.log("Success response from user login: ");
           console.log(response);
-          setTempUsername(req.username);
+          self.username = req.username;
           joinRoom("PublicRoom", "secret");
           joinRoom("PrivateRoom", "secret");
           joinRoom("PasswordProtectedRoom", "secret");
@@ -147,7 +221,7 @@ export const ChatViewModelProvider = ({ children }) => {
           resolve(false);
           // Try to log in instead
         } else {
-          setTempUsername(req.username);
+          self.username = req.username;
           setRooms(null);
           console.log(`Created user ${req.username} successfully!`);
 
@@ -192,6 +266,7 @@ export const ChatViewModelProvider = ({ children }) => {
     addSocketListener("chatRoomMemberLeft", handleChatRoomMemberLeft);
     addSocketListener("chatRoomMemberKicked", handleChatRoomMemberKicked);
     addSocketListener("addedToNewChatRoom", handleAddedToNewChatRoom);
+    addSocketListener("chatMemberUpdated", handleNewChatRoomMember);
   };
 
   // Use effect for setting up and cleaning up listeners
@@ -204,6 +279,7 @@ export const ChatViewModelProvider = ({ children }) => {
       removeSocketListener("chatRoomMemberLeft");
       removeSocketListener("chatRoomMemberKicked");
       removeSocketListener("addedToNewChatRoom");
+      removeSocketListener("chatMemberUpdated");
     };
   }, []);
 
@@ -214,8 +290,8 @@ export const ChatViewModelProvider = ({ children }) => {
   // FIXME: temporary addition for dev build to test user creation
   // TODO: remove this when user creation is implemented
   useEffect(() => {
-    if (socket && !tempUsername) {
-      setTempUsername("schlurp");
+    if (socket && !self.username) {
+      self.username = "schlurp";
     }
   }, [socket, ""]);
 
@@ -223,7 +299,7 @@ export const ChatViewModelProvider = ({ children }) => {
   // If no user is logged in, try to create a temporary user
   useEffect(() => {
     // Try to create a temporary user
-    if (tempUsername) {
+    if (self.username) {
       setRooms(() => {
         return {};
       });
@@ -234,7 +310,7 @@ export const ChatViewModelProvider = ({ children }) => {
           firstName: "Schl",
           lastName: "urp",
           email: `${username}@schluuuuu.uuuuurp`,
-          avatar: `https://avatars.dicebear.com/api/human/${username}.svg`
+          avatar: `https://i.pravatar.cc/150?img=${username}`
         };
         const userCreated = await createUser(req);
         if (!userCreated) {
@@ -246,9 +322,9 @@ export const ChatViewModelProvider = ({ children }) => {
         }
       };
 
-      createTempUser(tempUsername);
+      createTempUser(self.username);
     }
-  }, [tempUsername, ""]);
+  }, [self.username, ""]);
 
   return (
     <ChatContext.Provider
@@ -256,6 +332,7 @@ export const ChatViewModelProvider = ({ children }) => {
         ...chatModel,
         joinRoom,
         sendRoomMessage,
+        sendDirectMessage,
         createNewRoom,
         leaveRoom,
         changeRoomStatus,

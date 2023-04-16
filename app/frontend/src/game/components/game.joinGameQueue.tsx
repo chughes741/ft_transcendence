@@ -25,12 +25,17 @@ export default function JoinGameQueue() {
   return (
     <>
       {inQueue ? (
-          <GameLoader setInQueue={setInQueue} />
+        <GameLoader setInQueue={setInQueue} />
       ) : (
         <>
           <Box className="body-page-queue">
             <Box className="bottom-background" />
-            <Box className="join-queue" onClick={joinQueue}>Join Queue</Box>
+            <Box
+              className="join-queue"
+              onClick={joinQueue}
+            >
+              Join Queue
+            </Box>
           </Box>
         </>
       )}

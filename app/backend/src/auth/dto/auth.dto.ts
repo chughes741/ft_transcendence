@@ -1,6 +1,5 @@
-import { ApiProperty } from "@nestjs/swagger";
+
 import { UserStatus } from "@prisma/client";
-import { IsNotEmpty, IsString } from "class-validator";
 
 export class UserEntity {
   username: string;
@@ -19,6 +18,7 @@ export class AuthRequest {
   lastName?: string;
   email?: string;
   token : string;
+
 }
 
 export class AuthEntity {

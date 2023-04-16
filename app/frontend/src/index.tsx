@@ -7,7 +7,6 @@ import { WebSocketProvider } from "src/contexts/WebSocket.context";
 import { CssBaseline, ThemeProvider } from "@mui/material";
 import { ChatViewModelProvider } from "src/chat/chat.viewModel";
 import { ProfileViewModelProvider } from "./profile/profile.viewModel";
-import { RootViewModelProvider } from "./root.viewModel";
 import { SettingsViewModelProvider } from "./components/settings/settings.viewModel";
 import { RoomManagerProvider } from "./chat/lib/roomManager";
 
@@ -16,10 +15,10 @@ import { RootView } from "./root.view";
 import { ErrorBoundary } from "react-error-boundary";
 import Fallback from "./components/error/error";
 import { GameViewModelProvider } from "./game/game.viewModel";
+import { RootViewModelProvider } from "./root.viewModel";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 const theme = customTheme();
-
 
 root.render(
   <ErrorBoundary FallbackComponent={Fallback}>

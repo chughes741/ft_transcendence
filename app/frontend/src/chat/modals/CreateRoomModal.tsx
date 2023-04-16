@@ -26,6 +26,7 @@ import ButtonFunky from "../../components/ButtonFunky";
 import "src/styles/chat/ChatPage.css";
 import { useRoomModal } from "./useRoomModal";
 import { ChatRoomStatus } from "../chat.types";
+import { AddCircleOutline } from "@mui/icons-material";
 
 interface CreateRoomModalProps {
   showModal: boolean;
@@ -42,14 +43,7 @@ export const CreateRoomModal: React.FC<CreateRoomModalProps> = ({
   closeModal,
   onCreateRoom
 }) => {
-  if (!showModal) {
-    return null;
-  }
-  // const classes = useStyles();
-  const [roomStatus, setRoomStatus] = useState<ChatRoomStatus>(
-    ChatRoomStatus.PUBLIC
-  ); // defaults to public
-
+  if (!showModal) return null;
   // Improves code re-usability btw Create and Join RoomModals
   const {
     roomName,
@@ -60,6 +54,9 @@ export const CreateRoomModal: React.FC<CreateRoomModalProps> = ({
     togglePasswordVisibility
   } = useRoomModal(showModal);
 
+  const [roomStatus, setRoomStatus] = useState<ChatRoomStatus>(
+    ChatRoomStatus.PUBLIC
+  ); // defaults to public
   const handleSubmit = useCallback(async () => {
     if (roomName.trim().length <= 0) {
       alert("Please enter a room name.");
@@ -105,7 +102,6 @@ export const CreateRoomModal: React.FC<CreateRoomModalProps> = ({
     >
       <DialogTitle alignContent={"center"}>Create New Chat Room</DialogTitle>
       <DialogContent
-        // FIXME: add to global theme as dialogContent
         sx={{
           "& > *:not(:last-child)": {
             marginBottom: 2
@@ -170,6 +166,7 @@ export const CreateRoomModal: React.FC<CreateRoomModalProps> = ({
           Cancel
         </Button>
         <ButtonFunky
+          icon={<AddCircleOutline />}
           onClick={handleSubmit}
           content="Create Room"
           width="50%"

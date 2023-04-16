@@ -1,12 +1,8 @@
 // ChatModel.tsx
 import { useState, MouseEvent } from "react";
-import { RoomType, MessageType, UserListItem } from "./chat.types";
+import { RoomType, MessageType, ChatMemberEntity } from "./chat.types";
 
 export interface ChatModelType {
-  /* User */
-  tempUsername: string;
-  setTempUsername: (username: string) => void;
-
   /* Room List Information */
   currentRoomName: string;
   setCurrentRoomName: (roomName: string) => void;
@@ -21,11 +17,13 @@ export interface ChatModelType {
   handleContextMenu: (e: MouseEvent, roomData: { name: string }) => void;
 
   /* UserList Context Menu */
-  contextMenuUsersData: UserListItem | null;
+  contextMenuUsersData: ChatMemberEntity | null;
+  setContextMenuUsersData: (userData: ChatMemberEntity) => void;
   contextMenuUsersPosition: { x: number; y: number };
+  setContextMenuUsersPosition: (position: { x: number; y: number }) => void;
   contextMenuUsersVisible: boolean;
   setContextMenuUsersVisible: (arg: boolean) => void;
-  handleContextMenuUsers: (e: MouseEvent, userData: UserListItem) => void;
+  handleContextMenuUsers: (e: MouseEvent, userData: ChatMemberEntity) => void;
 
   /* Modals */
   showDirectMessageModal: boolean;
@@ -45,9 +43,6 @@ export interface ChatModelType {
 }
 
 export const useChatModel = (): ChatModelType => {
-  /* User */
-  const [tempUsername, setTempUsername] = useState("");
-
   /* Room List Information */
   const [currentRoomName, setCurrentRoomName] = useState("");
   const [currentRoomMessages, setCurrentRoomMessages] = useState([]);
@@ -85,30 +80,36 @@ export const useChatModel = (): ChatModelType => {
     y: 0
   });
 
-  const handleContextMenuUsers = (e: MouseEvent, userData: UserListItem) => {
+  const handleContextMenuUsers = (
+    e: React.MouseEvent,
+    userData: ChatMemberEntity
+  ) => {
     e.preventDefault();
+    console.log(
+      `handleContextMenuUsers: ${userData.username}, event: ${e.button}`
+    );
     setContextMenuUsersVisible(true);
     setContextMenuUsersPosition({ x: e.clientX, y: e.clientY });
     setContextMenuUsersData(userData);
   };
 
   return {
-    tempUsername,
-    setTempUsername,
     currentRoomName,
     setCurrentRoomName,
     currentRoomMessages,
     setCurrentRoomMessages,
     contextMenuData,
-    contextMenuUsersData,
     contextMenuPosition,
+    contextMenuUsersData,
+    setContextMenuUsersData,
     contextMenuUsersPosition,
-    handleContextMenu,
-    handleContextMenuUsers,
-    contextMenuRoomsVisible,
+    setContextMenuUsersPosition,
     contextMenuUsersVisible,
-    setContextMenuRoomsVisible,
     setContextMenuUsersVisible,
+    handleContextMenuUsers,
+    handleContextMenu,
+    contextMenuRoomsVisible,
+    setContextMenuRoomsVisible,
     showDirectMessageModal,
     setShowDirectMessageModal,
     showCreateRoomModal,

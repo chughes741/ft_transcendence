@@ -116,14 +116,17 @@ h2::before {
 .leave-queue-button {
   display: flex;
   justify-content: center;
-  width: 20vw;
-  font-size: 2rem;
+  width: 17vw;
+  font-size: 1.7rem;
   font-family: Raleway, sans-serif;
   color: #fff;
   cursor: pointer;
   user-select: none;
   border: 2.5px solid #333333;
   align-items: center;
+  border-radius: 13px;
+  font-weight: 400;
+  text-transform: uppercase;
 }
 
 @keyframes animate{

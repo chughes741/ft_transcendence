@@ -17,6 +17,8 @@ export interface ProfileViewModelType extends ProfileModelType {
   getProfile: () => Promise<void>;
   getFriends: () => Promise<void>;
   addFriend: (username: string, friend: string) => Promise<void>;
+  getWinPercentage: () => number;
+  getLossPercentage: () => number;
 }
 
 /**
@@ -63,7 +65,28 @@ export const ProfileViewModelProvider = ({ children }) => {
       }
     );
   };
+  const getWinPercentage = () => {
+    let numWins = 0;
+    for (let i = 0; i < matchHistory.length; i++) {
+      if (matchHistory[i].score_player1 > matchHistory[i].score_player2)
+        numWins++;
+    }
+    let percent: number = (numWins / matchHistory.length) * 100;
+    if (isNaN(percent)) percent = 0;
+    return percent;
+  };
 
+  const getLossPercentage = () => {
+    let numLosses = 0;
+    for (let i = 0; i < matchHistory.length; i++) {
+      if (matchHistory[i].score_player1 < matchHistory[i].score_player2)
+        numLosses++;
+    }
+    let percent: number = (numLosses / matchHistory.length) * 100;
+    if (isNaN(percent)) percent = 0;
+
+    return percent;
+  };
   /**
    * Sends a getProfile request to the server
    */
@@ -139,7 +162,9 @@ export const ProfileViewModelProvider = ({ children }) => {
         getMatchHistory,
         getProfile,
         getFriends,
-        addFriend
+        addFriend,
+        getWinPercentage,
+        getLossPercentage
       }}
     >
       {children}

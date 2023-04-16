@@ -16,6 +16,7 @@ export class Token {
     token_type: string = "bearer",
     expires_in: number = 7200,
     scope: string = "public",
+
     created_at: number = Date.now()
   ) {
     this.access_token = access_token;

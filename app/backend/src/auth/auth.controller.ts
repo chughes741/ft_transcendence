@@ -14,8 +14,11 @@ import { SubscribeMessage } from "@nestjs/websockets";
 import { PrismaClientExceptionFilterHttp } from "../prisma-client-exception.filter";
 import { AuthService } from "./auth.service";
 import { GetUser } from "./decorators";
-import { AuthRequest } from "./dto";
+import { AuthRequest, UserEntity } from "./dto";
 import { Token } from "src/token-storage.service";
+import { debugPort } from "process";
+import { UserStatus } from "@prisma/client";
+
 
 const logger = new Logger("AuthController");
 
@@ -66,9 +69,15 @@ export class AuthController {
   @Post("signin")
   signin(@Body() dto: AuthRequest) {
     
-    this.signin(dto);
-    return ;
-    //return this.authService.signin(dto);
+    const info : UserEntity = {
+      username: dto.username,
+      avatar : '',
+      firstName: dto.firstName,
+      lastName : dto.lastName,
+      email : dto.email,
+      status: UserStatus.ONLINE,
+    }
+    return this.authService.signin(info);
   }
 
   @Post("refresh")

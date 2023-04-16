@@ -20,10 +20,10 @@ model User {
   email  String @unique// To prevent duplicates in the DB
 
   enable2fa Boolean @default(false)
-
-  firstName String?
-  lastName  String?
-  status    UserStatus @default(OFFLINE)
+  firstName    String?
+  lastName     String?
+  status       UserStatus @default(OFFLINE)
+  is2faEnabled Boolean    @default(false)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
