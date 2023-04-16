@@ -6,14 +6,14 @@ import {
   ListItemIcon,
   ListItemText
 } from "@mui/material";
-import { FaCrown } from "react-icons/fa";
-import { useChatContext } from "../chat.context";
 import {
+  getRankIcon,
   getStatusIcon,
   renderAvatarGroup,
   truncateText
 } from "../lib/helperFunctions";
-import { ChatRoomStatus, RoomType } from "../chat.types";
+import { RoomType } from "../chat.types";
+import { useRootViewModelContext } from "../../root.context";
 
 interface RoomListItemProps {
   room: RoomType;
@@ -28,7 +28,7 @@ const RoomListItem: React.FC<RoomListItemProps> = ({
   onRoomSelect,
   onContextMenu
 }) => {
-  const { tempUsername } = useChatContext();
+  const { self } = useRootViewModelContext();
   return (
     <ListItem
       onClick={() => onRoomSelect(room.name)}
@@ -39,22 +39,25 @@ const RoomListItem: React.FC<RoomListItemProps> = ({
           <Badge
             anchorOrigin={{
               vertical: "top",
-              horizontal: "left"
+              horizontal: "right"
             }}
             overlap="circular"
+            color="error"
             badgeContent={
-              room.status !== ChatRoomStatus.DIALOGUE &&
-              room.rank === "OWNER" ? (
-                <FaCrown size={16} />
-              ) : null
+              room.hasUnreadMessages ? room.unreadMessagesCount : null
             }
           >
-            {renderAvatarGroup(room, tempUsername)}
+            {renderAvatarGroup(room, self.username)}
           </Badge>
         </ListItemIcon>
         <ListItemText
           style={{ overflowX: "hidden" }}
-          primary={room.name}
+          primary={
+            <>
+              {getRankIcon(room.rank, {})}
+              {room.name}
+            </>
+          }
           secondary={
             room.messages.length > 0
               ? truncateText(

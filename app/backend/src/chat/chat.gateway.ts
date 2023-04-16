@@ -17,7 +17,8 @@ import { Message } from "@prisma/client";
 import { ChatMember } from "@prisma/client";
 import { ChatMemberEntity, MessageEntity } from "./entities/message.entity";
 import { ChatMemberStatus, UserStatus } from "@prisma/client";
-import { kickMemberDto, updateChatMemberStatusDto } from "./dto/userlist.dto";
+import { KickMemberRequest, UpdateChatMemberRequest } from "./dto/userlist.dto";
+import { AuthRequest } from "../auth/dto";
 
 // FIXME: temporary error type until we can share btw back and frontend
 export type DevError = {
@@ -29,6 +30,20 @@ export type DevError = {
 /******************/
 export interface ListUsersRequest {
   chatRoomName: string;
+}
+
+export interface SendDirectMessageRequest {
+  recipient: string;
+  sender: string;
+  senderRank: ChatMemberRank;
+}
+
+export interface CreateUserRequest {
+  username: string;
+  avatar: string;
+  firstName?: string;
+  lastName?: string;
+  email?: string;
 }
 
 export interface MessagePrismaType extends Message {
@@ -54,7 +69,7 @@ export interface IChatMemberEntity {
   username: string;
   roomName: string;
   avatar: string;
-  chatMemberstatus: ChatMemberStatus;
+  chatMemberStatus: ChatMemberStatus;
   userStatus: UserStatus;
   rank: ChatMemberRank;
   endOfBan?: Date;
@@ -187,6 +202,18 @@ export class ChatGateway
     });
   }
 
+  async unbindAllUserSocketsFromRoom(username: string, roomName: string) {
+    const userSockets = this.userConnectionsService.getUserSockets(username);
+    if (!userSockets) {
+      logger.warn(`User ${username} has no sockets`);
+      return;
+    }
+    userSockets.forEach((socketId) => {
+      const invitedUserSocket = this.server.sockets.sockets.get(socketId);
+      invitedUserSocket?.leave(roomName);
+    });
+  }
+
   /**
    * @event "updateChatRoom"
    * Update the status of a chat room member.
@@ -240,8 +267,10 @@ export class ChatGateway
   @SubscribeMessage("listAvailableChatRooms")
   async listAvailableChatRooms(
     client: Socket,
-    username: string
-  ): Promise<AvailableRoomEntity[]> {
+    username: string,
+    roomName: string // Add roomName parameter
+  ): Promise<AvailableRoomEntity[] | UserEntity[]> {
+    // Update the return type
     const userId = await this.prismaService.getUserIdByNick(username);
     logger.log(
       `Received listAvailableChatRooms request from ${userId}, name ${username}`
@@ -249,6 +278,21 @@ export class ChatGateway
     if (!userId) {
       return [];
     }
+
+    // If roomName is empty, return available users
+    if (!roomName) {
+      const availableUsers = await this.prismaService.getAvailableUsers(
+        userId,
+        null
+      );
+      return availableUsers.map((user) => ({
+        username: user.username,
+        avatar: user.avatar,
+        status: user.status
+      }));
+    }
+
+    // Otherwise, return available rooms
     const availableRooms = await this.prismaService.getAvailableChatRooms(
       userId
     );
@@ -312,19 +356,20 @@ export class ChatGateway
   @SubscribeMessage("userCreation")
   async createTempUser(
     client: Socket,
-    username: string
-  ): Promise<DevError | string> {
+    req: AuthRequest
+  ): Promise<DevError | UserEntity> {
     logger.log(
-      `Received createUser request from ${client.id} for user ${username}`
+      `Received createUser request from ${client.id} for user ${req.username}`
     );
-    const userWasCreated = await this.chatService.createTempUser(
-      client.id,
-      username
-    );
+    const userWasCreated = await this.chatService.createTempUser(req);
     if (userWasCreated instanceof Error) {
       return { error: userWasCreated.message };
     }
-    return username;
+    this.userConnectionsService.addUserConnection(
+      userWasCreated.username,
+      client.id
+    );
+    return userWasCreated;
   }
 
   /**
@@ -338,13 +383,17 @@ export class ChatGateway
   @SubscribeMessage("userLogin")
   async devUserLogin(
     client: Socket,
-    username: string
+    req: AuthRequest
   ): Promise<{ error: string } | string> {
+    if (!req || !req.username) {
+      return { error: "Invalid request: username must be provided" };
+    }
+    const username = req.username;
     logger.log(
-      `Received createUser request from ${client.id} for user ${username}`
+      `Received devUserLogin request from ${client.id} for user ${username}`
     );
 
-    const userWasLoggedIn = await this.chatService.devUserLogin(username);
+    const userWasLoggedIn = await this.chatService.devUserLogin(req);
     if (userWasLoggedIn instanceof Error) {
       console.log(userWasLoggedIn);
       return { error: userWasLoggedIn.message };
@@ -469,21 +518,28 @@ export class ChatGateway
     client: Socket,
     req: LeaveRoomRequest
   ): Promise<DevError | string> {
+    logger.warn(`Received leaveRoom request from ${client.id}`);
+    console.log(req);
     const clientId = this.userConnectionsService.getUserBySocket(client.id);
     if (!clientId) {
       logger.error(`User ${client.id} not found`);
       return { error: "User not found" };
     }
-    const user = await this.prismaService.user.findUnique({
-      where: { username: clientId }
-    });
-    req.username = user.username;
-    const ret = await this.chatService.leaveRoom(req);
-    if (ret instanceof Error) return { error: ret.message };
-    client.leave(req.roomName);
-    this.server.to(req.roomName).emit("chatRoomMemberLeft", req);
-    logger.log(`User ${client.id} left room ${req.roomName}`);
-    return req.roomName;
+    try {
+      const user = await this.prismaService.user.findUnique({
+        where: { username: clientId }
+      });
+      req.username = user.username;
+      const ret = await this.chatService.leaveRoom(req);
+      if (ret instanceof Error) return { error: ret.message };
+      client.leave(req.roomName);
+      this.server.to(req.roomName).emit("chatRoomMemberLeft", req);
+      logger.log(`User ${client.id} left room ${req.roomName}`);
+      return req.roomName;
+    } catch (e) {
+      logger.error(`User ${clientId} not found`);
+      return { error: e.message };
+    }
   }
 
   /**
@@ -508,6 +564,10 @@ export class ChatGateway
     logger.log(
       `Received sendMessage request from ${sendDto.sender} to room ${sendDto.roomName}.`
     );
+
+    // Try to get the user database ID
+    const userId = await this.prismaService.getUserIdByNick(sendDto.sender);
+    if (!userId) return { error: "User not found" };
 
     // Delegate business logic to the chat service
     const ret = await this.chatService.sendMessage(sendDto);
@@ -585,42 +645,85 @@ export class ChatGateway
   @SubscribeMessage("updateChatMemberStatus")
   async updateChatMemberStatus(
     client: Socket,
-    data: updateChatMemberStatusDto
-  ): Promise<string> {
+    req: UpdateChatMemberRequest
+  ): Promise<RoomMemberEntity | DevError> {
+    logger.log(
+      `Received updateChatMemberStatus request from ${req.queryingUser} for ${req.usernameToUpdate}  in room ${req.roomName}`
+    );
+    console.log(req);
+
     try {
-      //Try to update the satus
-      const chatMember = await this.chatService.updateMemberStatus(data);
-      //If Successful, Broadcast back the updated list
-      if (chatMember)
-        await this.listUsers(client, { chatRoomName: data.forRoomName });
-
-      // (Might not be useful now that we broadcast the list) Broadcast the updated chat member information to all clients connected to the chat
+      const chatMember = await this.chatService.updateMemberStatus(req);
+      if (chatMember.status === "BANNED") {
+        // TODO: implement this
+        // Return this.kickChatMember, but with a different DTO
+      }
+      this.listUsers(client, { chatRoomName: req.roomName });
+      // TODO: implement a listener on the client side to handle this event
       //this.server.to(data.roomName).emit('chatMemberUpdated', chatMember);
-
-      return "Chat Member's Status succesfully updated !";
+      logger.log("Chat Member's Status succesfully updated !");
+      console.log(chatMember);
+      const user: ChatMemberEntity = {
+        username: chatMember.member.username,
+        roomName: req.roomName,
+        avatar: chatMember.member.avatar,
+        chatMemberStatus: chatMember.status,
+        userStatus: chatMember.member.status,
+        rank: chatMember.rank,
+        endOfBan: chatMember.endOfBan,
+        endOfMute: chatMember.endOfMute
+      };
+      const newMember: RoomMemberEntity = {
+        roomName: req.roomName,
+        user
+      };
+      this.server.to(req.roomName).emit("chatMemberUpdated", newMember);
+      if (chatMember.status === "BANNED") {
+        this.unbindAllUserSocketsFromRoom(req.usernameToUpdate, req.roomName);
+      }
+      return newMember;
     } catch (error) {
-      return error.message;
+      return { error: error.message };
     }
   }
 
   @SubscribeMessage("kickChatMember")
-  async kickChatMember(client: Socket, data: kickMemberDto): Promise<string> {
-    try {
-      const response = await this.chatService.kickMember(data);
-      if (
-        response ===
-        "Chat Member " +
-          data.ChatMemberToKickName +
-          " kicked out successfully !"
-      ) {
-        const list: ChatMemberEntity[] = await this.chatService.getUserList(
-          data.roomName
-        );
-        this.server.to(data.roomName).emit("userList", list);
-      }
-      return response;
-    } catch (error) {
-      return error.message;
+  async kickChatMember(
+    client: Socket,
+    req: KickMemberRequest
+  ): Promise<RoomMemberEntity | DevError> {
+    const response = await this.chatService.kickMember(req);
+    if (response instanceof Error) {
+      return { error: response.message };
+    } else {
+      const user = response as ChatMemberEntity;
+      // TODO: implement a listener on the client side to handle this event
+      this.server.to(req.roomName).emit("chatMemberKicked", user);
+      return { roomName: req.roomName, user };
     }
+  }
+
+  /**
+   * Send a Direct Message to a user, if the user is not blocked
+   * @param {Socket} client
+   * @param {SendDirectMessageRequest} req
+   * @returns {Promise<DevError | ChatRoomEntity>}
+   */
+  @SubscribeMessage("sendDirectMessage")
+  async sendDirectMessage(
+    client: Socket,
+    req: SendDirectMessageRequest
+  ): Promise<DevError | ChatRoomEntity> {
+    logger.log(
+      `Received sendDirectMessage request from ${req.sender} to ${req.recipient}`
+    );
+    console.log(req);
+    const ret = await this.chatService.sendDirectMessage(req);
+    if (ret instanceof Error) return { error: ret.message };
+    const room = ret as ChatRoomEntity;
+    // bind all of both users' socket to the room
+    this.bindAllUserSocketsToRoom(req.sender, room.name);
+    this.bindAllUserSocketsToRoom(req.recipient, room.name);
+    return room;
   }
 }

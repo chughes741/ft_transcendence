@@ -10,7 +10,7 @@ import {
   PrismaClient,
   User
 } from "@prisma/client";
-import { ChatRoomDto, UserDto, MessageDto } from "../auth/dto/prisma.dto";
+import { ChatRoomDto, MessageDto } from "../auth/dto/prisma.dto";
 import {
   ChatMemberPrismaType,
   MessagePrismaType,
@@ -25,11 +25,8 @@ import {
   GetMatchHistoryRequest,
   GetProfileRequest
 } from "kingpong-lib";
-import { updateChatMemberStatusDto } from "src/chat/dto/userlist.dto";
-
-/*End of Mute and End of Ban:  */
-//Is added to the current date (now)
-const GLOBAL_T_IN_DAYS = 5 /*DAYS*/ * (24 * 60 * 60 * 1000); // One day in milliseconds
+import { UpdateChatMemberRequest } from "src/chat/dto/userlist.dto";
+import { UserEntity } from "../auth/dto";
 
 const logger = new Logger("PrismaService");
 
@@ -95,14 +92,17 @@ export class PrismaService extends PrismaClient {
    * @returns {Promise<string>} - A Promise that resolves to the user id if the user is found, or an error if not found.
    * @async
    */
-  async getUserIdByNick(nick: string): Promise<string> {
+  async getUserIdByNick(nick: string): Promise<string | null> {
     if (!nick) {
       return null;
     }
 
-    const user = await this.user.findUnique({ where: { username: nick } });
-
-    return user ? user.id : null;
+    try {
+      const user = await this.user.findUnique({ where: { username: nick } });
+      return user.id;
+    } catch (err) {
+      return null;
+    }
   }
 
   /**
@@ -138,23 +138,26 @@ export class PrismaService extends PrismaClient {
 
   /**
    * Adds a user to the database
-   * @param dto - dto containing the room name and the user id
+   * @param req - dto containing the room name and the user id
    * @returns {Promise<User>} - A Promise that resolves to the chat member if the user is found, or an error if not found.
    */
-  async addUser(dto: UserDto): Promise<User> {
-    if (!dto.username || !dto.password || !dto.avatar) {
+  async addUser(req: UserEntity): Promise<User> {
+    logger.warn(`addUser:`);
+    console.log(req);
+    if (!req.username || !req.avatar) {
       throw new Error(
-        `Missing required fields: ${!!dto.avatar && "avatar, "} ${
-          !!dto.username && "username, "
-        } ${!!dto.password && "password "}`
+        `Missing required fields: ${!!req.avatar && "avatar, "} ${
+          !!req.username && "username, "
+        }`
       );
     }
     const data: Prisma.UserCreateInput = {
-      username: dto.username,
-      // firstName: dto.firstName,
-      // lastName: dto.lastName,
-      hash: dto.password,
-      avatar: dto.avatar
+      username: req.username,
+      firstName: req.firstName,
+      lastName: req.lastName,
+      avatar: req.avatar,
+      email: req.email,
+      status: req.status
     };
     return this.user.create({ data });
   }
@@ -503,107 +506,110 @@ export class PrismaService extends PrismaClient {
    * @returns {Promise<Friend>}
    */
   async addFriend(addFriendRequest: AddFriendRequest): Promise<boolean> {
-    return await this.$transaction(async () => {
-      logger.log(addFriendRequest.username);
-
-      const userUpdated = await this.user.update({
-        where: { username: addFriendRequest.username },
-        data: {
-          friends: {
-            create: {
-              friend: {
-                connect: { username: addFriendRequest.friend }
+    logger.log(
+      `Adding friend ${addFriendRequest.friend} to ${addFriendRequest.username}`
+    );
+    try {
+      return await this.$transaction(async () => {
+        const userUpdated = await this.user.update({
+          where: { username: addFriendRequest.username },
+          data: {
+            friends: {
+              create: {
+                friend: {
+                  connect: { username: addFriendRequest.friend }
+                }
               }
             }
           }
-        }
-      });
+        });
 
-      const friendUpdated = await this.user.update({
-        where: { username: addFriendRequest.friend },
-        data: {
-          friends: {
-            create: {
-              friend: {
-                connect: { username: addFriendRequest.username }
+        const friendUpdated = await this.user.update({
+          where: { username: addFriendRequest.friend },
+          data: {
+            friends: {
+              create: {
+                friend: {
+                  connect: { username: addFriendRequest.username }
+                }
               }
             }
           }
+        });
+
+        if (userUpdated && friendUpdated) {
+          return true;
+        } else {
+          return false;
         }
       });
-
-      if (userUpdated && friendUpdated) {
-        return true;
-      } else {
-        return false;
-      }
-    });
+    } catch (error) {
+      logger.log(error);
+      return false;
+    }
   }
 
   /**
    * Updates a chat member's status
    *
-   * @param {updateChatMemberStatusDto} updateDto
+   * @param {UpdateChatMemberRequest} updateDto
    * @async
    * @returns {Promise<ChatMember>}
    */
-  async updateChatMemberStatus(updateDto: updateChatMemberStatusDto) {
+  async updateChatMemberStatus(
+    updateDto: UpdateChatMemberRequest
+  ): Promise<ChatMemberPrismaType> {
     try {
-      const chatroom = await this.chatRoom.findUnique({
-        where: { name: updateDto.forRoomName },
-        include: { members: true }
-      });
-
-      const member = chatroom.members.find(
-        (member) => member.id === updateDto.memberToUpdateID
-      );
-
+      const member = updateDto.memberToUpdateUuid
+        ? await this.chatMember.findUnique({
+            where: { id: updateDto.memberToUpdateUuid },
+            include: { room: true }
+          })
+        : await this.getChatMemberByUsername(
+            updateDto.roomName,
+            updateDto.usernameToUpdate
+          );
       if (!member) {
         throw new Error("User is not a member of this chatroom");
       }
 
-      //STATUS to UPDATE to:
-      const newStatus: ChatMemberStatus = updateDto.changeStatusTo;
-      //Return RESULT of status update
-      let chatMember: ChatMember;
+      const newRank: ChatMemberRank = updateDto.memberToUpdateRank;
+      const newStatus: ChatMemberStatus = updateDto.status;
+      const futureDate = new Date(
+        updateDto.duration === -1
+          ? null
+          : Date.now() + updateDto.duration * 60000
+      );
 
-      // A future Date limit is established
-      const futureDate = new Date(Date.now() + GLOBAL_T_IN_DAYS);
+      const updateData: Partial<ChatMember> = {
+        status: newStatus,
+        rank: newRank
+      };
 
-      //CASES : SWITCH BETWEEN STATUSES
       switch (newStatus) {
         case ChatMemberStatus.OK:
-          console.log("User is OK");
-          chatMember = await this.chatMember.update({
-            where: { id: member.id },
-            data: {
-              status: newStatus,
-              endOfBan: null,
-              endOfMute: null
-            }
-          });
+          updateData.endOfBan = null;
+          updateData.endOfMute = null;
           break;
         case ChatMemberStatus.MUTED:
-          console.log("User is muted");
-          chatMember = await this.chatMember.update({
-            where: { id: member.id },
-            data: { status: newStatus, endOfMute: futureDate }
-          });
+          updateData.endOfMute = futureDate;
           break;
         case ChatMemberStatus.BANNED:
-          console.log("User is banned");
-          chatMember = await this.chatMember.update({
-            where: { id: member.id },
-            data: { status: newStatus, endOfBan: futureDate }
-          });
+          updateData.endOfBan = futureDate;
           break;
         default:
-          console.log("Unknown status");
+          throw new Error("Unknown status");
       }
+
+      const chatMember = await this.chatMember.update({
+        where: { id: member.id },
+        data: updateData,
+        include: { member: true, room: true }
+      });
+
       return chatMember;
-      //CATCH PRISMA ERROR
     } catch (error) {
-      throw new Error(`Failed to member's status: ${error.message}`);
+      throw new Error(`Failed to update member's status: ${error.message}`);
     }
   }
 
@@ -651,6 +657,56 @@ export class PrismaService extends PrismaClient {
     if (!chatMember) {
       throw new Error(
         `Chat member not found for room '${roomName}' and username '${username}'.`
+      );
+    }
+
+    return chatMember as ChatMemberPrismaType;
+  }
+
+  /**
+   * Fetches chat member by username and room name
+   *
+   * @param {string} roomName
+   * @param {string} uuid
+   * @async
+   * @returns {Promise<ChatMember>}
+   */
+  async getChatMemberByUUID(
+    roomName: string,
+    uuid: string
+  ): Promise<ChatMemberPrismaType> {
+    const chatMember = await this.chatMember.findFirst({
+      where: {
+        AND: [
+          {
+            room: {
+              name: { equals: roomName }
+            }
+          },
+          {
+            memberId: { equals: uuid }
+          }
+        ]
+      },
+      include: {
+        member: {
+          select: {
+            avatar: true,
+            username: true,
+            status: true
+          }
+        },
+        room: {
+          select: {
+            name: true
+          }
+        }
+      }
+    });
+
+    if (!chatMember) {
+      throw new Error(
+        `Chat member not found for room '${roomName}' and UUID '${uuid}'.`
       );
     }
 
@@ -722,6 +778,37 @@ export class PrismaService extends PrismaClient {
   }
 
   /**
+   * Check the status of a user in a chat room
+   *
+   * @param {number} userId
+   * @param {string} roomName
+   * @async
+   * @returns {Promise<{ status: ChatMemberStatus; expiration: Date | null }>}
+   */
+  async checkChatMemberStatus(
+    userId: string, // Changed from number to string to match your User model
+    roomName: string
+  ): Promise<{ status: ChatMemberStatus; expiration: Date | null }> {
+    const chatMember = await this.chatMember.findFirst({
+      where: {
+        memberId: userId, // Changed from memberId to userId to match your ChatMember model
+        room: {
+          name: roomName
+        }
+      },
+      select: {
+        status: true, // Changed from chatMemberStatus to status to match your ChatMember model
+        endOfMute: true // Changed from chatMemberStatusExpiration to endOfMute to match your ChatMember model
+      }
+    });
+
+    return {
+      status: chatMember?.status ?? ChatMemberStatus.OK,
+      expiration: chatMember?.endOfMute ?? null
+    };
+  }
+
+  /**
    * Deletes a chat member by their ID
    *
    * @param {number} id
@@ -752,5 +839,47 @@ export class PrismaService extends PrismaClient {
       }
     });
     return userToUpdate;
+  }
+
+  /**
+   * Adds a new Direct Message chat room between two users
+   * @param {string} senderId
+   * @param {string} recipientId
+   * @async
+   * @returns {Promise<ChatRoom>}
+   * @throws {Error} If the chat room already exists
+   */
+  async createDirectMessageRoom(
+    senderId: string,
+    recipientId: string,
+    roomName: string
+  ): Promise<ChatRoom> {
+    const newRoom = await this.chatRoom.create({
+      data: {
+        name: roomName,
+        status: ChatRoomStatus.DIALOGUE,
+        members: {
+          create: [
+            {
+              member: {
+                connect: { id: senderId }
+              },
+              rank: ChatMemberRank.USER,
+              status: ChatMemberStatus.OK
+            },
+            {
+              member: {
+                connect: { id: recipientId }
+              },
+              rank: ChatMemberRank.USER,
+              status: ChatMemberStatus.OK
+            }
+          ]
+        }
+      },
+      include: { members: true }
+    });
+
+    return newRoom;
   }
 }
