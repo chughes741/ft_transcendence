@@ -127,7 +127,8 @@ export class GameLogic {
 
     // console.log("padleft: " + gamestate.paddle_left.pos.y);
     // console.log("padright: " + gamestate.paddle_right.pos.y);
-    console.log("score: " + gamestate.score[0] + " | " + gamestate.score[1]);
+    /** This floods the terminal */
+    // console.log("score: " + gamestate.score[0] + " | " + gamestate.score[1]);
     //Find new ball position
     curBall.pos = Vec2.scaleAndAdd(
       prevBall.pos,

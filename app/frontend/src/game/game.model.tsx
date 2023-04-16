@@ -25,6 +25,9 @@ export interface GameModelType {
   displayQueue: boolean;
   setDisplayQueue: (displayQueue: boolean) => void;
 
+  inQueue: boolean;
+  setInQueue: (inQueue: boolean) => void;
+
   displayLobby: boolean;
   setDisplayLobby: (displayLobby: boolean) => void;
 
@@ -57,6 +60,7 @@ export const useGameModel = (): GameModelType => {
 
   //Display states
   const [displayQueue, setDisplayQueue] = useState<boolean>(true);
+  const [inQueue, setInQueue] = useState<boolean>(false);
   const [displayLobby, setDisplayLobby] = useState<boolean>(false);
   const [displayReady, setDisplayReady] = useState<boolean>(false);
   const [displayGame, setDisplayGame] = useState<boolean>(false);
@@ -86,6 +90,8 @@ export const useGameModel = (): GameModelType => {
     setOpponentUsername,
     displayQueue,
     setDisplayQueue,
+    inQueue,
+    setInQueue,
     displayLobby,
     setDisplayLobby,
     displayReady,

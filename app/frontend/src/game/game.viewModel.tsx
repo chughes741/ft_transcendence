@@ -13,6 +13,7 @@ import { useRootViewModelContext } from "src/root.context";
 
 export interface GameViewModelType extends GameModelType {
   setPlayerReadyState: () => Promise<void>;
+  joinGameQueue: () => Promise<void>;
 }
 
 export const GameViewModelContext: React.Context<GameViewModelType | null> =
@@ -36,6 +37,8 @@ export const GameViewModelProvider = ({ children }) => {
     setOpponentUsername,
     displayQueue,
     setDisplayQueue,
+    inQueue,
+    setInQueue,
     displayLobby,
     setDisplayLobby,
     displayReady,
@@ -73,6 +76,7 @@ export const GameViewModelProvider = ({ children }) => {
       setPlayerSide(payload.player_side);
       setOpponentUsername(payload.opponent_username);
 
+      setInQueue(false);
       setDisplayQueue(false);
       setDisplayLobby(true);
     });
@@ -165,11 +169,33 @@ export const GameViewModelProvider = ({ children }) => {
     );
   };
 
+  /**
+   * Manage joining the queue
+   * 
+   * 
+   */
+  const joinGameQueue = async () => {
+    console.log("Joining queue");
+
+    socket.emit(
+      GameEvents.JoinGameQueue,
+      {
+        username: self.username,
+        join_time: Date.now()
+      },
+      () => {
+        setInQueue(true);
+      }
+    );
+  };
+
+
   return (
     <GameViewModelContext.Provider
       value={{
         ...gameModel,
-        setPlayerReadyState
+        setPlayerReadyState,
+        joinGameQueue
 
         //...
       }}
