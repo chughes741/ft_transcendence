@@ -31,7 +31,6 @@ function VerifyQRCode () {
       const data = await response.json();
       setQRCode(data['qrcode']);
       setSecret(data['secret']);
-      console.log("secret ?", secret);
     } catch (error) {
       console.error(error);
     }
