@@ -17,7 +17,7 @@ export class UserConnectionsService {
     return userArray ? userArray[0] : null;
   }
 
-  addUserConnection(username: string, socketId: string): void {
+  addUserConnection(username: string, socketId: string): number {
     // Check if the socketId is already in use, and remove it from the old user
     const userExists = this.getUserBySocket(socketId);
     if (userExists) {
@@ -39,9 +39,10 @@ export class UserConnectionsService {
         this.getUserSockets(username).length
       } connections`
     );
+    return this.getUserSockets(username).length;
   }
 
-  removeUserConnection(username: string, socketId: string): void {
+  removeUserConnection(username: string, socketId: string): number | string {
     const connections = this.userConnections.get(username);
     if (connections) {
       const index = connections.indexOf(socketId);
@@ -55,6 +56,7 @@ export class UserConnectionsService {
         `Removed ${socketId} from ${username}. Now has ${connections.length} connections`
       );
     }
+    return connections.length ? connections.length : username;
   }
 
   userIsBlockedBy(blockedUsername: string, blockingUsername: string): boolean {
@@ -84,5 +86,10 @@ export class UserConnectionsService {
         this.blockedUsers.delete(blockingUsername);
       }
     }
+  }
+
+  getBlockedUsers(blockingUsername: string): string[] {
+    const blockedList = this.blockedUsers.get(blockingUsername);
+    return blockedList ? Array.from(blockedList) : [];
   }
 }

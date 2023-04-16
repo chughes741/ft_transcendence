@@ -178,7 +178,20 @@ export class ChatGateway
 
   handleDisconnect(client: Socket) {
     // Remove the user connection
-    this.userConnectionsService.removeUserConnection(client.id, client.id);
+    const connections = this.userConnectionsService.removeUserConnection(
+      client.id,
+      client.id
+    );
+    if (typeof connections === "string") {
+      logger.log(
+        `Client ${client.id} has no more active connections, updating user status to OFFLINE`
+      );
+
+      this.prismaService.user.update({
+        where: { username: connections },
+        data: { status: UserStatus.OFFLINE }
+      });
+    }
 
     logger.log(`Client disconnected: ${client.id}`);
   }
@@ -406,6 +419,12 @@ export class ChatGateway
       console.log(userWasLoggedIn);
       return { error: userWasLoggedIn.message };
     }
+
+    // Update the user status to online
+    this.prismaService.user.update({
+      where: { username },
+      data: { status: UserStatus.ONLINE }
+    });
 
     // Add the user connection to the UserConnections map
     this.userConnectionsService.addUserConnection(username, client.id);
