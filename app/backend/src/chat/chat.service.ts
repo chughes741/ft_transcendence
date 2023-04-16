@@ -145,7 +145,15 @@ export class ChatService {
     password: string
   ): Promise<void> {
     if (room.status === ChatRoomStatus.PASSWORD) {
+      logger.error(`REMOVE ME: comparing ${password} to ${room.password}`);
       const isPasswordCorrect = await argon2.verify(room.password, password);
+
+      const passwordHashed = await argon2.hash(password);
+      logger.warn(
+        `REMOVE ME: ${passwordHashed} === ${room.password} = ${
+          passwordHashed === room.password
+        } ?`
+      );
       if (!isPasswordCorrect) {
         throw Error("Incorrect password");
       }

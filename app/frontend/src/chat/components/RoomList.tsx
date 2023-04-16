@@ -36,6 +36,7 @@ const RoomList: React.FC = () => {
   const { rooms } = useRoomManager();
   const {
     currentRoomName,
+    setNewRoomStatus,
     /* Room fcts */
     createNewRoom,
     joinRoom,
@@ -159,6 +160,12 @@ const RoomList: React.FC = () => {
     setShowInviteUsersModal(true);
   };
 
+  const changeRoomPassword = () => {
+    setContextMenuRoomsVisible(false);
+    setNewRoomStatus(ChatRoomStatus.PASSWORD);
+    setShowPasswordModal(true);
+  };
+
   /****************/
   /*   Snackbar   */
   /****************/
@@ -212,7 +219,7 @@ const RoomList: React.FC = () => {
         onLeaveRoom={leaveRoom}
         onInvitePeopleToRoom={handleInvitePeopleToRoom}
         onChangeRoomStatus={changeRoomStatus}
-        onChangeRoomPassword={() => setShowPasswordModal(true)}
+        onChangeRoomPassword={changeRoomPassword}
       />
       <RoomPasswordModal
         showModal={showPasswordModal}
