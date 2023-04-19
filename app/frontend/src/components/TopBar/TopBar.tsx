@@ -55,6 +55,7 @@ export default function TopBar() {
     handleCloseUserMenu();
   };
 
+  console.log("ICI EST LE SEELF MA MAN", self);
   return (
     <AppBar
       position="static"

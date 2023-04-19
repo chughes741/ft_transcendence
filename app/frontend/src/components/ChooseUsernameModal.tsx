@@ -8,6 +8,7 @@ import {
   Button,
   DialogActions
 } from "@mui/material";
+import { useRootViewModelContext } from "../root.context";
 
 interface ChooseUsernameModalProps {
   showModal: boolean;
@@ -15,22 +16,55 @@ interface ChooseUsernameModalProps {
   pickUsername: (username: string) => void;
 }
 
+function validateUsername(username: string): boolean {
+  const minLength = 4;
+  const maxLength = 20;
+  const regex = /^[a-zA-Z0-9]+$/; // Only allow letters and numbers
+
+  if (username.length < minLength || username.length > maxLength) {
+    return false;
+  }
+
+  if (!regex.test(username)) {
+    return false;
+  }
+
+  return true;
+}
+
 export const ChooseUsernameModal: React.FC<ChooseUsernameModalProps> = ({
   showModal,
   pickUsername,
-  defaultUsername = "schlurp"
+  defaultUsername = "default"
 }) => {
   if (!showModal) return null;
-
   const [username, setUsername] = useState<string>("");
-
+  
+  const { self, setShowChooseUsernameModal, setFullscreen } = useRootViewModelContext();
+  
+  setFullscreen(true)
   const handleSubmit = useCallback(async () => {
+    if (!validateUsername(username)){
+      return
+    }
     const trimmedUsername = username.trim();
-
-    pickUsername(
-      trimmedUsername.length > 0 ? trimmedUsername : defaultUsername
-    );
+    pickUsername("default");
     setUsername("");
+    const url = `http://localhost:3000/auth/changeUsername?current=${self.username}&newname=${username}`;
+    const data = await fetch(url, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json"
+      }
+    });
+    const changeIsSuccess = await data.json();
+    if (changeIsSuccess){
+        setShowChooseUsernameModal(false);
+        self.username = username;
+    }
+    else
+      alert("holy fuck!")
+    setFullscreen(false);
   }, [username, setUsername]);
 
   const handleKeyPress = useCallback(
@@ -68,16 +102,16 @@ export const ChooseUsernameModal: React.FC<ChooseUsernameModalProps> = ({
       <DialogTitle alignContent={"center"}>Choose a username</DialogTitle>
       <DialogContent>
         <DialogContentText>
-          Enter a different username or use the default one:
+          Please choose a username :
         </DialogContentText>
         <TextField
           autoFocus
           margin="dense"
-          label={username.length > 0 ? "Username" : defaultUsername}
+          label="Username"
           type="text"
           fullWidth
           onChange={(e) => setUsername(e.target.value)}
-          inputProps={{ maxLength: 25 }}
+          inputProps={{ maxLength: 25, minLenght: 5 }}
         />
       </DialogContent>
       <DialogActions>

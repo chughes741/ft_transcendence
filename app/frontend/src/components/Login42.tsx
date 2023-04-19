@@ -104,7 +104,7 @@ interface AuthEntity {
 }
 
 export default function LoginWith42Button({ onSuccess, onFailure }: LoginWith42ButtonProps) {
-  const { setShowChooseUsernameModal } = useRootViewModelContext();
+  const { setShowChooseUsernameModal, setFullscreen } = useRootViewModelContext();
 
   const [isLoading, setIsLoading] = useState(false);
 
@@ -123,7 +123,6 @@ export default function LoginWith42Button({ onSuccess, onFailure }: LoginWith42B
     const handleAuthorizationCode = async () => {
       const searchParams = new URLSearchParams(window.location.search);
       const authorizationCode = searchParams.get("code");
-      console.log("Login 42 button");
       if (!authorizationCode) {
         onFailure(new Error("Authorization code not found"));
         return;
@@ -148,10 +147,10 @@ export default function LoginWith42Button({ onSuccess, onFailure }: LoginWith42B
         }
 
         const data  = await response.json();
-        if (data.user.firstConnection) {
+        if (data.user.firstConnection)
           setShowChooseUsernameModal(true);
-          data.user.username = "Poilu Paul le poil"
-        }
+        else
+          setFullscreen(false);
       //  else if (enable2fa)
         // VerifyQRCode
 

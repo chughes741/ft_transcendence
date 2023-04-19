@@ -33,12 +33,14 @@ export interface dataResponse {
 }
 
 function RootViewContent(): JSX.Element {
-  const { pageState, setPageState, history, self, setSelf, setSessionToken, setFullscreen } = useRootViewModelContext();
+  const { pageState, setPageState, history, self, setSelf, setSessionToken, setFullscreen, setShowChooseUsernameModal } = useRootViewModelContext();
 
   const handleLoginSuccess = (data : dataResponse) => {
     setSessionToken(data.token);
+
     console.log(data);
-    setFullscreen(false);
+
+    setSelf(data.user);
     setPageState(PageState.Home);
     history.push("/"); 
     // setError(null);

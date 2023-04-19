@@ -109,6 +109,7 @@ export class AuthController {
     @Query("current") currentName: string,
     @Query("newname") newName: string
   ) {
+    console.log("CHANGE USERNAME", currentName, " to " , newName);
     return await this.authService.changeName(currentName, newName);
   }
 
