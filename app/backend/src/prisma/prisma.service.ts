@@ -107,17 +107,17 @@ export class PrismaService extends PrismaClient {
     }
   }
 
-  async changeUserName(userName : string, newUsername : string) : Promise<boolean>{
-    
+  async changeUserName(userName: string, newUsername: string): Promise<boolean> {
+
     const nameExists = await this.userNameExists(newUsername);
     if (nameExists)
       return false;
     await this.user.update({
-      where : {
-        username : userName
+      where: {
+        username: userName
       },
       data: {
-        username : newUsername
+        username: newUsername
       }
     })
     return true;
@@ -183,8 +183,7 @@ export class PrismaService extends PrismaClient {
     console.log(req);
     if (!req.username || !req.avatar) {
       throw new Error(
-        `Missing required fields: ${!!req.avatar && "avatar, "} ${
-          !!req.username && "username, "
+        `Missing required fields: ${!!req.avatar && "avatar, "} ${!!req.username && "username, "
         }`
       );
     }
@@ -517,7 +516,7 @@ export class PrismaService extends PrismaClient {
       throw new Error("Username is undefined");
     }
     return await this.user.findUnique({
-      where: { 
+      where: {
         email: email
       }
     });
@@ -612,13 +611,13 @@ export class PrismaService extends PrismaClient {
     try {
       const member = updateDto.memberToUpdateUuid
         ? await this.chatMember.findUnique({
-            where: { id: updateDto.memberToUpdateUuid },
-            include: { room: true }
-          })
+          where: { id: updateDto.memberToUpdateUuid },
+          include: { room: true }
+        })
         : await this.getChatMemberByUsername(
-            updateDto.roomName,
-            updateDto.usernameToUpdate
-          );
+          updateDto.roomName,
+          updateDto.usernameToUpdate
+        );
       if (!member) {
         throw new Error("User is not a member of this chatroom");
       }
@@ -800,13 +799,13 @@ export class PrismaService extends PrismaClient {
     // Get a list of users who are not in the specified chat room
     const usersNotInRoom = roomId
       ? await this.chatMember.findMany({
-          where: {
-            roomId: roomId
-          },
-          select: {
-            memberId: true
-          }
-        })
+        where: {
+          roomId: roomId
+        },
+        select: {
+          memberId: true
+        }
+      })
       : [];
     const usersNotInRoomIds = usersNotInRoom
       ? usersNotInRoom.map((user) => user.memberId)
@@ -889,6 +888,40 @@ export class PrismaService extends PrismaClient {
       }
     });
     return userToUpdate;
+  }
+
+  async update2FA(userName: string): Promise<boolean> {
+
+    const user = await this.user.findUnique({
+      where: {
+        username: userName
+      },
+    })
+    if (!user)
+      return false
+
+    if (user.enable2fa === true) {
+      await this.user.update({
+        where: {
+          username: userName
+        },
+        data: {
+          enable2fa: false
+        }
+      });
+    }
+    else 
+    {
+      await this.user.update({
+        where: {
+          username: userName
+        },
+        data: {
+          enable2fa: true
+        }
+      });
+    }
+    return true;
   }
 
   /**
