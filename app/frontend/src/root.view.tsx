@@ -17,6 +17,7 @@ import LoginWith42Button from "./components/Login42";
 import { ChooseUsernameModal } from "./components/ChooseUsernameModal";
 import GameWindow from "./game/game.view";
 import { ProfileEntity } from "kingpong-lib";
+import VerifyQRCode from "./components/QrCodeElement";
 
 /**
  * Root view content
@@ -30,7 +31,11 @@ function RootViewContent(): JSX.Element {
 
   switch (pageState) {
     case PageState.Auth: {
-      return ( <LoginWith42Button/> )
+      return ( <LoginWith42Button/>  )
+    }
+    case PageState.QRCode : {
+      console.log("QR CODE PAGE STATE");
+      return (<VerifyQRCode />)
     }
     case PageState.Home: {
       return ( <></> );

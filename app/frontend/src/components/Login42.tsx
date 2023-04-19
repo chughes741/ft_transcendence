@@ -12,8 +12,6 @@ const CLIENT_ID =
 const REDIRECT_URI = "http://localhost:3000/";
 
 
-
-
  /*
  * We GOTTA add those to kingpong lib
  */
@@ -44,6 +42,7 @@ interface AuthEntity {
 export interface dataResponse {
   user: ProfileEntity,
   token: string,
+  twoFAenable : boolean,
 }
 
 export default function LoginWith42Button() {
@@ -52,6 +51,7 @@ export default function LoginWith42Button() {
     setSessionToken,
     setSelf,
     setPageState,  
+    history
   } = useRootViewModelContext();
 
   const [isLoading, setIsLoading] = useState(false);
@@ -72,7 +72,11 @@ export default function LoginWith42Button() {
   const onSuccess = (data : dataResponse) => {
     setSessionToken(data.token);
     setSelf(data.user);
-    setPageState(PageState.Home);
+    if (data.twoFAenable)
+      setPageState(PageState.QRCode);
+    else
+      setPageState(PageState.Home);
+    history.push("/");
   };
 
   // here is the useEffect to handle if theres an auth code, handles the call the backend with the authcode and socket id, 
@@ -106,20 +110,23 @@ export default function LoginWith42Button() {
           new Error(error);
           return;
         }
-
         const client  = await data.json();
+
+
         if (client.user.firstConnection)
           setShowChooseUsernameModal(true);
 
         else
           setFullscreen(false);
+        
 
-        // if (client.user.enable2fa)
-        //     VerifyQRCode
-
+        if (client.user.enable2fa)
+            setPageState(PageState.QRCode);
+        console.log("INFORMATION  " , client);
         const userProfile = {
           user: populateProfile(client),
-          token: client.access_token
+          token: client.access_token,
+          twoFAenable : client.user.enable2fa,
         }
         onSuccess(userProfile);
 

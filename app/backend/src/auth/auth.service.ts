@@ -47,6 +47,10 @@ export class AuthService {
       return newuser;
     }
     user.firstConnection = false;
+
+    //HARDCODED FOR TRUE: NEEDS TO BE REMOVED
+    user.enable2fa = true;
+    
     return user;
   }
 
@@ -86,7 +90,10 @@ export class AuthService {
     return { validated: false };
   }
 
+  async update2FA() : Promise<boolean> {
 
+    return true;
+  }
 
   async getAuht42(clientId: string, authorization_code: string) : Promise<AuthEntity> {
     const UID =

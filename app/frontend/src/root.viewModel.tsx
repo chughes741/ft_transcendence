@@ -48,6 +48,9 @@ export const RootViewModelProvider = ({ children }) => {
             setFullscreen(false);
             setPageState(PageState.Auth);
             break;
+          case "/qrcode":
+            setPageState(PageState.QRCode);
+            break;
           case "/":
             setPageState(PageState.Home);
             break;
@@ -82,6 +85,11 @@ export const RootViewModelProvider = ({ children }) => {
       case PageState.Auth:
         if (history.location.pathname !== '/auth') {
         history.push("/auth")
+        }
+        break;
+      case PageState.QRCode:
+        if (history.location.pathname !== "/qrcode") {
+        history.push("/qrcode");
         }
         break;
       case PageState.Home:

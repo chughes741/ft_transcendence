@@ -2,6 +2,8 @@ import { Label } from '@mui/icons-material';
 import { Button, InputLabel } from '@mui/material';
 import { Box } from '@mui/system';
 import React, { useState } from 'react';
+import { PageState } from "src/root.model";
+import { useRootViewModelContext } from 'src/root.context';
 
 type VerifyQRCodeResponse = {
   message: string;
@@ -9,12 +11,21 @@ type VerifyQRCodeResponse = {
 };
 
 function VerifyQRCode() {
+
+  const { 
+    setPageState,
+    setFullscreen,
+    history
+  } = useRootViewModelContext();
+
   const [qrCode, setQRCode] = useState<string | null>(null);
   const [code, setCode] = useState<string>('');
   const [errorMessage, setErrorMessage] = useState<string>('');
   const [secret, setSecret] = useState<string | null>(null);
+//  const { setFullscreen } = useRootViewModelContext();
 
-  const handleGetQRCode = async () => {
+  setFullscreen(true);
+  const handleGetQRCode = async (): Promise<boolean> => {
     try {
       const url = "/auth/qrCode";
       console.log("Click to get QRCODE wtf")
@@ -27,12 +38,15 @@ function VerifyQRCode() {
       const data = await response.json();
       setQRCode(data['qrcode']);
       setSecret(data['secret']);
+      return true;
     } catch (error) {
-      console.error(error);
+      return false;
     }
+
   };
 
-  const handleVerifyQRCode = async () => {
+  const handleVerifyQRCode = async (): Promise<boolean> => {
+
     try {
       console.log("Secret:", secret);
       const url = `/auth/verifyQrCode?secret=${secret}&code=${code}`;
@@ -43,23 +57,30 @@ function VerifyQRCode() {
         },
       });
       const data = await response.json();
-      
-      if (data.success) {
+      console.log("THE DATA" ,data);
+      if (data.validated) {
         setErrorMessage('');
         alert('QR code verified!');
         // Enable user here
+        setFullscreen(false);
+        setPageState(PageState.Home);
+        return true;
       } else {
+        // TODO
+        //If false ... can't enter website. //TODO
         setErrorMessage(data.message);
+        return false;
       }
     } catch (error) {
       console.error(error);
+      return false;
     }
   };
 
   return (
     <>
       <Box>Verify QR Code</Box>
-      {qrCode && <img src={qrCode} alt="QR Code" />}
+      {qrCode && <img  width="128" height="128" src={qrCode} alt="QR Code" />}
       <Button onClick={handleGetQRCode}>Get QR Code</Button>
       <br />
       <InputLabel htmlFor="code">Enter your one-time password:</InputLabel>
@@ -70,5 +91,4 @@ function VerifyQRCode() {
     </>
   );
 }
-
 export default VerifyQRCode;

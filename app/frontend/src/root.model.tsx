@@ -12,7 +12,8 @@ export enum PageState {
   Game = "Game",
   Chat = "Chat",
   Profile = "Profile",
-  Loader = "Loader"
+  Loader = "Loader",
+  QRCode = "QRCode"
 }
 
 /**
