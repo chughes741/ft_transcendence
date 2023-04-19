@@ -12,44 +12,31 @@ import { useRootViewModelContext } from "../root.context";
 
 interface ChooseUsernameModalProps {
   showModal: boolean;
-  defaultUsername: string;
-  pickUsername: (username: string) => void;
 }
 
-function validateUsername(username: string): boolean {
-  const minLength = 4;
-  const maxLength = 20;
-  const regex = /^[a-zA-Z0-9]+$/; // Only allow letters and numbers
+const validateUsername = (username: string): boolean => {
+  const minLength = 3;
+  const regex = /^[a-zA-Z0-9]+$/;
 
-  if (username.length < minLength || username.length > maxLength) {
+  if (username.length < minLength || !regex.test(username)) {
+    alert("The username must be between 3 and 20 characters, and can only contain letters and numbers. Please choose another one.")
     return false;
   }
-
-  if (!regex.test(username)) {
-    return false;
-  }
-
   return true;
 }
 
-export const ChooseUsernameModal: React.FC<ChooseUsernameModalProps> = ({
-  showModal,
-  pickUsername,
-  defaultUsername = "default"
-}) => {
+export const ChooseUsernameModal: React.FC<ChooseUsernameModalProps> = ({showModal}) => {
   if (!showModal) return null;
+  const { self, setShowChooseUsernameModal, setFullscreen } = useRootViewModelContext();
   const [username, setUsername] = useState<string>("");
   
-  const { self, setShowChooseUsernameModal, setFullscreen } = useRootViewModelContext();
   
-  setFullscreen(true)
+  setFullscreen(true);
+
   const handleSubmit = useCallback(async () => {
-    if (!validateUsername(username)){
-      return
-    }
-    const trimmedUsername = username.trim();
-    pickUsername("default");
-    setUsername("");
+    if (!validateUsername(username))
+      return;
+
     const url = `http://localhost:3000/auth/changeUsername?current=${self.username}&newname=${username}`;
     const data = await fetch(url, {
       method: "GET",
@@ -57,13 +44,15 @@ export const ChooseUsernameModal: React.FC<ChooseUsernameModalProps> = ({
         "Content-Type": "application/json"
       }
     });
+    
     const changeIsSuccess = await data.json();
     if (changeIsSuccess){
         setShowChooseUsernameModal(false);
         self.username = username;
     }
     else
-      alert("holy fuck!")
+      alert("This username is already taken, please choose another one.")
+
     setFullscreen(false);
   }, [username, setUsername]);
 
@@ -80,7 +69,6 @@ export const ChooseUsernameModal: React.FC<ChooseUsernameModalProps> = ({
     if (showModal) {
       window.addEventListener("keydown", handleKeyPress);
     }
-
     return () => {
       window.removeEventListener("keydown", handleKeyPress);
     };
@@ -111,7 +99,7 @@ export const ChooseUsernameModal: React.FC<ChooseUsernameModalProps> = ({
           type="text"
           fullWidth
           onChange={(e) => setUsername(e.target.value)}
-          inputProps={{ maxLength: 25, minLenght: 5 }}
+          inputProps={{ maxLength: 20 }}
         />
       </DialogContent>
       <DialogActions>

@@ -33,10 +33,6 @@ export interface RootModelType {
   showChooseUsernameModal: boolean;
   setShowChooseUsernameModal: (fullscreen: boolean) => void;
 
-  showConfirmationModal: boolean;
-  setShowConfirmationModal: (show: boolean) => void;
-  confirmationMessage: string;
-  setConfirmationMessage: (message: string) => void;
   sessionToken?: string;
   setSessionToken?: (sessionToken: string) => void;
 }
@@ -53,16 +49,7 @@ export const useRootModel = (): RootModelType => {
   const [fullscreen, setFullscreen] = useState<boolean>(true);
   const [showChooseUsernameModal, setShowChooseUsernameModal] =
     useState<boolean>(false);
-  const [showConfirmationModal, setShowConfirmationModal] =
-    useState<boolean>(false);
-  const [confirmationMessage, setConfirmationMessage] = useState<string>("");
   const [sessionToken, setSessionToken] = useState<string>("");
-// {
-//     username: "schlurp",
-//     avatar: "https://i.pravatar.cc/148",
-//     status: UserStatus.ONLINE,
-//     createdAt: new Date().toDateString()
-//   }
 
   return {
     self,
@@ -73,10 +60,6 @@ export const useRootModel = (): RootModelType => {
     setFullscreen,
     showChooseUsernameModal,
     setShowChooseUsernameModal,
-    showConfirmationModal,
-    setShowConfirmationModal,
-    confirmationMessage,
-    setConfirmationMessage,
     sessionToken,
     setSessionToken
   };

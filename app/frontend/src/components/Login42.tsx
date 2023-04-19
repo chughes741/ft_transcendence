@@ -2,83 +2,22 @@ import { useState, useEffect } from "react";
 import { Button,Box } from "@mui/material";
 import { socket } from "../contexts/WebSocket.context";
 import { ProfileEntity } from "kingpong-lib";
-import { dataResponse } from "src/root.view";
+
 import VerifyQRCode from "./QrCodeElement";
+import { PageState } from "src/root.model";
 import { useRootViewModelContext } from "src/root.context";
 
 const CLIENT_ID =
   "u-s4t2ud-51fb382cccb5740fc1b9129a3ddacef8324a59dc4c449e3e8ba5f62acb2079b6";
 const REDIRECT_URI = "http://localhost:3000/";
 
-interface LoginWith42ButtonProps {
-  onSuccess: (data: dataResponse) => void;
-  onFailure: (error: Error) => void;
-}
 
-// useEffect(() => {
-//   function LoginWith42Button({ onSuccess, onFailure }: LoginWith42ButtonProps) {
-//     const [isLoading, setIsLoading] = useState(false);
 
-//     // Step 2: Handle the authorization code and exchange it for an access token
-//     const handleAuthorizationCode = async () => {
-//       const searchParams = new URLSearchParams(window.location.search);
-//       const authorizationCode = searchParams.get("code");
-//       console.log("Login 42 button")
-//       if (!authorizationCode) {
-//         onFailure(new Error("Authorization code not found"));
-//         return;
-//       }
 
-//       // Remove the "code" query parameter from the URL
-//       const newUrl = window.location.pathname + window.location.hash;
-//       window.history.replaceState({}, "", newUrl);
+ /*
+ * We GOTTA add those to kingpong lib
+ */
 
-//       try {
-//         console.log("Before Trying to get token");
-//         const socketId = socket.id;
-//         const url = `http://localhost:3000/auth/token?code=${authorizationCode}&socketId=${socketId}`;
-//         const response = await fetch(url, {
-//           method: "GET",
-//           headers: {
-//             "Content-Type": "application/json"
-//           }
-//         });
-//         console.log("Response from 42 auth:", response);
-
-//         if (!response.ok) {
-//           const error = await response.json();
-//           onFailure(new Error(error.error_description));
-//           return;
-//         }
-
-//         const data = await response.json();
-//         onSuccess(data.access_token);
-//       } catch (error) {
-//         onFailure(error);
-//       }
-//     };
-//   }
-
-//   const handleLoginClick = () => {
-//     setIsLoading(true);
-
-//     // Step 1: Redirect the user to the 42 OAuth authorization endpoint
-//     const authorizationUrl = `https://api.intra.42.fr/oauth/authorize?client_id=${CLIENT_ID}&redirect_uri=${REDIRECT_URI}&response_type=code`;
-//     window.location.href = authorizationUrl;
-//   };
-
-//   return (
-//     <>
-//       <span>Log in only option : </span>
-//       <Button
-//         onClick={handleLoginClick}
-//         disabled={isLoading}
-//       >
-//         {isLoading ? "Logging in..." : "Login with 42"}
-//       </Button>
-//     </>
-//   );
-// }
 
 enum UserStatus {
   ONLINE,
@@ -95,7 +34,6 @@ interface UserEntity {
   email?: string;
   status?: UserStatus;
   firstConnection? : boolean;
-  
 }
 
 interface AuthEntity {
@@ -103,12 +41,24 @@ interface AuthEntity {
   user: UserEntity;
 }
 
-export default function LoginWith42Button({ onSuccess, onFailure }: LoginWith42ButtonProps) {
-  const { setShowChooseUsernameModal, setFullscreen } = useRootViewModelContext();
+export interface dataResponse {
+  user: ProfileEntity,
+  token: string,
+}
+
+export default function LoginWith42Button() {
+  const { setShowChooseUsernameModal, 
+    setFullscreen,
+    setSessionToken,
+    setSelf,
+    setPageState,  
+  } = useRootViewModelContext();
 
   const [isLoading, setIsLoading] = useState(false);
 
   const populateProfile = (data : AuthEntity) : ProfileEntity => {
+    
+    // returns the profile of the response
     const profile : ProfileEntity  = {
       username : data.user.username,
       avatar: data.user.avatar,
@@ -118,59 +68,70 @@ export default function LoginWith42Button({ onSuccess, onFailure }: LoginWith42B
     return (profile)
   }
 
+  // on success, set the session token and the self, and redirects to /home
+  const onSuccess = (data : dataResponse) => {
+    setSessionToken(data.token);
+    setSelf(data.user);
+    setPageState(PageState.Home);
+  };
+
+  // here is the useEffect to handle if theres an auth code, handles the call the backend with the authcode and socket id, 
+  // and gets the response as an auth entity, containinh a user and a session token
+  // if its the first connection, handles the change username modal and set the username in the db
+  // if 2fa is enabled, request the 2fa validation before completion
+
   useEffect(() => {
     // Handle the authorization code and exchange it for an access token
     const handleAuthorizationCode = async () => {
       const searchParams = new URLSearchParams(window.location.search);
       const authorizationCode = searchParams.get("code");
       if (!authorizationCode) {
-        onFailure(new Error("Authorization code not found"));
+        new Error("Authorization code not found");
         return;
       }
 
       try {
-        console.log("Before Trying to get token");
         const socketId = socket.id;
         const url = `http://localhost:3000/auth/token?code=${authorizationCode}&socketId=${socketId}`;
-        const response = await fetch(url, {
+
+        const data = await fetch(url, {
           method: "GET",
           headers: {
             "Content-Type": "application/json"
           }
         });
-        console.log("Response from 42 auth:", response);
 
-        if (!response.ok) {
-          const error = await response.json();
-          onFailure(new Error(error.error_description));
+        if (!data.ok) {
+          const error = await data.json();
+          new Error(error);
           return;
         }
 
-        const data  = await response.json();
-        if (data.user.firstConnection)
+        const client  = await data.json();
+        if (client.user.firstConnection)
           setShowChooseUsernameModal(true);
+
         else
           setFullscreen(false);
-      //  else if (enable2fa)
-        // VerifyQRCode
 
-        const dataRes  = {
-          user: populateProfile(data),
-          token: data.access_token
+        // if (client.user.enable2fa)
+        //     VerifyQRCode
+
+        const userProfile = {
+          user: populateProfile(client),
+          token: client.access_token
         }
-        onSuccess(dataRes);
+        onSuccess(userProfile);
 
       } catch (error) {
-        onFailure(error);
+       new Error(error);
       }
     };
-
     handleAuthorizationCode();
-  }, [onSuccess, onFailure]);
+  }, [onSuccess]);
 
   const handleLoginClick = () => {
     setIsLoading(true);
-
     // Redirect the user to the 42 OAuth authorization endpoint
     const authorizationUrl = `https://api.intra.42.fr/oauth/authorize?client_id=${CLIENT_ID}&redirect_uri=${REDIRECT_URI}&response_type=code`;
     window.location.href = authorizationUrl;

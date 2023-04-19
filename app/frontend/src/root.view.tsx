@@ -1,5 +1,5 @@
 /** Libraries */
-import { useCallback, useEffect } from "react";
+import { useEffect } from "react";
 import { Box, Container } from "@mui/material";
 
 /** Providers */
@@ -14,11 +14,8 @@ import ProfileView from "./profile/profile.view";
 import { HelmetView } from "./components/Helmet";
 import SettingsView from "./components/settings/settings.view";
 import LoginWith42Button from "./components/Login42";
-
-import { ConfirmationModal } from "./components/ConfirmationModal";
 import { ChooseUsernameModal } from "./components/ChooseUsernameModal";
 import GameWindow from "./game/game.view";
-import VerifyQRCode from "./components/QrCodeElement";
 import { ProfileEntity } from "kingpong-lib";
 
 /**
@@ -27,43 +24,16 @@ import { ProfileEntity } from "kingpong-lib";
  * @returns {JSX.Element} - Root view content
  */
 
-export interface dataResponse {
-  user: ProfileEntity,
-  token: string,
-}
-
 function RootViewContent(): JSX.Element {
-  const { pageState, setPageState, history, self, setSelf, setSessionToken, setFullscreen, setShowChooseUsernameModal } = useRootViewModelContext();
 
-  const handleLoginSuccess = (data : dataResponse) => {
-    setSessionToken(data.token);
-
-    console.log(data);
-
-    setSelf(data.user);
-    setPageState(PageState.Home);
-    history.push("/"); 
-    // setError(null);
-  };
-
-  const handleLoginFailure = (error: Error) => {
-    //setAccessToken(null);
-    // setError(error);
-  };
+  const { pageState } = useRootViewModelContext();
 
   switch (pageState) {
     case PageState.Auth: {
-      return (
-        <LoginWith42Button
-          onSuccess={handleLoginSuccess}
-          onFailure={handleLoginFailure}
-        />
-        )
+      return ( <LoginWith42Button/> )
     }
     case PageState.Home: {
-      return (
-        <></>
-      );
+      return ( <></> );
     }
     case PageState.Game: {
       return <GameWindow />;
@@ -75,7 +45,7 @@ function RootViewContent(): JSX.Element {
       return <ProfileView />;
     }
     default: {
-      return <div></div>;
+      return <></>;
     }
   }
 }
@@ -93,19 +63,11 @@ export function RootView(): JSX.Element {
     /* Username */
     showChooseUsernameModal,
     setShowChooseUsernameModal,
-    handlePickUsername,
-    /* Confirmation modal */
-    showConfirmationModal,
-    setShowConfirmationModal,
-    /* Confirmation modal data */
-    confirmationMessage,
-    setConfirmationMessage,
-    self
-  } = useRootViewModelContext();
+} = useRootViewModelContext();
+
 
   const handleKeyDown = (event: KeyboardEvent) => {
     if (event.key === "Escape" && fullscreen) {
-      console.log(`it worked! esc was pressed and fullscreen is ${fullscreen}`);
       setFullscreen(false);
     }
   };
@@ -119,17 +81,6 @@ export function RootView(): JSX.Element {
       window.removeEventListener("keydown", handleKeyDown);
     };
   }, [fullscreen]);
-
-  const onConfirmation = useCallback(
-    (confirmed: boolean) => {
-      console.log(`Username confirmed?: ${confirmed ? "Yes" : "No"}`);
-      setShowConfirmationModal(false);
-      if (!confirmed) return;
-      setConfirmationMessage("");
-      setShowChooseUsernameModal(confirmed ? false : true);
-    },
-    [showConfirmationModal]
-  );
 
   return (
     <>
@@ -167,16 +118,8 @@ export function RootView(): JSX.Element {
           )}
         </Box>
       </Container>
-      <ConfirmationModal
-        showModal={showConfirmationModal}
-        message={confirmationMessage}
-        closeModal={() => setShowConfirmationModal(false)}
-        onConfirmation={onConfirmation}
-      />
       <ChooseUsernameModal
         showModal={showChooseUsernameModal}
-        defaultUsername={self?.username}
-        pickUsername={handlePickUsername}
       />
     </>
   );

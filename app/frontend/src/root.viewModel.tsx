@@ -13,7 +13,6 @@ import { useEffect } from "react";
  * @extends {RootModelType}
  */
 export interface RootViewModelType extends RootModelType {
-  handlePickUsername: (username: string) => void;
   getSessionToken: () => void;
   history: BrowserHistory;
 }
@@ -26,52 +25,16 @@ export interface RootViewModelType extends RootModelType {
  */
 export const RootViewModelProvider = ({ children }) => {
   const rootModel = useRootModel();
-
-  const handlePickUsername = async (username: string): Promise<boolean> => {
-    if (!username || username.length === 0) {
-      return;
-    }
-
-    console.log("Picking username: ", username);
-    
-
-    return new Promise<boolean>((resolve) => {
-      socket.emit("pickUsername", username, (err: DevError | null) => {
-        if (handleSocketErrorResponse(err)) {
-          const error = `RoomList: Error picking username: ${
-            (err as DevError).error
-          }`;
-          alert(error);
-          console.error(error);
-        }
-        console.log("Username picked successfully");
-        // FIXME: move these calls back up inside the socket callback once "pickUsername" is implemented in the backend
-        rootModel.self.username = username;
-        rootModel.setConfirmationMessage(
-          `Are you sure you want to pick the username ${username}?
-          This action cannot be reverted`
-        );
-        rootModel.setShowConfirmationModal(true);
-      });
-  
-    })
-  };
-
-  const { pageState, setPageState, setFullscreen } = useRootModel();
+  const { pageState, setPageState, setFullscreen, sessionToken } = useRootModel();
+  const history = createBrowserHistory();
 
   /**
    * Redirect to 42Auth
    */
   const getSessionToken = () => {
-    console.log("get session token");
+    console.log("get session token = ", sessionToken);
   };
 
-  /**
-   * Navigate to a new page
-   * @param pageState The new page state
-   */
-
-  const history = createBrowserHistory();
 
   /*
    *   This useEffect() is there to handle the back and forward button
@@ -80,7 +43,6 @@ export const RootViewModelProvider = ({ children }) => {
   useEffect(() => {
     const unlisten = history.listen(
       ({ location: location, action: action }) => {
-        console.log(action, location);
         switch (location.pathname) {
           case "/auth":
             setFullscreen(false);
@@ -154,7 +116,6 @@ export const RootViewModelProvider = ({ children }) => {
       value={{
         ...rootModel,
         getSessionToken,
-        handlePickUsername,
         history
       }}
     >
