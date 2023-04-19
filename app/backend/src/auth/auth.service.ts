@@ -8,6 +8,7 @@ import * as qrcode from 'qrcode';
 import axios from "axios";
 import { Token, TokenStorageService } from "../token-storage.service";
 import { UserStatus } from "@prisma/client";
+import { boolean } from "joi";
 
 const logger = new Logger("AuthService");
 
@@ -49,7 +50,7 @@ export class AuthService {
     user.firstConnection = false;
 
     //HARDCODED FOR TRUE: NEEDS TO BE REMOVED
-    user.enable2fa = true;
+    //user.enable2fa = true;
     
     return user;
   }
@@ -90,9 +91,11 @@ export class AuthService {
     return { validated: false };
   }
 
-  async update2FA() : Promise<boolean> {
-
-    return true;
+  async update2FA(username : string) {
+    console.log("UPDATE 2FA FOR : ", username)
+    
+    const enable : boolean = await this.prisma.update2FA(username) 
+    return {enable2fa : enable };
   }
 
   async getAuht42(clientId: string, authorization_code: string) : Promise<AuthEntity> {

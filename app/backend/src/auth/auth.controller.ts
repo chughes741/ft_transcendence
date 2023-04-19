@@ -109,7 +109,6 @@ export class AuthController {
     @Query("current") currentName: string,
     @Query("newname") newName: string
   ) {
-    console.log("CHANGE USERNAME", currentName, " to " , newName);
     return await this.authService.changeName(currentName, newName);
   }
 
@@ -119,11 +118,21 @@ export class AuthController {
     @Query("code") code: string
   ) 
   {
-    console.log("INSIDE QRCODE  VERIFYFUNCTION", secret, code);
     return await this.authService.verifyQrCode(secret, code);
   }
 
-
+  @Get("update2FA")
+  async update2FA(
+    @Query("username") userName: string,
+  ) {
+    try {
+      console.log("INSIDE UPDATE2FA")
+      return await this.authService.update2FA(userName)
+    }
+    catch(error){
+      return error
+    }
+  }
 
   @Get("authorisationURL")
   async generateAuth42Url() {

@@ -897,9 +897,7 @@ export class PrismaService extends PrismaClient {
         username: userName
       },
     })
-    if (!user)
-      return false
-
+    console.log("received ?")
     if (user.enable2fa === true) {
       await this.user.update({
         where: {
@@ -909,6 +907,7 @@ export class PrismaService extends PrismaClient {
           enable2fa: false
         }
       });
+      return false;
     }
     else 
     {
