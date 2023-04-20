@@ -10,7 +10,8 @@ import {
   UpdateChatMemberRequest,
   ChatMemberEntity,
   KickMemberRequest,
-  RoomMemberEntity
+  RoomMemberEntity,
+  BlockUserRequest
 } from "../chat.types";
 import { useChatContext } from "../chat.context";
 import { useProfileViewModelContext } from "../../profile/profile.viewModel";
@@ -39,6 +40,8 @@ export default function UserListView({ userList, handleClick }: UserListProps) {
     setContextMenuUsersData,
     setContextMenuUsersVisible
   } = useChatContext();
+
+  const currentRoomStatus = useRoomManager().rooms[currentRoomName]?.status;
 
   const { sendDirectMessage } = useChatContext();
   const { updateRooms } = useRoomManager();
@@ -218,6 +221,25 @@ export default function UserListView({ userList, handleClick }: UserListProps) {
     setContextMenuUsersVisible(false);
   };
 
+  const onBlockUser = () => {
+    console.log("Block User");
+    const req: BlockUserRequest = {
+      blocker: self.username,
+      blockee: contextMenuUsersData.username
+    };
+    socket.emit("blockUser", req, (res: DevError | any) => {
+      if (handleSocketErrorResponse(res)) return console.error(res);
+      console.log(`successfully blocked user ${res}`);
+      updateRooms((newRooms) => {
+        if (!newRooms[currentRoomName].users[res]) return newRooms;
+        delete newRooms[currentRoomName].users[res];
+        return newRooms;
+      });
+    });
+
+    setContextMenuUsersVisible(false);
+  };
+
   const onPromoteToAdmin = () => {
     sendUpdateRequest(0, ChatMemberStatus.OK, ChatMemberRank.ADMIN);
     setContextMenuUsersVisible(false);
@@ -317,9 +339,11 @@ export default function UserListView({ userList, handleClick }: UserListProps) {
         onSendDirectMessage={onSendDirectMessage}
         onAddFriend={onAddFriend}
         onKickUser={onKickUser}
+        onBlockUser={onBlockUser}
         sendUpdateRequest={sendUpdateRequest}
         onPromoteToAdmin={onPromoteToAdmin}
         onDemoteToUser={onDemoteToUser}
+        currentRoomStatus={currentRoomStatus}
       />
     </>
   );

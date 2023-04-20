@@ -7,14 +7,17 @@ import {
 } from "@nestjs/websockets";
 import { Server, Socket } from "socket.io";
 import { GameService } from "./game.service";
-
 import { Logger } from "@nestjs/common";
-import { JoinGameInviteDto, JoinGameQueueDto } from "./dto/game.dto";
-import { GameStartEntity } from "./entities/game.entity";
-import { ClientGameStateUpdate } from "./game.types";
+import {
+  ClientGameStateUpdateRequest,
+  JoinGameInviteRequest,
+  LeaveGameQueueRequest,
+  LobbyCreatedEvent,
+  PlayerReadyRequest
+} from "kingpong-lib";
 import { GameModuleData } from "./game.data";
+import { JoinGameQueueRequest, GameEvents } from "kingpong-lib";
 
-import * as GameTypes from "./game.types";
 /** Create logger for module */
 const logger = new Logger("gameGateway");
 
@@ -36,58 +39,76 @@ export class GameGateway {
   @WebSocketServer()
   server: Server;
 
+  /****************************************************************************/
+  /**                              Queue & Invite                            **/
+  /****************************************************************************/
+
   /**
-   * Gateway for a client sent game invite
+   * Handle direct game invite event
    * @param {JoinGameInviteDto} joinGameInviteDto
-   * @returns {}
+   * @returns {Promise<LobbyCreatedEvent>}
    * @listens sendGameInvite
    */
-  @SubscribeMessage("sendGameInvite")
-  async sendGameInvite(@MessageBody() joinGameInviteDto: JoinGameInviteDto) {
-    this.gameService.sendGameInvite();
+  @SubscribeMessage(GameEvents.SendGameInvite)
+  async sendGameInvite(
+    @MessageBody() payload: JoinGameInviteRequest
+  ): Promise<LobbyCreatedEvent> {
+    return this.gameService.sendGameInvite(payload);
   }
 
   /**
-   * Join matchmaking queue for new game
-   * @param {JoinGameQueueDto} joinGameQueueDto
-   * @returns {}
-   * @listens joinGameQueue
+   * Handle the join queue event
+   * @param {JoinGameQueueRequest} payload
+   * @param {Socket} client
+   * @returns {Promise<boolean>}
+   * @listens GameEvents.JoinGameQueue
    */
-  @SubscribeMessage("joinGameQueue")
+  @SubscribeMessage(GameEvents.JoinGameQueue)
   async joinGameQueue(
     @ConnectedSocket() client: Socket,
-    @MessageBody() joinGameQueueDto: JoinGameQueueDto
-  ) {
-    logger.log("Socket id: " + client.id);
-    this.gameService.joinGameQueue(client, joinGameQueueDto);
+    @MessageBody() payload: JoinGameQueueRequest
+  ): Promise<boolean> {
+    return this.gameService.joinGameQueue(client, payload);
   }
+
+  /**
+   * Handle the leave queue event
+   * @param {Socket} client
+   * @param {LeaveGameQueueRequest} payload
+   * @listens GameEvents.LeaveGameQueue
+   */
+  @SubscribeMessage(GameEvents.LeaveGameQueue)
+  async leaveGameQueue(
+    @ConnectedSocket() client: Socket,
+    @MessageBody() payload: LeaveGameQueueRequest
+  ) {
+    this.gameService.leaveGameQueue(payload);
+  }
+
+  /****************************************************************************/
+  /**                                    Game                                **/
+  /****************************************************************************/
 
   /**
    * Handle playerReady event and start game when both players ready
-   * @param {PlayerReadyDto} playerReadyDto
-   * @returns {Promise<GameStartEntity>}
-   * @listens playerReady
-   *
-   * @todo This needs to identify which player the ready alert came from
-   * @todo return GameStartEntity
+   * @param {PlayerReadyRequest} payload
+   * @returns {Promise<boolean>}
+   * @listens GameEvents.PlayerReady
    */
-  @SubscribeMessage("playerReady")
-  async playerReady(@MessageBody() payload: GameTypes.PlayerReadyDto) {
-    //Retrieve the client id of the user who is ready
-    console.log("Payload in playerReady");
-    console.log(payload.lobby_id);
-    console.log(payload);
-    //Update ready status of players
-    this.gameModuleData.updatePlayerReady(payload);
-    //Attempt to start game
-    this.gameService.gameStart(payload.lobby_id);
+  @SubscribeMessage(GameEvents.PlayerReady)
+  async playerReady(
+    @MessageBody() payload: PlayerReadyRequest
+  ): Promise<boolean> {
+    return this.gameService.playerReady(payload);
   }
 
   /**
-   * Handle paddle position updates from players
+   * Handle game state updates from clients
+   * @param {ClientGameStateUpdateRequest} payload
+   * @listens GameEvents.ClientGameStateUpdate
    */
-  @SubscribeMessage("clientGameStateUpdate")
-  async clientUpdate(@MessageBody() payload: ClientGameStateUpdate) {
+  @SubscribeMessage(GameEvents.ClientGameStateUpdate)
+  async clientUpdate(@MessageBody() payload: ClientGameStateUpdateRequest) {
     this.gameService.clientUpdate(payload);
     return true;
   }

@@ -3,9 +3,11 @@ import { useRootViewModelContext } from "src/root.context";
 import {
   ChatMemberRank,
   ChatMemberEntity,
-  ChatMemberStatus
+  ChatMemberStatus,
+  ChatRoomStatus
 } from "../chat.types";
 import { useEffect, useState } from "react";
+import { useProfileViewModelContext } from "../../profile/profile.viewModel";
 
 interface UserContextMenuProps {
   ownRank: ChatMemberRank;
@@ -18,6 +20,7 @@ interface UserContextMenuProps {
   onSendDirectMessage: () => void;
   onAddFriend: () => void;
   onKickUser: () => void;
+  onBlockUser: () => void;
   sendUpdateRequest: (
     duration: number,
     newStatus: ChatMemberStatus,
@@ -25,6 +28,7 @@ interface UserContextMenuProps {
   ) => void;
   onPromoteToAdmin: () => void;
   onDemoteToUser: () => void;
+  currentRoomStatus: ChatRoomStatus;
 }
 
 export interface CMenuOption {
@@ -55,12 +59,20 @@ const UserContextMenu: React.FC<UserContextMenuProps> = ({
   onSendDirectMessage,
   onAddFriend,
   onKickUser,
+  onBlockUser,
   sendUpdateRequest,
   onPromoteToAdmin,
-  onDemoteToUser
+  onDemoteToUser,
+  currentRoomStatus
 }) => {
   if (!contextMenuData) return null;
   const { self } = useRootViewModelContext();
+
+  const { friends } = useProfileViewModelContext();
+
+  const isFriend = friends?.some(
+    (friend) => friend.username === contextMenuData.username
+  );
 
   const commonOptions = [
     {
@@ -72,17 +84,29 @@ const UserContextMenu: React.FC<UserContextMenuProps> = ({
   if (contextMenuData.username !== self.username) {
     othersOptions = [
       {
-        label: "Invite to Game",
+        label: "Invite to game",
         onClick: onInviteToGame
       },
       {
-        label: "Send Direct Message",
-        onClick: onSendDirectMessage
+        label: "Block User",
+        onClick: onBlockUser
       },
-      {
-        label: "Add friend",
-        onClick: onAddFriend
-      }
+      ...(currentRoomStatus !== ChatRoomStatus.DIALOGUE
+        ? [
+            {
+              label: "Send direct message",
+              onClick: onSendDirectMessage
+            }
+          ]
+        : []),
+      ...(!isFriend
+        ? [
+            {
+              label: "Add friend",
+              onClick: onSendDirectMessage
+            }
+          ]
+        : [])
     ];
   }
 
@@ -91,7 +115,7 @@ const UserContextMenu: React.FC<UserContextMenuProps> = ({
   const muteOption =
     contextMenuData.chatMemberStatus === ChatMemberStatus.MUTED
       ? {
-          label: "Unmute User",
+          label: "Unmute user",
           onClick: () => {
             console.log(`Unmuting user ${contextMenuData.username}...`);
             const status = ChatMemberStatus.OK;
@@ -101,7 +125,7 @@ const UserContextMenu: React.FC<UserContextMenuProps> = ({
           }
         }
       : {
-          label: "Mute User",
+          label: "Mute user",
           submenu: JSON.parse(JSON.stringify(muteDurationOptions)).map(
             (option) => ({
               label: option.label,
@@ -118,7 +142,7 @@ const UserContextMenu: React.FC<UserContextMenuProps> = ({
   const banOption =
     contextMenuData.chatMemberStatus === ChatMemberStatus.BANNED
       ? {
-          label: "Unban User",
+          label: "Unban user",
           onClick: () => {
             console.log(`Unbanning user ${contextMenuData.username}...`);
             const status = ChatMemberStatus.OK;
@@ -129,7 +153,7 @@ const UserContextMenu: React.FC<UserContextMenuProps> = ({
         }
       : contextMenuData.chatMemberStatus === ChatMemberStatus.MUTED
       ? {
-          label: "Ban User for duration of Mute",
+          label: "Ban user for duration of mute",
           onClick: () => {
             console.log(
               `Banning user ${contextMenuData.username} for the duration of mute...`
@@ -143,15 +167,7 @@ const UserContextMenu: React.FC<UserContextMenuProps> = ({
 
   if (ownRank === ChatMemberRank.OWNER || ownRank === ChatMemberRank.ADMIN) {
     if (contextMenuData.rank !== ChatMemberRank.OWNER) {
-      adminOptions = [
-        { label: "---" },
-        {
-          label: "Kick User",
-          onClick: onKickUser
-        },
-        muteOption,
-        banOption
-      ];
+      adminOptions = [{ label: "---" }, muteOption, banOption];
     }
   }
 

@@ -1,11 +1,20 @@
 import React, { useEffect, createContext, useContext } from "react";
 import { GameModelType, useGameModel } from "./game.model";
-import { GameContext } from "./game.context";
 import * as GameTypes from "src/game/game.types";
 import { socket } from "src/contexts/WebSocket.context";
+import {
+  GameEndedEvent,
+  GameEvents,
+  GameStartedEvent,
+  LobbyCreatedEvent,
+  ServerGameStateUpdateEvent,
+  GameState
+} from "kingpong-lib";
+import { useRootViewModelContext } from "src/root.context";
 
 export interface GameViewModelType extends GameModelType {
-  setPlayerReadyState: (state: boolean) => Promise<boolean>;
+  setPlayerReadyState: () => Promise<void>;
+  joinGameQueue: () => Promise<void>;
 }
 
 export const GameViewModelContext: React.Context<GameViewModelType | null> =
@@ -15,90 +24,163 @@ export const GameViewModelProvider = ({ children }) => {
   const gameModel = useGameModel();
 
   const {
+    lobby,
+    setLobby,
+    lobbyId,
+    matchId,
+    setMatchId,
+    setLobbyId,
+    playerSide,
+    setPlayerSide,
     playerReady,
     setPlayerReady,
-    setPlayerSide,
+    opponentUsername,
+    setOpponentUsername,
     displayQueue,
+    setDisplayQueue,
+    inQueue,
+    setInQueue,
+    displayLobby,
+    setDisplayLobby,
+    displayReady,
+    setDisplayReady,
     displayGame,
     setDisplayGame,
-    lobby,
-    setLobby
+    displayScore,
+    setDisplayScore,
+    scoreLeft,
+    setScoreLeft,
+    scoreRight,
+    setScoreRight, 
+    gameState,
+    setGameState
   } = gameModel;
+
+  const { self } = useRootViewModelContext();
 
   /*******************/
   /*  Socket Calls   */
   /*******************/
 
   /**
+   * @event "lobbyCreated"
+   * @dependency displayQueue
+   */
+  useEffect(() => {
+    if (!displayQueue) return;
+
+    socket.on(GameEvents.LobbyCreated, (payload: LobbyCreatedEvent) => {
+      console.log("lobbyCreated event received");
+
+      setLobby(new GameTypes.Lobby());
+      setLobbyId(payload.lobby_id);
+      setPlayerSide(payload.player_side);
+      setOpponentUsername(payload.opponent_username);
+
+      setInQueue(false);
+      setDisplayQueue(false);
+      setDisplayLobby(true);
+    });
+
+    return () => {
+      socket.off(GameEvents.LobbyCreated);
+    };
+  }, [displayQueue]);
+
+  /**
    * @event "gameStarted"
    * @dependency playerReady
    */
   useEffect(() => {
-    socket.on("gameStarted", (payload: GameTypes.GameStartedDto) => {
-      // TODO: implement rest of the lobby logic
+    if (!playerReady) return;
+
+    socket.on(GameEvents.GameStarted, (payload: GameStartedEvent) => {
+      console.log("gameStarted event received. Payload:");
+      console.log(payload);
+
       setPlayerSide(payload.player_side);
       setDisplayGame(true);
     });
 
     return () => {
-      socket.off("gameStarted");
+      socket.off(GameEvents.LobbyCreated);
     };
   }, [playerReady]);
 
   /**
-   * @event "lobbyCreated"
-   * @dependency displayQueue
+   * @event "gameEnded"
+   * @dependency displayGame
    */
   useEffect(() => {
-    socket.on("lobbyCreated", (payload: GameTypes.LobbyCreatedDto) => {
-      console.log("lobbyCreated event received. Payload:");
+    if (!displayGame) return;
+
+    socket.on(GameEvents.GameEnded, (payload: GameEndedEvent) => {
+      console.log("gameEnded event received. Payload:");
       console.log(payload);
 
-      setLobby(new GameTypes.Lobby(payload.lobby_id, payload.player_side));
-      // Set the lobby display state to true
-      gameModel.setDisplayLobby(true);
+      setDisplayGame(false);
+      setDisplayLobby(true);
     });
 
     return () => {
-      socket.off("lobbyCreated");
+      socket.off(GameEvents.GameEnded);
     };
-  }, [displayQueue]);
+  }, [displayGame]);
 
   /**
    * Manage ready toggle
-   * @param state
-   * @returns
+   *
+   * @async
    */
-  const setPlayerReadyState = async (state: boolean) => {
-    const payload: GameTypes.PlayerReadyDto = new GameTypes.PlayerReadyDto(
-      lobby.lobby_id,
-      state
-    );
+  const setPlayerReadyState = async () => {
+    if (playerReady) return;
     socket.emit(
-      "playerReady",
-      payload,
-      (response: boolean | { error: string }) => {
-        if (typeof response === "object") {
-          alert(response.error);
-        } else {
-          setPlayerReady(true);
-        }
+      GameEvents.PlayerReady,
+      {
+        match_id: matchId,
+        lobby_id: lobbyId,
+        username: self.username,
+        ready: true
+      },
+      (response: boolean) => {
+        setPlayerReady(response);
       }
     );
-    return true;
   };
 
+  /**
+   * Manage joining the queue
+   * 
+   * @async
+   */
+  const joinGameQueue = async () => {
+    console.log("Joining queue");
+
+    socket.emit(
+      GameEvents.JoinGameQueue,
+      {
+        username: self.username,
+        join_time: Date.now()
+      },
+      () => {
+        setInQueue(true);
+      }
+    );
+  };
+
+
   return (
-    <GameContext.Provider
+    <GameViewModelContext.Provider
       value={{
         ...gameModel,
-        setPlayerReadyState
+        setPlayerReadyState,
+        joinGameQueue
 
         //...
       }}
     >
       {children}
-    </GameContext.Provider>
+    </GameViewModelContext.Provider>
   );
 };
 

@@ -2,38 +2,28 @@ import Avatar from "@mui/material/Avatar";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import { useContext } from "react";
-import { GameContext } from "../game.context";
+import { useGameViewModelContext } from "../game.viewModel";
+import { useRootViewModelContext } from "src/root.context";
+import { FaBox } from "react-icons/fa";
 
-export default function playerDetail(side: string) {
-  const { lobby, setLobby } = useContext(GameContext);
-
+/**
+ * PlayerDetail component
+ *
+ * @param {string} side
+ * @returns {JSX.Element}
+ */
+export default function PlayerDetail({ side }) {
+  const { playerSide, opponentUsername } = useGameViewModelContext();
+  const { self } = useRootViewModelContext();
   return (
     <>
-      {side === lobby.player_side ? (
-        <Box>
-          <Box>
-            <Avatar
-              alt={lobby.player_name}
-              src={lobby.player_avatar}
-            />
-          </Box>
-
-          <Box>
-            <Typography>{lobby.player_name}</Typography>
-          </Box>
+      {side === playerSide ? (
+        <Box sx={{ display: "flex", alignContent: "space-around"}}>
+          <Typography>{self.username}</Typography>
         </Box>
       ) : (
-        <Box>
-          <Box>
-            <Avatar
-              alt={lobby.opponent_name}
-              src={lobby.opponent_avatar}
-            />
-          </Box>
-
-          <Box>
-            <Typography>{lobby.opponent_name}</Typography>
-          </Box>
+        <Box sx={{ display: "flex", alignContent: "space-around"}}>
+          <Typography>{opponentUsername}</Typography>
         </Box>
       )}
     </>
