@@ -154,6 +154,7 @@ export class AuthService {
     return authEntity;
   }
 
+  
   async TokenIsVerified(
     clientId: string,
     clientToken: string
@@ -169,6 +170,8 @@ export class AuthService {
     const expiresIn = token.expires_in;
     const createdTime = token.created_at;
     const totalValidTime = expiresIn + createdTime;
+    if (totalValidTime < currentTime)
+      this.tokenStorage.removeToken(clientId);
     return totalValidTime > currentTime;
   }
 

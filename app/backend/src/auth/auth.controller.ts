@@ -9,7 +9,7 @@ import {
   UseFilters,
   Logger,
   Headers,
-  UnauthorizedException,
+  UseGuards,
 } from "@nestjs/common";
 import { ApiTags } from "@nestjs/swagger";
 import { SubscribeMessage } from "@nestjs/websockets";
@@ -20,6 +20,8 @@ import { AuthRequest, UserEntity } from "./dto";
 import { Token } from "src/token-storage.service";
 import { debugPort } from "process";
 import { UserStatus } from "@prisma/client";
+import { AuthGuard } from "@nestjs/passport";
+import TokenIsVerified from "src/token-verify";
 
 
 const logger = new Logger("AuthController");
@@ -123,22 +125,16 @@ export class AuthController {
     return await this.authService.verifyQrCode(secret, code);
   }
 
+  // 
+
   @Get("update2FA")
+  @UseGuards(AuthGuard(), TokenIsVerified)
   async update2FA(
     @Query("username") userName: string,
     @Headers("Socket-id") socketId: string,
     @Headers('Authorization') authHeader: string
   ) {
-    try {
-      console.log("INSIDE UPDATE2FA", socketId, authHeader)
-    //  if (this.authService.TokenIsVerified(socketId, authHeader))
-     //   throw new UnauthorizedException('Token expired');
-
       return await this.authService.update2FA(userName)
-    }
-    catch(error){
-      return error
-    }
   }
 
   @Get("authorisationURL")
