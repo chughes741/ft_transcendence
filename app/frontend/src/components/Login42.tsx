@@ -96,6 +96,7 @@ export default function LoginWith42Button() {
 
       try {
         const socketId = socket.id;
+        console.log("SOCKET ID", socketId);
         const url = `http://localhost:3000/auth/token?code=${authorizationCode}&socketId=${socketId}`;
 
         const data = await fetch(url, {

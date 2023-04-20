@@ -4,9 +4,16 @@ import { SchedulerRegistry } from "@nestjs/schedule";
 import { GameConfig, PaddleConfig, BallConfig } from "./config/game.config";
 import { WebSocketServer, WebSocketGateway } from "@nestjs/websockets";
 import { Server } from "socket.io";
-import * as vec2 from "gl-vec2";
-import { GameData, BallData } from "./game.types";
-import { degToRad } from "./game.utils";
+import { Vec2 } from "./vector";
+import { GameData, BallData, gameLobby, PaddleData } from "./game.types";
+import { degToRad, checkIntersect } from "./game.utils";
+import {
+  ServerGameStateUpdateEvent,
+  GameEvents,
+  GameState,
+  GameEndedEvent,
+  Ball
+} from "kingpong-lib";
 const logger = new Logger("gameLogic");
 
 @WebSocketGateway({
@@ -21,108 +28,257 @@ export class GameLogic {
   @WebSocketServer()
   public server: Server;
 
-  //Create a new game instance
-  async createGame(gameState: GameData) {
-    //Create new gameData object
-    gameState = this.initNewGame();
-    logger.log("New game object created");
-
-    //Add new interval to scheduler
-    this.addGameUpdateInterval(
-      "gameUpdateInterval",
-      GameConfig.serverUpdateRate
-    );
-  }
-
-  //Calculate game state and send server update
-  async sendServerUpdate(gameState: GameData) {
-    gameState = this.calculateGameState(gameState);
-    this.server.emit("serverUpdate", gameState);
-  }
-
-  //Calculate game state and return gamestate object
-  calculateGameState(gameData: GameData): GameData {
-    //Check if new round
-    if (gameData.is_new_round) {
-      gameData.last_update_time = Date.now();
-      gameData.ball = this.getRandomBallDirection(gameData);
-      gameData.is_new_round = false;
-    }
-    //If not new round, calculate ball position and update timestamp
-    else {
-      gameData.ball = this.updateBall(gameData);
-      gameData.last_update_time = Date.now();
-    }
-    return gameData;
-  }
-
-  //Calculate ball position
-  updateBall(gameData: GameData): BallData {
-    //Save previous ball data
-    const prev: BallData = gameData.ball;
-    const cur: BallData = new BallData();
-
-    //Current ball position is previous ball position + (direction * speed)
-    const time_diff: number = (Date.now() - gameData.last_update_time) / 1000;
-
-    [cur.pos.x, cur.pos.y] = vec2.scaleAndAdd(
-      [cur.pos.x, cur.pos.y],
-      [prev.pos.x, prev.pos.y],
-      [prev.direction.x, prev.direction.y],
-      prev.speed * time_diff
-    );
-    cur.direction = prev.direction;
-    cur.speed = prev.speed;
-
-    //Check for collision with each wall
-    //hacky temporary solve
-    if (cur.pos.x >= GameConfig.playAreaWidth / 2 - 0.1) {
-      cur.direction.x = -cur.direction.x;
-    } else if (cur.pos.x <= -(GameConfig.playAreaWidth / 2) + 0.1) {
-      cur.direction.x = -cur.direction.x;
-    } else if (cur.pos.y >= GameConfig.playAreaHeight / 2 - 0.1) {
-      cur.direction.y = -cur.direction.y;
-    } else if (cur.pos.y <= -(GameConfig.playAreaHeight / 2) + 0.1) {
-      cur.direction.y = -cur.direction.y;
-    }
-
-    return cur;
-  }
+  /*************************************************************************************/
+  /**                                   Game Setup                                    **/
+  /*************************************************************************************/
 
   //Initialize new game
-  initNewGame(): GameData {
-    const gameData: GameData = new GameData();
+  initNewGame(players: string[]): GameData {
+    const gamestate: GameData = new GameData();
 
     //Setup general game properties
-    gameData.is_new_round = true;
-    gameData.bounds.width = GameConfig.playAreaWidth;
-    gameData.bounds.height = GameConfig.playAreaHeight;
-    // gameData.player_left_ready = false;
-    // gameData.player_right_ready = false;
-    gameData.players_ready = 0;
+    gamestate.is_new_round = true;
+    gamestate.bounds.width = GameConfig.playAreaWidth;
+    gamestate.bounds.height = GameConfig.playAreaHeight;
+    gamestate.players_ready = 0;
+    gamestate.players = [];
+    gamestate.players[0] = players[0];
+    gamestate.players[1] = players[1];
+    gamestate.score = [0, 0];
 
     //Randomize serve side for initial serve
-    if (Math.round(Math.random()) === 0) gameData.last_serve_side = "left";
-    else gameData.last_serve_side = "right";
+    if (Math.round(Math.random()) === 0) gamestate.last_serve_side = "left";
+    else gamestate.last_serve_side = "right";
 
     //Setup initial paddle state
-    gameData.paddle_left.pos.y = 0;
-    gameData.paddle_left.pos.x = -(
+    gamestate.paddle_left.pos.y = 0;
+    gamestate.paddle_left.pos.x = -(
       GameConfig.playAreaWidth / 2 -
       PaddleConfig.borderOffset
     );
-    gameData.paddle_right.pos.y = 0;
-    gameData.paddle_right.pos.x =
+    gamestate.paddle_right.pos.y = 0;
+    gamestate.paddle_right.pos.x =
       GameConfig.playAreaWidth / 2 - PaddleConfig.borderOffset;
 
-    return gameData;
+    return gamestate;
+  }
+
+  //Create a new game instance
+  async gameStart(lobby: gameLobby) {
+    //Add new interval to scheduler
+    try {
+      this.schedulerRegistry.getInterval("gameUpdateInterval" + lobby.lobby_id);
+      logger.log("Error creating gameUpdateInterval");
+    } catch {
+      this.addGameUpdateInterval(
+        lobby,
+        "gameUpdateInterval" + lobby.lobby_id,
+        GameConfig.serverUpdateRate
+      );
+    }
+  }
+
+  /*************************************************************************************/
+  /**                                 Gameplay Logic                                  **/
+  /*************************************************************************************/
+
+  //Calculate game state and send server update
+  async sendServerUpdate(lobby: gameLobby) {
+    lobby.gamestate = this.calculateGameState(lobby.gamestate);
+
+    //Build payload
+    const gamestate: GameState = {
+      ball_x: lobby.gamestate.ball.pos.x,
+      ball_y: lobby.gamestate.ball.pos.y,
+      paddle_left_y: lobby.gamestate.paddle_left.pos.y,
+      paddle_right_y: lobby.gamestate.paddle_right.pos.y,
+      score_left: lobby.gamestate.score[0],
+      score_right: lobby.gamestate.score[1]
+    };
+
+    if (
+      lobby.gamestate.score[0] >= GameConfig.maxScore ||
+      lobby.gamestate.score[1] >= GameConfig.maxScore
+    ) {
+      this.server.to(lobby.lobby_id).emit(GameEvents.GameEnded, {
+        match_id: lobby.lobby_id,
+        lobby_id: lobby.lobby_id,
+        game_state: gamestate
+      });
+      this.deleteInterval("gameUpdateInterval" + lobby.lobby_id);
+      return;
+    }
+
+    //Send update to lobby websocket room
+    this.server
+      .to(lobby.lobby_id)
+      .emit(GameEvents.ServerGameStateUpdate, gamestate);
+  }
+
+  //Calculate game state and return gamestate object
+  calculateGameState(gamestate: GameData): GameData {
+    //Check if new round
+    if (gamestate.is_new_round) {
+      gamestate.last_update_time = Date.now();
+      gamestate.ball = this.getRandomBallDirection(gamestate);
+      gamestate.is_new_round = false;
+    }
+    //If not new round, calculate ball position and update timestamp
+    else {
+      gamestate.ball = this.updateBall(gamestate);
+      gamestate.last_update_time = Date.now();
+    }
+    return gamestate;
+  }
+
+  //Calculate ball position
+  updateBall(gamestate: GameData): BallData {
+    //Save previous ball data, and create an object for new ball data
+    const prevBall: BallData = gamestate.ball;
+    const curBall: BallData = new BallData();
+
+    curBall.direction = prevBall.direction;
+    curBall.speed = prevBall.speed;
+    //Get a time difference between last update and this update
+    const time_diff: number = (Date.now() - gamestate.last_update_time) / 1000;
+
+    // console.log("padleft: " + gamestate.paddle_left.pos.y);
+    // console.log("padright: " + gamestate.paddle_right.pos.y);
+    /** This floods the terminal */
+    // console.log("score: " + gamestate.score[0] + " | " + gamestate.score[1]);
+    //Find new ball position
+    curBall.pos = Vec2.scaleAndAdd(
+      prevBall.pos,
+      prevBall.direction,
+      prevBall.speed * time_diff
+    );
+
+    //First need to check for paddle collision
+    if (curBall.direction.x > 0) {
+      //Check for collision with right side paddle
+      const intersect: Vec2 = checkIntersect(
+        prevBall.pos,
+        curBall.pos,
+        new Vec2(
+          GameConfig.playAreaWidth / 2 - PaddleConfig.borderOffset,
+          gamestate.paddle_right.pos.y + PaddleConfig.height / 2
+        ),
+        new Vec2(
+          GameConfig.playAreaWidth / 2 - PaddleConfig.borderOffset,
+          gamestate.paddle_right.pos.y - PaddleConfig.height / 2
+        )
+      );
+      if (intersect) {
+        const remainder: Vec2 = Vec2.sub(curBall.pos, intersect);
+        curBall.pos = Vec2.add(intersect, remainder);
+        curBall.direction.x = -curBall.direction.x;
+        curBall.speed = curBall.speed * BallConfig.speedIncreaseInterval;
+        return curBall;
+      }
+    } else if (curBall.direction.x < 0) {
+      //Check for collisions with left side paddle
+      const intersect: Vec2 = checkIntersect(
+        prevBall.pos,
+        curBall.pos,
+        new Vec2(
+          -(GameConfig.playAreaWidth / 2) + PaddleConfig.borderOffset,
+          gamestate.paddle_left.pos.y + PaddleConfig.height / 2
+        ),
+        new Vec2(
+          -(GameConfig.playAreaWidth / 2) + PaddleConfig.borderOffset,
+          gamestate.paddle_left.pos.y - PaddleConfig.height / 2
+        )
+      );
+      if (intersect) {
+        const remainder: Vec2 = Vec2.sub(curBall.pos, intersect);
+        curBall.pos = Vec2.add(intersect, remainder);
+        curBall.direction.x = -curBall.direction.x;
+        curBall.speed = curBall.speed * BallConfig.speedIncreaseInterval;
+        return curBall;
+      }
+    }
+    // Check if new ball position requires collision detection
+    if (curBall.pos.x >= GameConfig.playAreaWidth / 2) {
+      //Check collision between right wall and ball
+      //First get intersection
+      const intersect: Vec2 = checkIntersect(
+        prevBall.pos,
+        curBall.pos,
+        GameConfig.topRight,
+        GameConfig.botRight
+      );
+
+      // If Intersect reset game round and set a point for left player
+      if (intersect) {
+        gamestate.is_new_round = true;
+        gamestate.score[0]++;
+        return curBall;
+      }
+    } else if (curBall.pos.x <= -(GameConfig.playAreaWidth / 2)) {
+      const intersect: Vec2 = checkIntersect(
+        prevBall.pos,
+        curBall.pos,
+        GameConfig.topLeft,
+        GameConfig.botLeft
+      );
+      // If Intersect reset game round and set a point for right player
+      if (intersect) {
+        gamestate.is_new_round = true;
+        gamestate.score[1]++;
+        return curBall;
+      }
+    } else if (curBall.pos.y >= (GameConfig.playAreaHeight / 2))  {
+      const intersect: Vec2 = checkIntersect(
+        prevBall.pos,
+        curBall.pos,
+        GameConfig.topLeft,
+        GameConfig.topRight
+      );
+      if (intersect) {
+        const remainder: Vec2 = Vec2.sub(curBall.pos, intersect);
+        curBall.pos = Vec2.add(intersect, remainder);
+        curBall.direction.y = -curBall.direction.y;
+      }
+    } else if (curBall.pos.y <= -(GameConfig.playAreaHeight / 2)) {
+      const intersect: Vec2 = checkIntersect(
+        prevBall.pos,
+        curBall.pos,
+        GameConfig.botLeft,
+        GameConfig.botRight
+      );
+      if (intersect) {
+        const remainder: Vec2 = Vec2.sub(curBall.pos, intersect);
+        curBall.pos = Vec2.add(intersect, remainder);
+        curBall.direction.y = -curBall.direction.y;
+      }
+    }
+
+    //Janky simple collision
+    // if (curBall.pos.x >= GameConfig.playAreaWidth / 2 - BallConfig.radius) {
+    //   curBall.direction.x = -curBall.direction.x;
+    // } else if (
+    //   curBall.pos.x <= -(GameConfig.playAreaWidth / 2 + BallConfig.radius)
+    // ) {
+    //   curBall.direction.x = -curBall.direction.x;
+    // } else if (
+    //   curBall.pos.y >=
+    //   GameConfig.playAreaHeight / 2 - BallConfig.radius
+    // ) {
+    //   curBall.direction.y = -curBall.direction.y;
+    // } else if (
+    //   curBall.pos.y <= -(GameConfig.playAreaHeight / 2 + BallConfig.radius)
+    // ) {
+    //   curBall.direction.y = -curBall.direction.y;
+    // }
+    //TODO: If collision was with a paddle, increase ball speed!!!
+
+    return curBall;
   }
 
   //Get a new random ball direction and velocity
-  getRandomBallDirection(gameData: GameData): BallData {
+  getRandomBallDirection(gamestate: GameData): BallData {
     const ballData: BallData = new BallData();
-    ballData.pos.x = 0;
-    ballData.pos.y = 0;
+    ballData.pos = new Vec2(0, 0);
     ballData.speed = BallConfig.initialSpeed;
 
     //Angle needs to be centered on x axis, so need to get offset from y-axis (half the remainder when angle is subracted from 180)
@@ -134,34 +290,37 @@ export class GameLogic {
       angle_offset;
 
     //Convert the angle to a vector
-    [ballData.direction.x, ballData.direction.y] = vec2.set(
-      [ballData.direction.x, ballData.direction.y],
+    ballData.direction = new Vec2(
       Math.sin(degToRad(angle)),
       Math.cos(degToRad(angle))
     );
-
     //Normalize the vector
-    [ballData.direction.x, ballData.direction.y] = vec2.normalize(
-      [ballData.direction.x, ballData.direction.y],
-      [ballData.direction.x, ballData.direction.y]
-    );
+    ballData.direction = Vec2.normalize(ballData.direction);
 
     //If last serve was to the right, invert x value to send left
-    if (gameData.last_serve_side === "right") {
+    if (gamestate.last_serve_side === "right") {
       ballData.direction.x = -ballData.direction.x;
-      gameData.last_serve_side = "left";
-    } else gameData.last_serve_side = "right";
+      gamestate.last_serve_side = "left";
+    } else gamestate.last_serve_side = "right";
 
     return ballData;
   }
 
+  /*************************************************************************************/
+  /**                           Interval Management                                   **/
+  /*************************************************************************************/
+
   //Add new gameUpdateInterval
-  async addGameUpdateInterval(name: string, milliseconds: number) {
+  async addGameUpdateInterval(
+    lobby: gameLobby,
+    name: string,
+    milliseconds: number
+  ) {
+    const lobby_id: string = lobby.lobby_id;
     //Set callback function to gamestate
-    const interval = setInterval(
-      this.sendServerUpdate.bind(this),
-      milliseconds
-    );
+    const interval = setInterval(() => {
+      this.sendServerUpdate(lobby);
+    }, milliseconds);
     this.schedulerRegistry.addInterval(name, interval);
     logger.log(`Interval ${name} created`);
   }

@@ -1,3 +1,4 @@
+import { GameState } from "kingpong-lib";
 import { PaddleConfig, BallConfig, GameConfig } from "./game.config";
 
 export class Vec2 {
@@ -57,59 +58,14 @@ export class GameStateDto {
   paddle_left_pos: number;
   paddle_right_pos: number;
 }
-
-export class ClientGameStateUpdate {
-  match_id: string;
-  player_side: string;
-  paddle_pos: number;
-}
-
-export class PlayerReadyDto {
-  constructor(Lobby_ID: string, Is_Ready: boolean) {
-    this.lobby_id = Lobby_ID;
-    this.is_ready = Is_Ready;
-  }
-  lobby_id: string;
-  is_ready: boolean;
-}
-
-export class LobbyCreatedDto {
-  constructor(Lobby_ID) {
-    this.lobby_id = Lobby_ID;
-  }
-  lobby_id: string;
-  player_side: string;
-}
-
-export class GameStartedDto {
-  match_id: string;
-  player_side: string;
-}
-
+//TODO: change this to gamestate
 export class Lobby {
-  constructor(Lobby_ID: string, Player_Side: string) {
-    this.lobby_id = Lobby_ID;
-    this.player_side = Player_Side;
-    this.game.ball_x = 0;
-    this.game.ball_y = 0;
-    this.game.paddle_left_y = 0;
-    this.game.paddle_right_y = 0;
+  constructor() {
+    this.game_state = new GameState();
+    this.game_state.ball_x = 0;
+    this.game_state.ball_y = 0;
+    this.game_state.paddle_left_y = 0;
+    this.game_state.paddle_right_y = 0;
   }
-  player_side: string;
-  lobby_id: string;
-  player_name: string;
-  opponent_name: string;
-  player_avatar: string;
-  opponent_avatar: string;
-  player_ready: boolean;
-  opponent_ready: boolean;
-
-  game: {
-    ball_x: number;
-    ball_y: number;
-    paddle_left_y: number;
-    paddle_right_y: number;
-    score_left: number;
-    score_right: number;
-  };
+  game_state: GameState;
 }

@@ -37,6 +37,11 @@ export class TokenStorageService {
     return this.tokens.get(username);
   }
 
+  getTokenbySocket( socketID : string) : Token {
+    console.log(this.tokens);
+    return this.tokens.get(socketID);
+  }
+
   getSocketByToken(access_token: string): string {
     // Find the socket that contains the token
     const socket = Array.from(this.tokens.entries()).find(

@@ -1,8 +1,7 @@
-import * as React from "react";
-import { socket } from "src/contexts/WebSocket.context";
-import GameLoader from "./GameLoader";
-import { Box } from "@mui/system";
-import "./GameQueue.css";
+import Box from "@mui/material/Box";
+import { useGameViewModelContext } from "../game.viewModel";
+import LoadingPage from "./game.loadingPage";
+import "./game.joinGameQueue.tsx.css";
 
 /**
  * This is a button that will join the game queue.
@@ -10,29 +9,19 @@ import "./GameQueue.css";
  * @returns {JSX.Element} The button.
  */
 export default function JoinGameQueue() {
-  const [inQueue, setInQueue] = React.useState<boolean>(false);
-
-  /** Join game queue callback */
-  const joinQueue = () => {
-    setInQueue(true);
-    console.log("joinGameQueue event emitted");
-    socket.emit("joinGameQueue", {
-      client_id: "",
-      join_time: Date.now()
-    });
-  };
+  const { joinGameQueue, inQueue } = useGameViewModelContext();
 
   return (
     <>
       {inQueue ? (
-        <GameLoader setInQueue={setInQueue} />
+        <LoadingPage />
       ) : (
         <>
           <Box className="body-page-queue">
             <Box className="bottom-background" />
             <Box
               className="join-queue"
-              onClick={joinQueue}
+              onClick={joinGameQueue}
             >
               Join Queue
             </Box>

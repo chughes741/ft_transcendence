@@ -1,6 +1,6 @@
 import * as GameTypes from "./game.types";
 import { Logger } from "@nestjs/common";
-
+import {PlayerReadyRequest, ClientGameStateUpdateRequest} from "kingpong-lib";
 const logger = new Logger("gameData");
 
 /**
@@ -11,6 +11,24 @@ export class GameModuleData {
   public static games: GameTypes.GameData[] = [];
   public static lobbies: GameTypes.gameLobby[] = [];
 
+  /*************************************************************************************/
+  /**                                   Queue                                         **/
+  /*************************************************************************************/
+
+  /**
+   * Check if a given user is already in the queue
+   * @param username
+   * @returns
+   */
+  checkQueue(username: string): GameTypes.PlayerQueue {
+    GameModuleData.queue.forEach((element) => {
+      if (element.username === username) {
+        return element;
+      }
+    });
+    return null;
+  }
+
   /**
    * Adds player to game queue
    * @method addQueue
@@ -19,27 +37,40 @@ export class GameModuleData {
    */
   addQueue(player: GameTypes.PlayerQueue) {
     GameModuleData.queue.push(player);
+    console.log("size of queue: " + GameModuleData.queue.length);
   }
 
   /**
-   * Removes player from game queue
+   * Removes player from queue given a player object
    * @method removeQueue
    * @param {GameTypes.PlayerQueue} player
    * @returns {}
    */
   removeQueue(player: GameTypes.PlayerQueue) {
-    GameModuleData.queue = GameModuleData.queue.splice(
-      GameModuleData.queue.indexOf(player),
-      1
+    GameModuleData.queue = GameModuleData.queue.filter(
+      (element) => element !== player
     );
   }
 
   /**
-   *
+   * Removes a player from queue given a username
+   * @param player
+   */
+  removeQueueUsername(player: string) {
+    console.log("size of queue before: " + GameModuleData.queue.length);
+
+    GameModuleData.queue = GameModuleData.queue.filter(
+      (element) => element.username !== player
+    );
+
+    console.log("size of queue after: " + GameModuleData.queue.length);
+  }
+
+  /**
+   * Attempts to return a pair of players from the queue
    * @method  getPairQueue
    * @returns {GameTypes.PlayerQueue[]}
    *
-   * @todo Fix current match systems and implement actual MMR checks
    */
   getPairQueue(): GameTypes.PlayerQueue[] {
     if (GameModuleData.queue.length >= 2) {
@@ -52,18 +83,22 @@ export class GameModuleData {
     }
   }
 
+  /*************************************************************************************/
+  /**                                   Gameplay                                      **/
+  /*************************************************************************************/
+
   /**
    *
    */
-  setPaddlePosition(payload: GameTypes.ClientGameStateUpdate) {
+  setPaddlePosition(payload: ClientGameStateUpdateRequest) {
     //Find correct match
     GameModuleData.lobbies.forEach((element) => {
       //If match_id is found then update paddle pos
-      if (element.match_id === payload.match_id) {
-        if (payload.player_side === "left") {
-          element.gamestate.paddle_left.pos.y = payload.paddle_pos;
+      if (element.lobby_id === payload.lobby_id) {
+        if (payload.username === element.players[0]) {
+          element.gamestate.paddle_left.pos.y = payload.paddle_position;
         } else {
-          element.gamestate.paddle_right.pos.y = payload.paddle_pos;
+          element.gamestate.paddle_right.pos.y = payload.paddle_position;
         }
       }
     });
@@ -73,13 +108,10 @@ export class GameModuleData {
    * Update the player ready status for a player in specified lobby
    * @param {GameTypes.PlayerReadyDto} payload
    */
-  updatePlayerReady(payload: GameTypes.PlayerReadyDto) {
-    console.log("entered updatePlayerReady");
-    console.log(payload.lobby_id);
+  updatePlayerReady(payload: PlayerReadyRequest) {
     GameModuleData.lobbies.forEach((element) => {
-      //If match_id is found then update paddle pos
       if (element.lobby_id === payload.lobby_id) {
-        if (payload.is_ready) {
+        if (payload.ready) {
           element.gamestate.players_ready++;
         } else {
           element.gamestate.players_ready--;
@@ -92,13 +124,27 @@ export class GameModuleData {
   /**
    * Retrieve the lobby object that corresponds to the given lobby id
    */
-  getLobby(lobby_id: string): GameTypes.gameLobby {
-    GameModuleData.lobbies.forEach((element) => {
-      //If match_id is found then update paddle pos
+  getLobby(lobby_id: string): GameTypes.gameLobby | null {
+    for (let i = 0; i < GameModuleData.lobbies.length; i++) {
+      const element = GameModuleData.lobbies[i];
+      // If lobby_id is found, return the element
       if (element.lobby_id === lobby_id) {
         return element;
       }
-    });
-    return null;
+    }
+    return null; // Return null if lobby_id is not found
   }
+
+  /**
+   * Adds a lobby to the list of lobbies
+   */
+  addLobby(lobby: GameTypes.gameLobby) {
+    if (GameModuleData.lobbies.push(lobby)) {
+      return true;
+    }
+    return false;
+  };
+
 }
+
+

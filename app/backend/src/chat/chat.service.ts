@@ -7,11 +7,13 @@ import {
   ChatMemberStatus,
   ChatRoom,
   ChatRoomStatus,
-  UserStatus
+  UserStatus,
+  BlockedUser
 } from "@prisma/client";
 import { PrismaService } from "../prisma/prisma.service";
 import { UserConnectionsService } from "../user-connections.service";
 import {
+  BlockUserRequest,
   ChatMemberPrismaType,
   ChatRoomEntity,
   CreateChatRoomDto,
@@ -636,6 +638,10 @@ export class ChatService {
       return new Error("Invalid sender or recipient username");
     }
 
+    // Check if the member is blocked by the recipient
+    if (await this.prismaService.checkIfBlocked(recipientId, senderId))
+      return new Error("You are blocked by the recipient");
+
     // Check if a dialogue room between the sender and the recipient already exists
     const existingRoom = await this.prismaService.chatRoom.findFirst({
       where: {
@@ -658,5 +664,49 @@ export class ChatService {
       `${sender}-${recipient}-${Date.now()}`
     );
     return this.getChatRoomEntity(newRoom, ChatMemberRank.USER);
+  }
+
+  /**
+   * Block a user. The user will not be able to send messages to the user who blocked them
+   * @param {BlockUserRequest} req - The users in the Direct Message
+   * @returns {Promise<BlockedUser | Error>} - The created ChatMessageEntity
+   * @memberof ChatService
+   */
+  async blockUser(req: BlockUserRequest): Promise<BlockedUser | Error> {
+    try {
+      const { blocker, blockee } = req;
+
+      // Check if blocker and blockee exist
+      const [blockerId, blockeeId] = await Promise.all([
+        this.prismaService.getUserIdByNick(blocker),
+        this.prismaService.getUserIdByNick(blockee)
+      ]);
+
+      if (!blockerId || !blockeeId) {
+        return new Error("Invalid blocker or blockee username");
+      }
+
+      // Check if they were already blocking each other
+      const existingBlock = await this.prismaService.blockedUser.findFirst({
+        where: {
+          blockerId,
+          blockedUserId: blockeeId
+        }
+      });
+
+      if (existingBlock) {
+        return existingBlock;
+      }
+
+      // Create a new dialogue room and add both the sender and the recipient as members
+      const newBlock = await this.prismaService.addBlockedUser(
+        blockerId,
+        blockeeId
+      );
+      return newBlock;
+    } catch (error) {
+      logger.error("Error blocking user", error);
+      return error;
+    }
   }
 }

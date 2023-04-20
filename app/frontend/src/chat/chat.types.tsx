@@ -154,3 +154,8 @@ export interface KickMemberRequest {
   roomName: string;
   queryingMemberRank: ChatMemberRank;
 }
+
+export interface BlockUserRequest {
+  blocker: string;
+  blockee: string;
+}
