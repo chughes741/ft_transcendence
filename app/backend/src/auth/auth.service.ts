@@ -160,11 +160,16 @@ export class AuthService {
   ): Promise<boolean> {
     // Check if token is valid
     const token = this.tokenStorage.getToken(clientId);
+    console.log("TOKEN TO VERIFY", token);
     if (!token || token.access_token !== clientToken) {
       logger.error("Who TF is that?", clientId);
       return false;
     }
-    return true;
+    const currentTime = Math.floor(Date.now() / 1000);
+    const expiresIn = token.expires_in;
+    const createdTime = token.created_at;
+    const totalValidTime = expiresIn + createdTime;
+    return totalValidTime > currentTime;
   }
 
   async changeName(current : string, newName : string) : Promise<boolean>{

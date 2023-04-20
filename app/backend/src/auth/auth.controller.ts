@@ -7,7 +7,9 @@ import {
   HttpStatus,
   Post,
   UseFilters,
-  Logger
+  Logger,
+  Headers,
+  UnauthorizedException,
 } from "@nestjs/common";
 import { ApiTags } from "@nestjs/swagger";
 import { SubscribeMessage } from "@nestjs/websockets";
@@ -124,9 +126,14 @@ export class AuthController {
   @Get("update2FA")
   async update2FA(
     @Query("username") userName: string,
+    @Headers("Socket-id") socketId: string,
+    @Headers('Authorization') authHeader: string
   ) {
     try {
-      console.log("INSIDE UPDATE2FA")
+      console.log("INSIDE UPDATE2FA", socketId, authHeader)
+    //  if (this.authService.TokenIsVerified(socketId, authHeader))
+     //   throw new UnauthorizedException('Token expired');
+
       return await this.authService.update2FA(userName)
     }
     catch(error){

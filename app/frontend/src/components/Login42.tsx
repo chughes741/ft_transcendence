@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Button,Box } from "@mui/material";
+import { Button, Box } from "@mui/material";
 import { socket } from "../contexts/WebSocket.context";
 import { ProfileEntity } from "kingpong-lib";
 
@@ -12,9 +12,9 @@ const CLIENT_ID =
 const REDIRECT_URI = "http://localhost:3000/";
 
 
- /*
- * We GOTTA add those to kingpong lib
- */
+/*
+* We GOTTA add those to kingpong lib
+*/
 
 
 enum UserStatus {
@@ -25,13 +25,13 @@ enum UserStatus {
 
 interface UserEntity {
   username: string;
-  enable2fa? : boolean;
+  enable2fa?: boolean;
   avatar: string;
   firstName?: string;
   lastName?: string;
   email?: string;
   status?: UserStatus;
-  firstConnection? : boolean;
+  firstConnection?: boolean;
 }
 
 interface AuthEntity {
@@ -42,25 +42,26 @@ interface AuthEntity {
 export interface dataResponse {
   user: ProfileEntity,
   token: string,
-  twoFAenable : boolean,
+  twoFAenable: boolean,
 }
 
 export default function LoginWith42Button() {
-  const { setShowChooseUsernameModal, 
+  const { setShowChooseUsernameModal,
     setFullscreen,
+    sessionToken,
     setSessionToken,
     setSelf,
-    setPageState,  
+    setPageState,
     history
   } = useRootViewModelContext();
 
   const [isLoading, setIsLoading] = useState(false);
 
-  const populateProfile = (data : AuthEntity) : ProfileEntity => {
-    
+  const populateProfile = (data: AuthEntity): ProfileEntity => {
+
     // returns the profile of the response
-    const profile : ProfileEntity  = {
-      username : data.user.username,
+    const profile: ProfileEntity = {
+      username: data.user.username,
       avatar: data.user.avatar,
       status: data.user.status,
       createdAt: new Date().toLocaleString(),
@@ -69,13 +70,18 @@ export default function LoginWith42Button() {
   }
 
   // on success, set the session token and the self, and redirects to /home
-  const onSuccess = (data : dataResponse) => {
+  const onSuccess = (data: dataResponse) => {
+    console.log(data);
     setSessionToken(data.token);
     setSelf(data.user);
+
+    
     if (data.twoFAenable)
       setPageState(PageState.QRCode);
     else
       setPageState(PageState.Home);
+
+    console.log("SESSION TOKEN", sessionToken)
     history.push("/");
   };
 
@@ -110,7 +116,7 @@ export default function LoginWith42Button() {
           new Error(error);
           return;
         }
-        const client  = await data.json();
+        const client = await data.json();
 
 
         if (client.user.firstConnection)
@@ -118,20 +124,21 @@ export default function LoginWith42Button() {
 
         else
           setFullscreen(false);
-        
+
 
         if (client.user.enable2fa)
-            setPageState(PageState.QRCode);
-        console.log("INFORMATION  " , client);
-        const userProfile = {
+          setPageState(PageState.QRCode);
+        console.log("INFORMATION  ", client);
+        const userProfile: dataResponse = {
           user: populateProfile(client),
-          token: client.access_token,
-          twoFAenable : client.user.enable2fa,
+          token: client.token,
+          twoFAenable: client.user.enable2fa,
         }
+        console.log("USER PROFILE :", userProfile)
         onSuccess(userProfile);
 
       } catch (error) {
-       new Error(error);
+        new Error(error);
       }
     };
     handleAuthorizationCode();
@@ -147,16 +154,16 @@ export default function LoginWith42Button() {
   return (
     <>
       <Box className="body-page-auth" sx={{
-            display: "flex", 
-            alignItems:"center", 
-            justifyContent:"center", 
-            width:"100vw", 
-            height: "100vh"
-          }}
-        >
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        width: "100vw",
+        height: "100vh"
+      }}
+      >
         <Box>Log in only option : </Box>
-        <Button 
-          onClick={handleLoginClick} 
+        <Button
+          onClick={handleLoginClick}
           disabled={isLoading}
           disableRipple={true}
           disableFocusRipple={true}
