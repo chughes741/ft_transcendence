@@ -17,8 +17,6 @@ const logger = new Logger("AuthService");
 export class AuthService {
   constructor(
     private prisma: PrismaService, // create(), findUnique()
-    private jwt: JwtService, // signAsync()
-    private config: ConfigService, // JWT_SECRET
     private tokenStorage: TokenStorageService
   ) {}
 
@@ -43,24 +41,12 @@ export class AuthService {
     //IF THERE IS NO USER
     if(!user)
     {
-
       const newuser : UserEntity = await this.prisma.addUser(data)
       newuser.firstConnection = true;
       return newuser;
     }
     user.firstConnection = false;
-
-    //HARDCODED FOR TRUE: NEEDS TO BE REMOVED
-    //user.enable2fa = true;
-    
     return user;
-  }
-
-  //Might implement or not
-  async refreshToken(refresh_token: Token): Promise<Token> {
-    
-
-    return ;
   }
 
   async enableTwoFactorAuth() {

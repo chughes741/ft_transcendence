@@ -4,6 +4,7 @@ import { Box } from '@mui/system';
 import React, { useState } from 'react';
 import { PageState } from "src/root.model";
 import { useRootViewModelContext } from 'src/root.context';
+import { socket } from 'src/contexts/WebSocket.context';
 
 type VerifyQRCodeResponse = {
   message: string;
@@ -15,6 +16,7 @@ function VerifyQRCode() {
   const { 
     setPageState,
     setFullscreen,
+    sessionToken,
     history
   } = useRootViewModelContext();
 
@@ -28,11 +30,12 @@ function VerifyQRCode() {
   const handleGetQRCode = async (): Promise<boolean> => {
     try {
       const url = "/auth/qrCode";
-      console.log("Click to get QRCODE wtf")
       const response = await fetch(url, {
         method: 'GET',
         headers: {
-          "Content-Type": "application/json"
+          "Content-Type": "application/json",
+          //"client-id": socket.id,
+          //"client-token": sessionToken,
         }
       });
       const data = await response.json();

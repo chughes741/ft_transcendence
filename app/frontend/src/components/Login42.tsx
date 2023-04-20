@@ -11,11 +11,9 @@ const CLIENT_ID =
   "u-s4t2ud-51fb382cccb5740fc1b9129a3ddacef8324a59dc4c449e3e8ba5f62acb2079b6";
 const REDIRECT_URI = "http://localhost:3000/";
 
-
 /*
 * We GOTTA add those to kingpong lib
 */
-
 
 enum UserStatus {
   ONLINE,
@@ -46,6 +44,8 @@ export interface dataResponse {
 }
 
 export default function LoginWith42Button() {
+
+
   const { setShowChooseUsernameModal,
     setFullscreen,
     sessionToken,
@@ -75,7 +75,7 @@ export default function LoginWith42Button() {
     setSessionToken(data.token);
     setSelf(data.user);
 
-    
+
     if (data.twoFAenable)
       setPageState(PageState.QRCode);
     else
@@ -101,42 +101,35 @@ export default function LoginWith42Button() {
       }
 
       try {
-        const socketId = socket.id;
-        console.log("SOCKET ID", socketId);
-        const url = `http://localhost:3000/auth/token?code=${authorizationCode}&socketId=${socketId}`;
+        socket.on("connect", async () => {
+          const url = `http://localhost:3000/auth/token?code=${authorizationCode}&socketId=${socket.id}`;
 
-        const data = await fetch(url, {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json"
+          const data = await fetch(url, {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json"
+            }
+          });
+          if (!data.ok) {
+            const error = await data.json();
+            new Error(error);
+            return;
           }
+          const client = await data.json();
+          if (client.user.firstConnection)
+            setShowChooseUsernameModal(true);
+
+          else
+            setFullscreen(false);
+          if (client.user.enable2fa)
+            setPageState(PageState.QRCode);
+          const userProfile: dataResponse = {
+            user: populateProfile(client),
+            token: client.token,
+            twoFAenable: client.user.enable2fa,
+          }
+          onSuccess(userProfile);
         });
-
-        if (!data.ok) {
-          const error = await data.json();
-          new Error(error);
-          return;
-        }
-        const client = await data.json();
-
-
-        if (client.user.firstConnection)
-          setShowChooseUsernameModal(true);
-
-        else
-          setFullscreen(false);
-
-
-        if (client.user.enable2fa)
-          setPageState(PageState.QRCode);
-        console.log("INFORMATION  ", client);
-        const userProfile: dataResponse = {
-          user: populateProfile(client),
-          token: client.token,
-          twoFAenable: client.user.enable2fa,
-        }
-        console.log("USER PROFILE :", userProfile)
-        onSuccess(userProfile);
 
       } catch (error) {
         new Error(error);

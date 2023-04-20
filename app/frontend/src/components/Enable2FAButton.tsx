@@ -20,7 +20,7 @@ export default function TwoFactorButton({ enabled }: Props) {
         console.log("SESSION TOKEN 2FA", sessionToken)
         setIsLoading(true);
         const socketId = socket.id;
-        console.log("SOCKETID in TOKEN 2FA", socketId)
+        console.log("SOCKETID in TOKEN 2FA", socket.id)
         const url = `/auth/update2FA?username=${self.username}`;
         console.log("Update 2FA for", self.username)
         const response = await fetch(url, {
@@ -42,6 +42,7 @@ export default function TwoFactorButton({ enabled }: Props) {
             setSelf(null);
             return ;
         }
+        console.log(data);
         setIsLoading(false);
     }
 

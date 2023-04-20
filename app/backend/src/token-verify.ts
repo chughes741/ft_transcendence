@@ -1,11 +1,21 @@
-import { CanActivate, Injectable } from "@nestjs/common";
-import { TokenStorageService } from "./token-storage.service";
+import { CanActivate, Injectable, Logger } from "@nestjs/common";
+import { Token, TokenStorageService } from "./token-storage.service";
 import { UnauthorizedException } from "@nestjs/common";
 import { ExecutionContext } from "@nestjs/common";
 
 @Injectable()
 export default class TokenIsVerified implements CanActivate {
     constructor(private readonly tokenStorage: TokenStorageService) { }
+
+    async refreshToken(clientID: string , refresh_token: Token) {
+        //Refresh the Token
+        let newToken: Token;
+        newToken = refresh_token;
+        newToken.created_at = Date.now();
+        await this.tokenStorage.removeToken(clientID);
+        await this.tokenStorage.addToken(clientID, newToken);
+        Logger.log("Refresh : ", newToken)
+    }
 
     async canActivate(context: ExecutionContext): Promise<boolean> {
         const req = context.switchToHttp().getRequest();
@@ -27,6 +37,7 @@ export default class TokenIsVerified implements CanActivate {
             this.tokenStorage.removeToken(clientId);
             throw new UnauthorizedException();
         }
+        await this.refreshToken(clientId, token);
         return true;
     }
 }
