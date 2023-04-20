@@ -2,8 +2,6 @@ import { useState, useEffect } from "react";
 import { Button, Box } from "@mui/material";
 import { socket } from "../contexts/WebSocket.context";
 import { ProfileEntity } from "kingpong-lib";
-
-import VerifyQRCode from "./QrCodeElement";
 import { PageState } from "src/root.model";
 import { useRootViewModelContext } from "src/root.context";
 
@@ -85,9 +83,9 @@ export default function LoginWith42Button() {
     history.push("/");
   };
 
-  // here is the useEffect to handle if theres an auth code, handles the call the backend with the authcode and socket id, 
-  // and gets the response as an auth entity, containinh a user and a session token
-  // if its the first connection, handles the change username modal and set the username in the db
+  // here is the useEffect to handle if there is an auth code, handles the call the backend with the auth code and socket id,
+  // and gets the response as an auth entity, containing a user and a session token
+  // if it is the first connection, handles the change username modal and set the username in the db
   // if 2fa is enabled, request the 2fa validation before completion
 
   useEffect(() => {

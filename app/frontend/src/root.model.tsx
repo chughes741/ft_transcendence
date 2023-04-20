@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { ProfileEntity, UserStatus } from "kingpong-lib";
+import { ProfileEntity } from "kingpong-lib";
 
 /**
  * Each page view is a value

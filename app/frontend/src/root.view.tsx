@@ -16,7 +16,6 @@ import SettingsView from "./components/settings/settings.view";
 import LoginWith42Button from "./components/Login42";
 import { ChooseUsernameModal } from "./components/ChooseUsernameModal";
 import GameWindow from "./game/game.view";
-import { ProfileEntity } from "kingpong-lib";
 import VerifyQRCode from "./components/QrCodeElement";
 
 /**
@@ -34,7 +33,6 @@ function RootViewContent(): JSX.Element {
       return ( <LoginWith42Button/>  )
     }
     case PageState.QRCode : {
-      console.log("QR CODE PAGE STATE");
       return (<VerifyQRCode />)
     }
     case PageState.Home: {
@@ -67,7 +65,6 @@ export function RootView(): JSX.Element {
     setFullscreen,
     /* Username */
     showChooseUsernameModal,
-    setShowChooseUsernameModal,
 } = useRootViewModelContext();
 
 

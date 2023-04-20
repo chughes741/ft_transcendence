@@ -1,8 +1,5 @@
 import { PageState, RootModelType, useRootModel } from "./root.model";
 import { RootViewModelContext } from "./root.context";
-import { socket } from "./contexts/WebSocket.context";
-import { DevError } from "./chat/chat.types";
-import { handleSocketErrorResponse } from "./chat/lib/helperFunctions";
 import { createBrowserHistory, BrowserHistory } from "history";
 import { useEffect } from "react";
 
@@ -119,6 +116,7 @@ export const RootViewModelProvider = ({ children }) => {
         break;
     }
   }, [pageState]);
+
   return (
     <RootViewModelContext.Provider
       value={{
