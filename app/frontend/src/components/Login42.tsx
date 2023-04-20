@@ -4,16 +4,15 @@ import { socket } from "../contexts/WebSocket.context";
 import { ProfileEntity } from "kingpong-lib";
 import { PageState } from "src/root.model";
 import { useRootViewModelContext } from "src/root.context";
+import "./Login42.tsx.css";
 
 const CLIENT_ID =
   "u-s4t2ud-51fb382cccb5740fc1b9129a3ddacef8324a59dc4c449e3e8ba5f62acb2079b6";
 const REDIRECT_URI = "http://localhost:3000/";
 
-
 /*
-* We GOTTA add those to kingpong lib
-*/
-
+ * We GOTTA add those to kingpong lib
+ */
 
 enum UserStatus {
   ONLINE,
@@ -38,13 +37,14 @@ interface AuthEntity {
 }
 
 export interface dataResponse {
-  user: ProfileEntity,
-  token: string,
-  twoFAenable: boolean,
+  user: ProfileEntity;
+  token: string;
+  twoFAenable: boolean;
 }
 
 export default function LoginWith42Button() {
-  const { setShowChooseUsernameModal,
+  const {
+    setShowChooseUsernameModal,
     setFullscreen,
     sessionToken,
     setSessionToken,
@@ -56,16 +56,15 @@ export default function LoginWith42Button() {
   const [isLoading, setIsLoading] = useState(false);
 
   const populateProfile = (data: AuthEntity): ProfileEntity => {
-
     // returns the profile of the response
     const profile: ProfileEntity = {
       username: data.user.username,
       avatar: data.user.avatar,
       status: data.user.status,
-      createdAt: new Date().toLocaleString(),
-    }
-    return (profile)
-  }
+      createdAt: new Date().toLocaleString()
+    };
+    return profile;
+  };
 
   // on success, set the session token and the self, and redirects to /home
   const onSuccess = (data: dataResponse) => {
@@ -73,13 +72,10 @@ export default function LoginWith42Button() {
     setSessionToken(data.token);
     setSelf(data.user);
 
-    
-    if (data.twoFAenable)
-      setPageState(PageState.QRCode);
-    else
-      setPageState(PageState.Home);
+    if (data.twoFAenable) setPageState(PageState.QRCode);
+    else setPageState(PageState.Home);
 
-    console.log("SESSION TOKEN", sessionToken)
+    console.log("SESSION TOKEN", sessionToken);
     history.push("/");
   };
 
@@ -90,7 +86,7 @@ export default function LoginWith42Button() {
 
   useEffect(() => {
     // Handle the authorization code and exchange it for an access token
-    const handleAuthorizationCode = async () => {
+    const handleAuthorizationCode = async (): Promise<boolean> => {
       const searchParams = new URLSearchParams(window.location.search);
       const authorizationCode = searchParams.get("code");
       if (!authorizationCode) {
@@ -116,58 +112,61 @@ export default function LoginWith42Button() {
         }
         const client = await data.json();
 
+        if (client.user.firstConnection) setShowChooseUsernameModal(true);
+        else setFullscreen(false);
 
-        if (client.user.firstConnection)
-          setShowChooseUsernameModal(true);
-
-        else
-          setFullscreen(false);
-
-
-        if (client.user.enable2fa)
-          setPageState(PageState.QRCode);
+        if (client.user.enable2fa) setPageState(PageState.QRCode);
         console.log("INFORMATION  ", client);
         const userProfile: dataResponse = {
           user: populateProfile(client),
           token: client.token,
-          twoFAenable: client.user.enable2fa,
-        }
-        console.log("USER PROFILE :", userProfile)
+          twoFAenable: client.user.enable2fa
+        };
+        console.log("USER PROFILE :", userProfile);
         onSuccess(userProfile);
-
       } catch (error) {
         new Error(error);
       }
     };
-    handleAuthorizationCode();
+    handleAuthorizationCode().then();
   }, [onSuccess]);
 
   const handleLoginClick = () => {
     setIsLoading(true);
     // Redirect the user to the 42 OAuth authorization endpoint
-    const authorizationUrl = `https://api.intra.42.fr/oauth/authorize?client_id=${CLIENT_ID}&redirect_uri=${REDIRECT_URI}&response_type=code`;
-    window.location.href = authorizationUrl;
+    history.push(
+      `https://api.intra.42.fr/oauth/authorize?client_id=${CLIENT_ID}&redirect_uri=${REDIRECT_URI}&response_type=code`
+    );
   };
 
   return (
     <>
-      <Box className="body-page-auth" sx={{
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        width: "100vw",
-        height: "100vh"
-      }}
-      >
-        <Box>Log in only option : </Box>
-        <Button
-          onClick={handleLoginClick}
-          disabled={isLoading}
-          disableRipple={true}
-          disableFocusRipple={true}
-        >
-          {isLoading ? "Logging in..." : "Login with 42"}
-        </Button>
+      <Box className="body-page-auth">
+        <Box className="lines">
+          <Box className="line" />
+          <Box className="line" />
+          <Box className="line" />
+        </Box>
+
+        <Box className="login-details">
+          <Box className="login-text">
+            Welcome to Schlurp's psychedelic ride. Enjoy yourself on the King
+            Pong Island
+          </Box>
+          <Box className="container-button">
+            <Box className="tag">Log in with 42 </Box>
+            <Button
+              variant={"outlined"}
+              className="button-login"
+              onClick={handleLoginClick}
+              disabled={isLoading}
+              disableRipple={true}
+              disableFocusRipple={true}
+            >
+              {isLoading ? "Logging in..." : "Login"}
+            </Button>
+          </Box>
+        </Box>
       </Box>
     </>
   );

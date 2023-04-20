@@ -37,9 +37,10 @@ export const RootViewModelProvider = ({ children }) => {
    *   This useEffect() is there to handle the back and forward button
    *   it uses the history.listen hook to check the URL and set the PageState accordingly
    */
+
   useEffect(() => {
     const unlisten = history.listen(
-      ({ location: location, action: action }) => {
+      ({ location: location}) => {
         switch (location.pathname) {
           case "/auth":
             setFullscreen(false);
@@ -77,16 +78,17 @@ export const RootViewModelProvider = ({ children }) => {
    *  already the one corresponding to that pageState, append the url with the appropriate path
    *
    */
+
   useEffect(() => {
     switch (pageState) {
       case PageState.Auth:
         if (history.location.pathname !== '/auth') {
-        history.push("/auth")
+          history.push("/auth")
         }
         break;
       case PageState.QRCode:
         if (history.location.pathname !== "/qrcode") {
-        history.push("/qrcode");
+          history.push("/qrcode");
         }
         break;
       case PageState.Home:

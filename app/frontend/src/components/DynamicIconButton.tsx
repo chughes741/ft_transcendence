@@ -34,7 +34,7 @@ export default function DynamicIconButton({
     overflow: "hidden",
     whiteSpace: "nowrap",
     width: hovered ? "auto" : 0,
-    opacity: hovered ? 1 : 0
+    opacity: hovered ? 1 : 0,
   };
 
   const iconStyle = {
