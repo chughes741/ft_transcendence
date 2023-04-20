@@ -145,6 +145,7 @@ export class AuthService {
       email: response2.data.email,
       status: UserStatus.ONLINE,
     })
+    console.log("TOKEN :", token)
     const authEntity : AuthEntity = {
       user :theuser,
       token : token.access_token,
