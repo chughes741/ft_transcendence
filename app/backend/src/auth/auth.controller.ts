@@ -128,7 +128,7 @@ export class AuthController {
   // 
 
   @Get("update2FA")
-  @UseGuards(AuthGuard(), TokenIsVerified)
+  @UseGuards(TokenIsVerified)
   async update2FA(
     @Query("username") userName: string,
     @Headers("Socket-id") socketId: string,

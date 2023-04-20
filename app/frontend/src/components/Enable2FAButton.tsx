@@ -11,48 +11,46 @@ interface Props {
 
 export default function TwoFactorButton({ enabled }: Props) {
     const [isLoading, setIsLoading] = useState(false);
-    const { self, sessionToken, setSessionToken, setPageState } = useRootViewModelContext();
+    const { self, setSelf, sessionToken, setSessionToken, setPageState, history, setFullscreen } = useRootViewModelContext();
 
     const onToggle = async () => {
-        
+
         //TRY is needed to catch error : Unauthorized Exception
-        try
-        {
-            console.log("SESSION TOKEN 2FA", sessionToken)
-            setIsLoading(true);
-            const socketId = socket.id;
-            const url = `/auth/update2FA?username=${self.username}`;
-            console.log("Update 2FA for" , self.username)
-            const response = await fetch(url, {
-                method: 'GET',
-                headers: {
-                    "Content-Type": "application/json",
-                    "client-id": socketId,
-                    "client-token": sessionToken,
-                }
-            });
-            const data = await response.json();
-            console.log("TRUE OR FALSE :   ", data);
-            setIsLoading(false);
-        }
-        //IF UNAUTHORIZED:
-        catch (error) {
-            if (error.status === 401) //UNAUTHORIZED EXCEPTION
-            {
-                //MUST FLUSH THE session TOKEN and bring back to login page
-                setSessionToken("")
-                setPageState(PageState.Auth);
+
+        console.log("SESSION TOKEN 2FA", sessionToken)
+        setIsLoading(true);
+        const socketId = socket.id;
+        console.log("SOCKETID in TOKEN 2FA", socketId)
+        const url = `/auth/update2FA?username=${self.username}`;
+        console.log("Update 2FA for", self.username)
+        const response = await fetch(url, {
+            method: 'GET',
+            headers: {
+                "Content-Type": "application/json",
+                "client-id": socketId,
+                "client-token": sessionToken,
             }
+        });
+        const data = await response.json();
+        if (data.statusCode && data.statusCode === 401) //UNAUTHORIZED EXCEPTION
+        {
+            //MUST FLUSH THE session TOKEN and bring back to login page
+            setSessionToken("")
+            setPageState(PageState.Auth);
+            history.push('/auth');
+            setFullscreen(true);
+            setSelf(null);
+            return ;
         }
-    
+        setIsLoading(false);
     }
-/*
+
     const handleClick = async () => {
         setIsLoading(true);
         await onToggle();
         setIsLoading(false);
     };
-*/
+
     return (
         <Button
             variant="contained"

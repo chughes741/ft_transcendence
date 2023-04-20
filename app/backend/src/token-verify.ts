@@ -1,13 +1,15 @@
-import { Injectable } from "@nestjs/common";
-import { NestMiddleware } from "@nestjs/common";
+import { CanActivate, Injectable } from "@nestjs/common";
 import { TokenStorageService } from "./token-storage.service";
-import { NextFunction } from "express";
+import { UnauthorizedException } from "@nestjs/common";
+import { ExecutionContext } from "@nestjs/common";
 
 @Injectable()
-export default class TokenIsVerified implements NestMiddleware {
+export default class TokenIsVerified implements CanActivate {
     constructor(private readonly tokenStorage: TokenStorageService) { }
 
-    async use(req: Request, res: Response, next: NextFunction) {
+    async canActivate(context: ExecutionContext): Promise<boolean> {
+        const req = context.switchToHttp().getRequest();
+
         const clientId = req.headers['client-id'] as string;
         const clientToken = req.headers['client-token'] as string;
 
@@ -15,9 +17,7 @@ export default class TokenIsVerified implements NestMiddleware {
         const token = this.tokenStorage.getTokenbySocket(clientId)
         console.log("TOKEN TO VERIFY", token, clientToken);
         if (!token || token.access_token !== clientToken) {
-            let response;
-            response.status = 401;
-            return response.json({ message: 'Unauthorized' });
+            throw new UnauthorizedException();
         }
         const currentTime = Math.floor(Date.now() / 1000);
         const expiresIn = token.expires_in;
@@ -25,10 +25,8 @@ export default class TokenIsVerified implements NestMiddleware {
         const totalValidTime = expiresIn + createdTime;
         if (totalValidTime < currentTime) {
             this.tokenStorage.removeToken(clientId);
-            let response;
-            response.status = 401;
-            return response.json({ message: 'Unauthorized' });
+            throw new UnauthorizedException();
         }
-        next();
+        return true;
     }
 }

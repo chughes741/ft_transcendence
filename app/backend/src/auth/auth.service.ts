@@ -9,6 +9,7 @@ import axios from "axios";
 import { Token, TokenStorageService } from "../token-storage.service";
 import { UserStatus } from "@prisma/client";
 import { boolean } from "joi";
+import { Console } from "console";
 
 const logger = new Logger("AuthService");
 
@@ -135,7 +136,7 @@ export class AuthService {
       }
     });
     const userName = response2.data.login + response2.data.id;
-
+    console.log("CLIENTID when Addind token", clientId);
     this.tokenStorage.addToken(clientId, token);
     const theuser = await this.signin({
       username: userName,
@@ -154,7 +155,7 @@ export class AuthService {
     return authEntity;
   }
 
-  
+
   async TokenIsVerified(
     clientId: string,
     clientToken: string
