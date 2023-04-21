@@ -32,15 +32,16 @@ export class AuthService {
 
   async signin(data : UserEntity) : Promise<UserEntity> {
 
-    logger.log ("Signin USER ENTITY: " , data);
     const user : UserEntity = await this.prisma.getUserbyMail(data.email);
     //IF THERE IS NO USER
     if(!user)
     {
+      logger.log ("Signin first time" );
       const newuser : UserEntity = await this.prisma.addUser(data)
       newuser.firstConnection = true;
       return newuser;
     }
+    logger.log ("Returning user" );
     user.firstConnection = false;
     return user;
   }
@@ -49,9 +50,7 @@ export class AuthService {
     const secret = speakeasy.generateSecret({
       name: "42authentification"
     });
-
     const code = await qrcode.toDataURL(secret.otpauth_url);
-    console.log("QRCODE MAYBE :", code)
     return { secret: secret.base32, qrcode: code};
   }
 
@@ -69,13 +68,11 @@ export class AuthService {
       encoding: "base32",
       token: enteredToken
     });
-    console.log("VERIFICATION : ", verified)
     if (verified) return { validated: true };
     return { validated: false };
   }
 
   async update2FA(username : string) {
-    console.log("UPDATE 2FA FOR : ", username)
     
     const enable : boolean = await this.prisma.update2FA(username) 
     return {enable2fa : enable };
@@ -86,9 +83,9 @@ export class AuthService {
       "u-s4t2ud-51fb382cccb5740fc1b9129a3ddacef8324a59dc4c449e3e8ba5f62acb2079b6";
     const SECRET =
       "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";
-    const API_BASE_URL = "https://api.intra.42.fr/oauth/token";
     const API_42_URL = "https://api.intra.42.fr";
     const REDIRECT_URI = "http://localhost:3000/";
+
 
     const fuckedUpResponse = await axios.post(
       "https://api.intra.42.fr/oauth/token",
@@ -118,7 +115,6 @@ export class AuthService {
       }
     });
     const userName = response2.data.login + response2.data.id;
-    console.log("CLIENTID when Addind token", clientId);
     this.tokenStorage.addToken(clientId, token);
     const theuser = await this.signin({
       username: userName,
@@ -128,12 +124,12 @@ export class AuthService {
       email: response2.data.email,
       status: UserStatus.ONLINE,
     })
-    console.log("TOKEN :", token)
+    logger.log("Token :", token.access_token)
     const authEntity : AuthEntity = {
       user :theuser,
       token : token.access_token,
     }
-    console.log("AUTHENTITY" ,authEntity)
+    logger.log("Identity of user logging in" , authEntity.user)
     return authEntity;
   }
 
