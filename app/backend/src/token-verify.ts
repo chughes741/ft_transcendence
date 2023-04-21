@@ -15,6 +15,7 @@ export default class TokenIsVerified implements CanActivate {
         await this.tokenStorage.removeToken(clientID);
         await this.tokenStorage.addToken(clientID, newToken);
         Logger.log("Refresh : ", newToken)
+        console.log("New Token refreshed : ", newToken)
     }
 
     async canActivate(context: ExecutionContext): Promise<boolean> {
