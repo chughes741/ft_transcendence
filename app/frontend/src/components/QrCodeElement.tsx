@@ -1,23 +1,15 @@
-import { Label } from '@mui/icons-material';
 import { Button, InputLabel } from '@mui/material';
 import { Box } from '@mui/system';
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { PageState } from "src/root.model";
 import { useRootViewModelContext } from 'src/root.context';
-import { socket } from 'src/contexts/WebSocket.context';
-
-type VerifyQRCodeResponse = {
-  message: string;
-  success: boolean;
-};
 
 function VerifyQRCode() {
-
   const { 
     setPageState,
     setFullscreen,
-    sessionToken,
-    history
+   // sessionToken,
+   // history
   } = useRootViewModelContext();
 
   const [qrCode, setQRCode] = useState<string | null>(null);

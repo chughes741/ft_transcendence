@@ -8,7 +8,6 @@ import {
   Post,
   UseFilters,
   Logger,
-  Headers,
   UseGuards,
 } from "@nestjs/common";
 import { ApiTags } from "@nestjs/swagger";
@@ -18,9 +17,7 @@ import { AuthService } from "./auth.service";
 import { GetUser } from "./decorators";
 import { AuthRequest, UserEntity } from "./dto";
 import { Token } from "src/token-storage.service";
-import { debugPort } from "process";
 import { UserStatus } from "@prisma/client";
-import { AuthGuard } from "@nestjs/passport";
 import TokenIsVerified from "src/token-verify";
 
 
@@ -79,12 +76,11 @@ export class AuthController {
     return this.authService.signin(info);
   }
 
-  @Post("deleteToken")
+  @Post("refreshToken")
   @SubscribeMessage("refresh")
   async refreshToken(@Body("refresh_token") refresh_token: Token) {
-
+    logger.log(refresh_token);
     return
-    //return this.authService.refreshToken(refresh_token);
   }
 
   @Get("token")

@@ -1,8 +1,7 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { ArrowBack, ArrowBackIosNew } from "@mui/icons-material";
 import { Button } from "@mui/material";
 import { useRootViewModelContext } from "src/root.context";
-import { socket } from "src/contexts/WebSocket.context";
 import { PageState } from "src/root.model";
 import { headers } from "./Login42";
 
@@ -12,7 +11,7 @@ interface Props {
 
 export default function TwoFactorButton({ enabled }: Props) {
     const [isLoading, setIsLoading] = useState(false);
-    const { self, setSelf, sessionToken, setSessionToken, setPageState, history, setFullscreen } = useRootViewModelContext();
+    const { self, setSelf, setSessionToken, setPageState, history, setFullscreen } = useRootViewModelContext();
 
     const onToggle = async () => {
 
@@ -38,11 +37,12 @@ export default function TwoFactorButton({ enabled }: Props) {
         setIsLoading(false);
     }
 
+        /*
     const handleClick = async () => {
         setIsLoading(true);
         await onToggle();
         setIsLoading(false);
-    };
+    };*/
 
     return (
         <Button

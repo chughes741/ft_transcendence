@@ -2,7 +2,6 @@ import { CanActivate, Injectable, Logger } from "@nestjs/common";
 import { Token, TokenStorageService } from "./token-storage.service";
 import { UnauthorizedException } from "@nestjs/common";
 import { ExecutionContext } from "@nestjs/common";
-import axios from "axios";
 
 const logger = new Logger("TokenVerification");
 
@@ -13,9 +12,7 @@ export default class TokenIsVerified implements CanActivate {
 
     async refreshToken(clientID: string , refresh_token: Token) {
         //Refresh the Token
-        let newToken: Token;
-        newToken = refresh_token;
-
+        const newToken = refresh_token;
         newToken.created_at = Date.now();
         newToken.expires_in = 7200;
         await this.tokenStorage.removeToken(clientID);

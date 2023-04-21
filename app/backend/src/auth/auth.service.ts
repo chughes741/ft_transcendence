@@ -6,7 +6,6 @@ import * as qrcode from 'qrcode';
 import axios from "axios";
 import { Token, TokenStorageService } from "../token-storage.service";
 import { UserStatus } from "@prisma/client";
-import { ApiRequestTimeoutResponse } from "@nestjs/swagger";
 
 const logger = new Logger("AuthService");
 
@@ -22,6 +21,7 @@ export class AuthService {
   ): Promise<
     { access_token: string } | { errorCode: number; errorMessage: string }
   > {
+    console.log(req);
     return { access_token: "new access token" }
   }
 

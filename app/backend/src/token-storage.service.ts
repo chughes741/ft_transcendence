@@ -1,6 +1,5 @@
 import { Injectable, Logger } from "@nestjs/common";
 import axios from "axios";
-import { log } from "util";
 
 const logger = new Logger("UserConnectionsService");
 
