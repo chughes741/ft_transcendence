@@ -40,7 +40,8 @@ export const RootViewModelProvider = ({ children }) => {
 
   useEffect(() => {
     const unlisten = history.listen(
-      ({ location: location}) => {
+      ({ location: location, action}) => {
+          console.log(action)
         switch (location.pathname) {
           case "/auth":
             setFullscreen(false);
@@ -113,6 +114,7 @@ export const RootViewModelProvider = ({ children }) => {
         break;
       default:
         if (history.location.pathname !== "/") {
+          console.log("phphphph loly fuck")
           history.push("/");
         }
         break;

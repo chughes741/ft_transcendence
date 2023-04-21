@@ -26,7 +26,7 @@ import VerifyQRCode from "./components/QrCodeElement";
 
 function RootViewContent(): JSX.Element {
 
-  const { pageState } = useRootViewModelContext();
+  const { pageState, history } = useRootViewModelContext();
 
   switch (pageState) {
     case PageState.Auth: {

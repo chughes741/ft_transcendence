@@ -70,7 +70,6 @@ export const RoomManagerProvider = ({ children }) => {
       minute: "numeric",
       hour12: true
     });
-
     return {
       username: messagePayload.username,
       roomId: messagePayload.roomName,

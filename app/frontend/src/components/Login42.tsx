@@ -1,9 +1,9 @@
-import { useState, useEffect } from "react";
-import { Button, Box } from "@mui/material";
-import { socket } from "../contexts/WebSocket.context";
-import { ProfileEntity } from "kingpong-lib";
-import { PageState } from "src/root.model";
-import { useRootViewModelContext } from "src/root.context";
+import {useEffect, useState} from "react";
+import {Box, Button} from "@mui/material";
+import {socket} from "../contexts/WebSocket.context";
+import {ProfileEntity} from "kingpong-lib";
+import {PageState} from "src/root.model";
+import {useRootViewModelContext} from "src/root.context";
 import "./Login42.tsx.css";
 
 const CLIENT_ID =
@@ -46,11 +46,11 @@ export default function LoginWith42Button() {
   const {
     setShowChooseUsernameModal,
     setFullscreen,
-    sessionToken,
     setSessionToken,
     setSelf,
     setPageState,
-    history
+    history,
+      self
   } = useRootViewModelContext();
 
   const [isLoading, setIsLoading] = useState(false);
@@ -70,13 +70,16 @@ export default function LoginWith42Button() {
   const onSuccess = (data: dataResponse) => {
     console.log(data);
     setSessionToken(data.token);
-    setSelf(data.user);
-
+    setSelf({avatar: data.user.avatar,
+    createdAt: data.user.createdAt,
+    status: data.user.status,
+    username: data.user.username});
+    console.log("selfffff", self);
     if (data.twoFAenable) setPageState(PageState.QRCode);
-    else setPageState(PageState.Home);
+    else {
+      setPageState(PageState.Home);
+    }
 
-    console.log("SESSION TOKEN", sessionToken);
-    history.push("/");
   };
 
   // here is the useEffect to handle if there is an auth code, handles the call the backend with the auth code and socket id,
