@@ -80,20 +80,10 @@ export class AuthService {
   }
 
   async getAuht42(clientId: string, authorization_code: string) : Promise<AuthEntity> {
-    /*
-    const UID =
-      "u-s4t2ud-51fb382cccb5740fc1b9129a3ddacef8324a59dc4c449e3e8ba5f62acb2079b6";
-    const SECRET =
-      "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";
-    const API_42_URL = "https://api.intra.42.fr";
-    const REDIRECT_URI = "http://localhost:3000/";
-    */
-
     const UID = process.env.UID;
     const SECRET = process.env.SECRET;
     const API_42_URL = process.env.API_42_URL;
     const REDIRECT_URI = process.env.REDIRECT_URI;
-    console.log(UID, SECRET, API_42_URL, REDIRECT_URI);
 
     const fuckedUpResponse = await axios.post( "https://api.intra.42.fr/oauth/token",
       {
