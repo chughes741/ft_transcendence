@@ -1,14 +1,7 @@
-import React, { useState, useCallback, useEffect } from "react";
-import {
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogContentText,
-  TextField,
-  Button,
-  DialogActions
-} from "@mui/material";
-import { useRootViewModelContext } from "../root.context";
+import React, {useCallback, useEffect, useState} from "react";
+import {Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, TextField} from "@mui/material";
+import {useRootViewModelContext} from "../root.context";
+import {UserStatus} from "kingpong-lib";
 
 interface ChooseUsernameModalProps {
   showModal: boolean;
@@ -27,7 +20,7 @@ const validateUsername = (username: string): boolean => {
 
 export const ChooseUsernameModal: React.FC<ChooseUsernameModalProps> = ({showModal}) => {
   if (!showModal) return null;
-  const { self, setShowChooseUsernameModal, setFullscreen } = useRootViewModelContext();
+  const { self, setSelf, setShowChooseUsernameModal, setFullscreen } = useRootViewModelContext();
   const [username, setUsername] = useState<string>("");
   
   
@@ -46,20 +39,24 @@ export const ChooseUsernameModal: React.FC<ChooseUsernameModalProps> = ({showMod
     });
     
     const changeIsSuccess = await data.json();
-    if (changeIsSuccess){
-        setShowChooseUsernameModal(false);
-        self.username = username;
-    }
-    else
+    if (!changeIsSuccess) {
       alert("This username is already taken, please choose another one.")
-
+    } else {
+      setSelf({
+        username: username,
+        avatar: self.avatar,
+        status: self.status,
+        createdAt: self.createdAt
+      });
+      setShowChooseUsernameModal(false);
+    }
     setFullscreen(false);
-  }, [username, setUsername]);
+  }, [username, setUsername, self, setSelf]);
 
   const handleKeyPress = useCallback(
     (e: KeyboardEvent) => {
       if (e.key === "Enter") {
-        handleSubmit();
+        handleSubmit().then();
       }
     },
     [handleSubmit]

@@ -15,15 +15,14 @@ export class AuthService {
   constructor(
     private prisma: PrismaService, // create(), findUnique()
     private tokenStorage: TokenStorageService
-  ) {}
+  ) { }
 
   async signup(
     req: AuthRequest
   ): Promise<
     { access_token: string } | { errorCode: number; errorMessage: string }
-  > 
-  {
-    return {access_token : "new access token"}
+  > {
+    return { access_token: "new access token" }
   }
 
   async callToSignup(req: AuthRequest) {
@@ -31,18 +30,17 @@ export class AuthService {
     return req;
   }
 
-  async signin(data : UserEntity) : Promise<UserEntity> {
+  async signin(data: UserEntity): Promise<UserEntity> {
 
-    const user : UserEntity = await this.prisma.getUserbyMail(data.email);
+    const user: UserEntity = await this.prisma.getUserbyMail(data.email);
     //IF THERE IS NO USER
-    if(!user)
-    {
-      logger.log ("Signin first time" );
-      const newuser : UserEntity = await this.prisma.addUser(data)
+    if (!user) {
+      logger.log("Signin first time");
+      const newuser: UserEntity = await this.prisma.addUser(data)
       newuser.firstConnection = true;
       return newuser;
     }
-    logger.log ("Returning user" );
+    logger.log("Returning user");
     user.firstConnection = false;
     return user;
   }
@@ -52,7 +50,7 @@ export class AuthService {
       name: "42authentification"
     });
     const code = await qrcode.toDataURL(secret.otpauth_url);
-    return { secret: secret.base32, qrcode: code};
+    return { secret: secret.base32, qrcode: code };
   }
 
   generateToken(secret) {
@@ -73,19 +71,28 @@ export class AuthService {
     return { validated: false };
   }
 
-  async update2FA(username : string) {
-    
-    const enable : boolean = await this.prisma.update2FA(username) 
-    return {enable2fa : enable };
+  async update2FA(username: string) {
+
+    const enable: boolean = await this.prisma.update2FA(username)
+    return { enable2fa: enable };
   }
 
-  async getAuht42(clientId: string, authorization_code: string) : Promise<AuthEntity> {
+  async checkToRefresh(token: Token): Promise<Token> {
+
+    if (token.expires_in < 7000)
+      return await this.tokenStorage.refresh42Token(token);
+    if (Math.floor(Date.now() / 1000) > token.created_at + 100)
+      return await this.tokenStorage.refresh42Token(token);
+    return token
+  }
+
+  async getAuht42(clientId: string, authorization_code: string): Promise<AuthEntity> {
     const UID = process.env.UID;
     const SECRET = process.env.SECRET;
     const API_42_URL = process.env.API_42_URL;
     const REDIRECT_URI = process.env.REDIRECT_URI;
 
-    const fuckedUpResponse = await axios.post( "https://api.intra.42.fr/oauth/token",
+    const response = await axios.post("https://api.intra.42.fr/oauth/token",
       {
         grant_type: "authorization_code",
         client_id: UID,
@@ -94,17 +101,19 @@ export class AuthService {
         code: authorization_code
       }
     );
-    const response = fuckedUpResponse.data;
+    const data = response.data;
     // Get an access token
 
-    const token = new Token(
-      response.access_token,
-      response.refresh_token,
-      response.token_type,
-      response.expires_in,
-      response.scope,
-      response.created_at
+    let token = new Token(
+      data.access_token,
+      data.refresh_token,
+      data.token_type,
+      data.expires_in,
+      data.scope,
+      data.created_at
     );
+
+    token = await this.checkToRefresh(token);
 
     const response2 = await axios.get(`${API_42_URL}/v2/me`, {
       headers: {
@@ -112,26 +121,30 @@ export class AuthService {
       }
     });
     const userName = response2.data.login + response2.data.id;
+
     this.tokenStorage.addToken(clientId, token);
     const theuser = await this.signin({
       username: userName,
       avatar: response2.data.image.link,
-      firstName : response2.data.first_name,
+      firstName: response2.data.first_name,
       lastName: response2.data.last_name,
       email: response2.data.email,
       status: UserStatus.ONLINE,
     })
     logger.log("Token :", token.access_token)
-    const authEntity : AuthEntity = {
-      user :theuser,
-      token : token.access_token,
+    const authEntity: AuthEntity = {
+      user: theuser,
+      token: token.access_token,
     }
-    logger.log("Identity of user logging in" , authEntity.user)
     return authEntity;
   }
 
-  async changeName(current : string, newName : string) : Promise<boolean>{
+  async changeName(current: string, newName: string): Promise<boolean> {
     return this.prisma.changeUserName(current, newName);
+  }
+
+  async deleteToken(socketID: string) {
+    this.tokenStorage.removeToken(socketID);
   }
 
 }

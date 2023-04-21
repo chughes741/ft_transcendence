@@ -47,19 +47,20 @@ export const headers = {
 }
 
 export default function LoginWith42Button() {
-  const { setShowChooseUsernameModal,
+  const {
+    setShowChooseUsernameModal,
     setFullscreen,
     sessionToken,
     setSessionToken,
     setSelf,
     setPageState,
-    history
+    history,
+    self
   } = useRootViewModelContext();
 
   const [isLoading, setIsLoading] = useState(false);
 
   const populateProfile = (data: AuthEntity): ProfileEntity => {
-
     // returns the profile of the response
     const profile: ProfileEntity = {
       username: data.user.username,
@@ -80,20 +81,29 @@ export default function LoginWith42Button() {
     if (data.twoFAenable)
       setPageState(PageState.QRCode);
     else
+      setSelf({
+        avatar: data.user.avatar,
+        createdAt: data.user.createdAt,
+        status: data.user.status,
+        username: data.user.username
+      });
+    console.log("selfffff", self);
+    if (data.twoFAenable) setPageState(PageState.QRCode);
+    else {
       setPageState(PageState.Home);
 
-    console.log("SESSION TOKEN", sessionToken)
-    history.push("/");
-  };
-
-  // here is the useEffect to handle if theres an auth code, handles the call the backend with the authcode and socket id, 
-  // and gets the response as an auth entity, containinh a user and a session token
-  // if its the first connection, handles the change username modal and set the username in the db
+      console.log("SESSION TOKEN", sessionToken)
+      history.push("/");
+    }
+  }
+  // here is the useEffect to handle if there is an auth code, handles the call the backend with the auth code and socket id,
+  // and gets the response as an auth entity, containing a user and a session token
+  // if it is the first connection, handles the change username modal and set the username in the db
   // if 2fa is enabled, request the 2fa validation before completion
 
   useEffect(() => {
     // Handle the authorization code and exchange it for an access token
-    const handleAuthorizationCode = async () => {
+    const handleAuthorizationCode = async (): Promise<boolean> => {
       const searchParams = new URLSearchParams(window.location.search);
       const authorizationCode = searchParams.get("code");
       if (!authorizationCode) {
@@ -138,35 +148,46 @@ export default function LoginWith42Button() {
         new Error(error);
       }
     };
-    handleAuthorizationCode();
+    handleAuthorizationCode().then();
   }, [onSuccess]);
 
   const handleLoginClick = () => {
     setIsLoading(true);
     // Redirect the user to the 42 OAuth authorization endpoint
-    const authorizationUrl = `https://api.intra.42.fr/oauth/authorize?client_id=${CLIENT_ID}&redirect_uri=${REDIRECT_URI}&response_type=code`;
-    window.location.href = authorizationUrl;
+    history.push(
+      `https://api.intra.42.fr/oauth/authorize?client_id=${CLIENT_ID}&redirect_uri=${REDIRECT_URI}&response_type=code`
+    );
   };
+
 
   return (
     <>
-      <Box className="body-page-auth" sx={{
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        width: "100vw",
-        height: "100vh"
-      }}
-      >
-        <Box>Log in only option : </Box>
-        <Button
-          onClick={handleLoginClick}
-          disabled={isLoading}
-          disableRipple={true}
-          disableFocusRipple={true}
-        >
-          {isLoading ? "Logging in..." : "Login with 42"}
-        </Button>
+      <Box className="body-page-auth">
+        <Box className="lines">
+          <Box className="line" />
+          <Box className="line" />
+          <Box className="line" />
+        </Box>
+
+        <Box className="login-details">
+          <Box className="login-text">
+            Welcome to Schlurp's psychedelic ride. Enjoy yourself on the King
+            Pong Island
+          </Box>
+          <Box className="container-button">
+            <Box className="tag">Log in with 42 </Box>
+            <Button
+              variant={"outlined"}
+              className="button-login"
+              onClick={handleLoginClick}
+              disabled={isLoading}
+              disableRipple={true}
+              disableFocusRipple={true}
+            >
+              {isLoading ? "Logging in..." : "Login"}
+            </Button>
+          </Box>
+        </Box>
       </Box>
     </>
   );

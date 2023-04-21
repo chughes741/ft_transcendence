@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { ProfileEntity, UserStatus } from "kingpong-lib";
+import { ProfileEntity } from "kingpong-lib";
 
 /**
  * Each page view is a value
@@ -52,6 +52,7 @@ export const useRootModel = (): RootModelType => {
     useState<boolean>(false);
   const [sessionToken, setSessionToken] = useState<string>("");
 
+  console.log("AHHHHHHHHHHHHHHHHHHHHHHH le self ici est : ", self)
   return {
     self,
     setSelf,

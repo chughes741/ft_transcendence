@@ -21,6 +21,10 @@
     align-items: center;
     align-self: center;
     translate: 5% 0;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
 }
 
 .dynamic-icon-button:before {

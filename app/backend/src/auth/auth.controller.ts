@@ -31,7 +31,7 @@ const logger = new Logger("AuthController");
 @ApiTags("auth")
 export class AuthController {
   // Here, private means that authService is a member attribute
-  constructor(private authService: AuthService) {}
+  constructor(private authService: AuthService) { }
 
   @HttpCode(HttpStatus.CREATED)
   @Post("signup")
@@ -48,11 +48,6 @@ export class AuthController {
   @Get("signup")
   signup_ft(@Body() dto: AuthRequest) {
     logger.log("Succesfully redirected!");
-
-    logger.log({
-      dto
-    }); // Creates an object and assigns it
-
     return dto;
   }
 
@@ -72,22 +67,22 @@ export class AuthController {
   @HttpCode(HttpStatus.OK)
   @Post("signin")
   signin(@Body() dto: AuthRequest) {
-    
-    const info : UserEntity = {
+
+    const info: UserEntity = {
       username: dto.username,
-      avatar : '',
+      avatar: '',
       firstName: dto.firstName,
-      lastName : dto.lastName,
-      email : dto.email,
+      lastName: dto.lastName,
+      email: dto.email,
       status: UserStatus.ONLINE,
     }
     return this.authService.signin(info);
   }
 
-  @Post("refresh")
+  @Post("deleteToken")
   @SubscribeMessage("refresh")
   async refreshToken(@Body("refresh_token") refresh_token: Token) {
-    
+
     return
     //return this.authService.refreshToken(refresh_token);
   }
@@ -98,15 +93,12 @@ export class AuthController {
     @Query("socketId") socketId: string
   ) {
     logger.log("Inside Generate42Token");
-    logger.log("Authorisation code : ", authorizationCode);
-    logger.log("Socket ID: ", socketId);
     return await this.authService.getAuht42(socketId, authorizationCode);
   }
 
   @Get("qrCode")
-  async generateQrCode() 
-  {
-    console.log("INSIDE QRCODE FUNCTION");
+  async generateQrCode() {
+    logger.log("Generating QrCode");
     return await this.authService.enableTwoFactorAuth();
   }
 
@@ -122,8 +114,7 @@ export class AuthController {
   async verifyQrCode(
     @Query("secret") secret: string,
     @Query("code") code: string
-  ) 
-  {
+  ) {
     return await this.authService.verifyQrCode(secret, code);
   }
 
@@ -133,17 +124,15 @@ export class AuthController {
   @UseGuards(TokenIsVerified)
   async update2FA(
     @Query("username") userName: string,
-    @Headers("Socket-id") socketId: string,
-    @Headers('Authorization') authHeader: string
   ) {
-      return await this.authService.update2FA(userName)
+    return await this.authService.update2FA(userName)
   }
 
-  @Get("authorisationURL")
-  async generateAuth42Url() {
-    const REDIRECT_URI = "http://localhost:3000/";
-    const CLIENT_ID =
-      "u-s4t2ud-51fb382cccb5740fc1b9129a3ddacef8324a59dc4c449e3e8ba5f62acb2079b6";
-    return `https://api.intra.42.fr/oauth/authorize?client_id=${CLIENT_ID}&redirect_uri=${REDIRECT_URI}&response_type=code`;
+  @Post("deleteToken")
+  @UseGuards(TokenIsVerified)
+  async deleteToken(@Query("socketId") socketId: string) {
+    this.authService.deleteToken(socketId);
+    return
   }
+
 }
