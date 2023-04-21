@@ -2,8 +2,6 @@ import { useState, useEffect } from "react";
 import { Button, Box } from "@mui/material";
 import { socket } from "../contexts/WebSocket.context";
 import { ProfileEntity } from "kingpong-lib";
-
-import VerifyQRCode from "./QrCodeElement";
 import { PageState } from "src/root.model";
 import { useRootViewModelContext } from "src/root.context";
 
@@ -43,9 +41,12 @@ export interface dataResponse {
   twoFAenable: boolean,
 }
 
+export const headers = {
+  "client-id": null,
+  "client-token": null,
+}
+
 export default function LoginWith42Button() {
-
-
   const { setShowChooseUsernameModal,
     setFullscreen,
     sessionToken,
@@ -99,7 +100,6 @@ export default function LoginWith42Button() {
         new Error("Authorization code not found");
         return;
       }
-
       try {
         socket.on("connect", async () => {
           const url = `http://localhost:3000/auth/token?code=${authorizationCode}&socketId=${socket.id}`;
@@ -121,6 +121,9 @@ export default function LoginWith42Button() {
 
           else
             setFullscreen(false);
+          headers["client-id"] = socket.id;
+          headers["client-token"] = client.token;
+          console.log(headers);
           if (client.user.enable2fa)
             setPageState(PageState.QRCode);
           const userProfile: dataResponse = {

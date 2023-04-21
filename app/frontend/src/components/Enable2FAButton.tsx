@@ -4,6 +4,7 @@ import { Button } from "@mui/material";
 import { useRootViewModelContext } from "src/root.context";
 import { socket } from "src/contexts/WebSocket.context";
 import { PageState } from "src/root.model";
+import { headers } from "./Login42";
 
 interface Props {
     enabled: boolean;
@@ -15,21 +16,12 @@ export default function TwoFactorButton({ enabled }: Props) {
 
     const onToggle = async () => {
 
-        //TRY is needed to catch error : Unauthorized Exception
-
-        console.log("SESSION TOKEN 2FA", sessionToken)
         setIsLoading(true);
-        const socketId = socket.id;
-        console.log("SOCKETID in TOKEN 2FA", socket.id)
         const url = `/auth/update2FA?username=${self.username}`;
-        console.log("Update 2FA for", self.username)
+        console.log("With headers", headers)
         const response = await fetch(url, {
             method: 'GET',
-            headers: {
-                "Content-Type": "application/json",
-                "client-id": socketId,
-                "client-token": sessionToken,
-            }
+            headers
         });
         const data = await response.json();
         if (data.statusCode && data.statusCode === 401) //UNAUTHORIZED EXCEPTION

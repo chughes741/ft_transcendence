@@ -1,15 +1,11 @@
 import { Injectable, Logger } from "@nestjs/common";
 import { PrismaService } from "../prisma/prisma.service";
 import { AuthEntity, AuthRequest, UserEntity } from "./dto";
-import { JwtService } from "@nestjs/jwt";
-import { ConfigService } from "@nestjs/config";
 import * as speakeasy from 'speakeasy';
 import * as qrcode from 'qrcode';
 import axios from "axios";
 import { Token, TokenStorageService } from "../token-storage.service";
 import { UserStatus } from "@prisma/client";
-import { boolean } from "joi";
-import { Console } from "console";
 
 const logger = new Logger("AuthService");
 
