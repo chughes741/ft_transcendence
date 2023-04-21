@@ -6,6 +6,7 @@ import * as qrcode from 'qrcode';
 import axios from "axios";
 import { Token, TokenStorageService } from "../token-storage.service";
 import { UserStatus } from "@prisma/client";
+import { ApiRequestTimeoutResponse } from "@nestjs/swagger";
 
 const logger = new Logger("AuthService");
 
@@ -79,16 +80,22 @@ export class AuthService {
   }
 
   async getAuht42(clientId: string, authorization_code: string) : Promise<AuthEntity> {
+    /*
     const UID =
       "u-s4t2ud-51fb382cccb5740fc1b9129a3ddacef8324a59dc4c449e3e8ba5f62acb2079b6";
     const SECRET =
       "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";
     const API_42_URL = "https://api.intra.42.fr";
     const REDIRECT_URI = "http://localhost:3000/";
+    */
 
+    const UID = process.env.UID;
+    const SECRET = process.env.SECRET;
+    const API_42_URL = process.env.API_42_URL;
+    const REDIRECT_URI = process.env.REDIRECT_URI;
+    console.log(UID, SECRET, API_42_URL, REDIRECT_URI);
 
-    const fuckedUpResponse = await axios.post(
-      "https://api.intra.42.fr/oauth/token",
+    const fuckedUpResponse = await axios.post( "https://api.intra.42.fr/oauth/token",
       {
         grant_type: "authorization_code",
         client_id: UID,
@@ -131,27 +138,6 @@ export class AuthService {
     }
     logger.log("Identity of user logging in" , authEntity.user)
     return authEntity;
-  }
-
-
-  async TokenIsVerified(
-    clientId: string,
-    clientToken: string
-  ): Promise<boolean> {
-    // Check if token is valid
-    const token = this.tokenStorage.getToken(clientId);
-    console.log("TOKEN TO VERIFY", token);
-    if (!token || token.access_token !== clientToken) {
-      logger.error("Who TF is that?", clientId);
-      return false;
-    }
-    const currentTime = Math.floor(Date.now() / 1000);
-    const expiresIn = token.expires_in;
-    const createdTime = token.created_at;
-    const totalValidTime = expiresIn + createdTime;
-    if (totalValidTime < currentTime)
-      this.tokenStorage.removeToken(clientId);
-    return totalValidTime > currentTime;
   }
 
   async changeName(current : string, newName : string) : Promise<boolean>{
