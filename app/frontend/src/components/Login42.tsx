@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import {useState, useEffect, useCallback} from "react";
 import { Button, Box } from "@mui/material";
 import { socket } from "../contexts/WebSocket.context";
 import { ProfileEntity } from "kingpong-lib";
