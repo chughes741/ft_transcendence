@@ -69,12 +69,12 @@ export const useGameModel = (): GameModelType => {
   const [scoreRight, setScoreRight] = useState<number>(0);
 
   const [gameState, setGameState] = useState<GameState>({
-      ball_x: 0,
-      ball_y: 0,
-      paddle_left_y: 0,
-      paddle_right_y: 0,
-      score_left: 0,
-      score_right: 0,
+    ball_x: 0,
+    ball_y: 0,
+    paddle_left_y: 0,
+    paddle_right_y: 0,
+    score_left: 0,
+    score_right: 0
   });
 
   return {

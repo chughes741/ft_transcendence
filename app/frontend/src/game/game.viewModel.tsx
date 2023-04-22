@@ -51,7 +51,7 @@ export const GameViewModelProvider = ({ children }) => {
     scoreLeft,
     setScoreLeft,
     scoreRight,
-    setScoreRight, 
+    setScoreRight,
     gameState,
     setGameState
   } = gameModel;
@@ -150,7 +150,7 @@ export const GameViewModelProvider = ({ children }) => {
 
   /**
    * Manage joining the queue
-   * 
+   *
    * @async
    */
   const joinGameQueue = async () => {
@@ -167,7 +167,6 @@ export const GameViewModelProvider = ({ children }) => {
       }
     );
   };
-
 
   return (
     <GameViewModelContext.Provider

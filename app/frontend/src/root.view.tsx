@@ -1,7 +1,7 @@
 /** Libraries */
 import { useEffect } from "react";
 import { Box, Container } from "@mui/material";
-import logo from "./42Logo.png"
+import logo from "./42Logo.png";
 
 /** Providers */
 import { useRootViewModelContext } from "./root.context";
@@ -26,18 +26,17 @@ import VerifyQRCode from "./components/QrCodeElement";
  */
 
 function RootViewContent(): JSX.Element {
-
   const { pageState } = useRootViewModelContext();
 
   switch (pageState) {
     case PageState.Auth: {
-      return ( <LoginWith42Button/>  )
+      return <LoginWith42Button />;
     }
-    case PageState.QRCode : {
-      return (<VerifyQRCode />)
+    case PageState.QRCode: {
+      return <VerifyQRCode />;
     }
     case PageState.Home: {
-      return ( <div></div> );
+      return <div></div>;
     }
     case PageState.Game: {
       return <GameWindow />;
@@ -65,9 +64,8 @@ export function RootView(): JSX.Element {
     fullscreen,
     setFullscreen,
     /* Username */
-    showChooseUsernameModal,
-} = useRootViewModelContext();
-
+    showChooseUsernameModal
+  } = useRootViewModelContext();
 
   const handleKeyDown = (event: KeyboardEvent) => {
     if (event.key === "Escape" && fullscreen) {
@@ -121,9 +119,7 @@ export function RootView(): JSX.Element {
           )}
         </Box>
       </Container>
-      <ChooseUsernameModal
-        showModal={showChooseUsernameModal}
-      />
+      <ChooseUsernameModal showModal={showChooseUsernameModal} />
     </>
   );
 }

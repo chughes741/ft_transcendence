@@ -1,11 +1,11 @@
-import {useCallback, useEffect, useState} from "react";
-import {Box, Button} from "@mui/material";
-import {ProfileEntity} from "kingpong-lib";
-import {PageState} from "src/root.model";
-import {useRootViewModelContext} from "src/root.context";
+import { useCallback, useEffect, useState } from "react";
+import { Box, Button } from "@mui/material";
+import { ProfileEntity } from "kingpong-lib";
+import { PageState } from "src/root.model";
+import { useRootViewModelContext } from "src/root.context";
 import "./Login42.tsx.css";
-import {socket} from "../contexts/WebSocket.context";
-import {createBrowserHistory} from "history";
+import { socket } from "../contexts/WebSocket.context";
+import { createBrowserHistory } from "history";
 
 const CLIENT_ID =
   "u-s4t2ud-51fb382cccb5740fc1b9129a3ddacef8324a59dc4c449e3e8ba5f62acb2079b6";
@@ -55,15 +55,15 @@ export default function LoginWith42Button() {
     sessionToken,
     setSessionToken,
     setSelf,
-    setPageState,
+    setPageState
   } = useRootViewModelContext();
 
-    const history = createBrowserHistory();
-  if (sessionToken) // add a check if the toke is still valid
-  {
+  const history = createBrowserHistory();
+  if (sessionToken) {
+    // add a check if the toke is still valid
     history.go(-3);
-    return
-}
+    return;
+  }
   const [isLoading, setIsLoading] = useState(false);
 
   const populateProfile = (data: AuthEntity): ProfileEntity => {
@@ -125,7 +125,6 @@ export default function LoginWith42Button() {
           twoFAenable: client.user.enable2fa
         };
         onSuccess(userProfile);
-
       });
     } catch (error) {
       new Error(error);
@@ -139,7 +138,9 @@ export default function LoginWith42Button() {
   const handleLoginClick = () => {
     setIsLoading(true);
     // Redirect the user to the 42 OAuth authorization endpoint
-     history.push(`https://api.intra.42.fr/oauth/authorize?client_id=${CLIENT_ID}&redirect_uri=${REDIRECT_URI}&response_type=code`);
+    history.push(
+      `https://api.intra.42.fr/oauth/authorize?client_id=${CLIENT_ID}&redirect_uri=${REDIRECT_URI}&response_type=code`
+    );
   };
 
   return (

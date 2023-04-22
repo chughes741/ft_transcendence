@@ -6,11 +6,12 @@ import { useRootViewModelContext } from "src/root.context";
 import { PageState } from "src/root.model";
 import { headers } from "./Login42";
 import { socket } from "src/contexts/WebSocket.context";
-import {createBrowserHistory} from "history";
+import { createBrowserHistory } from "history";
 
 function ImgUpload() {
   const [file, setFile] = useState(null);
-  const { self, setSelf, setSessionToken, setPageState, setFullscreen } = useRootViewModelContext();
+  const { self, setSelf, setSessionToken, setPageState, setFullscreen } =
+    useRootViewModelContext();
   const handleFileChange = (event) => {
     setFile(event.target.files[0]);
   };
@@ -29,23 +30,23 @@ function ImgUpload() {
       formData.append("file", file);
       formData.append("newData", JSON.stringify(newdata));
 
-      console.log("Headers in IMG upload", headers)
+      console.log("Headers in IMG upload", headers);
       const response = await fetch("/imgtransfer/upload", {
         method: "POST",
         headers,
         body: formData
-      })
+      });
       const data = await response.json();
-      if (data.statusCode && data.statusCode === 401) //UNAUTHORIZED EXCEPTION
-      {
+      if (data.statusCode && data.statusCode === 401) {
+        //UNAUTHORIZED EXCEPTION
         //MUST FLUSH THE session TOKEN and bring back to login page
         await fetch(`/auth/deleteToken?socketId=${socket.id}`, {
-          method: 'POST',
+          method: "POST",
           headers
         });
-        setSessionToken("")
+        setSessionToken("");
         setPageState(PageState.Auth);
-        history.push('/auth');
+        history.push("/auth");
         setFullscreen(true);
         setSelf(null);
         return;

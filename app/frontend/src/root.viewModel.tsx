@@ -1,5 +1,5 @@
-import { RootModelType, useRootModel} from "./root.model";
-import {RootViewModelContext} from "./root.context";
+import { RootModelType, useRootModel } from "./root.model";
+import { RootViewModelContext } from "./root.context";
 
 /**
  * Root view model type
@@ -9,7 +9,6 @@ import {RootViewModelContext} from "./root.context";
  */
 export interface RootViewModelType extends RootModelType {
   getSessionToken: () => void;
-
 }
 
 /**
@@ -22,7 +21,6 @@ export const RootViewModelProvider = ({ children }) => {
   const rootModel = useRootModel();
   const { sessionToken } = useRootModel();
 
-
   /**
    * Redirect to 42Auth
    */
@@ -34,7 +32,7 @@ export const RootViewModelProvider = ({ children }) => {
     <RootViewModelContext.Provider
       value={{
         ...rootModel,
-        getSessionToken,
+        getSessionToken
       }}
     >
       {children}

@@ -8,6 +8,12 @@ import { TokenStorageService } from "src/token-storage.service";
 
 @Module({
   imports: [PrismaModule],
-  providers: [ChatGateway, ChatService, UserConnectionsService, PrismaService, TokenStorageService]
+  providers: [
+    ChatGateway,
+    ChatService,
+    UserConnectionsService,
+    PrismaService,
+    TokenStorageService
+  ]
 })
 export class ChatModule {}

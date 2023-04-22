@@ -37,13 +37,11 @@ export interface ListUsersRequest {
   chatRoomName: string;
 }
 
-
 export interface SendDirectMessageRequest {
   recipient: string;
   sender: string;
   senderRank: ChatMemberRank;
 }
-
 
 export interface CreateUserRequest {
   username: string;
@@ -167,7 +165,7 @@ export class ChatGateway
     private prismaService: PrismaService,
     private chatService: ChatService,
     private userConnectionsService: UserConnectionsService,
-    private tokenStorage: TokenStorageService,
+    private tokenStorage: TokenStorageService
   ) {}
 
   @WebSocketServer()

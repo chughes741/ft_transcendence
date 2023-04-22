@@ -16,6 +16,11 @@ import { TokenStorageService } from "src/token-storage.service";
     PrismaModule
   ],
   controllers: [ImgTransferController],
-  providers: [ImgTransferService, PrismaService, TokenIsVerified, TokenStorageService]
+  providers: [
+    ImgTransferService,
+    PrismaService,
+    TokenIsVerified,
+    TokenStorageService
+  ]
 })
 export class ImgTransferModule {}

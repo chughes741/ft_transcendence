@@ -27,14 +27,12 @@ import {
   GetProfileRequest
 } from "kingpong-lib";
 
-
 /*End of Mute and End of Ban:  */
 //Is added to the current date (now)
 const GLOBAL_T_IN_DAYS = 5 /*DAYS*/ * (24 * 60 * 60 * 1000); // One day in milliseconds
 
 import { UpdateChatMemberRequest } from "src/chat/dto/userlist.dto";
 import { UserEntity } from "../auth/dto";
-
 
 const logger = new Logger("PrismaService");
 
@@ -101,18 +99,21 @@ export class PrismaService extends PrismaClient {
     }
 
     try {
-      const user = await this.user.findUnique({ where: { username: username } });
+      const user = await this.user.findUnique({
+        where: { username: username }
+      });
       return !!user;
     } catch (err) {
       return false;
     }
   }
 
-  async changeUserName(userName: string, newUsername: string): Promise<boolean> {
-
+  async changeUserName(
+    userName: string,
+    newUsername: string
+  ): Promise<boolean> {
     const nameExists = await this.userNameExists(newUsername);
-    if (nameExists)
-      return false;
+    if (nameExists) return false;
     await this.user.update({
       where: {
         username: userName
@@ -120,7 +121,7 @@ export class PrismaService extends PrismaClient {
       data: {
         username: newUsername
       }
-    })
+    });
     return true;
   }
 
@@ -184,7 +185,8 @@ export class PrismaService extends PrismaClient {
     console.log(req);
     if (!req.username || !req.avatar) {
       throw new Error(
-        `Missing required fields: ${!!req.avatar && "avatar, "} ${!!req.username && "username, "
+        `Missing required fields: ${!!req.avatar && "avatar, "} ${
+          !!req.username && "username, "
         }`
       );
     }
@@ -523,7 +525,6 @@ export class PrismaService extends PrismaClient {
     });
   }
 
-
   /**
    * Returns a users friends from the database
    *
@@ -612,13 +613,13 @@ export class PrismaService extends PrismaClient {
     try {
       const member = updateDto.memberToUpdateUuid
         ? await this.chatMember.findUnique({
-          where: { id: updateDto.memberToUpdateUuid },
-          include: { room: true }
-        })
+            where: { id: updateDto.memberToUpdateUuid },
+            include: { room: true }
+          })
         : await this.getChatMemberByUsername(
-          updateDto.roomName,
-          updateDto.usernameToUpdate
-        );
+            updateDto.roomName,
+            updateDto.usernameToUpdate
+          );
       if (!member) {
         throw new Error("User is not a member of this chatroom");
       }
@@ -800,13 +801,13 @@ export class PrismaService extends PrismaClient {
     // Get a list of users who are not in the specified chat room
     const usersNotInRoom = roomId
       ? await this.chatMember.findMany({
-        where: {
-          roomId: roomId
-        },
-        select: {
-          memberId: true
-        }
-      })
+          where: {
+            roomId: roomId
+          },
+          select: {
+            memberId: true
+          }
+        })
       : [];
     const usersNotInRoomIds = usersNotInRoom
       ? usersNotInRoom.map((user) => user.memberId)
@@ -892,12 +893,11 @@ export class PrismaService extends PrismaClient {
   }
 
   async update2FA(userName: string): Promise<boolean> {
-
     const user = await this.user.findUnique({
       where: {
         username: userName
-      },
-    })
+      }
+    });
     if (user.enable2fa === true) {
       await this.user.update({
         where: {
@@ -908,9 +908,7 @@ export class PrismaService extends PrismaClient {
         }
       });
       return false;
-    }
-    else 
-    {
+    } else {
       await this.user.update({
         where: {
           username: userName
