@@ -6,6 +6,7 @@ import {
   ChatMemberStatus,
   ChatRoom,
   ChatRoomStatus,
+  GameType,
   Match,
   Prisma,
   PrismaClient,
@@ -28,6 +29,7 @@ import {
 } from "kingpong-lib";
 import { UpdateChatMemberRequest } from "src/chat/dto/userlist.dto";
 import { UserEntity } from "../auth/dto";
+import { MatchEntity } from "../game/game.types";
 
 const logger = new Logger("PrismaService");
 
@@ -981,5 +983,40 @@ export class PrismaService extends PrismaClient {
     });
 
     return !!blockedUser;
+  }
+
+  /**
+   * Add a match to the database
+   * @param {string} player1Id
+   * @param {string} player2Id
+   * @param {number} scorePlayer1
+   * @param {number} scorePlayer2
+   * @async
+   * @returns {Promise<Match>}
+   */
+  async addMatch({
+    player1Id,
+    player2Id,
+    scorePlayer1,
+    scorePlayer2,
+    timestamp,
+    gameType
+  }: MatchEntity): Promise<Match> {
+    const newMatch = await this.match.create({
+      data: {
+        player1: {
+          connect: { id: player1Id }
+        },
+        player2: {
+          connect: { id: player2Id }
+        },
+        scorePlayer1,
+        scorePlayer2,
+        timestamp,
+        gameType
+      }
+    });
+
+    return newMatch;
   }
 }

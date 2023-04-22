@@ -5,7 +5,13 @@ import { GameConfig, PaddleConfig, BallConfig } from "./config/game.config";
 import { WebSocketServer, WebSocketGateway } from "@nestjs/websockets";
 import { Server } from "socket.io";
 import { Vec2 } from "./vector";
-import { GameData, BallData, gameLobby, PaddleData } from "./game.types";
+import {
+  GameData,
+  BallData,
+  gameLobby,
+  PaddleData,
+  MatchEntity
+} from "./game.types";
 import { degToRad, checkIntersect } from "./game.utils";
 import {
   ServerGameStateUpdateEvent,
@@ -14,6 +20,8 @@ import {
   GameEndedEvent,
   Ball
 } from "kingpong-lib";
+import { GameType } from "@prisma/client";
+import { PrismaService } from "../prisma/prisma.service";
 const logger = new Logger("gameLogic");
 
 @WebSocketGateway({
@@ -23,7 +31,10 @@ const logger = new Logger("gameLogic");
 })
 @Injectable()
 export class GameLogic {
-  constructor(private schedulerRegistry: SchedulerRegistry) {}
+  constructor(
+    private schedulerRegistry: SchedulerRegistry,
+    private prismaService: PrismaService
+  ) {}
 
   @WebSocketServer()
   public server: Server;
@@ -83,7 +94,7 @@ export class GameLogic {
   /*************************************************************************************/
 
   //Calculate game state and send server update
-  async sendServerUpdate(lobby: gameLobby) {
+  async sendServerUpdate(lobby: gameLobby): Promise<void> {
     lobby.gamestate = this.calculateGameState(lobby.gamestate);
 
     //Build payload
@@ -100,12 +111,41 @@ export class GameLogic {
       lobby.gamestate.score[0] >= GameConfig.maxScore ||
       lobby.gamestate.score[1] >= GameConfig.maxScore
     ) {
+      // Check if interval still exists
+      try {
+        this.deleteInterval("gameUpdateInterval" + lobby.lobby_id);
+      } catch (error) {
+        return;
+      }
+
+      const player1Id = await this.prismaService.getUserIdByNick(
+        lobby.gamestate.players[0]
+      );
+      const player2Id = await this.prismaService.getUserIdByNick(
+        lobby.gamestate.players[1]
+      );
       this.server.to(lobby.lobby_id).emit(GameEvents.GameEnded, {
         match_id: lobby.lobby_id,
         lobby_id: lobby.lobby_id,
         game_state: gamestate
       });
-      this.deleteInterval("gameUpdateInterval" + lobby.lobby_id);
+      const match: MatchEntity = {
+        player1Id,
+        player2Id,
+        scorePlayer1: lobby.gamestate.score[0],
+        scorePlayer2: lobby.gamestate.score[1],
+        timestamp: new Date(Date.now()),
+        gameType: GameType.UNRANKED
+      };
+      logger.log("Match: " + JSON.stringify(match));
+      try {
+        const ret = await this.prismaService.addMatch(match);
+        logger.log("Successfully added match to database");
+        console.log(ret);
+      } catch (error) {
+        logger.error(error);
+      }
+
       return;
     }
 
@@ -227,7 +267,7 @@ export class GameLogic {
         gamestate.score[1]++;
         return curBall;
       }
-    } else if (curBall.pos.y >= (GameConfig.playAreaHeight / 2))  {
+    } else if (curBall.pos.y >= GameConfig.playAreaHeight / 2) {
       const intersect: Vec2 = checkIntersect(
         prevBall.pos,
         curBall.pos,

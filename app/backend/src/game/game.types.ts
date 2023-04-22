@@ -1,6 +1,5 @@
+import { GameType } from "@prisma/client";
 import { Vec2 } from "./vector";
-
-
 
 export class BallData {
   pos: Vec2 = new Vec2();
@@ -54,4 +53,13 @@ export class ClientGameStateUpdate {
   lobby_id: string;
   player_side: string;
   paddle_pos: number;
+}
+
+export interface MatchEntity {
+  player1Id: string;
+  player2Id: string;
+  scorePlayer1: number;
+  scorePlayer2: number;
+  timestamp: Date;
+  gameType: GameType;
 }
