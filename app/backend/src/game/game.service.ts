@@ -46,7 +46,7 @@ export class GameService {
 
   /**
    * Emit event to tell client that lobby has been successfully created
-   * 
+   *
    * @method createLobby
    * @param {GameTypes.PlayerQueue[]} playerPair
    * @returns {}
@@ -99,7 +99,7 @@ export class GameService {
 
   /**
    * Adds player to the game queue and tries to find a match
-   * 
+   *
    * @method joinGameQueue
    * @param {JoinGameQueueRequest} player
    * @returns {Promise<boolean>}
@@ -137,7 +137,7 @@ export class GameService {
 
   /**
    * Removes player from the game queue
-   * 
+   *
    * @param player
    * @returns Return bool on success?
    */
@@ -152,7 +152,7 @@ export class GameService {
 
   /**
    * Creates a new game lobby with sender and invitee as players
-   * 
+   *
    * @method sendGameInvite
    * @returns {Promise<LobbyCreatedEvent>}
    * @async
@@ -178,7 +178,7 @@ export class GameService {
    */
   async playerReady(payload: PlayerReadyRequest): Promise<boolean> {
     logger.log("playerReady() called");
-    
+
     logger.log("lobby_id: " + this.gameModuleData.getLobby(payload.lobby_id));
     if (this.gameModuleData.getLobby(payload.lobby_id)) {
       this.gameModuleData.updatePlayerReady(payload);
@@ -189,7 +189,7 @@ export class GameService {
 
   /**
    * Start the game if both players are ready
-   * 
+   *
    * @method gameStart
    * @returns {}
    * @async
@@ -208,7 +208,7 @@ export class GameService {
 
   /**
    * Handle game state updates from the client to update paddle positions
-   * 
+   *
    * @method clientUpdate
    * @param {ClientGameStateUpdateRequest} payload
    * @returns {}

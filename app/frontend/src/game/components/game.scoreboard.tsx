@@ -25,7 +25,7 @@ export default function ScoreBoard() {
           borderRadius: 1
         }}
       >
-        <Box sx={{ display: "flex", flexGrow: 1, ml: 2}}>
+        <Box sx={{ display: "flex", flexGrow: 1, ml: 2 }}>
           <Typography>{scoreLeft}</Typography>
         </Box>
         <Box sx={{ display: "flex", flexGrow: 1, ml: 2 }}>
@@ -37,7 +37,7 @@ export default function ScoreBoard() {
           </Divider>
         </Box>
         <Box sx={{ display: "flex", flexGrow: 1, ml: 2, mr: 2 }}>
-          <Typography >{scoreRight}</Typography>
+          <Typography>{scoreRight}</Typography>
         </Box>
       </Box>
     </Box>

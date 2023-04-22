@@ -5,7 +5,7 @@ import { socket } from "src/contexts/WebSocket.context";
 
 /**
  * QueueWait component
- * 
+ *
  * @returns {JSX.Element}
  */
 export default function queueWait() {

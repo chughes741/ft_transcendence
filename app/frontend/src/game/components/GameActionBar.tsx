@@ -17,7 +17,7 @@ export default function GameActionBar() {
         display: "flex",
         flexDirection: "row",
         alignItems: "center",
-        alignContent: "space-between",
+        alignContent: "space-between"
       }}
     >
       {/* Left Player */}
