@@ -8,7 +8,7 @@ import { HttpException, HttpStatus } from "@nestjs/common";
 import * as path from "path";
 import { ImgTransferService } from "./imgtransfer.service";
 import { imgTransferDTO } from "./dto/imgtransfer.dto";
-import TokenIsVerified from "src/token-verify";
+import TokenIsVerified from "src/tokenstorage/token-verify.service";
 
 const imageFileFilter = (req, file, cb) => {
   const extname = path.extname(file.originalname);
@@ -58,4 +58,13 @@ export class ImgTransferController {
       return "Failed to upload";
     }
   }
+
+  @Post("testing")
+  @UseGuards(TokenIsVerified)
+  public async functionTesttoCall() {
+    console.log("INSIDE it WORKS");
+
+  }
+
+
 }

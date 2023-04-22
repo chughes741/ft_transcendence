@@ -28,7 +28,7 @@ import { MessageEntity } from "./entities/message.entity";
 import { KickMemberRequest, UpdateChatMemberRequest } from "./dto/userlist.dto";
 import { ChatMemberEntity } from "./entities/message.entity";
 import { AuthRequest, UserEntity } from "../auth/dto";
-import { TokenStorageService } from "src/token-storage.service";
+import { TokenStorageService } from "src/tokenstorage/token-storage.service";
 
 const logger = new Logger("ChatService");
 

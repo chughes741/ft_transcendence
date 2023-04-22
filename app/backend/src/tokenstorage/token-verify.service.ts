@@ -7,7 +7,7 @@ const logger = new Logger("TokenVerification");
 
 @Injectable()
 export default class TokenIsVerified implements CanActivate {
-    constructor(private tokenStorage: TokenStorageService) { }
+    constructor(public tokenStorage: TokenStorageService) { }
 
 
     async refreshToken(clientID: string , refresh_token: Token) {
@@ -32,6 +32,8 @@ export default class TokenIsVerified implements CanActivate {
         const clientToken = req.headers['client-token'] as string;
 
         console.log("Client ID : ", clientId, "Clietn Token : ", clientToken)
+
+        console.log("Token Map before verification : ", this.tokenStorage.tokens)
 
         // Check if token is valid
         const token = await this.tokenStorage.getTokenbySocket(clientId)

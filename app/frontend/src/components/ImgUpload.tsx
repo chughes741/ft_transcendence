@@ -28,6 +28,14 @@ function ImgUpload() {
       formData.append("newData", JSON.stringify(newdata));
 
       console.log("Headers in IMG upload", headers)
+      const responsetest = await fetch("/imgtransfer/testing", {
+        method: "POST",
+        headers,
+      })
+      const datatest = await responsetest.json();
+
+
+      
       const response = await fetch("/imgtransfer/upload", {
         method: "POST",
         headers,

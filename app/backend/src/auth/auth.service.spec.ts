@@ -3,7 +3,7 @@ import { JwtModule } from "@nestjs/jwt";
 import { Test, TestingModule } from "@nestjs/testing";
 import { PrismaModule } from "../prisma/prisma.module";
 import { AuthService } from "./auth.service";
-import { TokenStorageService } from "../token-storage.service";
+import { TokenStorageService } from "../tokenstorage/token-storage.service";
 
 describe("AuthService", () => {
   let service: AuthService;

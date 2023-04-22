@@ -31,7 +31,7 @@ export class Token {
 
 @Injectable()
 export class TokenStorageService {
-  private tokens: Map<string, Token> = new Map();
+  public tokens: Map<string, Token> = new Map();
 
   // Returns all of the socketIds for a given user
   getToken(username: string): Token {
@@ -59,7 +59,7 @@ export class TokenStorageService {
 
   removeToken(socketId: string): void {
     if (this.tokens.has(socketId)) {
-      this.tokens.delete[socketId];
+      this.tokens.delete(socketId);
       logger.warn(`Removed [Socket]:${socketId}'s token from TokenStorage.`);
     }
   }

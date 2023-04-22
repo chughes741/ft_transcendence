@@ -16,9 +16,9 @@ import { PrismaClientExceptionFilterHttp } from "../prisma-client-exception.filt
 import { AuthService } from "./auth.service";
 import { GetUser } from "./decorators";
 import { AuthRequest, UserEntity } from "./dto";
-import { Token } from "src/token-storage.service";
+import { Token } from "src/tokenstorage/token-storage.service";
 import { UserStatus } from "@prisma/client";
-import TokenIsVerified from "src/token-verify";
+import TokenIsVerified from "src/tokenstorage/token-verify.service";
 
 
 const logger = new Logger("AuthController");
@@ -115,7 +115,6 @@ export class AuthController {
     return await this.authService.verifyQrCode(secret, code);
   }
 
-  // 
 
   @Get("update2FA")
   @UseGuards(TokenIsVerified)

@@ -4,14 +4,16 @@ import { useState } from 'react';
 import { PageState } from "src/root.model";
 import { useRootViewModelContext } from 'src/root.context';
 import { socket } from 'src/contexts/WebSocket.context';
+import { headers } from './Login42';
 
 function VerifyQRCode() {
   const {
     setPageState,
     setFullscreen,
     sessionToken,
-    self,
-    // history
+    setSelf,
+    setSessionToken,
+    history
   } = useRootViewModelContext();
 
   const [qrCode, setQRCode] = useState<string | null>(null);
@@ -46,7 +48,6 @@ function VerifyQRCode() {
   const handleVerifyQRCode = async (): Promise<boolean> => {
 
     try {
-      console.log("Secret:", secret);
       const url = `/auth/verifyQrCode?secret=${secret}&code=${code}`;
       const response = await fetch(url, {
         method: 'GET',
@@ -57,7 +58,6 @@ function VerifyQRCode() {
         },
       });
       const data = await response.json();
-      console.log("THE DATA", data);
       if (data.validated) {
         setErrorMessage('');
         alert('QR code verified!');
@@ -65,11 +65,20 @@ function VerifyQRCode() {
         setFullscreen(false);
         setPageState(PageState.Home);
         return true;
-      } else {
-        // TODO
-        //If false ... can't enter website. //TODO
-        setErrorMessage(data.message);
-        return false;
+      }
+      if (data.statusCode && data.statusCode === 401) //UNAUTHORIZED EXCEPTION
+      {
+        //MUST FLUSH THE session TOKEN and bring back to login page
+        await fetch(`/auth/deleteToken?socketId=${socket.id}`, {
+          method: 'POST',
+          headers
+        });
+        setSessionToken("")
+        setPageState(PageState.Auth);
+        history.push('/auth');
+        setFullscreen(true);
+        setSelf(null);
+        return;
       }
     } catch (error) {
       console.error(error);
