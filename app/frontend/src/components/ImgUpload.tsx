@@ -6,13 +6,15 @@ import { useRootViewModelContext } from "src/root.context";
 import { PageState } from "src/root.model";
 import { headers } from "./Login42";
 import { socket } from "src/contexts/WebSocket.context";
+import {createBrowserHistory} from "history";
 
 function ImgUpload() {
   const [file, setFile] = useState(null);
-  const { self, setSelf, setSessionToken, setPageState, history, setFullscreen } = useRootViewModelContext();
+  const { self, setSelf, setSessionToken, setPageState, setFullscreen } = useRootViewModelContext();
   const handleFileChange = (event) => {
     setFile(event.target.files[0]);
   };
+  const history = createBrowserHistory();
 
   const handleUpload = async () => {
     console.log("handUpload Clicked", file);
