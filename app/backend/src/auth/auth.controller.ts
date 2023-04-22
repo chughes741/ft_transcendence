@@ -107,6 +107,7 @@ export class AuthController {
   }
 
   @Get("verifyQrCode")
+  @UseGuards(TokenIsVerified)
   async verifyQrCode(
     @Query("secret") secret: string,
     @Query("code") code: string

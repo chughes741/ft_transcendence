@@ -3,22 +3,25 @@ import { Box } from '@mui/system';
 import { useState } from 'react';
 import { PageState } from "src/root.model";
 import { useRootViewModelContext } from 'src/root.context';
+import { socket } from 'src/contexts/WebSocket.context';
 
 function VerifyQRCode() {
-  const { 
+  const {
     setPageState,
     setFullscreen,
-   // sessionToken,
-   // history
+    sessionToken,
+    self,
+    // history
   } = useRootViewModelContext();
 
   const [qrCode, setQRCode] = useState<string | null>(null);
   const [code, setCode] = useState<string>('');
   const [errorMessage, setErrorMessage] = useState<string>('');
   const [secret, setSecret] = useState<string | null>(null);
-//  const { setFullscreen } = useRootViewModelContext();
+  //  const { setFullscreen } = useRootViewModelContext();
 
   setFullscreen(true);
+
   const handleGetQRCode = async (): Promise<boolean> => {
     try {
       const url = "/auth/qrCode";
@@ -33,11 +36,11 @@ function VerifyQRCode() {
       const data = await response.json();
       setQRCode(data['qrcode']);
       setSecret(data['secret']);
+
       return true;
     } catch (error) {
       return false;
     }
-
   };
 
   const handleVerifyQRCode = async (): Promise<boolean> => {
@@ -49,10 +52,12 @@ function VerifyQRCode() {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
+          "client-id": socket.id,
+          "client-token": sessionToken,
         },
       });
       const data = await response.json();
-      console.log("THE DATA" ,data);
+      console.log("THE DATA", data);
       if (data.validated) {
         setErrorMessage('');
         alert('QR code verified!');
@@ -75,7 +80,7 @@ function VerifyQRCode() {
   return (
     <>
       <Box>Verify QR Code</Box>
-      {qrCode && <img  width="128" height="128" src={qrCode} alt="QR Code" />}
+      {qrCode && <img width="128" height="128" src={qrCode} alt="QR Code" />}
       <Button onClick={handleGetQRCode}>Get QR Code</Button>
       <br />
       <InputLabel htmlFor="code">Enter your one-time password:</InputLabel>
