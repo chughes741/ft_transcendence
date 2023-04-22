@@ -1,6 +1,7 @@
 /** Libraries */
 import { useEffect } from "react";
 import { Box, Container } from "@mui/material";
+import logo from "./42Logo.png"
 
 /** Providers */
 import { useRootViewModelContext } from "./root.context";
@@ -26,7 +27,7 @@ import VerifyQRCode from "./components/QrCodeElement";
 
 function RootViewContent(): JSX.Element {
 
-  const { pageState, history } = useRootViewModelContext();
+  const { pageState } = useRootViewModelContext();
 
   switch (pageState) {
     case PageState.Auth: {
@@ -36,7 +37,7 @@ function RootViewContent(): JSX.Element {
       return (<VerifyQRCode />)
     }
     case PageState.Home: {
-      return ( <></> );
+      return ( <div></div> );
     }
     case PageState.Game: {
       return <GameWindow />;

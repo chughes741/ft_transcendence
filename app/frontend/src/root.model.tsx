@@ -52,7 +52,6 @@ export const useRootModel = (): RootModelType => {
     useState<boolean>(false);
   const [sessionToken, setSessionToken] = useState<string>("");
 
-  console.log("AHHHHHHHHHHHHHHHHHHHHHHH le self ici est : ", self)
   return {
     self,
     setSelf,

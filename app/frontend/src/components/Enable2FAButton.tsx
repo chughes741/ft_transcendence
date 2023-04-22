@@ -11,7 +11,7 @@ interface Props {
 
 export default function TwoFactorButton({ enabled }: Props) {
     const [isLoading, setIsLoading] = useState(false);
-    const { self, setSelf, setSessionToken, setPageState, history, setFullscreen } = useRootViewModelContext();
+    const { self, setSelf, setSessionToken, setPageState, setFullscreen } = useRootViewModelContext();
 
     const onToggle = async () => {
 
@@ -28,7 +28,6 @@ export default function TwoFactorButton({ enabled }: Props) {
             //MUST FLUSH THE session TOKEN and bring back to login page
             setSessionToken("")
             setPageState(PageState.Auth);
-            history.push('/auth');
             setFullscreen(true);
             setSelf(null);
             return ;
