@@ -84,7 +84,7 @@ function PaddleLeft() {
 function PaddleRight() {
   const { self } = useRootViewModelContext();
   const { playerSide, lobbyId, gameState } = useGameViewModelContext();
-  
+
   const ref = useRef<Mesh>(null!);
 
   useFrame((state) => {
@@ -140,7 +140,7 @@ function Floor() {
  */
 function OuterFrameTop() {
   const mesh = useRef<Mesh>(null!);
-  
+
   return (
     <mesh
       ref={mesh}
@@ -159,7 +159,7 @@ function OuterFrameTop() {
  */
 function OuterFrameBottom() {
   const mesh = useRef<Mesh>(null!);
-  
+
   return (
     <mesh
       ref={mesh}
@@ -178,7 +178,7 @@ function OuterFrameBottom() {
  */
 function OuterFrameLeft() {
   const mesh = useRef<Mesh>(null!);
-  
+
   return (
     <mesh
       ref={mesh}
@@ -197,7 +197,7 @@ function OuterFrameLeft() {
  */
 function OuterFrameRight() {
   const mesh = useRef<Mesh>(null!);
-  
+
   return (
     <mesh
       ref={mesh}
@@ -234,7 +234,7 @@ export default function Game() {
     return () => {
       socket.off(GameEvents.ServerGameStateUpdate);
       socket.off(GameEvents.GameEnded);
-    }
+    };
   }, [displayLobby]);
 
   if (!gameState) return <div>Loading...</div>;

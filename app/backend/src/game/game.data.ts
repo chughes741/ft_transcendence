@@ -1,6 +1,6 @@
 import * as GameTypes from "./game.types";
 import { Logger } from "@nestjs/common";
-import {PlayerReadyRequest, ClientGameStateUpdateRequest} from "kingpong-lib";
+import { PlayerReadyRequest, ClientGameStateUpdateRequest } from "kingpong-lib";
 const logger = new Logger("gameData");
 
 /**
@@ -143,8 +143,5 @@ export class GameModuleData {
       return true;
     }
     return false;
-  };
-
+  }
 }
-
-
