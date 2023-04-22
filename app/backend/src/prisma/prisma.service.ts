@@ -29,7 +29,7 @@ import {
 } from "kingpong-lib";
 import { UpdateChatMemberRequest } from "src/chat/dto/userlist.dto";
 import { UserEntity } from "../auth/dto";
-import { MatchEntity } from "../game/game.types";
+import { MatchType } from "../game/game.types";
 
 const logger = new Logger("PrismaService");
 
@@ -1001,7 +1001,7 @@ export class PrismaService extends PrismaClient {
     scorePlayer2,
     timestamp,
     gameType
-  }: MatchEntity): Promise<Match> {
+  }: MatchType): Promise<Match> {
     const newMatch = await this.match.create({
       data: {
         player1: {

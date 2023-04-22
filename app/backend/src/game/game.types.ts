@@ -55,7 +55,7 @@ export class ClientGameStateUpdate {
   paddle_pos: number;
 }
 
-export interface MatchEntity {
+export interface MatchType {
   player1Id: string;
   player2Id: string;
   scorePlayer1: number;

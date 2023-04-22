@@ -10,7 +10,7 @@ import {
   BallData,
   gameLobby,
   PaddleData,
-  MatchEntity
+  MatchType
 } from "./game.types";
 import { degToRad, checkIntersect } from "./game.utils";
 import {
@@ -129,7 +129,7 @@ export class GameLogic {
         lobby_id: lobby.lobby_id,
         game_state: gamestate
       });
-      const match: MatchEntity = {
+      const match: MatchType = {
         player1Id,
         player2Id,
         scorePlayer1: lobby.gamestate.score[0],
