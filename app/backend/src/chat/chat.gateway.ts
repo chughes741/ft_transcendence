@@ -20,6 +20,7 @@ import { ChatMemberStatus, UserStatus } from "@prisma/client";
 import { KickMemberRequest, UpdateChatMemberRequest } from "./dto/userlist.dto";
 
 import { AuthRequest } from "../auth/dto";
+import { TokenStorageService } from "src/token-storage.service";
 
 // FIXME: temporary error type until we can share btw back and frontend
 export type DevError = {
@@ -165,7 +166,8 @@ export class ChatGateway
   constructor(
     private prismaService: PrismaService,
     private chatService: ChatService,
-    private userConnectionsService: UserConnectionsService
+    private userConnectionsService: UserConnectionsService,
+    private tokenStorage: TokenStorageService,
   ) {}
 
   @WebSocketServer()
@@ -179,8 +181,9 @@ export class ChatGateway
     logger.log(`Client connected: ${client.id}`);
   }
 
-  handleDisconnect(client: Socket) {
+  async handleDisconnect(client: Socket) {
     // Remove the user connection
+    await this.tokenStorage.removeToken(client.id);
     const connections = this.userConnectionsService.removeUserConnection(
       client.id,
       client.id

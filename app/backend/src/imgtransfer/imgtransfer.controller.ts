@@ -1,4 +1,4 @@
-import { Body, Controller, Injectable, UploadedFile } from "@nestjs/common";
+import { Body, Controller, Injectable, UnauthorizedException, UploadedFile, UseGuards } from "@nestjs/common";
 import { Post } from "@nestjs/common";
 import { Express } from "express";
 import { FileInterceptor } from "@nestjs/platform-express";
@@ -8,6 +8,7 @@ import { HttpException, HttpStatus } from "@nestjs/common";
 import * as path from "path";
 import { ImgTransferService } from "./imgtransfer.service";
 import { imgTransferDTO } from "./dto/imgtransfer.dto";
+import TokenIsVerified from "src/token-verify";
 
 const imageFileFilter = (req, file, cb) => {
   const extname = path.extname(file.originalname);
@@ -35,7 +36,7 @@ export class ImgTransferController {
       }),
       fileFilter: imageFileFilter
     })
-  )
+    )
   public async uploadUserImage(
     @UploadedFile() file: Express.Multer.File,
     @Body() Data: imgTransferDTO
@@ -52,6 +53,8 @@ export class ImgTransferController {
       this.imgtransferService.updateProfilePic(user, data);
       return newImgUrl;
     } catch (error) {
+      if (error instanceof UnauthorizedException)
+        return error;
       return "Failed to upload";
     }
   }

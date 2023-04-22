@@ -17,6 +17,8 @@ import { ImgTransferModule } from "./imgtransfer/imgtransfer.module";
 import { ImgTransferController } from "./imgtransfer/imgtransfer.controller";
 import { ImgTransferService } from "./imgtransfer/imgtransfer.service";
 import { TokenStorageService } from "./token-storage.service";
+import { Scope } from '@nestjs/common';
+import TokenIsVerified from "./token-verify";
 
 /** Used for src/... import paths */
 require("tsconfig-paths");
@@ -45,7 +47,12 @@ require("tsconfig-paths");
     AppService,
     PrismaService,
     UserConnectionsService,
-    TokenStorageService,
+    {
+      provide: TokenStorageService,
+      useClass: TokenStorageService,
+      scope: Scope.DEFAULT,
+    },
+    TokenIsVerified,
     ImgTransferService
   ]
 })

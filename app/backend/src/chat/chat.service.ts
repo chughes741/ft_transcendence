@@ -28,6 +28,7 @@ import { MessageEntity } from "./entities/message.entity";
 import { KickMemberRequest, UpdateChatMemberRequest } from "./dto/userlist.dto";
 import { ChatMemberEntity } from "./entities/message.entity";
 import { AuthRequest, UserEntity } from "../auth/dto";
+import { TokenStorageService } from "src/token-storage.service";
 
 const logger = new Logger("ChatService");
 
@@ -35,7 +36,6 @@ const logger = new Logger("ChatService");
 export class ChatService {
   constructor(
     private readonly prismaService: PrismaService,
-    private userConnectionsService: UserConnectionsService
   ) {}
 
   async getChatRoomEntity(

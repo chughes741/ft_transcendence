@@ -3,10 +3,13 @@ import { IconButton } from "@mui/material";
 import { PhotoCamera } from "@mui/icons-material";
 import { useState } from "react";
 import { useRootViewModelContext } from "src/root.context";
+import { PageState } from "src/root.model";
+import { headers } from "./Login42";
+import { socket } from "src/contexts/WebSocket.context";
 
 function ImgUpload() {
   const [file, setFile] = useState(null);
-  const { self } = useRootViewModelContext();
+  const { self, setSelf, setSessionToken, setPageState, history, setFullscreen } = useRootViewModelContext();
   const handleFileChange = (event) => {
     setFile(event.target.files[0]);
   };
@@ -24,25 +27,27 @@ function ImgUpload() {
       formData.append("file", file);
       formData.append("newData", JSON.stringify(newdata));
 
-      fetch("/imgtransfer/upload", {
+      console.log("Headers in IMG upload", headers)
+      const response = await fetch("/imgtransfer/upload", {
         method: "POST",
+        headers,
         body: formData
       })
-        .then((response) => {
-          if (response.ok) {
-            console.log("Avatar uploaded successfully");
-            response.text().then((text) => {
-              console.log("File upload worked! Should be uploaded at: ", text);
-            });
-          } else {
-            response.text().then((text) => {
-              console.error("Error uploading avatar in response:", text);
-            });
-          }
-        })
-        .catch((error) => {
-          console.error("Caught error uploading avatar:", error);
+      const data = await response.json();
+      if (data.statusCode && data.statusCode === 401) //UNAUTHORIZED EXCEPTION
+      {
+        //MUST FLUSH THE session TOKEN and bring back to login page
+        await fetch(`/auth/deleteToken?socketId=${socket.id}`, {
+          method: 'POST',
+          headers
         });
+        setSessionToken("")
+        setPageState(PageState.Auth);
+        history.push('/auth');
+        setFullscreen(true);
+        setSelf(null);
+        return;
+      }
     }
   };
 

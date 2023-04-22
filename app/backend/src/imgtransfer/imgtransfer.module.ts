@@ -5,6 +5,8 @@ import { ImgTransferService } from "./imgtransfer.service";
 import { ImgTransferController } from "./imgtransfer.controller";
 import { PrismaModule } from "src/prisma/prisma.module";
 import { PrismaService } from "src/prisma/prisma.service";
+import TokenIsVerified from "src/token-verify";
+import { TokenStorageService } from "src/token-storage.service";
 
 @Module({
   imports: [
@@ -14,6 +16,6 @@ import { PrismaService } from "src/prisma/prisma.service";
     PrismaModule
   ],
   controllers: [ImgTransferController],
-  providers: [ImgTransferService, PrismaService]
+  providers: [ImgTransferService, PrismaService, TokenIsVerified, TokenStorageService]
 })
 export class ImgTransferModule {}

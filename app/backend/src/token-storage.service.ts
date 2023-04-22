@@ -38,9 +38,9 @@ export class TokenStorageService {
     return this.tokens.get(username);
   }
 
-  getTokenbySocket(socketID: string): Token {
-    //console.log(this.tokens);
-    return this.tokens.get(socketID);
+  async getTokenbySocket(socketID: string): Promise<Token> {
+    console.log(this.tokens);
+    return await this.tokens.get(socketID);
   }
 
   getSocketByToken(access_token: string): string {
@@ -59,7 +59,7 @@ export class TokenStorageService {
 
   removeToken(socketId: string): void {
     if (this.tokens.has(socketId)) {
-      delete this.tokens[socketId];
+      this.tokens.delete[socketId];
       logger.warn(`Removed [Socket]:${socketId}'s token from TokenStorage.`);
     }
   }
