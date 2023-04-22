@@ -4,6 +4,7 @@ import { socket } from "../contexts/WebSocket.context";
 import { ProfileEntity } from "kingpong-lib";
 import { PageState } from "src/root.model";
 import { useRootViewModelContext } from "src/root.context";
+import "./Login42.tsx.css";
 
 const CLIENT_ID =
   "u-s4t2ud-51fb382cccb5740fc1b9129a3ddacef8324a59dc4c449e3e8ba5f62acb2079b6";
