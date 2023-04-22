@@ -7,6 +7,6 @@ import { TokenStorageModule } from './token-storage.module';
 @Module({
     imports: [TokenStorageModule],
     providers: [TokenIsVerified],
-    exports: [TokenIsVerified],
+    exports: [TokenIsVerified, TokenStorageModule],
 })
 export class TokenModule {}

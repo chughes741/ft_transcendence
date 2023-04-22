@@ -39,6 +39,7 @@ require("tsconfig-paths");
     PrismaModule,
     AuthModule,
     TokenModule,
+    TokenStorageModule,
     ConfigModule.forRoot({
       envFilePath: "../.env",
       // validationSchema: configValidationSchema,
