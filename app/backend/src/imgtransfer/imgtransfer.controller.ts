@@ -15,7 +15,8 @@ import { HttpException, HttpStatus } from "@nestjs/common";
 import * as path from "path";
 import { ImgTransferService } from "./imgtransfer.service";
 import { imgTransferDTO } from "./dto/imgtransfer.dto";
-import TokenIsVerified from "src/token-verify";
+import TokenIsVerified from "src/tokenstorage/token-verify.service";
+import { Token } from "src/tokenstorage/token-storage.service";
 
 const imageFileFilter = (req, file, cb) => {
   const extname = path.extname(file.originalname);
@@ -30,7 +31,10 @@ const imageFileFilter = (req, file, cb) => {
 @Injectable()
 @Controller("imgtransfer")
 export class ImgTransferController {
-  constructor(private imgtransferService: ImgTransferService) {}
+  constructor(
+    private imgtransferService: ImgTransferService,
+    private tokenIsVerified: TokenIsVerified
+    ) {}
 
   @Post("upload")
   @UseInterceptors(
@@ -49,6 +53,7 @@ export class ImgTransferController {
     @Body() Data: imgTransferDTO
   ) {
     try {
+      console.log(this.tokenIsVerified.tokenStorage);
       const user = JSON.parse(Data.newData).username;
       const baseUrl = process.env.SITE_URL + "img/";
       const newImgUrl = new URL(file.filename, baseUrl).href;
@@ -64,4 +69,13 @@ export class ImgTransferController {
       return "Failed to upload";
     }
   }
+
+  @Post("testing")
+  @UseGuards(TokenIsVerified)
+  public async functionTesttoCall() {
+    console.log("INSIDE it WORKS");
+
+  }
+
+
 }

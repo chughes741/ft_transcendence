@@ -1,23 +1,29 @@
-import { Input, InputLabel } from "@mui/material";
+import { Input } from "@mui/material";
 import { Box } from "@mui/system";
 import React, { useEffect, useState } from "react";
 import { PageState } from "src/root.model";
 import { useRootViewModelContext } from "src/root.context";
 import "./Login42.tsx.css";
 import "./QrCodeElement.tsx.css";
+import { socket } from 'src/contexts/WebSocket.context';
+import { headers } from './Login42';
+import {createBrowserHistory} from "history";
+
 
 function VerifyQRCode() {
   const {
     setPageState,
-    setFullscreen
-    // sessionToken,
-    // history
+    setFullscreen,
+    sessionToken,
+    setSelf,
+    setSessionToken,
   } = useRootViewModelContext();
 
   const [qrCode, setQRCode] = useState<string | null>(null);
   const [code, setCode] = useState<string>("");
   const [errorMessage, setErrorMessage] = useState<string>("");
   const [secret, setSecret] = useState<string | null>(null);
+  const history = createBrowserHistory();
 
   setFullscreen(true);
 
@@ -33,8 +39,9 @@ function VerifyQRCode() {
         }
       });
       const data = await response.json();
-      setQRCode(data["qrcode"]);
-      setSecret(data["secret"]);
+      setQRCode(data['qrcode']);
+      setSecret(data['secret']);
+
       return true;
     } catch (error) {
       return false;
@@ -43,16 +50,16 @@ function VerifyQRCode() {
 
   const handleVerifyQRCode = async (): Promise<boolean> => {
     try {
-      console.log("Secret:", secret);
       const url = `/auth/verifyQrCode?secret=${secret}&code=${code}`;
       const response = await fetch(url, {
         method: "GET",
         headers: {
-          "Content-Type": "application/json"
-        }
+          'Content-Type': 'application/json',
+          "client-id": socket.id,
+          "client-token": sessionToken,
+        },
       });
       const data = await response.json();
-      console.log("THE DATA", data);
       if (data.validated) {
         setErrorMessage("");
         alert("Verification successful!");
@@ -63,6 +70,20 @@ function VerifyQRCode() {
         alert("There was an error with the code you provided");
         setErrorMessage(data.message);
         return false;
+      }
+      if (data.statusCode && data.statusCode === 401) //UNAUTHORIZED EXCEPTION
+      {
+        //MUST FLUSH THE session TOKEN and bring back to login page
+        await fetch(`/auth/deleteToken?socketId=${socket.id}`, {
+          method: 'POST',
+          headers
+        });
+        setSessionToken("")
+        setPageState(PageState.Auth);
+        history.push('/auth');
+        setFullscreen(true);
+        setSelf(null);
+        return;
       }
     } catch (error) {
       return false;

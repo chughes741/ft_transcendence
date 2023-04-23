@@ -4,12 +4,14 @@ import { GameModuleData } from "./game.data";
 import { GameGateway } from "./game.gateway";
 import { GameLogic } from "./game.logic";
 import { GameService } from "./game.service";
+import { PrismaModule } from "../prisma/prisma.module";
 
 describe("GameGateway", () => {
   let gateway: GameGateway;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
+      imports: [PrismaModule],
       providers: [
         GameGateway,
         GameService,

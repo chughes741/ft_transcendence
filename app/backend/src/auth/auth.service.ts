@@ -4,8 +4,9 @@ import { AuthEntity, AuthRequest, UserEntity } from "./dto";
 import * as speakeasy from "speakeasy";
 import * as qrcode from "qrcode";
 import axios from "axios";
-import { Token, TokenStorageService } from "../token-storage.service";
+import { Token, TokenStorageService } from "../tokenstorage/token-storage.service";
 import { UserStatus } from "@prisma/client";
+import TokenIsVerified from "src/tokenstorage/token-verify.service";
 
 const logger = new Logger("AuthService");
 
@@ -13,8 +14,8 @@ const logger = new Logger("AuthService");
 export class AuthService {
   constructor(
     private prisma: PrismaService, // create(), findUnique()
-    private tokenStorage: TokenStorageService
-  ) {}
+    private tokenClass: TokenIsVerified
+  ) { }
 
   async signup(
     req: AuthRequest
@@ -76,10 +77,10 @@ export class AuthService {
 
   async checkToRefresh(token: Token): Promise<Token> {
     if (token.expires_in < 7000)
-      return await this.tokenStorage.refresh42Token(token);
+      return await this.tokenClass.tokenStorage.refresh42Token(token);
     if (Math.floor(Date.now() / 1000) > token.created_at + 100)
-      return await this.tokenStorage.refresh42Token(token);
-    return token;
+      return await this.tokenClass.tokenStorage.refresh42Token(token);
+    return token
   }
 
   async getAuht42(
@@ -119,7 +120,7 @@ export class AuthService {
     });
     const userName = response2.data.login + response2.data.id;
 
-    this.tokenStorage.addToken(clientId, token);
+    this.tokenClass.tokenStorage.addToken(clientId, token);
     const theuser = await this.signin({
       username: userName,
       avatar: response2.data.image.link,
@@ -141,6 +142,6 @@ export class AuthService {
   }
 
   async deleteToken(socketID: string) {
-    this.tokenStorage.removeToken(socketID);
+    this.tokenClass.tokenStorage.removeToken(socketID);
   }
 }

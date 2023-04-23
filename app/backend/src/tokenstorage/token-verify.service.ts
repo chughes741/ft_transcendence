@@ -7,7 +7,7 @@ const logger = new Logger("TokenVerification");
 
 @Injectable()
 export default class TokenIsVerified implements CanActivate {
-  constructor(private tokenStorage: TokenStorageService) {}
+    constructor(public tokenStorage: TokenStorageService) { }
 
   async refreshToken(clientID: string, refresh_token: Token) {
     //Refresh the Token
@@ -30,11 +30,10 @@ export default class TokenIsVerified implements CanActivate {
     const clientId = req.headers["client-id"] as string;
     const clientToken = req.headers["client-token"] as string;
 
-    console.log("Client ID : ", clientId, "Clietn Token : ", clientToken);
+   // logger.log("Client ID : ", clientId, "Clietn Token : ", clientToken);
 
     // Check if token is valid
     const token = await this.tokenStorage.getTokenbySocket(clientId);
-    console.log("TOKEN FROM STORAGE : ", token);
     if (!token || token.access_token !== clientToken) {
       logger.log("Token verification failure");
       throw new UnauthorizedException();
@@ -47,9 +46,8 @@ export default class TokenIsVerified implements CanActivate {
     if (totalValidTime < currentTime) {
       this.tokenStorage.removeToken(clientId);
       logger.log("Token has expired");
-      throw new UnauthorizedException();
+      throw new UnauthorizedException()
     }
-
     logger.log("Token verification SUCCESS");
     await this.refreshToken(clientId, token);
     return true;
