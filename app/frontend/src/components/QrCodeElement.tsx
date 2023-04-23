@@ -1,8 +1,10 @@
-import { Button, InputLabel } from "@mui/material";
+import { Input, InputLabel } from "@mui/material";
 import { Box } from "@mui/system";
-import { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { PageState } from "src/root.model";
 import { useRootViewModelContext } from "src/root.context";
+import "./Login42.tsx.css";
+import "./QrCodeElement.tsx.css";
 
 function VerifyQRCode() {
   const {
@@ -16,9 +18,9 @@ function VerifyQRCode() {
   const [code, setCode] = useState<string>("");
   const [errorMessage, setErrorMessage] = useState<string>("");
   const [secret, setSecret] = useState<string | null>(null);
-  //  const { setFullscreen } = useRootViewModelContext();
 
   setFullscreen(true);
+
   const handleGetQRCode = async (): Promise<boolean> => {
     try {
       const url = "/auth/qrCode";
@@ -53,46 +55,59 @@ function VerifyQRCode() {
       console.log("THE DATA", data);
       if (data.validated) {
         setErrorMessage("");
-        alert("QR code verified!");
-        // Enable user here
+        alert("Verification successful!");
         setFullscreen(false);
         setPageState(PageState.Home);
         return true;
       } else {
-        // TODO
-        //If false ... can't enter website. //TODO
+        alert("There was an error with the code you provided");
         setErrorMessage(data.message);
         return false;
       }
     } catch (error) {
-      console.error(error);
       return false;
     }
   };
 
+  useEffect(() => {
+    handleGetQRCode().then();
+  }, []);
+
   return (
     <>
-      <Box>Verify QR Code</Box>
-      {qrCode && (
-        <img
-          width="128"
-          height="128"
-          src={qrCode}
-          alt="QR Code"
-        />
-      )}
-      <Button onClick={handleGetQRCode}>Get QR Code</Button>
-      <br />
-      <InputLabel htmlFor="code">Enter your one-time password:</InputLabel>
-      <input
-        type="text"
-        id="code"
-        value={code}
-        onChange={(e) => setCode(e.target.value)}
-      />
-      <br />
-      {errorMessage && <p style={{ color: "red" }}>{errorMessage}</p>}
-      <Button onClick={handleVerifyQRCode}>Verify QR Code</Button>
+      <Box className="body-page-auth qr-body-page">
+        <Box className="lines">
+          <Box className="line" />
+          <Box className="line" />
+          <Box className="line" />
+        </Box>
+        <Box className="login-details">
+          <Box className="title-qr">Verify QR Code</Box>
+          {qrCode && (
+            <img
+              className="image-qr"
+              src={qrCode}
+              alt="QR Code"
+            />
+          )}
+          <Input
+            className="input-verify-qr"
+            type="text"
+            inputProps={{ maxLength: 6 }}
+            id="code"
+            placeholder="Enter your verification code"
+            value={code}
+            onChange={(e) => setCode(e.target.value)}
+          />
+          {errorMessage && <p style={{ color: "red" }}>{errorMessage}</p>}
+          <Box
+            className="button-verify-qr"
+            onClick={handleVerifyQRCode}
+          >
+            Authenticate me
+          </Box>
+        </Box>
+      </Box>
     </>
   );
 }
