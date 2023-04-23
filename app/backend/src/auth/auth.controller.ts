@@ -7,14 +7,18 @@ import {
   HttpStatus,
   Post,
   UseFilters,
-  Logger
+  Logger,
+  UseGuards
 } from "@nestjs/common";
 import { ApiTags } from "@nestjs/swagger";
 import { SubscribeMessage } from "@nestjs/websockets";
 import { PrismaClientExceptionFilterHttp } from "../prisma-client-exception.filter";
 import { AuthService } from "./auth.service";
 import { GetUser } from "./decorators";
-import { AuthRequest } from "./dto";
+import { AuthRequest, UserEntity } from "./dto";
+import { Token } from "src/tokenstorage/token-storage.service";
+import { UserStatus } from "@prisma/client";
+import TokenIsVerified from "src/tokenstorage/token-verify.service";
 
 const logger = new Logger("AuthController");
 
@@ -40,11 +44,6 @@ export class AuthController {
   @Get("signup")
   signup_ft(@Body() dto: AuthRequest) {
     logger.log("Succesfully redirected!");
-
-    logger.log({
-      dto
-    }); // Creates an object and assigns it
-
     return dto;
   }
 
@@ -64,13 +63,22 @@ export class AuthController {
   @HttpCode(HttpStatus.OK)
   @Post("signin")
   signin(@Body() dto: AuthRequest) {
-    return this.authService.signin(dto);
+    const info: UserEntity = {
+      username: dto.username,
+      avatar: "",
+      firstName: dto.firstName,
+      lastName: dto.lastName,
+      email: dto.email,
+      status: UserStatus.ONLINE
+    };
+    return this.authService.signin(info);
   }
 
-  @Post("refresh")
+  @Post("refreshToken")
   @SubscribeMessage("refresh")
-  async refreshToken(@Body("refresh_token") refresh_token: string) {
-    return this.authService.refreshToken(refresh_token);
+  async refreshToken(@Body("refresh_token") refresh_token: Token) {
+    logger.log(refresh_token);
+    return;
   }
 
   @Get("token")
@@ -79,17 +87,45 @@ export class AuthController {
     @Query("socketId") socketId: string
   ) {
     logger.log("Inside Generate42Token");
-    logger.log("Authorisation code : ", authorizationCode);
-    logger.log("Socket ID: ", authorizationCode);
-    const token = await this.authService.getAuht42(socketId, authorizationCode);
-    return { token };
+    return await this.authService.getAuht42(socketId, authorizationCode);
   }
 
-  @Get("authorisationURL")
-  async generateAuth42Url() {
-    const REDIRECT_URI = "http://localhost:3000/";
-    const CLIENT_ID =
-      "u-s4t2ud-51fb382cccb5740fc1b9129a3ddacef8324a59dc4c449e3e8ba5f62acb2079b6";
-    return `https://api.intra.42.fr/oauth/authorize?client_id=${CLIENT_ID}&redirect_uri=${REDIRECT_URI}&response_type=code`;
+  @Get("qrCode")
+  async generateQrCode() {
+    logger.log("Generating QrCode");
+    return await this.authService.enableTwoFactorAuth();
+  }
+
+  @Get("changeUsername")
+  async changeUsername(
+    @Query("current") currentName: string,
+    @Query("newname") newName: string
+  ) {
+    return await this.authService.changeName(currentName, newName);
+  }
+
+  @Get("verifyQrCode")
+  @UseGuards(TokenIsVerified)
+  async verifyQrCode(
+    @Query("secret") secret: string,
+    @Query("code") code: string
+  ) {
+    return await this.authService.verifyQrCode(secret, code);
+  }
+
+
+  @Get("update2FA")
+  @UseGuards(TokenIsVerified)
+  async update2FA(@Query("username") userName: string) {
+    return await this.authService.update2FA(userName);
+  }
+
+  @Post("deleteToken")
+  @UseGuards(TokenIsVerified)
+  async deleteToken(@Query("socketId") socketId: string) {
+    Logger.log("Token deletion engage");
+
+    this.authService.deleteToken(socketId);
+    return;
   }
 }

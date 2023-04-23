@@ -16,7 +16,11 @@ import { UserConnectionsService } from "./user-connections.service";
 import { ImgTransferModule } from "./imgtransfer/imgtransfer.module";
 import { ImgTransferController } from "./imgtransfer/imgtransfer.controller";
 import { ImgTransferService } from "./imgtransfer/imgtransfer.service";
-import { TokenStorageService } from "./token-storage.service";
+import { TokenStorageService } from "./tokenstorage/token-storage.service";
+import { Scope } from '@nestjs/common';
+import TokenIsVerified from "./tokenstorage/token-verify.service";
+import { TokenStorageModule } from "./tokenstorage/token-storage.module";
+import { TokenModule } from "./tokenstorage/token-verify.module";
 
 /** Used for src/... import paths */
 require("tsconfig-paths");
@@ -34,6 +38,7 @@ require("tsconfig-paths");
     LoginModule,
     PrismaModule,
     AuthModule,
+    TokenModule,
     ConfigModule.forRoot({
       envFilePath: "../.env",
       // validationSchema: configValidationSchema,
@@ -45,8 +50,9 @@ require("tsconfig-paths");
     AppService,
     PrismaService,
     UserConnectionsService,
+    ImgTransferService,
+    TokenIsVerified,
     TokenStorageService,
-    ImgTransferService
   ]
 })
 export class AppModule {}

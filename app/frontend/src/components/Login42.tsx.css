@@ -1,0 +1,120 @@
+.body-page-auth {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100vw;
+    height: 100vh;
+    background-color: #131313;
+    color: #fff;
+    line-height: 1.6;
+    position: relative;
+    font-family: Raleway, sans-serif;
+    overflow: hidden;
+}
+
+.lines {
+    position: absolute;
+    top: 0;
+    height: 100%;
+    margin: auto;
+    width: 90vw;
+}
+
+.line {
+    position: absolute;
+    width: 1px;
+    height: 100%;
+    top: 0;
+    left: 50%;
+    background: rgba(255,255,255,0.1);
+    overflow: hidden;
+}
+
+.line::after {
+    content: '';
+    display: block;
+    position: absolute;
+    height: 15vh;
+    width: 100%;
+    top: -50%;
+    left: 0;
+    background: linear-gradient(to bottom, rgba(255, 255, 255, 0) 0%, #FA7F08 75%, #FA7F08 100%);
+    animation: drop 7s 0s forwards infinite;
+    animation-timing-function: cubic-bezier(0.4, 0.26, 0, 0.97);
+}
+
+.line:nth-child(1) {
+    margin-left: -25%;
+}
+.line:nth-child(1)::after {
+    animation-delay: 2s;
+}
+
+.line:nth-child(3) {
+    margin-left: 25%;
+}
+
+.line:nth-child(3)::after {
+    animation-delay: 2.5s;
+}
+
+@keyframes drop {
+    0% {
+        top: -50%;
+    }
+    100%{
+        top: 110%;
+    }
+
+}
+
+.login-details {
+    user-select: none;
+    display: flex;
+    flex-direction: column;
+    font-family: Raleway, sans-serif;
+    font-size: 2rem;
+    background-color: rgb(33,33,33);
+    background-color: rgba(33,33,33, 0.1);
+    backdrop-filter: blur(4px);
+    color: white;
+    font-weight: bold;
+    border: 3px solid #f1f1f1;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 2;
+    width: 65vw;
+    padding: 20px;
+    text-align: center;
+}
+
+.login-details {
+    font-size: 2rem;
+    color: #9f9f9f;
+}
+
+.container-button {
+    width: 65%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    align-self: center;
+}
+
+.tag {
+    margin: 1rem;
+    font-size: 2rem;
+    color: #f1f1f1;
+}
+
+.button-login {
+    width: 15vw;
+    height: auto;
+    border: 1px solid #f1f1f1 !important;
+    color: #FA7F08 !important;
+    font-size: 1.5rem !important;
+    font-weight: 600 !important;
+}

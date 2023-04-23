@@ -55,6 +55,7 @@ export default function TopBar() {
     handleCloseUserMenu();
   };
 
+  console.log("ICI EST LE SEELF MA MAN", self);
   return (
     <AppBar
       position="static"
@@ -98,13 +99,18 @@ export default function TopBar() {
             disableRipple={true}
             disableFocusRipple={true}
           >
-            <Box sx={{ marginRight: "0.5vw", fontWeight: "600" }}>
-              {self.username}
-            </Box>
-            <Avatar
-              src={self.avatar}
-              sx={{ width: "4rem", height: "4rem" }}
-            />
+            {self && (
+              <>
+                <Box sx={{ marginRight: "0.5vw", fontWeight: "600" }}>
+                  {self.username}
+                </Box>
+                <Avatar
+                  src={self.avatar}
+                  sx={{ width: "4rem", height: "4rem" }}
+                />
+              </>
+            )}
+
           </IconButton>
           <Menu
             sx={{ mt: "45px" }}

@@ -10,4 +10,5 @@ body {
   display: grid;
   height: 100vh;
   width: 100vw;
+  user-select: none;
 }

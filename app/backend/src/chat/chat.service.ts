@@ -28,15 +28,13 @@ import { MessageEntity } from "./entities/message.entity";
 import { KickMemberRequest, UpdateChatMemberRequest } from "./dto/userlist.dto";
 import { ChatMemberEntity } from "./entities/message.entity";
 import { AuthRequest, UserEntity } from "../auth/dto";
+import { TokenStorageService } from "src/tokenstorage/token-storage.service";
 
 const logger = new Logger("ChatService");
 
 @Injectable()
 export class ChatService {
-  constructor(
-    private readonly prismaService: PrismaService,
-    private userConnectionsService: UserConnectionsService
-  ) {}
+  constructor(private readonly prismaService: PrismaService) {}
 
   async getChatRoomEntity(
     room: ChatRoom,

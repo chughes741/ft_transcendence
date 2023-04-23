@@ -66,6 +66,7 @@ export const ProfileViewModelProvider = ({ children }) => {
     );
   };
   const getWinPercentage = () => {
+    if (!matchHistory) return;
     let numWins = 0;
     for (let i = 0; i < matchHistory.length; i++) {
       if (matchHistory[i].score_player1 > matchHistory[i].score_player2)
@@ -78,13 +79,13 @@ export const ProfileViewModelProvider = ({ children }) => {
 
   const getLossPercentage = () => {
     let numLosses = 0;
+    if (!matchHistory) return;
     for (let i = 0; i < matchHistory.length; i++) {
       if (matchHistory[i].score_player1 < matchHistory[i].score_player2)
         numLosses++;
     }
     let percent: number = (numLosses / matchHistory.length) * 100;
     if (isNaN(percent)) percent = 0;
-
     return percent;
   };
   /**

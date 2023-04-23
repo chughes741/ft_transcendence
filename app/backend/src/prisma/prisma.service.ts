@@ -27,6 +27,11 @@ import {
   GetMatchHistoryRequest,
   GetProfileRequest
 } from "kingpong-lib";
+
+/*End of Mute and End of Ban:  */
+//Is added to the current date (now)
+const GLOBAL_T_IN_DAYS = 5 /*DAYS*/ * (24 * 60 * 60 * 1000); // One day in milliseconds
+
 import { UpdateChatMemberRequest } from "src/chat/dto/userlist.dto";
 import { UserEntity } from "../auth/dto";
 import { MatchType } from "../game/game.types";
@@ -87,6 +92,39 @@ export class PrismaService extends PrismaClient {
     } catch (err) {
       return false;
     }
+  }
+
+  async userNameExists(username: string): Promise<boolean> {
+    if (!username) {
+      logger.error("userExists: User username is required");
+      return false;
+    }
+
+    try {
+      const user = await this.user.findUnique({
+        where: { username: username }
+      });
+      return !!user;
+    } catch (err) {
+      return false;
+    }
+  }
+
+  async changeUserName(
+    userName: string,
+    newUsername: string
+  ): Promise<boolean> {
+    const nameExists = await this.userNameExists(newUsername);
+    if (nameExists) return false;
+    await this.user.update({
+      where: {
+        username: userName
+      },
+      data: {
+        username: newUsername
+      }
+    });
+    return true;
   }
 
   /**
@@ -477,6 +515,18 @@ export class PrismaService extends PrismaClient {
     });
   }
 
+  async getUserbyMail(email: string): Promise<User> {
+    if (email === undefined || null) {
+      logger.log("Username is undefined");
+      throw new Error("Username is undefined");
+    }
+    return await this.user.findUnique({
+      where: {
+        email: email
+      }
+    });
+  }
+
   /**
    * Returns a users friends from the database
    *
@@ -842,6 +892,35 @@ export class PrismaService extends PrismaClient {
       }
     });
     return userToUpdate;
+  }
+
+  async update2FA(userName: string): Promise<boolean> {
+    const user = await this.user.findUnique({
+      where: {
+        username: userName
+      }
+    });
+    if (user.enable2fa === true) {
+      await this.user.update({
+        where: {
+          username: userName
+        },
+        data: {
+          enable2fa: false
+        }
+      });
+      return false;
+    } else {
+      await this.user.update({
+        where: {
+          username: userName
+        },
+        data: {
+          enable2fa: true
+        }
+      });
+    }
+    return true;
   }
 
   /**
