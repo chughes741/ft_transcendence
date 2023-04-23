@@ -30,11 +30,10 @@ export default class TokenIsVerified implements CanActivate {
     const clientId = req.headers["client-id"] as string;
     const clientToken = req.headers["client-token"] as string;
 
-    console.log("Client ID : ", clientId, "Clietn Token : ", clientToken);
+   // logger.log("Client ID : ", clientId, "Clietn Token : ", clientToken);
 
     // Check if token is valid
     const token = await this.tokenStorage.getTokenbySocket(clientId);
-    console.log("TOKEN FROM STORAGE : ", token);
     if (!token || token.access_token !== clientToken) {
       logger.log("Token verification failure");
       throw new UnauthorizedException();

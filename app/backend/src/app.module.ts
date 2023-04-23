@@ -39,7 +39,6 @@ require("tsconfig-paths");
     PrismaModule,
     AuthModule,
     TokenModule,
-    TokenStorageModule,
     ConfigModule.forRoot({
       envFilePath: "../.env",
       // validationSchema: configValidationSchema,
@@ -51,12 +50,6 @@ require("tsconfig-paths");
     AppService,
     PrismaService,
     UserConnectionsService,
-    {
-      provide: TokenStorageService,
-      useClass: TokenStorageService,
-      scope: Scope.DEFAULT
-    },
-    TokenIsVerified,
     ImgTransferService,
   ]
 })
