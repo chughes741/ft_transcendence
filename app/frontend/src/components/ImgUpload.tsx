@@ -10,40 +10,40 @@ import { createBrowserHistory } from "history";
 import { ProfileEntity } from "kingpong-lib";
 
 function ImgUpload() {
-  const [file, setFile] = useState(null);
+  const [file, setFile] = useState(null); //Contains the img file
   const { self, setSelf, setSessionToken, setPageState, setFullscreen } =
-    useRootViewModelContext();
+    useRootViewModelContext();  //Use context
   const handleFileChange = (event) => {
     setFile(event.target.files[0]);
   };
   const history = createBrowserHistory();
 
+  //Upload image on submitgit
   const handleUpload = async () => {
-    console.log("handUpload Clicked", file);
-
     if (file) {
-      //
+      //Create a form data for img transfer
+      const formData = new FormData();
+      formData.append("file", file); //Append the image
       //     REPLACE WITH CONTEXT USERNAME HERE
       const newdata = { username: self.username };
-
-      //--------------------- End of Username
-      const formData = new FormData();
-      formData.append("file", file);
       formData.append("newData", JSON.stringify(newdata));
 
+      //Post image in formData.
       const response = await fetch("/imgtransfer/upload", {
         method: "POST",
         headers,
         body: formData
       });
+      
+      //IF UnAuthorized : MUST FLUSH THE session TOKEN and bring back to login page
       const data = await response.json();
       if (data.statusCode && data.statusCode === 401) {
-        //UNAUTHORIZED EXCEPTION
-        //MUST FLUSH THE session TOKEN and bring back to login page
+        //Deletes token in backend
         await fetch(`/auth/deleteToken?socketId=${socket.id}`, {
           method: "POST",
           headers
         });
+        //Return to login
         setSessionToken("");
         setPageState(PageState.Auth);
         history.push("/auth");
