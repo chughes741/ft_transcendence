@@ -165,7 +165,7 @@ export class ChatGateway
     private prismaService: PrismaService,
     private chatService: ChatService,
     private userConnectionsService: UserConnectionsService,
-    private tokenStorage: TokenStorageService
+    //private tokenStorage: TokenStorageService
   ) {}
 
   @WebSocketServer()
@@ -181,7 +181,7 @@ export class ChatGateway
 
   async handleDisconnect(client: Socket) {
     // Remove the user connection
-    await this.tokenStorage.removeToken(client.id);
+    //await this.tokenStorage.removeToken(client.id);
     const connections = this.userConnectionsService.removeUserConnection(
       client.id,
       client.id

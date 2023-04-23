@@ -57,7 +57,7 @@ require("tsconfig-paths");
       scope: Scope.DEFAULT
     },
     TokenIsVerified,
-    ImgTransferService
+    ImgTransferService,
   ]
 })
 export class AppModule {}
