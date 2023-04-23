@@ -12,7 +12,7 @@ import TokenIsVerified from "src/tokenstorage/token-verify.service";
 import { TokenStorageModule } from "src/tokenstorage/token-storage.module";
 
 @Module({
-  imports: [JwtModule.register({}), PrismaModule, TokenModule, TokenStorageModule],
+  imports: [JwtModule.register({}), PrismaModule, TokenModule],
   controllers: [AuthController],
   providers: [
     AuthService,
@@ -20,7 +20,6 @@ import { TokenStorageModule } from "src/tokenstorage/token-storage.module";
     JwtStrategy,
     SessionSerializer,
     TokenIsVerified,
-    TokenStorageService
   ]
 })
 export class AuthModule {}
