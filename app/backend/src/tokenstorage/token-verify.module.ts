@@ -6,7 +6,7 @@ import { TokenStorageModule } from './token-storage.module';
 @Global()
 @Module({
     imports: [TokenStorageModule],
-    providers: [TokenIsVerified, TokenStorageService],
-    exports: [TokenIsVerified, TokenStorageModule, TokenStorageService],
+    providers: [TokenIsVerified],
+    exports: [TokenIsVerified],
 })
 export class TokenModule {}
