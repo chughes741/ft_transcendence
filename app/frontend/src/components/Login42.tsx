@@ -60,11 +60,30 @@ export default function LoginWith42Button() {
   } = useRootViewModelContext();
 
   const history = createBrowserHistory();
-  if (sessionToken) {
-    // add a check if the toke is still valid
-    history.go(-3);
-    return;
+
+  console.log("SESSION TOKEN", sessionToken);
+  try {
+
+
+    fetch("/auth/testing", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      }
+    }).then(response => response.json())
+      .then(data => {
+        console.log("If is true", data);
+        if (data === true) {
+          history.go(-3);
+          return;
+        }
+      })
   }
+  catch (error){
+    console.log("Needs to be authorize by 42 Auth")
+  }
+
+
   const [isLoading, setIsLoading] = useState(false);
 
   const populateProfile = (data: AuthEntity): ProfileEntity => {
@@ -125,7 +144,11 @@ export default function LoginWith42Button() {
           twoFAenable: client.user.enable2fa
         };
         setSelf(userProfile.user);
-        console.log("This is thy self: " , self);
+        self.username = userProfile.user.username
+        self.avatar = userProfile.user.avatar
+        self.createdAt = userProfile.user.createdAt
+        self.status = userProfile.user.status
+        console.log("This is thy self: ", self);
         onSuccess(userProfile);
       });
     } catch (error) {

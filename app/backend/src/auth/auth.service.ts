@@ -4,7 +4,7 @@ import { AuthEntity, AuthRequest, UserEntity } from "./dto";
 import * as speakeasy from "speakeasy";
 import * as qrcode from "qrcode";
 import axios from "axios";
-import { Token, TokenStorageService } from "../tokenstorage/token-storage.service";
+import { Token } from "../tokenstorage/token-storage.service";
 import { UserStatus } from "@prisma/client";
 import TokenIsVerified from "src/tokenstorage/token-verify.service";
 
@@ -145,4 +145,6 @@ export class AuthService {
   async deleteToken(socketID: string) {
     this.tokenClass.tokenStorage.removeToken(socketID);
   }
+
+
 }
