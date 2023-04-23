@@ -1,0 +1,43 @@
+.qr-body-page {
+    flex-direction: column;
+}
+
+.title-qr {
+    font-size: 2rem;
+    margin: 1rem;
+    color: #f1f1f1;
+}
+.image-qr {
+    width: 25vh;
+    height: 25vh;
+    align-self: center;
+}
+
+.label {
+    font-size: 2rem;
+    margin: 1rem;
+    color: #f1f1f1;
+}
+
+.input-verify-qr {
+    width: 20vw;
+    height: 5vh;
+    font-size: 1.5rem !important;
+    margin: 1rem;
+    align-self: center;
+    padding-left: 0.6rem;   
+    background-color: #4d4e53;
+    border: 1px solid #9f9f9f;
+}
+
+.button-verify-qr {
+    border: 1px solid #9f9f9f;
+    width: 23vw;
+    height: 5vh;
+    font-size: 1.7rem;
+    color: #FA7F08;
+    margin: 1rem;
+    padding: 0.4rem;
+    align-self: center;
+}
+
