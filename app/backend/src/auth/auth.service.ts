@@ -49,6 +49,7 @@ export class AuthService {
       name: "42authentification"
     });
     const code = await qrcode.toDataURL(secret.otpauth_url);
+    console.log("What is the qrcode", code)
     return { secret: secret.base32, qrcode: code };
   }
 

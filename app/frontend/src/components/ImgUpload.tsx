@@ -7,6 +7,7 @@ import { PageState } from "src/root.model";
 import { headers } from "./Login42";
 import { socket } from "src/contexts/WebSocket.context";
 import { createBrowserHistory } from "history";
+import { ProfileEntity } from "kingpong-lib";
 
 function ImgUpload() {
   const [file, setFile] = useState(null);
@@ -30,15 +31,6 @@ function ImgUpload() {
       formData.append("file", file);
       formData.append("newData", JSON.stringify(newdata));
 
-      console.log("Headers in IMG upload", headers)
-      const responsetest = await fetch("/imgtransfer/testing", {
-        method: "POST",
-        headers,
-      })
-      const datatest = await responsetest.json();
-
-
-      
       const response = await fetch("/imgtransfer/upload", {
         method: "POST",
         headers,
@@ -56,7 +48,7 @@ function ImgUpload() {
         setPageState(PageState.Auth);
         history.push("/auth");
         setFullscreen(true);
-        setSelf(null);
+        setSelf({ username : "", avatar: "", createdAt: "", status: 0});
         return;
       }
     }
