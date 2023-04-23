@@ -51,6 +51,8 @@ require("tsconfig-paths");
     PrismaService,
     UserConnectionsService,
     ImgTransferService,
+    TokenIsVerified,
+    TokenStorageService,
   ]
 })
 export class AppModule {}
