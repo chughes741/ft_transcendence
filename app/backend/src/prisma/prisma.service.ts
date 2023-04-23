@@ -6,6 +6,7 @@ import {
   ChatMemberStatus,
   ChatRoom,
   ChatRoomStatus,
+  GameType,
   Match,
   Prisma,
   PrismaClient,
@@ -33,6 +34,7 @@ const GLOBAL_T_IN_DAYS = 5 /*DAYS*/ * (24 * 60 * 60 * 1000); // One day in milli
 
 import { UpdateChatMemberRequest } from "src/chat/dto/userlist.dto";
 import { UserEntity } from "../auth/dto";
+import { MatchType } from "../game/game.types";
 
 const logger = new Logger("PrismaService");
 
@@ -1060,5 +1062,40 @@ export class PrismaService extends PrismaClient {
     });
 
     return !!blockedUser;
+  }
+
+  /**
+   * Add a match to the database
+   * @param {string} player1Id
+   * @param {string} player2Id
+   * @param {number} scorePlayer1
+   * @param {number} scorePlayer2
+   * @async
+   * @returns {Promise<Match>}
+   */
+  async addMatch({
+    player1Id,
+    player2Id,
+    scorePlayer1,
+    scorePlayer2,
+    timestamp,
+    gameType
+  }: MatchType): Promise<Match> {
+    const newMatch = await this.match.create({
+      data: {
+        player1: {
+          connect: { id: player1Id }
+        },
+        player2: {
+          connect: { id: player2Id }
+        },
+        scorePlayer1,
+        scorePlayer2,
+        timestamp,
+        gameType
+      }
+    });
+
+    return newMatch;
   }
 }

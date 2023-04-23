@@ -1,3 +1,4 @@
+import { GameType } from "@prisma/client";
 import { Vec2 } from "./vector";
 
 export class BallData {
@@ -52,4 +53,13 @@ export class ClientGameStateUpdate {
   lobby_id: string;
   player_side: string;
   paddle_pos: number;
+}
+
+export interface MatchType {
+  player1Id: string;
+  player2Id: string;
+  scorePlayer1: number;
+  scorePlayer2: number;
+  timestamp: Date;
+  gameType: GameType;
 }
