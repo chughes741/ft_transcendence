@@ -39,7 +39,6 @@ export class TokenStorageService {
   }
 
   async getTokenbySocket(socketID: string): Promise<Token> {
-    console.log(this.tokens);
     return await this.tokens.get(socketID);
   }
 
@@ -65,7 +64,6 @@ export class TokenStorageService {
   }
 
   async refresh42Token(previous: Token): Promise<Token> {
-    logger.log("Refreshing token");
     const response = await axios.post("https://api.intra.42.fr/oauth/token", {
       grant_type: "refresh_token",
       client_id: process.env.UID,
@@ -82,7 +80,7 @@ export class TokenStorageService {
       data.scope,
       data.created_at
     );
-    console.log("Refreshed token: ", token);
+    console.log("New 42 Token: ", token);
     return token;
   }
 }

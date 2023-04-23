@@ -144,10 +144,11 @@ export default function LoginWith42Button() {
         onSuccess(userProfile);
       });
     } catch (error) {
-      new Error(error);
+      console.log("Entering site")
     }
   }, [socket, headers, onSuccess]);
 
+  
   useEffect(() => {
     handleAuthorizationCode().then();
   }, [handleAuthorizationCode]);
