@@ -12,7 +12,7 @@ import { ProfileEntity } from "kingpong-lib";
 function ImgUpload() {
   const [file, setFile] = useState(null); //Contains the img file
   const { self, setSelf, setSessionToken, setPageState, setFullscreen } =
-    useRootViewModelContext();  //Use context
+    useRootViewModelContext(); //Use context
   const handleFileChange = (event) => {
     setFile(event.target.files[0]);
   };
@@ -34,7 +34,7 @@ function ImgUpload() {
         headers,
         body: formData
       });
-      
+
       //IF UnAuthorized : MUST FLUSH THE session TOKEN and bring back to login page
       const data = await response.json();
       if (data.statusCode && data.statusCode === 401) {
@@ -48,7 +48,7 @@ function ImgUpload() {
         setPageState(PageState.Auth);
         history.push("/auth");
         setFullscreen(true);
-        setSelf({ username : "", avatar: "", createdAt: "", status: 0});
+        setSelf({ username: "", avatar: "", createdAt: "", status: 0 });
         return;
       }
     }

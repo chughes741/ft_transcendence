@@ -98,16 +98,15 @@ export default function LoginWith42Button() {
   // if 2fa is enabled, request the 2fa Qrcode validation before completion
 
   const handleAuthorizationCode = useCallback(async (): Promise<boolean> => {
+    const searchParams = new URLSearchParams(window.location.search); //Get string url info from new window
 
-    const searchParams = new URLSearchParams(window.location.search);//Get string url info from new window
-   
-    const authorizationCode = searchParams.get("code"); //Get code querry from 42 auth page 
+    const authorizationCode = searchParams.get("code"); //Get code querry from 42 auth page
     if (!authorizationCode) {
       new Error("Authorization code not found");
       return;
     }
     try {
-      //Enables socket connection 
+      //Enables socket connection
       socket.on("connect", async () => {
         const url = `http://localhost:3000/auth/token?code=${authorizationCode}&socketId=${socket.id}`;
 
@@ -125,7 +124,10 @@ export default function LoginWith42Button() {
         }
         //Data received from the backend fetch by 42 api
         const client = await data.json();
-        if (client.user.firstConnection) setShowChooseUsernameModal(true); //Choose username on first connection
+        if (client.user.firstConnection)
+          setShowChooseUsernameModal(
+            true
+          ); //Choose username on first connection
         else setFullscreen(false);
         //Creates the headers that will enable token authentification
         headers["client-id"] = socket.id;
@@ -136,19 +138,18 @@ export default function LoginWith42Button() {
           twoFAenable: client.user.enable2fa
         };
         //Set self for frontend usage
-        self.username = userProfile.user.username
-        self.avatar = userProfile.user.avatar
-        self.createdAt = userProfile.user.createdAt
-        self.status = userProfile.user.status
+        self.username = userProfile.user.username;
+        self.avatar = userProfile.user.avatar;
+        self.createdAt = userProfile.user.createdAt;
+        self.status = userProfile.user.status;
         //console.log("This is thy self: ", self);
         onSuccess(userProfile);
       });
     } catch (error) {
-      console.log("Entering site")
+      console.log("Entering site");
     }
   }, [socket, headers, onSuccess]);
 
-  
   useEffect(() => {
     handleAuthorizationCode().then();
   }, [handleAuthorizationCode]);

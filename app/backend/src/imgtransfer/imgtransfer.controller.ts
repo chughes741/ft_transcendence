@@ -33,7 +33,7 @@ export class ImgTransferController {
   constructor(
     private imgtransferService: ImgTransferService,
     private tokenIsVerified: TokenIsVerified
-    ) {}
+  ) {}
 
   @Post("upload")
   @UseInterceptors(
@@ -69,5 +69,4 @@ export class ImgTransferController {
       return "Failed to upload";
     }
   }
-
 }

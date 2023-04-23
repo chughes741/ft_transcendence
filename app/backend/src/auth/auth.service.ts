@@ -15,7 +15,7 @@ export class AuthService {
   constructor(
     private prisma: PrismaService, // create(), findUnique()
     private tokenClass: TokenIsVerified
-  ) { }
+  ) {}
 
   async signup(
     req: AuthRequest
@@ -49,7 +49,7 @@ export class AuthService {
       name: "42authentification"
     });
     const code = await qrcode.toDataURL(secret.otpauth_url);
-    console.log("What is the qrcode", code)
+    console.log("What is the qrcode", code);
     return { secret: secret.base32, qrcode: code };
   }
 
@@ -81,7 +81,7 @@ export class AuthService {
       return await this.tokenClass.tokenStorage.refresh42Token(token);
     if (Math.floor(Date.now() / 1000) > token.created_at + 100)
       return await this.tokenClass.tokenStorage.refresh42Token(token);
-    return token
+    return token;
   }
 
   async getAuht42(
@@ -145,6 +145,4 @@ export class AuthService {
   async deleteToken(socketID: string) {
     this.tokenClass.tokenStorage.removeToken(socketID);
   }
-
-
 }

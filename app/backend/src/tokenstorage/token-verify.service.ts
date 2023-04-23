@@ -7,7 +7,7 @@ const logger = new Logger("TokenVerification");
 
 @Injectable()
 export default class TokenIsVerified implements CanActivate {
-    constructor(public tokenStorage: TokenStorageService) { }
+  constructor(public tokenStorage: TokenStorageService) {}
 
   async refreshToken(clientID: string, refresh_token: Token) {
     //Refresh the Token
@@ -37,7 +37,7 @@ export default class TokenIsVerified implements CanActivate {
     if (totalValidTime < currentTime) {
       this.tokenStorage.removeToken(clientId);
       logger.log("Token has expired");
-      throw new UnauthorizedException()
+      throw new UnauthorizedException();
     }
     logger.log("Token verification Success");
     await this.refreshToken(clientId, token);

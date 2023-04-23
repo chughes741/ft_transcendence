@@ -17,7 +17,7 @@ import { ImgTransferModule } from "./imgtransfer/imgtransfer.module";
 import { ImgTransferController } from "./imgtransfer/imgtransfer.controller";
 import { ImgTransferService } from "./imgtransfer/imgtransfer.service";
 import { TokenStorageService } from "./tokenstorage/token-storage.service";
-import { Scope } from '@nestjs/common';
+import { Scope } from "@nestjs/common";
 import TokenIsVerified from "./tokenstorage/token-verify.service";
 import { TokenStorageModule } from "./tokenstorage/token-storage.module";
 import { TokenModule } from "./tokenstorage/token-verify.module";
@@ -50,7 +50,7 @@ require("tsconfig-paths");
     AppService,
     PrismaService,
     UserConnectionsService,
-    ImgTransferService,
+    ImgTransferService
   ]
 })
 export class AppModule {}

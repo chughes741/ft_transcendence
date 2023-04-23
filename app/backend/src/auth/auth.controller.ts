@@ -32,15 +32,13 @@ export class AuthController {
   @Post("testing")
   @UseGuards(TokenIsVerified)
   public async functionTesttoCall() {
-    try{
+    try {
       return true;
-    }
-    catch(error)
-    {
+    } catch (error) {
       return false;
     }
   }
-  
+
   @HttpCode(HttpStatus.CREATED)
   @Post("signup")
   signup(@Body() dto: AuthRequest) {
@@ -124,7 +122,6 @@ export class AuthController {
   ) {
     return await this.authService.verifyQrCode(secret, code);
   }
-
 
   @Get("update2FA")
   @UseGuards(TokenIsVerified)
