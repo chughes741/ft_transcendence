@@ -156,7 +156,7 @@ export class ChatService {
     user: string,
     roomId: number
   ): Promise<ChatMember> {
-    const userId = await this.prismaService.getUserIdByNick(user);
+    const userId = await this.prismaService.getUserIdByUsername(user);
     let chatMember = await this.prismaService.chatMember.findFirst({
       where: { memberId: userId, roomId: roomId }
     });
@@ -224,7 +224,7 @@ export class ChatService {
 
   async leaveRoom(req: LeaveRoomRequest): Promise<ChatMember | Error> {
     try {
-      const userId = await this.prismaService.getUserIdByNick(req.username);
+      const userId = await this.prismaService.getUserIdByUsername(req.username);
       logger.log(`User ${req.username} is leaving room ${req.roomName}`);
       const roomId = await this.prismaService.getChatRoomId(req.roomName);
       if (!roomId) {
@@ -341,7 +341,7 @@ export class ChatService {
     if (!sendDto.content) return;
 
     // Try to get the user database ID
-    const userId = await this.prismaService.getUserIdByNick(sendDto.sender);
+    const userId = await this.prismaService.getUserIdByUsername(sendDto.sender);
     if (!userId) return Error("User not found");
 
     // Try to get the room database ID
@@ -399,7 +399,7 @@ export class ChatService {
     console.log(req);
 
     try {
-      await this.prismaService.getUserIdByNick(username);
+      await this.prismaService.getUserIdByUsername(username);
     } catch (e) {
       logger.log(`UserCreation error: User ${username} already exists`);
       return Error("User already exists");
@@ -447,7 +447,7 @@ export class ChatService {
   async devUserLogin(req: AuthRequest): Promise<Error | string> {
     // Check if the user already exists
     const username = req.username;
-    const userExists = await this.prismaService.getUserIdByNick(username);
+    const userExists = await this.prismaService.getUserIdByUsername(username);
     if (!userExists) {
       // Warn the client that the user already exists
       logger.log(`UserLogin error: User ${username} does not exist`);
@@ -630,8 +630,8 @@ export class ChatService {
 
     // Check if sender and recipient exist
     const [senderId, recipientId] = await Promise.all([
-      this.prismaService.getUserIdByNick(sender),
-      this.prismaService.getUserIdByNick(recipient)
+      this.prismaService.getUserIdByUsername(sender),
+      this.prismaService.getUserIdByUsername(recipient)
     ]);
 
     if (!senderId || !recipientId) {
@@ -678,8 +678,8 @@ export class ChatService {
 
       // Check if blocker and blockee exist
       const [blockerId, blockeeId] = await Promise.all([
-        this.prismaService.getUserIdByNick(blocker),
-        this.prismaService.getUserIdByNick(blockee)
+        this.prismaService.getUserIdByUsername(blocker),
+        this.prismaService.getUserIdByUsername(blockee)
       ]);
 
       if (!blockerId || !blockeeId) {

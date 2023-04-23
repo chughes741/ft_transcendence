@@ -88,18 +88,20 @@ export class PrismaService extends PrismaClient {
   }
 
   /**
-   * Gets the user id of a user with the specified nick.
-   * @param {string} nick - The user's nick.
+   * Gets the user id of a user with the specified username.
+   * @param {string} username - The user's username.
    * @returns {Promise<string>} - A Promise that resolves to the user id if the user is found, or an error if not found.
    * @async
    */
-  async getUserIdByNick(nick: string): Promise<string | null> {
-    if (!nick) {
+  async getUserIdByUsername(username: string): Promise<string | null> {
+    if (!username) {
       return null;
     }
 
     try {
-      const user = await this.user.findUnique({ where: { username: nick } });
+      const user = await this.user.findUnique({
+        where: { username: username }
+      });
       return user.id;
     } catch (err) {
       return null;
@@ -174,7 +176,7 @@ export class PrismaService extends PrismaClient {
     // FIXME: this should use the userExists() method
     // TODO: remove this code when authentication is enabled
     logger.log(`dto.owner: ${dto.owner}`);
-    const userID = await this.getUserIdByNick(dto.owner);
+    const userID = await this.getUserIdByUsername(dto.owner);
     logger.log(`userID: ${userID}`);
     console.log(dto);
     if (dto.owner && !userID) {

@@ -293,7 +293,7 @@ export class ChatGateway
     roomName: string // Add roomName parameter
   ): Promise<AvailableRoomEntity[] | UserEntity[]> {
     // Update the return type
-    const userId = await this.prismaService.getUserIdByNick(username);
+    const userId = await this.prismaService.getUserIdByUsername(username);
     logger.log(
       `Received listAvailableChatRooms request from ${userId}, name ${username}`
     );
@@ -344,7 +344,7 @@ export class ChatGateway
   ): Promise<User[]> {
     logger.log(`Received listAvailableUsers request from ${client.id}`);
     const username = this.userConnectionsService.getUserBySocket(client.id);
-    const userId = await this.prismaService.getUserIdByNick(username);
+    const userId = await this.prismaService.getUserIdByUsername(username);
     const roomId = await this.prismaService.getChatRoomId(req.chatRoomName);
     if (!userId || (!roomId && req.chatRoomName !== "")) {
       logger.error(`User id: ${userId} or room id: ${roomId} not found`);
@@ -614,7 +614,7 @@ export class ChatGateway
     );
 
     // Try to get the user database ID
-    const userId = await this.prismaService.getUserIdByNick(sendDto.sender);
+    const userId = await this.prismaService.getUserIdByUsername(sendDto.sender);
     if (!userId) return { error: "User not found" };
 
     // Delegate business logic to the chat service
