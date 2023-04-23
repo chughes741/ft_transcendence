@@ -45,7 +45,7 @@ export interface RootModelType {
  */
 export const useRootModel = (): RootModelType => {
   /** @todo null until logged in */
-  const [self, setSelf] = useState<ProfileEntity>(null);
+  const [self, setSelf] = useState<ProfileEntity>(new ProfileEntity());
   const [pageState, setPageState] = useState<PageState>(PageState.Auth);
   const [fullscreen, setFullscreen] = useState<boolean>(true);
   const [showChooseUsernameModal, setShowChooseUsernameModal] =

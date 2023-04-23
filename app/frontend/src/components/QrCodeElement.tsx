@@ -76,7 +76,7 @@ function VerifyQRCode() {
         setPageState(PageState.Auth);
         history.push('/auth');
         setFullscreen(true);
-        setSelf(null);
+        setSelf({ username : "", avatar: "", createdAt: "", status: 0});
         return;
       }
     } catch (error) {

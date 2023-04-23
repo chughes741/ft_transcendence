@@ -34,7 +34,7 @@ export default function TwoFactorButton({ enabled }: Props) {
       setSessionToken("");
       setPageState(PageState.Auth);
       setFullscreen(true);
-      setSelf(null);
+      setSelf({ username : "", avatar: "", createdAt: "", status: 0});
       return;
     }
     console.log(data);

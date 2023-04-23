@@ -55,6 +55,7 @@ export default function LoginWith42Button() {
     sessionToken,
     setSessionToken,
     setSelf,
+    self,
     setPageState
   } = useRootViewModelContext();
 
@@ -79,7 +80,6 @@ export default function LoginWith42Button() {
   // on success, set the session token and the self, and redirects to /
   const onSuccess = (data: dataResponse) => {
     setSessionToken(data.token);
-    setSelf(data.user);
     if (data.twoFAenable) setPageState(PageState.QRCode);
     else {
       history.replace("/");
@@ -124,6 +124,8 @@ export default function LoginWith42Button() {
           token: client.token,
           twoFAenable: client.user.enable2fa
         };
+        setSelf(userProfile.user);
+        console.log("This is thy self: " , self);
         onSuccess(userProfile);
       });
     } catch (error) {
