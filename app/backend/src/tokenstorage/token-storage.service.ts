@@ -65,17 +65,14 @@ export class TokenStorageService {
   }
 
   async refresh42Token(previous: Token): Promise<Token> {
-
-    logger.log("Refreshing token")
-    const response = await axios.post("https://api.intra.42.fr/oauth/token",
-      {
-        grant_type: "refresh_token",
-        client_id: process.env.UID,
-        client_secret: process.env.SECRET,
-        redirect_uri: process.env.REDIRECT_URI,
-        refresh_token: previous.refresh_token,
-      }
-    );
+    logger.log("Refreshing token");
+    const response = await axios.post("https://api.intra.42.fr/oauth/token", {
+      grant_type: "refresh_token",
+      client_id: process.env.UID,
+      client_secret: process.env.SECRET,
+      redirect_uri: process.env.REDIRECT_URI,
+      refresh_token: previous.refresh_token
+    });
     const data = response.data;
     const token = new Token(
       data.access_token,
@@ -84,8 +81,8 @@ export class TokenStorageService {
       data.expires_in,
       data.scope,
       data.created_at
-    )
-    console.log("Refreshed token: ", token)
+    );
+    console.log("Refreshed token: ", token);
     return token;
   }
 }

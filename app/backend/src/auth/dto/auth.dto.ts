@@ -1,10 +1,9 @@
-
 import { UserStatus } from "@prisma/client";
 
 export class UserEntity {
   username: string;
-  enable2fa? : boolean;
-  firstConnection? : boolean;
+  enable2fa?: boolean;
+  firstConnection?: boolean;
   avatar: string;
   firstName?: string;
   lastName?: string;
@@ -18,8 +17,7 @@ export class AuthRequest {
   firstName?: string;
   lastName?: string;
   email?: string;
-  token : string;
-
+  token: string;
 }
 
 export class AuthEntity {

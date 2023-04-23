@@ -1,8 +1,8 @@
 import { Injectable, Logger } from "@nestjs/common";
 import { PrismaService } from "../prisma/prisma.service";
 import { AuthEntity, AuthRequest, UserEntity } from "./dto";
-import * as speakeasy from 'speakeasy';
-import * as qrcode from 'qrcode';
+import * as speakeasy from "speakeasy";
+import * as qrcode from "qrcode";
 import axios from "axios";
 import { Token, TokenStorageService } from "../tokenstorage/token-storage.service";
 import { UserStatus } from "@prisma/client";
@@ -23,21 +23,19 @@ export class AuthService {
     { access_token: string } | { errorCode: number; errorMessage: string }
   > {
     console.log(req);
-    return { access_token: "new access token" }
+    return { access_token: "new access token" };
   }
 
   async callToSignup(req: AuthRequest) {
-
     return req;
   }
 
   async signin(data: UserEntity): Promise<UserEntity> {
-
     const user: UserEntity = await this.prisma.getUserbyMail(data.email);
     //IF THERE IS NO USER
     if (!user) {
       logger.log("Signin first time");
-      const newuser: UserEntity = await this.prisma.addUser(data)
+      const newuser: UserEntity = await this.prisma.addUser(data);
       newuser.firstConnection = true;
       return newuser;
     }
@@ -57,7 +55,7 @@ export class AuthService {
   generateToken(secret) {
     const token = speakeasy.totp({
       secret: secret,
-      encoding: "base32",
+      encoding: "base32"
     });
     return token;
   }
@@ -73,13 +71,11 @@ export class AuthService {
   }
 
   async update2FA(username: string) {
-
-    const enable: boolean = await this.prisma.update2FA(username)
+    const enable: boolean = await this.prisma.update2FA(username);
     return { enable2fa: enable };
   }
 
   async checkToRefresh(token: Token): Promise<Token> {
-
     if (token.expires_in < 7000)
       return await this.tokenClass.tokenStorage.refresh42Token(token);
     if (Math.floor(Date.now() / 1000) > token.created_at + 100)
@@ -87,21 +83,22 @@ export class AuthService {
     return token
   }
 
-  async getAuht42(clientId: string, authorization_code: string): Promise<AuthEntity> {
+  async getAuht42(
+    clientId: string,
+    authorization_code: string
+  ): Promise<AuthEntity> {
     const UID = process.env.UID;
     const SECRET = process.env.SECRET;
     const API_42_URL = process.env.API_42_URL;
     const REDIRECT_URI = process.env.REDIRECT_URI;
 
-    const response = await axios.post("https://api.intra.42.fr/oauth/token",
-      {
-        grant_type: "authorization_code",
-        client_id: UID,
-        client_secret: SECRET,
-        redirect_uri: REDIRECT_URI,
-        code: authorization_code
-      }
-    );
+    const response = await axios.post("https://api.intra.42.fr/oauth/token", {
+      grant_type: "authorization_code",
+      client_id: UID,
+      client_secret: SECRET,
+      redirect_uri: REDIRECT_URI,
+      code: authorization_code
+    });
     const data = response.data;
     // Get an access token
 
@@ -130,13 +127,13 @@ export class AuthService {
       firstName: response2.data.first_name,
       lastName: response2.data.last_name,
       email: response2.data.email,
-      status: UserStatus.ONLINE,
-    })
-    logger.log("Token :", token.access_token)
+      status: UserStatus.ONLINE
+    });
+    logger.log("Token :", token.access_token);
     const authEntity: AuthEntity = {
       user: theuser,
-      token: token.access_token,
-    }
+      token: token.access_token
+    };
     return authEntity;
   }
 
@@ -147,5 +144,4 @@ export class AuthService {
   async deleteToken(socketID: string) {
     this.tokenClass.tokenStorage.removeToken(socketID);
   }
-
 }

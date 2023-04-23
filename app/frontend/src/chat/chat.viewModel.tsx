@@ -304,26 +304,26 @@ export const ChatViewModelProvider = ({ children }) => {
   //       return {};
   //     });
 
-      // const createTempUser = async (username: string): Promise<void> => {
-      //   const req: AuthRequest = {
-      //     username,
-      //     firstName: "Schl",
-      //     lastName: "urp",
-      //     email: `${username}@schluuuuu.uuuuurp`,
-      //     avatar: `https://i.pravatar.cc/150?img=${username}`
-      //   };
-      //   const userCreated = await createUser(req);
-      //   if (!userCreated) {
-      //     // Try to login instead
-      //     const userLogged = await userLogin(req);
-      //     if (!userLogged) {
-      //       console.log("Failed to create or login to user", username);
-      //     }
-      //   }
-      // };
+  // const createTempUser = async (username: string): Promise<void> => {
+  //   const req: AuthRequest = {
+  //     username,
+  //     firstName: "Schl",
+  //     lastName: "urp",
+  //     email: `${username}@schluuuuu.uuuuurp`,
+  //     avatar: `https://i.pravatar.cc/150?img=${username}`
+  //   };
+  //   const userCreated = await createUser(req);
+  //   if (!userCreated) {
+  //     // Try to login instead
+  //     const userLogged = await userLogin(req);
+  //     if (!userLogged) {
+  //       console.log("Failed to create or login to user", username);
+  //     }
+  //   }
+  // };
 
-      // createTempUser(self.username);
-    // }
+  // createTempUser(self.username);
+  // }
   // }, [self.username, ""]);
 
   return (

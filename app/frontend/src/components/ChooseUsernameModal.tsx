@@ -1,7 +1,15 @@
-import React, {useCallback, useEffect, useState} from "react";
-import {Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, TextField} from "@mui/material";
-import {useRootViewModelContext} from "../root.context";
-import {UserStatus} from "kingpong-lib";
+import React, { useCallback, useEffect, useState } from "react";
+import {
+  Button,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
+  TextField
+} from "@mui/material";
+import { useRootViewModelContext } from "../root.context";
+import { UserStatus } from "kingpong-lib";
 
 interface ChooseUsernameModalProps {
   showModal: boolean;
@@ -12,23 +20,26 @@ const validateUsername = (username: string): boolean => {
   const regex = /^[a-zA-Z0-9]+$/;
 
   if (username.length < minLength || !regex.test(username)) {
-    alert("The username must be between 3 and 20 characters, and can only contain letters and numbers. Please choose another one.")
+    alert(
+      "The username must be between 3 and 20 characters, and can only contain letters and numbers. Please choose another one."
+    );
     return false;
   }
   return true;
-}
+};
 
-export const ChooseUsernameModal: React.FC<ChooseUsernameModalProps> = ({showModal}) => {
+export const ChooseUsernameModal: React.FC<ChooseUsernameModalProps> = ({
+  showModal
+}) => {
   if (!showModal) return null;
-  const { self, setSelf, setShowChooseUsernameModal, setFullscreen } = useRootViewModelContext();
+  const { self, setSelf, setShowChooseUsernameModal, setFullscreen } =
+    useRootViewModelContext();
   const [username, setUsername] = useState<string>("");
-  
-  
+
   setFullscreen(true);
 
   const handleSubmit = useCallback(async () => {
-    if (!validateUsername(username))
-      return;
+    if (!validateUsername(username)) return;
 
     const url = `http://localhost:3000/auth/changeUsername?current=${self.username}&newname=${username}`;
     const data = await fetch(url, {
@@ -37,10 +48,10 @@ export const ChooseUsernameModal: React.FC<ChooseUsernameModalProps> = ({showMod
         "Content-Type": "application/json"
       }
     });
-    
+
     const changeIsSuccess = await data.json();
     if (!changeIsSuccess) {
-      alert("This username is already taken, please choose another one.")
+      alert("This username is already taken, please choose another one.");
     } else {
       setSelf({
         username: username,
@@ -86,9 +97,7 @@ export const ChooseUsernameModal: React.FC<ChooseUsernameModalProps> = ({showMod
     >
       <DialogTitle alignContent={"center"}>Choose a username</DialogTitle>
       <DialogContent>
-        <DialogContentText>
-          Please choose a username :
-        </DialogContentText>
+        <DialogContentText>Please choose a username :</DialogContentText>
         <TextField
           autoFocus
           margin="dense"

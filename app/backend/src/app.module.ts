@@ -54,7 +54,7 @@ require("tsconfig-paths");
     {
       provide: TokenStorageService,
       useClass: TokenStorageService,
-      scope: Scope.DEFAULT,
+      scope: Scope.DEFAULT
     },
     TokenIsVerified,
     ImgTransferService

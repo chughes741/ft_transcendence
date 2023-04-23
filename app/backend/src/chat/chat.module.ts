@@ -6,9 +6,16 @@ import { UserConnectionsService } from "../user-connections.service";
 import { PrismaService } from "src/prisma/prisma.service";
 import { TokenStorageService } from "src/tokenstorage/token-storage.service";
 import { TokenStorageModule } from "src/tokenstorage/token-storage.module";
+import { TokenModule } from "src/tokenstorage/token-verify.module";
 
 @Module({
-  imports: [PrismaModule, TokenStorageModule],
-  providers: [ChatGateway, ChatService, UserConnectionsService, PrismaService]
+  imports: [PrismaModule, TokenStorageModule, TokenModule],
+  providers: [
+    ChatGateway,
+    ChatService,
+    UserConnectionsService,
+    PrismaService,
+    TokenStorageService
+  ]
 })
 export class ChatModule {}

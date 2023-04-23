@@ -8,7 +8,7 @@ import {
   Post,
   UseFilters,
   Logger,
-  UseGuards,
+  UseGuards
 } from "@nestjs/common";
 import { ApiTags } from "@nestjs/swagger";
 import { SubscribeMessage } from "@nestjs/websockets";
@@ -20,7 +20,6 @@ import { Token } from "src/tokenstorage/token-storage.service";
 import { UserStatus } from "@prisma/client";
 import TokenIsVerified from "src/tokenstorage/token-verify.service";
 
-
 const logger = new Logger("AuthController");
 
 @UseFilters(new PrismaClientExceptionFilterHttp())
@@ -28,7 +27,7 @@ const logger = new Logger("AuthController");
 @ApiTags("auth")
 export class AuthController {
   // Here, private means that authService is a member attribute
-  constructor(private authService: AuthService) { }
+  constructor(private authService: AuthService) {}
 
   @HttpCode(HttpStatus.CREATED)
   @Post("signup")
@@ -64,15 +63,14 @@ export class AuthController {
   @HttpCode(HttpStatus.OK)
   @Post("signin")
   signin(@Body() dto: AuthRequest) {
-
     const info: UserEntity = {
       username: dto.username,
-      avatar: '',
+      avatar: "",
       firstName: dto.firstName,
       lastName: dto.lastName,
       email: dto.email,
-      status: UserStatus.ONLINE,
-    }
+      status: UserStatus.ONLINE
+    };
     return this.authService.signin(info);
   }
 
@@ -80,7 +78,7 @@ export class AuthController {
   @SubscribeMessage("refresh")
   async refreshToken(@Body("refresh_token") refresh_token: Token) {
     logger.log(refresh_token);
-    return
+    return;
   }
 
   @Get("token")
@@ -118,20 +116,16 @@ export class AuthController {
 
   @Get("update2FA")
   @UseGuards(TokenIsVerified)
-  async update2FA(
-    @Query("username") userName: string,
-  ) {
-    return await this.authService.update2FA(userName)
+  async update2FA(@Query("username") userName: string) {
+    return await this.authService.update2FA(userName);
   }
 
   @Post("deleteToken")
   @UseGuards(TokenIsVerified)
   async deleteToken(@Query("socketId") socketId: string) {
-    
     Logger.log("Token deletion engage");
-    
-    this.authService.deleteToken(socketId);
-    return
-  }
 
+    this.authService.deleteToken(socketId);
+    return;
+  }
 }

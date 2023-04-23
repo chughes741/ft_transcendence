@@ -1,7 +1,5 @@
 import { Vec2 } from "./vector";
 
-
-
 export class BallData {
   pos: Vec2 = new Vec2();
   direction: Vec2 = new Vec2();

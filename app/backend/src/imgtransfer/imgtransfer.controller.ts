@@ -1,4 +1,11 @@
-import { Body, Controller, Injectable, UnauthorizedException, UploadedFile, UseGuards } from "@nestjs/common";
+import {
+  Body,
+  Controller,
+  Injectable,
+  UnauthorizedException,
+  UploadedFile,
+  UseGuards
+} from "@nestjs/common";
 import { Post } from "@nestjs/common";
 import { Express } from "express";
 import { FileInterceptor } from "@nestjs/platform-express";
@@ -40,7 +47,7 @@ export class ImgTransferController {
       }),
       fileFilter: imageFileFilter
     })
-    )
+  )
   public async uploadUserImage(
     @UploadedFile() file: Express.Multer.File,
     @Body() Data: imgTransferDTO
@@ -58,8 +65,7 @@ export class ImgTransferController {
       this.imgtransferService.updateProfilePic(user, data);
       return newImgUrl;
     } catch (error) {
-      if (error instanceof UnauthorizedException)
-        return error;
+      if (error instanceof UnauthorizedException) return error;
       return "Failed to upload";
     }
   }

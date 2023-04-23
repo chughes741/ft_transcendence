@@ -18,11 +18,11 @@ export default function PlayerDetail({ side }) {
   return (
     <>
       {side === playerSide ? (
-        <Box sx={{ display: "flex", alignContent: "space-around"}}>
+        <Box sx={{ display: "flex", alignContent: "space-around" }}>
           <Typography>{self.username}</Typography>
         </Box>
       ) : (
-        <Box sx={{ display: "flex", alignContent: "space-around"}}>
+        <Box sx={{ display: "flex", alignContent: "space-around" }}>
           <Typography>{opponentUsername}</Typography>
         </Box>
       )}
