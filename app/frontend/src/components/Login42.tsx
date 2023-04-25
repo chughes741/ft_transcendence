@@ -129,7 +129,11 @@ export default function LoginWith42Button() {
         else setFullscreen(false);
         //Creates the headers that will enable token authentification
         headers["client-id"] = socket.id;
-        headers["client-token"] = client.token; //42 Token
+        headers["client-token"] = client.token; 
+
+    
+
+        //PrepInfo
         const userProfile: dataResponse = {
           user: populateProfile(client),
           token: client.token,
@@ -146,6 +150,7 @@ export default function LoginWith42Button() {
     } catch (error) {
       console.log("Entering site")
     }
+
   }, [socket, headers, onSuccess]);
 
   

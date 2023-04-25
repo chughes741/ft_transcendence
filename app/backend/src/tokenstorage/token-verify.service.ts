@@ -2,12 +2,15 @@ import { CanActivate, Injectable, Logger } from "@nestjs/common";
 import { Token, TokenStorageService } from "./token-storage.service";
 import { UnauthorizedException } from "@nestjs/common";
 import { ExecutionContext } from "@nestjs/common";
+import { WebSocketServer } from '@nestjs/websockets';
 
 const logger = new Logger("TokenVerification");
 
 @Injectable()
 export default class TokenIsVerified implements CanActivate {
-    constructor(public tokenStorage: TokenStorageService) { }
+    constructor(
+      public tokenStorage: TokenStorageService
+      ) { }
 
   async refreshToken(clientID: string, refresh_token: Token) {
     //Refresh the Token
@@ -16,12 +19,31 @@ export default class TokenIsVerified implements CanActivate {
   }
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
-    const req = context.switchToHttp().getRequest();
+    const isWebSocket = context.getType() === 'ws';
+    let clientId : string ;
+    let clientToken : string ;
+    if (isWebSocket){
+      console.log("Websockets found")
+      const client = context.switchToWs().getClient();
+      const newheaders = client.handshake.headers;
+      console.log("CLIENT: ", client)
+      console.log("HEADERS EXTRA : ", newheaders)
+      console.log("QUERRY : ", client.handshake.QUERRY)
+      clientId = newheaders.clientid as string;
+      clientToken = newheaders.clienttoken as string;
+ 
+    }
+    else {
+      const req = context.switchToHttp().getRequest();
+      clientId = req.headers["client-id"] as string;
+      clientToken = req.headers["client-token"] as string;
+    }
 
-    const clientId = req.headers["client-id"] as string;
-    const clientToken = req.headers["client-token"] as string;
-
+    console.log(clientId, clientToken)
     logger.log("Client ID : ", clientId, "Client Token : ", clientToken);
+    //const clientId = req.headers["client-id"] as string;
+    //const clientToken = req.headers["client-token"] as string;
+    
 
     // Check if token is valid
     const token = await this.tokenStorage.getTokenbySocket(clientId);

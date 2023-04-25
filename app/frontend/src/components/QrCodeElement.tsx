@@ -33,12 +33,25 @@ function VerifyQRCode() {
       const response = await fetch(url, {
         method: "GET",
         headers: {
-          "Content-Type": "application/json"
-          //"client-id": socket.id,
-          //"client-token": sessionToken,
+          "Content-Type": "application/json",
+          "client-id": socket.id,
+          "client-token": sessionToken,
         }
       });
       const data = await response.json();
+      if (data.statusCode && data.statusCode === 401) //UNAUTHORIZED EXCEPTION
+      {
+        //MUST FLUSH THE session TOKEN and bring back to login page
+        fetch(`/auth/deleteToken?socketId=${socket.id}`, {
+          method: 'POST',
+        });
+        setSessionToken("")
+        setPageState(PageState.Auth);
+        history.push('/auth');
+        setFullscreen(true);
+        setSelf({ username : "", avatar: "", createdAt: "", status: 0});
+        return;
+      }
       setQRCode(data['qrcode']);
       setSecret(data['secret']);
 
@@ -66,17 +79,12 @@ function VerifyQRCode() {
         setFullscreen(false);
         setPageState(PageState.Home);
         return true;
-      } else {
-        alert("There was an error with the code you provided");
-        setErrorMessage(data.message);
-        return false;
-      }
+      } 
       if (data.statusCode && data.statusCode === 401) //UNAUTHORIZED EXCEPTION
       {
         //MUST FLUSH THE session TOKEN and bring back to login page
-        await fetch(`/auth/deleteToken?socketId=${socket.id}`, {
+        fetch(`/auth/deleteToken?socketId=${socket.id}`, {
           method: 'POST',
-          headers
         });
         setSessionToken("")
         setPageState(PageState.Auth);
@@ -84,6 +92,11 @@ function VerifyQRCode() {
         setFullscreen(true);
         setSelf({ username : "", avatar: "", createdAt: "", status: 0});
         return;
+      }
+      else {
+        alert("There was an error with the code you provided");
+        setErrorMessage(data.message);
+        return false;
       }
     } catch (error) {
       return false;

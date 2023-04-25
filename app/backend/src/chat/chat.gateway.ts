@@ -1,4 +1,4 @@
-import { Logger } from "@nestjs/common";
+import { Logger, UseGuards } from "@nestjs/common";
 import {
   OnGatewayConnection,
   OnGatewayDisconnect,
@@ -21,6 +21,7 @@ import { KickMemberRequest, UpdateChatMemberRequest } from "./dto/userlist.dto";
 
 import { AuthRequest } from "../auth/dto";
 import { TokenStorageService } from "src/tokenstorage/token-storage.service";
+import TokenIsVerified from "src/tokenstorage/token-verify.service";
 
 // FIXME: temporary error type until we can share btw back and frontend
 export type DevError = {
@@ -640,6 +641,7 @@ export class ChatGateway
     Takes a ChatmemberPrismaType array and transforms it into a ChatMemberEntity[], expected by the client
   */
 
+  @UseGuards(TokenIsVerified)
   @SubscribeMessage("listUsers")
   async listUsers(
     client: Socket,
