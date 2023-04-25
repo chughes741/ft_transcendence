@@ -95,8 +95,7 @@ export class ChatService {
       if (createDto.status === ChatRoomStatus.PASSWORD)
         createDto.password = await argon2.hash(createDto.password);
       const room = await this.prismaService.createChatRoom(createDto);
-      logger.log(`Room ${createDto.name} successfully added to the database: `);
-      logger.log(room);
+      logger.log(`Room ${createDto.name} successfully added to the database`);
       const members = await this.prismaService.getRoomMembers(room.name);
       return {
         name: room.name,
@@ -279,7 +278,7 @@ export class ChatService {
           return Error("Old password is incorrect");
         }
       }
-      logger.warn(`Previous status was ${room.status}`);
+      logger.log(`Previous status was ${room.status}`);
       logger.log(`Updating room ${roomName} to status ${status}`);
 
       if (status === ChatRoomStatus.PASSWORD) {
@@ -367,8 +366,7 @@ export class ChatService {
         senderId: userId,
         roomId
       });
-      logger.log(`Message added to the database: `);
-      logger.log(ret);
+      logger.log(`Message added to the database: `, ret);
       return new MessageEntity(ret);
     } catch (e) {
       logger.error("Error adding message to database", e);
@@ -394,7 +392,6 @@ export class ChatService {
     // Check if the user already exists
     const { username, avatar, email, firstName, lastName } = req;
     logger.warn(`User ${username} is trying to create a user`);
-    logger.log(req);
 
     try {
       await this.prismaService.getUserIdByNick(username);
@@ -414,8 +411,7 @@ export class ChatService {
         status: UserStatus.ONLINE
       };
       const prismaReturn = await this.prismaService.addUser(userData);
-      logger.log(`User ${username} added to the database: `);
-      logger.log(prismaReturn);
+      logger.log(`User ${username} added to the database: `, prismaReturn);
     } catch (e) {
       logger.error("User already exists", "User already exists", e);
       return Error("User already exists");
@@ -452,8 +448,7 @@ export class ChatService {
       return Error("User login error: user does not exist");
     }
     // FIXME: add password protection
-    logger.log(`User ${username} logged in: `);
-    logger.log(userExists);
+    logger.log(`User ${username} logged in: `, userExists);
 
     return username;
   }
@@ -601,8 +596,7 @@ export class ChatService {
         logger.log(`Error adding user ${username}`, e);
       }
     }
-    logger.log("After the try/catch, Invited users:");
-    logger.log(invitedUsers);
+    logger.log("After the try/catch, Invited users:", invitedUsers);
     return invitedUsers.map((user) => {
       return {
         username: user.username,

@@ -22,7 +22,7 @@ export class ImgTransferService {
   ): Promise<string> {
     const users = this.prismaService.GetProfile({ username: userName });
     const imageUrl = (await users).avatar;
-    logger.log("URL: " + imageUrl);
+    logger.log("URL:", imageUrl);
     if (isUrlValid(imageUrl)) {
       const imgPth = path
         .join(__dirname, "/img", path.basename(imageUrl))

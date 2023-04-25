@@ -77,7 +77,6 @@ export class ImgTransferController {
   @UseGuards(TokenIsVerified)
   public async functionTesttoCall() {
     logger.log("INSIDE it WORKS");
-
   }
 
 

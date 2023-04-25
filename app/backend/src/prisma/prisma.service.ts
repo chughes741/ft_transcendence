@@ -183,8 +183,7 @@ export class PrismaService extends PrismaClient {
    * @returns {Promise<User>} - A Promise that resolves to the chat member if the user is found, or an error if not found.
    */
   async addUser(req: UserEntity): Promise<User> {
-    logger.warn(`addUser:`);
-    logger.log(req);
+    logger.log(`addUser:`, req);
     if (!req.username || !req.avatar) {
       throw new Error(
         `Missing required fields: ${!!req.avatar && "avatar, "} ${
@@ -216,7 +215,6 @@ export class PrismaService extends PrismaClient {
     logger.log(`dto.owner: ${dto.owner}`);
     const userID = await this.getUserIdByNick(dto.owner);
     logger.log(`userID: ${userID}`);
-    logger.log(dto);
     if (dto.owner && !userID) {
       throw new Error("Invalid owner UUID");
     }
@@ -507,7 +505,6 @@ export class PrismaService extends PrismaClient {
   async GetProfile(getProfileRequest: GetProfileRequest): Promise<User> {
     logger.log(getProfileRequest.username);
     if (getProfileRequest.username === undefined || null) {
-      logger.log("Username is undefined");
       throw new Error("Username is undefined");
     }
     return await this.user.findUnique({
@@ -517,7 +514,6 @@ export class PrismaService extends PrismaClient {
 
   async getUserbyMail(email: string): Promise<User> {
     if (email === undefined || null) {
-      logger.log("Username is undefined");
       throw new Error("Username is undefined");
     }
     return await this.user.findUnique({
@@ -777,7 +773,6 @@ export class PrismaService extends PrismaClient {
    */
   async getAvailableUsers(userId: string, roomId: number): Promise<User[]> {
     if (!userId) {
-      logger.error("User ID is undefined");
       throw new Error("User ID is undefined");
     }
     logger.warn(

@@ -14,7 +14,6 @@ export default class TokenIsVerified implements CanActivate {
 
     refresh_token.created_at = Date.now();
     refresh_token.expires_in = 7200;
-    logger.log("Inside refresh Token");
     /*
         const newToken = refresh_token;
         newToken.created_at = Date.now();
@@ -35,7 +34,7 @@ export default class TokenIsVerified implements CanActivate {
     // Check if token is valid
     const token = await this.tokenStorage.getTokenbySocket(clientId);
     if (!token || token.access_token !== clientToken) {
-      logger.log("Token verification failure");
+      logger.warn("Token verification failure");
       throw new UnauthorizedException();
     }
     const currentTime = Math.floor(Date.now() / 1000);

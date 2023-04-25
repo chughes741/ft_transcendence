@@ -490,7 +490,6 @@ export class ChatGateway
     // Add the user to the socket room
     client.join(createDto.name);
     logger.log(`User ${createDto.owner} joined socket room ${createDto.name}`);
-    logger.log(createDto);
     return ret;
   }
 
@@ -571,7 +570,6 @@ export class ChatGateway
     req: LeaveRoomRequest
   ): Promise<DevError | string> {
     logger.warn(`Received leaveRoom request from ${client.id}`);
-    logger.log(req);
     const clientId = this.userConnectionsService.getUserBySocket(client.id);
     if (!clientId) {
       logger.error(`User ${client.id} not found`);
@@ -625,8 +623,7 @@ export class ChatGateway
     const ret = await this.chatService.sendMessage(sendDto);
     if (ret instanceof Error) return { error: ret.message };
 
-    logger.log(`Message sent successfully: `);
-    logger.log(ret);
+    logger.log("Message sent successfully:", ret);
     // If nothing went wrong, send the message to the room
     this.server.to(sendDto.roomName).emit("newMessage", ret);
     logger.log(
@@ -658,8 +655,7 @@ export class ChatGateway
     client: Socket,
     req: InviteUsersToRoomRequest
   ): Promise<string[] | false> {
-    logger.log(`Received inviteUsersToRoom request from ${client.id}: `);
-    logger.log(req);
+    logger.log(`Received inviteUsersToRoom request from ${client.id}: `, req);
     // Get the list of Database users to invite from the req's usernames array
 
     const chatMembers = await this.chatService.inviteUsersToRoom(req);
@@ -680,8 +676,7 @@ export class ChatGateway
         member.rank
       );
 
-      logger.log(`roomInfo: `);
-      logger.log(roomInfo);
+      logger.log(`roomInfo: `, roomInfo);
 
       this.sendEventToAllUserSockets(
         member.username,
@@ -702,7 +697,6 @@ export class ChatGateway
     logger.log(
       `Received updateChatMemberStatus request from ${req.queryingUser} for ${req.usernameToUpdate}  in room ${req.roomName}`
     );
-    logger.log(req);
 
     try {
       const chatMember = await this.chatService.updateMemberStatus(req);
@@ -713,8 +707,7 @@ export class ChatGateway
       this.listUsers(client, { chatRoomName: req.roomName });
       // TODO: implement a listener on the client side to handle this event
       //this.server.to(data.roomName).emit('chatMemberUpdated', chatMember);
-      logger.log("Chat Member's Status succesfully updated !");
-      logger.log(chatMember);
+      logger.log("Chat Member's Status succesfully updated");
       const user: ChatMemberEntity = {
         username: chatMember.member.username,
         roomName: req.roomName,
@@ -769,7 +762,6 @@ export class ChatGateway
     logger.log(
       `Received sendDirectMessage request from ${req.sender} to ${req.recipient}`
     );
-    logger.log(req);
     const ret = await this.chatService.sendDirectMessage(req);
     if (ret instanceof Error) return { error: ret.message };
     const room = ret as ChatRoomEntity;
@@ -796,7 +788,6 @@ export class ChatGateway
     logger.log(
       `Received blockUser request from ${req.blocker} to block ${req.blockee}`
     );
-    logger.log(req);
     const ret = await this.chatService.blockUser(req);
     if (ret instanceof Error) return { error: ret.message };
     return { success: "User blocked successfully" };

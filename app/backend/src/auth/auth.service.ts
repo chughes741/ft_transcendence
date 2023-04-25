@@ -49,7 +49,7 @@ export class AuthService {
       name: "42authentification"
     });
     const code = await qrcode.toDataURL(secret.otpauth_url);
-    logger.log("What is the qrcode", code)
+    logger.log("QRcode:", code)
     return { secret: secret.base32, qrcode: code };
   }
 
@@ -130,7 +130,7 @@ export class AuthService {
       email: response2.data.email,
       status: UserStatus.ONLINE
     });
-    logger.log("Token :", token.access_token);
+    logger.log("Token:", token.access_token);
     const authEntity: AuthEntity = {
       user: theuser,
       token: token.access_token

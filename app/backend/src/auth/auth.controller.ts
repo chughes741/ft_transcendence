@@ -50,12 +50,7 @@ export class AuthController {
   @Get("signin")
   signin_ft(@GetUser() user) {
     // The barren export pattern in ./dto/index.ts allows automatic exposition
-
-    logger.log("Succesfully signed in!");
-
-    logger.log({
-      user
-    }); // Creates an object and assigns it
+    logger.log("Succesfully signed in!", { user });
 
     return user;
   }
@@ -112,7 +107,6 @@ export class AuthController {
   ) {
     return await this.authService.verifyQrCode(secret, code);
   }
-
 
   @Get("update2FA")
   @UseGuards(TokenIsVerified)

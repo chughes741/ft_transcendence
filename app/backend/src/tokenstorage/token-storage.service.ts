@@ -54,13 +54,13 @@ export class TokenStorageService {
   addToken(socketId: string, token: Token): void {
     // Add the token to the map
     this.tokens.set(socketId, token);
-    logger.warn(`Added [Token]${token.access_token} to [Socket] ${socketId}.`);
+    logger.log(`Added [Token]${token.access_token} to [Socket] ${socketId}.`);
   }
 
   removeToken(socketId: string): void {
     if (this.tokens.has(socketId)) {
       this.tokens.delete(socketId);
-      logger.warn(`Removed [Socket]:${socketId}'s token from TokenStorage.`);
+      logger.log(`Removed [Socket]:${socketId}'s token from TokenStorage.`);
     }
   }
 

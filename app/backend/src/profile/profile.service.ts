@@ -27,7 +27,7 @@ export class ProfileService {
     getMatchHistoryRequest: GetMatchHistoryRequest
   ): Promise<MatchHistoryItem[]> {
     if (!getMatchHistoryRequest.username) {
-      logger.log("No username is provided");
+      logger.warn("No username is provided");
       return [];
     }
     logger.log(`Fetching match history for ${getMatchHistoryRequest.username}`);
@@ -62,7 +62,7 @@ export class ProfileService {
     getProfileRequest: GetProfileRequest
   ): Promise<ProfileEntity | null> {
     if (!getProfileRequest.username) {
-      logger.log("No username is provided");
+      logger.warn("No username is provided");
       return null;
     }
     logger.log(`Fetching profile for ${getProfileRequest.username}`);
@@ -93,7 +93,7 @@ export class ProfileService {
     getFriendsRequest: GetFriendsRequest
   ): Promise<ProfileEntity[] | null> {
     if (!getFriendsRequest.username) {
-      logger.log("No username is provided");
+      logger.warn("No username is provided");
       return null;
     }
     logger.log(`Fetching friends for ${getFriendsRequest.username}`);

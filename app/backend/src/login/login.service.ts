@@ -21,7 +21,7 @@ export class LoginService {
    */
   @UsePipes(new ValidationPipe({ transform: true }))
   async login(@Body() dto: AuthRequest) {
-    logger.log(dto);
+    logger.log("ValidationPipe:", dto);
 
     try {
       const user = await this.prismaService.user.create({
@@ -33,10 +33,9 @@ export class LoginService {
           avatar: dto.avatar
         }
       });
-      logger.log("Successfully created user " + user.username + ".");
+      logger.log("Successfully created user", user.username);
       return user;
     } catch (error) {
-      logger.log("error code: " + error.code);
       logger.error(error);
       throw new WsException(error.code);
     }

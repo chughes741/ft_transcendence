@@ -142,7 +142,6 @@ export class GameLogic {
       try {
         const ret = await this.prismaService.addMatch(match);
         logger.log("Successfully added match to database");
-        logger.log(ret);
       } catch (error) {
         logger.error(error);
       }

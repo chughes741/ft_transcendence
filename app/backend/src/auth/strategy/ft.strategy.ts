@@ -73,7 +73,7 @@ export class FortyTwoStrategy extends PassportStrategy(Strategy, "ft") {
     done: VerifyCallback
   ): Promise<null | VerifyCallback> {
     request.session.accessToken = accessToken;
-    logger.log("accessToken", accessToken, "refreshToken", refreshToken);
+    logger.log("accessToken:", accessToken, "refreshToken:", refreshToken);
     // In this example, the user's 42 profile is supplied as the user
     // record.  In a production-quality application, the 42 profile should
     // be associated with a user record in the application's database, which

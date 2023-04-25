@@ -77,7 +77,6 @@ export class GameService {
     this.gameModuleData.addLobby(newLobby);
     // GameModuleData.lobbies.push(newLobby);
     logger.log("Sizeof lobbies: ", GameModuleData.lobbies.length);
-    logger.log(GameModuleData.lobbies[0]);
 
     //Create payload
     const payload: LobbyCreatedEvent = {
