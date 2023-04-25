@@ -22,7 +22,7 @@ import { KickMemberRequest, UpdateChatMemberRequest } from "./dto/userlist.dto";
 import { AuthRequest } from "../auth/dto";
 import { TokenStorageService } from "src/tokenstorage/token-storage.service";
 
-// FIXME: temporary error type until we can share btw back and frontend
+/** @todo temporary error type until we can share btw back and frontend */
 export type DevError = {
   error: string;
 };
@@ -95,7 +95,7 @@ export type RoomMemberEntity = {
 
 export interface ChatRoomEntity {
   name: string;
-  queryingUserRank: ChatMemberRank; // FIXME: This should be embedded in the ChatMember type
+  queryingUserRank: ChatMemberRank /** @todo This should be embedded in the ChatMember type */;
   status: ChatRoomStatus;
   members: ChatMemberEntity[];
   latestMessage?: IMessageEntity;
@@ -155,7 +155,11 @@ export class BlockUserRequest {
   blockee: string;
 }
 
-// FIXME: uncomment the following line to enable authentication
+/**
+ * Chat gateway
+ *
+ * @todo Enable JWT authguard
+ */
 // @UseGuards(JwtWsAuthGuard)
 @WebSocketGateway()
 export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
@@ -233,11 +237,12 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   }
 
   /**
-   * @event "updateChatRoom"
    * Update the status of a chat room member.
-   * @param client - socket client
-   * @param updateChatRoomRequest - updated room info
-   * @returns updated room info if successful, error otherwise
+   *
+   * @event "updateChatRoom"
+   * @param {Socket} client - socket.io client
+   * @param {UpdateChatRoomRequest} updateChatRoomRequest - request to update the chat room
+   * @returns {ChatRoomEntity | DevError} - the updated chat room or an error
    */
   @SubscribeMessage("updateChatRoom")
   async updateChatRoom(
@@ -268,17 +273,20 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   }
 
   /**
-   * @event "listAvailableChatRooms"
    * Get all available chat rooms from the server, and send them to the client,
    * excluding the ones the user is already in.
+   *
    * Info sent back to the client:
    *  - room name
    *  - room status
    *  - room owner
    *  - amount of room members
-   * @param client socket client
-   * @param username username of the user requesting the list
-   * @returns list of chat rooms
+   *
+   * @event "listAvailableChatRooms"
+   * @param {Socket} client - socket.io client
+   * @param {string} username - username of the user
+   * @param {string} roomName - name of the room
+   * @returns {AvailableRoomEntity[] | UserEntity[]} - available rooms or users
    */
   @SubscribeMessage("listAvailableChatRooms")
   async listAvailableChatRooms(
@@ -330,6 +338,11 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
   /**
    * Get all available users
+   *
+   * @event "listAvailableUsers"
+   * @param {Socket} client - socket.io client
+   * @param {ListUsersRequest} req - request to list users
+   * @returns {User[]} - available users
    */
   @SubscribeMessage("listAvailableUsers")
   async listAvailableUsers(
@@ -362,11 +375,12 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
    * Temporary function to create a user
    *
    * If there is an error in the service, return it
+   * @todo remove this function when authentication is enabled
    *
-   * TODO: remove this function when authentication is enabled
-   * @param client socket client
-   * @param username
-   * @returns DevError or username
+   * @event "userCreation"
+   * @param {Socket} client
+   * @param {AuthRequest} req
+   * @returns {DevError | UserEntity}
    */
   @SubscribeMessage("userCreation")
   async createTempUser(
@@ -389,11 +403,14 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
   /**
    * Temporary function to login a user
+   *
    * If the user does not exist, return an error
-   * TODO: remove this function when authentication is enabled
-   * @param client socket client
-   * @param username
-   * @returns DevError or username
+   * @todo remove this function when authentication is enabled
+   *
+   * @event "userLogin"
+   * @param {Socket} client
+   * @param {AuthRequest} req
+   * @returns {DevError | string}
    */
   @SubscribeMessage("userLogin")
   async devUserLogin(
@@ -449,9 +466,11 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
    *
    * If the chat room is successfully created, add the user to the socket room.
    * If the chat service returns an error, return it
-   * @param client socket client
-   * @param room CreateRoomDto
-   * @returns DevError or room name
+   *
+   * @event "createRoom"
+   * @param {Socket} client - socket.io client
+   * @param {CreateChatRoomDto} createDto - chat room creation request
+   * @returns {ChatRoomEntity | DevError} - created chat room or error
    */
   @SubscribeMessage("createRoom")
   async createRoom(
@@ -485,14 +504,16 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
   /**
    * Join a chat room.
+   *
    * If the room does not exist, create it.
    * Fetch a list of messages from the database and send them to the client.
    * If there is a password, check if it matches the one in the database.
    * If the user is not a member of the room, add them to the database.
    *
-   * @param client client socket
-   * @param dto JoinRoomDto, containing the room name and password
-   * @returns DevError or room name
+   * @event "joinRoom"
+   * @param {Socket} client - socket.io client
+   * @param {JoinRoomDto} dto - join room request
+   * @returns {DevError | ChatRoomEntity} - chat room or error
    */
   @SubscribeMessage("joinRoom")
   async joinRoom(
@@ -508,7 +529,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
       }`
     );
 
-    // TODO: move this to a "getChatRoomMessages" handler
+    /** @todo move this to a "getChatRoomMessages" handler */
     // Assign the user id to the dto instead of the socket id
     dto.user = username;
     const ret = await this.chatService.joinRoom(dto);
@@ -535,7 +556,14 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     }
   }
 
-  // Add a new event to get a page of messages
+  /**
+   * Get a page of messages from a chat room.
+   *
+   * @event "getRoomMessagesPage"
+   * @param {Socket} client - socket.io client
+   * @param {GetRoomMessagesPageDto} dto - get room messages page request
+   * @returns {MessageEntity[]} - array of messages
+   */
   @SubscribeMessage("getRoomMessagesPage")
   async getRoomMessagesPage(
     client: Socket,
@@ -551,8 +579,11 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
   /**
    * Leave a chat room
-   * @param client client socket
-   * @param room name of the room to leave
+   *
+   * @event "leaveRoom"
+   * @param {Socket} client - socket.io client
+   * @param {LeaveRoomRequest} req - leave room request
+   * @returns {DevError | string} - error or success message
    */
   @SubscribeMessage("leaveRoom")
   async leaveRoom(
@@ -589,9 +620,10 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
    * If the room exists, send the message to the room and broadcast it to
    * all clients in the room
    *
-   * @param client
-   * @param sendDto
-   * @returns
+   * @event "sendMessage"
+   * @param {Socket} client - socket.io client
+   * @param {SendMessageDto} sendDto - send message request
+   * @returns {DevError | string} - error or success message
    */
   @SubscribeMessage("sendMessage")
   async sendMessage(
@@ -622,11 +654,14 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     return sendDto.roomName;
   }
 
-  /*
-    GET USER LIST : Get all user information relevant for the chat user tab Component
-    Takes a ChatmemberPrismaType array and transforms it into a ChatMemberEntity[], expected by the client
-  */
-
+  /**
+   * Get a list of users in a chat room.
+   *
+   * @event "listUsers"
+   * @param {Socket} client - socket.io client
+   * @param {ListUsersRequest} payload - list users request
+   * @returns {ChatMemberEntity[]} - array of chat members
+   */
   @SubscribeMessage("listUsers")
   async listUsers(
     client: Socket,
@@ -679,6 +714,14 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     return chatMembers.map((member) => member.username);
   }
 
+  /**
+   * Update a chat member's status
+   *
+   * @event "updateChatMemberStatus"
+   * @param {Socket} client - socket.io client
+   * @param {UpdateChatMemberRequest} req - update chat member request
+   * @returns {RoomMemberEntity | DevError} - updated chat member or error
+   */
   @SubscribeMessage("updateChatMemberStatus")
   async updateChatMemberStatus(
     client: Socket,
@@ -691,11 +734,11 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     try {
       const chatMember = await this.chatService.updateMemberStatus(req);
       if (chatMember.status === "BANNED") {
-        // TODO: implement this
+        /** @todo implement this */
         // Return this.kickChatMember, but with a different DTO
       }
       this.listUsers(client, { chatRoomName: req.roomName });
-      // TODO: implement a listener on the client side to handle this event
+      /** @todo implement a listener on the client side to handle this event */
       //this.server.to(data.roomName).emit('chatMemberUpdated', chatMember);
       logger.debug("Chat Member's Status succesfully updated");
       const user: ChatMemberEntity = {
@@ -722,6 +765,14 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     }
   }
 
+  /**
+   * Kick a chat member from a room
+   *
+   * @event "kickChatMember"
+   * @param {Socket} client - socket.io client
+   * @param {KickMemberRequest} req - kick member request
+   * @returns {RoomMemberEntity | DevError} - updated chat member or error
+   */
   @SubscribeMessage("kickChatMember")
   async kickChatMember(
     client: Socket,
@@ -732,7 +783,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
       return { error: response.message };
     } else {
       const user = response as ChatMemberEntity;
-      // TODO: implement a listener on the client side to handle this event
+      /** @todo implement a listener on the client side to handle this event */
       this.server.to(req.roomName).emit("chatMemberKicked", user);
       return { roomName: req.roomName, user };
     }
@@ -740,9 +791,11 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
   /**
    * Send a Direct Message to a user, if the user is not blocked
-   * @param {Socket} client
-   * @param {SendDirectMessageRequest} req
-   * @returns {Promise<DevError | ChatRoomEntity>}
+   *
+   * @event "sendDirectMessage"
+   * @param {Socket} client - socket.io client
+   * @param {SendDirectMessageRequest} req - send direct message request
+   * @returns {ChatRoomEntity | DevError} - chat room entity or error
    */
   @SubscribeMessage("sendDirectMessage")
   async sendDirectMessage(
@@ -765,10 +818,11 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
   /**
    * Block a user from sending you direct messages
-   * @param {Socket} client
-   * @param {BlockUserRequest} req
-   * @returns {Promise<DevError | BlockedUserEntity>}
-   * @memberof ChatGateway
+   * 
+   * @event "blockUser"
+   * @param {Socket} client - socket.io client
+   * @param {BlockUserRequest} req - block user request
+   * @returns {DevError | { success: string }} - success message or error
    */
   @SubscribeMessage("blockUser")
   async blockUser(
