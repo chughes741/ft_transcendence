@@ -23,7 +23,7 @@ const renderMessageContent = (content: string) => {
     }
 
     const language = match[1] || "javascript";
-    console.log(`language: ${language}`);
+    console.debug(`language: ${language}`);
     const code = match[2].trim();
     contentElements.push(
       <SyntaxHighlighter

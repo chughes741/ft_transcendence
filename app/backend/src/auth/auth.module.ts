@@ -7,9 +7,7 @@ import { JwtStrategy } from "./strategy";
 import { SessionSerializer } from "./session.serializer";
 import { FortyTwoStrategy } from "./strategy/ft.strategy";
 import { TokenModule } from "src/tokenstorage/token-verify.module";
-import { TokenStorageService } from "src/tokenstorage/token-storage.service";
 import TokenIsVerified from "src/tokenstorage/token-verify.service";
-import { TokenStorageModule } from "src/tokenstorage/token-storage.module";
 
 @Module({
   imports: [JwtModule.register({}), PrismaModule, TokenModule],

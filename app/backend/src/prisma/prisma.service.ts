@@ -6,7 +6,6 @@ import {
   ChatMemberStatus,
   ChatRoom,
   ChatRoomStatus,
-  GameType,
   Match,
   Prisma,
   PrismaClient,
@@ -183,8 +182,7 @@ export class PrismaService extends PrismaClient {
    * @returns {Promise<User>} - A Promise that resolves to the chat member if the user is found, or an error if not found.
    */
   async addUser(req: UserEntity): Promise<User> {
-    logger.warn(`addUser:`);
-    console.log(req);
+    logger.debug(`addUser:`, req);
     if (!req.username || !req.avatar) {
       throw new Error(
         `Missing required fields: ${!!req.avatar && "avatar, "} ${
@@ -213,10 +211,9 @@ export class PrismaService extends PrismaClient {
     // Check if the owner UUID is valid
     // FIXME: this should use the userExists() method
     // TODO: remove this code when authentication is enabled
-    logger.log(`dto.owner: ${dto.owner}`);
+    logger.debug(`dto.owner: ${dto.owner}`);
     const userID = await this.getUserIdByNick(dto.owner);
-    logger.log(`userID: ${userID}`);
-    console.log(dto);
+    logger.debug(`userID: ${userID}`);
     if (dto.owner && !userID) {
       throw new Error("Invalid owner UUID");
     }
@@ -424,7 +421,7 @@ export class PrismaService extends PrismaClient {
     // Check if the owner UUID is valid
     const userExists = await this.userExists(dto.senderId);
     if (dto.senderId && !userExists) {
-      logger.log(`userExists: ${userExists}`);
+      logger.debug(`userExists: ${userExists}`);
       return;
     }
 
@@ -474,7 +471,6 @@ export class PrismaService extends PrismaClient {
   async GetMatchHistory(
     getMatchHistoryRequest: GetMatchHistoryRequest
   ): Promise<MatchPrismaType[]> {
-    logger.log(getMatchHistoryRequest.username);
     return await this.match.findMany({
       where: {
         OR: [
@@ -505,9 +501,7 @@ export class PrismaService extends PrismaClient {
    * @returns {Promise<User>}
    */
   async GetProfile(getProfileRequest: GetProfileRequest): Promise<User> {
-    logger.log(getProfileRequest.username);
     if (getProfileRequest.username === undefined || null) {
-      logger.log("Username is undefined");
       throw new Error("Username is undefined");
     }
     return await this.user.findUnique({
@@ -517,7 +511,6 @@ export class PrismaService extends PrismaClient {
 
   async getUserbyMail(email: string): Promise<User> {
     if (email === undefined || null) {
-      logger.log("Username is undefined");
       throw new Error("Username is undefined");
     }
     return await this.user.findUnique({
@@ -537,7 +530,6 @@ export class PrismaService extends PrismaClient {
    */
   //TODO: define a prisma type for the return
   async getFriends(getFriendsRequest: GetFriendsRequest): Promise<any[]> {
-    logger.log(getFriendsRequest.username);
     const user = await this.user.findUnique({
       where: { username: getFriendsRequest.username },
       include: {
@@ -559,7 +551,7 @@ export class PrismaService extends PrismaClient {
    * @returns {Promise<Friend>}
    */
   async addFriend(addFriendRequest: AddFriendRequest): Promise<boolean> {
-    logger.log(
+    logger.debug(
       `Adding friend ${addFriendRequest.friend} to ${addFriendRequest.username}`
     );
     try {
@@ -597,7 +589,7 @@ export class PrismaService extends PrismaClient {
         }
       });
     } catch (error) {
-      logger.log(error);
+      logger.error(error);
       return false;
     }
   }
@@ -777,10 +769,9 @@ export class PrismaService extends PrismaClient {
    */
   async getAvailableUsers(userId: string, roomId: number): Promise<User[]> {
     if (!userId) {
-      logger.error("User ID is undefined");
       throw new Error("User ID is undefined");
     }
-    logger.warn(
+    logger.debug(
       `getAvailableUsers request for user ${userId} in room ${roomId}`
     );
     // Get a list of users who blocked or have been blocked by the querying user
@@ -815,7 +806,7 @@ export class PrismaService extends PrismaClient {
       ? usersNotInRoom.map((user) => user.memberId)
       : [];
 
-    logger.warn(`Blocked users:`, blockedIds);
+    logger.debug(`Blocked users:`, blockedIds);
 
     // Find users who are not in the blocked list and not in the specified room
     const availableUsers = await this.user.findMany({
@@ -825,7 +816,7 @@ export class PrismaService extends PrismaClient {
         }
       }
     });
-    logger.warn("Available users: " + availableUsers);
+    logger.debug("Available users: " + availableUsers);
 
     return availableUsers;
   }

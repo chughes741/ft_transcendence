@@ -85,7 +85,7 @@ export const useChatModel = (): ChatModelType => {
     userData: ChatMemberEntity
   ) => {
     e.preventDefault();
-    console.log(
+    console.debug(
       `handleContextMenuUsers: ${userData.username}, event: ${e.button}`
     );
     setContextMenuUsersVisible(true);

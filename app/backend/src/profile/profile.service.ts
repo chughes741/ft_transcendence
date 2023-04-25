@@ -27,10 +27,12 @@ export class ProfileService {
     getMatchHistoryRequest: GetMatchHistoryRequest
   ): Promise<MatchHistoryItem[]> {
     if (!getMatchHistoryRequest.username) {
-      logger.log("No username is provided");
+      logger.warn("No username is provided");
       return [];
     }
-    logger.log(`Fetching match history for ${getMatchHistoryRequest.username}`);
+    logger.debug(
+      `Fetching match history for ${getMatchHistoryRequest.username}`
+    );
     /** Fetch match history from prisma service */
     const matches = await this.prismaService.GetMatchHistory(
       getMatchHistoryRequest
@@ -62,10 +64,10 @@ export class ProfileService {
     getProfileRequest: GetProfileRequest
   ): Promise<ProfileEntity | null> {
     if (!getProfileRequest.username) {
-      logger.log("No username is provided");
+      logger.warn("No username is provided");
       return null;
     }
-    logger.log(`Fetching profile for ${getProfileRequest.username}`);
+    logger.debug(`Fetching profile for ${getProfileRequest.username}`);
     const user = await this.prismaService.GetProfile(getProfileRequest);
     const profile = {
       username: user.username,
@@ -78,7 +80,7 @@ export class ProfileService {
           : UserStatus.AWAY,
       createdAt: user.createdAt.toLocaleTimeString()
     };
-    logger.log("PROFILE AVATAR :" + profile.avatar);
+    logger.debug("Profile avatar:", profile.avatar);
     return profile;
   }
 
@@ -93,10 +95,10 @@ export class ProfileService {
     getFriendsRequest: GetFriendsRequest
   ): Promise<ProfileEntity[] | null> {
     if (!getFriendsRequest.username) {
-      logger.log("No username is provided");
+      logger.warn("No username is provided");
       return null;
     }
-    logger.log(`Fetching friends for ${getFriendsRequest.username}`);
+    logger.debug(`Fetching friends for ${getFriendsRequest.username}`);
     const friends = await this.prismaService.getFriends(getFriendsRequest);
     const friendProfiles = friends.map((friend) => {
       return {
@@ -123,7 +125,7 @@ export class ProfileService {
    * @returns {boolean} - Update successful
    */
   updateProfile(updateProfileRequest: UpdateProfileRequest): boolean {
-    logger.log(`Updating profile for ${updateProfileRequest.username}`);
+    logger.debug(`Updating profile for ${updateProfileRequest.username}`);
     return true;
   }
 
@@ -135,7 +137,7 @@ export class ProfileService {
    * @returns {boolean} - Add successful
    */
   addFriend(addFriendRequest: AddFriendRequest): Promise<boolean> {
-    logger.log(
+    logger.debug(
       `Adding friend ${addFriendRequest.friend} to ${addFriendRequest.username}`
     );
     return this.prismaService.addFriend(addFriendRequest);

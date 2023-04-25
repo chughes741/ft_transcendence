@@ -6,11 +6,11 @@ import {
   Collapse,
   List,
   ListItemButton,
-  ListItemText
+  ListItemText,
+  Snackbar
 } from "@mui/material";
 import { useChatContext } from "../chat.context";
 
-import { Snackbar } from "@mui/material";
 import Alert from "@mui/material/Alert";
 
 import { socket } from "../../contexts/WebSocket.context";
@@ -22,7 +22,6 @@ import { UserEntity, InviteUsersModal } from "../modals/InviteUsersModal";
 import { JoinRoomModal } from "../modals/JoinRoomModal";
 import { handleSocketErrorResponse } from "../lib/helperFunctions";
 import {
-  ChatMemberRank,
   ChatRoomStatus,
   DevError,
   ListUsersRequest,
@@ -129,8 +128,8 @@ const RoomList: React.FC = () => {
   // Emit a "listAvailableUsers" socket event when the roomName changes
   useEffect(() => {
     if (!showInviteUsersModal || !contextMenuData?.name) return;
-    console.log(
-      "showInviteUsers Modal has been activated, so me too: ",
+    console.debug(
+      "showInviteUsers Modal has been activated:",
       contextMenuData?.name
     );
 
@@ -142,13 +141,13 @@ const RoomList: React.FC = () => {
     socket.emit("listAvailableUsers", req, (users: DevError | UserEntity[]) => {
       if (handleSocketErrorResponse(users)) {
         const error = users as DevError;
-        console.error(
+        console.warn(
           `RoomList: Error fetching the available users: ${error.error}`
         );
         return;
       }
-      console.log("Available users: ", users);
-      console.log("Current room name: ", currentRoomName);
+      console.debug("Available users: ", users);
+      console.debug("Current room name: ", currentRoomName);
       setAvailableUsers(users);
       setSelectedUsers([]);
     });
@@ -166,8 +165,7 @@ const RoomList: React.FC = () => {
 
   useEffect(() => {
     socket.on("addedToNewChatRoom", (room) => {
-      console.log(`You have been added to a new chat room: ${room.name}`);
-      console.log(room);
+      console.debug(`You have been added to a new chat room: ${room.name}`);
       setAddedRoomName(room.name);
     });
   }, [socket]);

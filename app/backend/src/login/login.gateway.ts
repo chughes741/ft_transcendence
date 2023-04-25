@@ -4,7 +4,6 @@ import {
   MessageBody
 } from "@nestjs/websockets";
 import { LoginService } from "./login.service";
-import { LoginDto } from "./dto/login.dto";
 import { UseFilters } from "@nestjs/common";
 import { PrismaClientExceptionFilterWs } from "../prisma-client-exception.filter";
 import { AuthRequest } from "../auth/dto";

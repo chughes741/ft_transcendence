@@ -18,7 +18,7 @@ export default function TwoFactorButton({ enabled }: Props) {
   const onToggle = async () => {
     setIsLoading(true);
     const url = `/auth/update2FA?username=${self.username}`;
-    console.log("With headers", headers);
+    console.debug("With headers", headers);
     const response = await fetch(url, {
       method: "GET",
       headers
@@ -37,7 +37,6 @@ export default function TwoFactorButton({ enabled }: Props) {
       setSelf({ username: "", avatar: "", createdAt: "", status: 0 });
       return;
     }
-    console.log(data);
     setIsLoading(false);
   };
 

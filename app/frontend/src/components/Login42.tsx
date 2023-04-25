@@ -124,10 +124,8 @@ export default function LoginWith42Button() {
         }
         //Data received from the backend fetch by 42 api
         const client = await data.json();
-        if (client.user.firstConnection)
-          setShowChooseUsernameModal(
-            true
-          ); //Choose username on first connection
+        if (client.user.firstConnection) setShowChooseUsernameModal(true);
+        //Choose username on first connection
         else setFullscreen(false);
         //Creates the headers that will enable token authentification
         headers["client-id"] = socket.id;
@@ -142,7 +140,7 @@ export default function LoginWith42Button() {
         self.avatar = userProfile.user.avatar;
         self.createdAt = userProfile.user.createdAt;
         self.status = userProfile.user.status;
-        //console.log("This is thy self: ", self);
+
         onSuccess(userProfile);
       });
     } catch (error) {

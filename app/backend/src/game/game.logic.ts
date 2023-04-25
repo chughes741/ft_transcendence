@@ -1,27 +1,15 @@
-import { Logger } from "@nestjs/common";
-import { Injectable } from "@nestjs/common";
+import { Logger, Injectable } from "@nestjs/common";
 import { SchedulerRegistry } from "@nestjs/schedule";
 import { GameConfig, PaddleConfig, BallConfig } from "./config/game.config";
 import { WebSocketServer, WebSocketGateway } from "@nestjs/websockets";
 import { Server } from "socket.io";
 import { Vec2 } from "./vector";
-import {
-  GameData,
-  BallData,
-  gameLobby,
-  PaddleData,
-  MatchType
-} from "./game.types";
+import { GameData, BallData, gameLobby, MatchType } from "./game.types";
 import { degToRad, checkIntersect } from "./game.utils";
-import {
-  ServerGameStateUpdateEvent,
-  GameEvents,
-  GameState,
-  GameEndedEvent,
-  Ball
-} from "kingpong-lib";
+import { GameEvents, GameState } from "kingpong-lib";
 import { GameType } from "@prisma/client";
 import { PrismaService } from "../prisma/prisma.service";
+
 const logger = new Logger("gameLogic");
 
 @WebSocketGateway({
@@ -79,7 +67,7 @@ export class GameLogic {
     //Add new interval to scheduler
     try {
       this.schedulerRegistry.getInterval("gameUpdateInterval" + lobby.lobby_id);
-      logger.log("Error creating gameUpdateInterval");
+      logger.error("Error creating gameUpdateInterval");
     } catch {
       this.addGameUpdateInterval(
         lobby,
@@ -137,13 +125,12 @@ export class GameLogic {
         timestamp: new Date(Date.now()),
         gameType: GameType.UNRANKED
       };
-      logger.log("Match: " + JSON.stringify(match));
+      logger.debug("Match: " + JSON.stringify(match));
       try {
         const ret = await this.prismaService.addMatch(match);
-        logger.log("Successfully added match to database");
-        console.log(ret);
+        logger.debug("Successfully added match to database");
       } catch (error) {
-        logger.error(error);
+        logger.error("Problem with sendServerUpdate", error);
       }
 
       return;
@@ -182,10 +169,6 @@ export class GameLogic {
     //Get a time difference between last update and this update
     const time_diff: number = (Date.now() - gamestate.last_update_time) / 1000;
 
-    // console.log("padleft: " + gamestate.paddle_left.pos.y);
-    // console.log("padright: " + gamestate.paddle_right.pos.y);
-    /** This floods the terminal */
-    // console.log("score: " + gamestate.score[0] + " | " + gamestate.score[1]);
     //Find new ball position
     curBall.pos = Vec2.scaleAndAdd(
       prevBall.pos,
@@ -356,18 +339,17 @@ export class GameLogic {
     name: string,
     milliseconds: number
   ) {
-    const lobby_id: string = lobby.lobby_id;
     //Set callback function to gamestate
     const interval = setInterval(() => {
       this.sendServerUpdate(lobby);
     }, milliseconds);
     this.schedulerRegistry.addInterval(name, interval);
-    logger.log(`Interval ${name} created`);
+    logger.debug(`Interval ${name} created`);
   }
 
   //Delete an interval
   deleteInterval(name: string) {
     this.schedulerRegistry.deleteInterval(name);
-    logger.log(`Interval ${name} deleted!`);
+    logger.debug(`Interval ${name} deleted!`);
   }
 }

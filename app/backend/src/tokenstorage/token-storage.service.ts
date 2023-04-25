@@ -14,9 +14,9 @@ export class Token {
   constructor(
     access_token: string,
     refresh_token: string,
-    token_type: string = "bearer",
-    expires_in: number = 7200,
-    scope: string = "public",
+    token_type = "bearer",
+    expires_in = 7200,
+    scope = "public",
 
     created_at: number = Date.now()
   ) {
@@ -53,13 +53,13 @@ export class TokenStorageService {
   addToken(socketId: string, token: Token): void {
     // Add the token to the map
     this.tokens.set(socketId, token);
-    logger.warn(`Added [Token]${token.access_token} to [Socket] ${socketId}.`);
+    logger.debug(`Added [Token]${token.access_token} to [Socket] ${socketId}.`);
   }
 
   removeToken(socketId: string): void {
     if (this.tokens.has(socketId)) {
       this.tokens.delete(socketId);
-      logger.warn(`Removed [Socket]:${socketId}'s token from TokenStorage.`);
+      logger.debug(`Removed [Socket]:${socketId}'s token from TokenStorage.`);
     }
   }
 
@@ -80,7 +80,7 @@ export class TokenStorageService {
       data.scope,
       data.created_at
     );
-    console.log("New 42 Token: ", token);
+    console.debug("New 42 Token: ", token);
     return token;
   }
 }

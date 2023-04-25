@@ -1,5 +1,5 @@
 import { PassportStrategy } from "@nestjs/passport";
-import { Injectable } from "@nestjs/common";
+import { Injectable, Logger } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import { Strategy, Profile, VerifyCallback } from "passport-42";
 
@@ -37,11 +37,12 @@ import { Strategy, Profile, VerifyCallback } from "passport-42";
 //       accessToken,
 //       refreshToken,
 //     };
-//     Logger.log(user);
 
 //     done(null, user);
 //   }
 // }
+
+const logger = new Logger("JwtStrategy");
 
 @Injectable()
 export class FortyTwoStrategy extends PassportStrategy(Strategy, "ft") {
@@ -71,7 +72,7 @@ export class FortyTwoStrategy extends PassportStrategy(Strategy, "ft") {
     done: VerifyCallback
   ): Promise<null | VerifyCallback> {
     request.session.accessToken = accessToken;
-    console.log("accessToken", accessToken, "refreshToken", refreshToken);
+    logger.debug("accessToken:", accessToken, "refreshToken:", refreshToken);
     // In this example, the user's 42 profile is supplied as the user
     // record.  In a production-quality application, the 42 profile should
     // be associated with a user record in the application's database, which

@@ -14,7 +14,7 @@ export default function Fallback({
   error
 }: FallbackProps): ReactElement {
   function resetError() {
-    console.log(error);
+    console.warn("FallBack error:", error);
     resetErrorBoundary();
   }
 

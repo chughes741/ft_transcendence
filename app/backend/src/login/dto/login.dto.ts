@@ -2,6 +2,8 @@ import { Logger } from "@nestjs/common";
 import { ApiProperty } from "@nestjs/swagger";
 import { IsNotEmpty, IsOptional, IsString } from "class-validator";
 
+const logger = new Logger("LoginDto");
+
 export class LoginDto {
   @IsString()
   @IsNotEmpty()
@@ -17,6 +19,6 @@ export class LoginDto {
     this.username = username;
     this.password = password;
 
-    Logger.log(`username: ${this.username}`);
+    logger.debug(`username: ${this.username}`);
   }
 }

@@ -8,8 +8,10 @@ const logger = new Logger("PrismaClientExceptionFilter");
 @Catch(Prisma.PrismaClientKnownRequestError)
 export class PrismaClientExceptionFilterHttp extends BaseExceptionFilter {
   catch(exception: Prisma.PrismaClientKnownRequestError, host: ArgumentsHost) {
-    logger.error("Oopsie fucky is happening in HTTP Exception filter");
-    console.error(exception.message);
+    logger.error(
+      "Problem with HTTP PrismaClientExceptionFilter",
+      exception.message
+    );
     const ctx = host.switchToHttp();
     const response = ctx.getResponse<Response>();
     const message = exception.message.replace(/\n/g, "");
@@ -36,14 +38,9 @@ import { BaseWsExceptionFilter, WsException } from "@nestjs/websockets";
 @Catch(WsException)
 export class PrismaClientExceptionFilterWs extends BaseWsExceptionFilter {
   catch(exception: WsException, host: ArgumentsHost) {
-    console.log("Oopsie fucky is happening in WS Exception filter");
-    logger.error(exception);
-    logger.error(host);
+    logger.error("Problem with WS PrismaClientExceptionFilter", exception);
     const client = host.switchToWs().getClient();
     let message = exception.message.replace(/\n/g, "");
-
-    logger.log(message);
-    logger.log(exception.getError());
 
     switch (exception.getError()) {
       case "P2002": {

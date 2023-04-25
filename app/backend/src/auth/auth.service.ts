@@ -22,7 +22,6 @@ export class AuthService {
   ): Promise<
     { access_token: string } | { errorCode: number; errorMessage: string }
   > {
-    console.log(req);
     return { access_token: "new access token" };
   }
 
@@ -34,12 +33,12 @@ export class AuthService {
     const user: UserEntity = await this.prisma.getUserbyMail(data.email);
     //IF THERE IS NO USER
     if (!user) {
-      logger.log("Signin first time");
+      logger.debug("Signin first time");
       const newuser: UserEntity = await this.prisma.addUser(data);
       newuser.firstConnection = true;
       return newuser;
     }
-    logger.log("Returning user");
+    logger.debug("Returning user");
     user.firstConnection = false;
     return user;
   }
@@ -49,7 +48,7 @@ export class AuthService {
       name: "42authentification"
     });
     const code = await qrcode.toDataURL(secret.otpauth_url);
-    console.log("What is the qrcode", code);
+    logger.debug("QRcode:", code);
     return { secret: secret.base32, qrcode: code };
   }
 
@@ -130,7 +129,7 @@ export class AuthService {
       email: response2.data.email,
       status: UserStatus.ONLINE
     });
-    logger.log("Token :", token.access_token);
+    logger.debug("Token:", token.access_token);
     const authEntity: AuthEntity = {
       user: theuser,
       token: token.access_token

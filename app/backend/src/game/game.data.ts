@@ -1,6 +1,7 @@
 import * as GameTypes from "./game.types";
 import { Logger } from "@nestjs/common";
 import { PlayerReadyRequest, ClientGameStateUpdateRequest } from "kingpong-lib";
+
 const logger = new Logger("gameData");
 
 /**
@@ -37,7 +38,7 @@ export class GameModuleData {
    */
   addQueue(player: GameTypes.PlayerQueue) {
     GameModuleData.queue.push(player);
-    console.log("size of queue: " + GameModuleData.queue.length);
+    logger.debug("size of queue: " + GameModuleData.queue.length);
   }
 
   /**
@@ -57,13 +58,13 @@ export class GameModuleData {
    * @param player
    */
   removeQueueUsername(player: string) {
-    console.log("size of queue before: " + GameModuleData.queue.length);
+    logger.debug("size of queue before: " + GameModuleData.queue.length);
 
     GameModuleData.queue = GameModuleData.queue.filter(
       (element) => element.username !== player
     );
 
-    console.log("size of queue after: " + GameModuleData.queue.length);
+    logger.debug("size of queue after: " + GameModuleData.queue.length);
   }
 
   /**
@@ -116,7 +117,7 @@ export class GameModuleData {
         } else {
           element.gamestate.players_ready--;
         }
-        console.log("PlayersReady: " + element.gamestate.players_ready);
+        logger.debug("PlayersReady: " + element.gamestate.players_ready);
       }
     });
   }

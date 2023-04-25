@@ -57,8 +57,6 @@ const UserContextMenu: React.FC<UserContextMenuProps> = ({
   onViewProfile,
   onInviteToGame,
   onSendDirectMessage,
-  onAddFriend,
-  onKickUser,
   onBlockUser,
   sendUpdateRequest,
   onPromoteToAdmin,
@@ -117,10 +115,10 @@ const UserContextMenu: React.FC<UserContextMenuProps> = ({
       ? {
           label: "Unmute user",
           onClick: () => {
-            console.log(`Unmuting user ${contextMenuData.username}...`);
+            console.debug(`Unmuting user ${contextMenuData.username}...`);
             const status = ChatMemberStatus.OK;
             const duration = -1;
-            console.log("duration: " + duration + " status: " + status);
+            console.debug("duration: " + duration + " status: " + status);
             sendUpdateRequest(duration, status, contextMenuData.rank);
           }
         }
@@ -130,9 +128,11 @@ const UserContextMenu: React.FC<UserContextMenuProps> = ({
             (option) => ({
               label: option.label,
               onClick: () => {
-                console.log(`Muting user ${contextMenuData.username}...`);
+                console.debug(`Muting user ${contextMenuData.username}...`);
                 const status = ChatMemberStatus.MUTED;
-                console.log("duration: " + option.value + " status: " + status);
+                console.debug(
+                  "duration: " + option.value + " status: " + status
+                );
                 sendUpdateRequest(option.value, status, contextMenuData.rank);
               }
             })
@@ -144,10 +144,10 @@ const UserContextMenu: React.FC<UserContextMenuProps> = ({
       ? {
           label: "Unban user",
           onClick: () => {
-            console.log(`Unbanning user ${contextMenuData.username}...`);
+            console.debug(`Unbanning user ${contextMenuData.username}...`);
             const status = ChatMemberStatus.OK;
             const duration = -1;
-            console.log("duration: " + duration + " status: " + status);
+            console.debug("duration: " + duration + " status: " + status);
             sendUpdateRequest(duration, status, contextMenuData.rank);
           }
         }
@@ -155,7 +155,7 @@ const UserContextMenu: React.FC<UserContextMenuProps> = ({
       ? {
           label: "Ban user for duration of mute",
           onClick: () => {
-            console.log(
+            console.debug(
               `Banning user ${contextMenuData.username} for the duration of mute...`
             );
             const status = ChatMemberStatus.BANNED;
@@ -212,8 +212,7 @@ const UserContextMenu: React.FC<UserContextMenuProps> = ({
 
   useEffect(() => {
     if (contextMenuVisible) {
-      console.log(`UserContextMenu: ${contextMenuData.username}`);
-      console.log(contextMenuData);
+      console.debug(`UserContextMenu: ${contextMenuData.username}`);
     }
   }, [contextMenuVisible]);
 
