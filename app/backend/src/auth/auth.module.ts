@@ -19,7 +19,7 @@ import { TokenStorageModule } from "src/tokenstorage/token-storage.module";
     FortyTwoStrategy,
     JwtStrategy,
     SessionSerializer,
-    TokenIsVerified,
+    TokenIsVerified
   ]
 })
 export class AuthModule {}

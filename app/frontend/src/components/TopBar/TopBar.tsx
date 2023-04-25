@@ -109,7 +109,6 @@ export default function TopBar() {
                 />
               </>
             )}
-
           </IconButton>
           <Menu
             sx={{ mt: "45px" }}

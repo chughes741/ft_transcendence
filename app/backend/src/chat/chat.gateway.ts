@@ -164,9 +164,9 @@ export class ChatGateway
   constructor(
     private prismaService: PrismaService,
     private chatService: ChatService,
-    private userConnectionsService: UserConnectionsService,
-    //private tokenStorage: TokenStorageService
-  ) {}
+    private userConnectionsService: UserConnectionsService
+  ) //private tokenStorage: TokenStorageService
+  {}
 
   @WebSocketServer()
   server: Server;

@@ -34,7 +34,7 @@ export default function TwoFactorButton({ enabled }: Props) {
       setSessionToken("");
       setPageState(PageState.Auth);
       setFullscreen(true);
-      setSelf({ username : "", avatar: "", createdAt: "", status: 0});
+      setSelf({ username: "", avatar: "", createdAt: "", status: 0 });
       return;
     }
     setIsLoading(false);
@@ -58,4 +58,3 @@ export default function TwoFactorButton({ enabled }: Props) {
     </Button>
   );
 }
-

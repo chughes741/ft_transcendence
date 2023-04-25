@@ -7,20 +7,12 @@ const logger = new Logger("TokenVerification");
 
 @Injectable()
 export default class TokenIsVerified implements CanActivate {
-    constructor(public tokenStorage: TokenStorageService) { }
+  constructor(public tokenStorage: TokenStorageService) {}
 
   async refreshToken(clientID: string, refresh_token: Token) {
     //Refresh the Token
-
     refresh_token.created_at = Date.now();
     refresh_token.expires_in = 7200;
-    /*
-        const newToken = refresh_token;
-        newToken.created_at = Date.now();
-        newToken.expires_in = 7200;
-        await this.tokenStorage.removeToken(clientID);
-        await this.tokenStorage.addToken(clientID, newToken);
-        */
   }
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
@@ -29,10 +21,12 @@ export default class TokenIsVerified implements CanActivate {
     const clientId = req.headers["client-id"] as string;
     const clientToken = req.headers["client-token"] as string;
 
+    logger.debug("Client ID : ", clientId, "Client Token : ", clientToken);
+
     // Check if token is valid
     const token = await this.tokenStorage.getTokenbySocket(clientId);
     if (!token || token.access_token !== clientToken) {
-      logger.error("Token verification failure");
+      logger.error("Token verification Failure");
       throw new UnauthorizedException();
     }
     const currentTime = Math.floor(Date.now() / 1000);
@@ -42,9 +36,10 @@ export default class TokenIsVerified implements CanActivate {
     if (totalValidTime < currentTime) {
       this.tokenStorage.removeToken(clientId);
       logger.warn("Token has expired");
-      throw new UnauthorizedException()
+      throw new UnauthorizedException();
     }
-    logger.debug("Token verification successful");
+    logger.debug("Token verification Success");
+
     await this.refreshToken(clientId, token);
     return true;
   }
