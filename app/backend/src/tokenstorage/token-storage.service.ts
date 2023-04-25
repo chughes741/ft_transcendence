@@ -39,7 +39,7 @@ export class TokenStorageService {
   }
 
   async getTokenbySocket(socketID: string): Promise<Token> {
-    console.log(this.tokens);
+    logger.log(this.tokens);
     return await this.tokens.get(socketID);
   }
 
@@ -82,7 +82,7 @@ export class TokenStorageService {
       data.scope,
       data.created_at
     );
-    console.log("Refreshed token: ", token);
+    logger.log("Refreshed token: ", token);
     return token;
   }
 }

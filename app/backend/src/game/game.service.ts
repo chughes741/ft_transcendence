@@ -76,8 +76,8 @@ export class GameService {
     //TODO: Swap this to a setter function in the data module
     this.gameModuleData.addLobby(newLobby);
     // GameModuleData.lobbies.push(newLobby);
-    console.log("Sizeof lobbies: ", GameModuleData.lobbies.length);
-    console.log(GameModuleData.lobbies[0]);
+    logger.log("Sizeof lobbies: ", GameModuleData.lobbies.length);
+    logger.log(GameModuleData.lobbies[0]);
 
     //Create payload
     const payload: LobbyCreatedEvent = {

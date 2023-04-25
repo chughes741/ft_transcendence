@@ -22,6 +22,7 @@ import {
 } from "kingpong-lib";
 import { GameType } from "@prisma/client";
 import { PrismaService } from "../prisma/prisma.service";
+
 const logger = new Logger("gameLogic");
 
 @WebSocketGateway({
@@ -141,7 +142,7 @@ export class GameLogic {
       try {
         const ret = await this.prismaService.addMatch(match);
         logger.log("Successfully added match to database");
-        console.log(ret);
+        logger.log(ret);
       } catch (error) {
         logger.error(error);
       }
@@ -182,10 +183,10 @@ export class GameLogic {
     //Get a time difference between last update and this update
     const time_diff: number = (Date.now() - gamestate.last_update_time) / 1000;
 
-    // console.log("padleft: " + gamestate.paddle_left.pos.y);
-    // console.log("padright: " + gamestate.paddle_right.pos.y);
+    // logger.log("padleft: " + gamestate.paddle_left.pos.y);
+    // logger.log("padright: " + gamestate.paddle_right.pos.y);
     /** This floods the terminal */
-    // console.log("score: " + gamestate.score[0] + " | " + gamestate.score[1]);
+    // logger.log("score: " + gamestate.score[0] + " | " + gamestate.score[1]);
     //Find new ball position
     curBall.pos = Vec2.scaleAndAdd(
       prevBall.pos,

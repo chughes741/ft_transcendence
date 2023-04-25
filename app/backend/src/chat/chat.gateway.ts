@@ -210,7 +210,7 @@ export class ChatGateway
       logger.warn(`User ${username} has no sockets`);
       return;
     }
-    console.log(data);
+    logger.log(data);
     userSockets.forEach((socketId) => {
       this.server.to(socketId).emit(event, data);
     });
@@ -259,7 +259,7 @@ export class ChatGateway
     logger.log(
       `Received updateChatRoom request from ${username}, for room ${updateChatRoomRequest.roomName}`
     );
-    console.log(updateChatRoomRequest);
+    logger.log(updateChatRoomRequest);
     // FIXME: Should not have to be here
     try {
       const updatedRoom = await this.chatService.updateRoom(
@@ -361,7 +361,7 @@ export class ChatGateway
         roomId
       );
       logger.warn(`List of users: `);
-      console.log(availableUsers);
+      logger.log(availableUsers);
       return availableUsers;
     } catch (e) {
       logger.error(`Error while getting available users: ${e}`);
@@ -421,7 +421,7 @@ export class ChatGateway
 
     const userWasLoggedIn = await this.chatService.devUserLogin(req);
     if (userWasLoggedIn instanceof Error) {
-      console.log(userWasLoggedIn);
+      logger.log(userWasLoggedIn);
       return { error: userWasLoggedIn.message };
     }
 
@@ -490,7 +490,7 @@ export class ChatGateway
     // Add the user to the socket room
     client.join(createDto.name);
     logger.log(`User ${createDto.owner} joined socket room ${createDto.name}`);
-    console.log(createDto);
+    logger.log(createDto);
     return ret;
   }
 
@@ -571,7 +571,7 @@ export class ChatGateway
     req: LeaveRoomRequest
   ): Promise<DevError | string> {
     logger.warn(`Received leaveRoom request from ${client.id}`);
-    console.log(req);
+    logger.log(req);
     const clientId = this.userConnectionsService.getUserBySocket(client.id);
     if (!clientId) {
       logger.error(`User ${client.id} not found`);
@@ -626,7 +626,7 @@ export class ChatGateway
     if (ret instanceof Error) return { error: ret.message };
 
     logger.log(`Message sent successfully: `);
-    console.log(ret);
+    logger.log(ret);
     // If nothing went wrong, send the message to the room
     this.server.to(sendDto.roomName).emit("newMessage", ret);
     logger.log(
@@ -659,7 +659,7 @@ export class ChatGateway
     req: InviteUsersToRoomRequest
   ): Promise<string[] | false> {
     logger.log(`Received inviteUsersToRoom request from ${client.id}: `);
-    console.log(req);
+    logger.log(req);
     // Get the list of Database users to invite from the req's usernames array
 
     const chatMembers = await this.chatService.inviteUsersToRoom(req);
@@ -681,7 +681,7 @@ export class ChatGateway
       );
 
       logger.log(`roomInfo: `);
-      console.log(roomInfo);
+      logger.log(roomInfo);
 
       this.sendEventToAllUserSockets(
         member.username,
@@ -702,7 +702,7 @@ export class ChatGateway
     logger.log(
       `Received updateChatMemberStatus request from ${req.queryingUser} for ${req.usernameToUpdate}  in room ${req.roomName}`
     );
-    console.log(req);
+    logger.log(req);
 
     try {
       const chatMember = await this.chatService.updateMemberStatus(req);
@@ -714,7 +714,7 @@ export class ChatGateway
       // TODO: implement a listener on the client side to handle this event
       //this.server.to(data.roomName).emit('chatMemberUpdated', chatMember);
       logger.log("Chat Member's Status succesfully updated !");
-      console.log(chatMember);
+      logger.log(chatMember);
       const user: ChatMemberEntity = {
         username: chatMember.member.username,
         roomName: req.roomName,
@@ -769,7 +769,7 @@ export class ChatGateway
     logger.log(
       `Received sendDirectMessage request from ${req.sender} to ${req.recipient}`
     );
-    console.log(req);
+    logger.log(req);
     const ret = await this.chatService.sendDirectMessage(req);
     if (ret instanceof Error) return { error: ret.message };
     const room = ret as ChatRoomEntity;
@@ -796,7 +796,7 @@ export class ChatGateway
     logger.log(
       `Received blockUser request from ${req.blocker} to block ${req.blockee}`
     );
-    console.log(req);
+    logger.log(req);
     const ret = await this.chatService.blockUser(req);
     if (ret instanceof Error) return { error: ret.message };
     return { success: "User blocked successfully" };

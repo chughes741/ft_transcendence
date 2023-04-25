@@ -14,7 +14,7 @@ export default class TokenIsVerified implements CanActivate {
 
     refresh_token.created_at = Date.now();
     refresh_token.expires_in = 7200;
-    console.log("Inside refresh Token");
+    logger.log("Inside refresh Token");
     /*
         const newToken = refresh_token;
         newToken.created_at = Date.now();
@@ -42,7 +42,7 @@ export default class TokenIsVerified implements CanActivate {
     const expiresIn = token.expires_in;
     const createdTime = token.created_at;
     const totalValidTime = expiresIn + createdTime;
-    console.log(totalValidTime, currentTime);
+    logger.log(totalValidTime, currentTime);
     if (totalValidTime < currentTime) {
       this.tokenStorage.removeToken(clientId);
       logger.log("Token has expired");

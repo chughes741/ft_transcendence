@@ -96,7 +96,7 @@ export class ChatService {
         createDto.password = await argon2.hash(createDto.password);
       const room = await this.prismaService.createChatRoom(createDto);
       logger.log(`Room ${createDto.name} successfully added to the database: `);
-      console.log(room);
+      logger.log(room);
       const members = await this.prismaService.getRoomMembers(room.name);
       return {
         name: room.name,
@@ -368,7 +368,7 @@ export class ChatService {
         roomId
       });
       logger.log(`Message added to the database: `);
-      console.log(ret);
+      logger.log(ret);
       return new MessageEntity(ret);
     } catch (e) {
       logger.error("Error adding message to database", e);
@@ -394,7 +394,7 @@ export class ChatService {
     // Check if the user already exists
     const { username, avatar, email, firstName, lastName } = req;
     logger.warn(`User ${username} is trying to create a user`);
-    console.log(req);
+    logger.log(req);
 
     try {
       await this.prismaService.getUserIdByNick(username);
@@ -415,7 +415,7 @@ export class ChatService {
       };
       const prismaReturn = await this.prismaService.addUser(userData);
       logger.log(`User ${username} added to the database: `);
-      console.log(prismaReturn);
+      logger.log(prismaReturn);
     } catch (e) {
       logger.error("User already exists", "User already exists", e);
       return Error("User already exists");
@@ -453,7 +453,7 @@ export class ChatService {
     }
     // FIXME: add password protection
     logger.log(`User ${username} logged in: `);
-    console.log(userExists);
+    logger.log(userExists);
 
     return username;
   }
@@ -602,7 +602,7 @@ export class ChatService {
       }
     }
     logger.log("After the try/catch, Invited users:");
-    console.log(invitedUsers);
+    logger.log(invitedUsers);
     return invitedUsers.map((user) => {
       return {
         username: user.username,

@@ -22,7 +22,7 @@ export class AuthService {
   ): Promise<
     { access_token: string } | { errorCode: number; errorMessage: string }
   > {
-    console.log(req);
+    logger.log(req);
     return { access_token: "new access token" };
   }
 
@@ -49,7 +49,7 @@ export class AuthService {
       name: "42authentification"
     });
     const code = await qrcode.toDataURL(secret.otpauth_url);
-    console.log("What is the qrcode", code)
+    logger.log("What is the qrcode", code)
     return { secret: secret.base32, qrcode: code };
   }
 

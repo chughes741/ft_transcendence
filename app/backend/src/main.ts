@@ -15,6 +15,8 @@ import {
 import { NestExpressApplication } from "@nestjs/platform-express";
 import * as bodyParser from 'body-parser';
 
+const logger = new Logger("main");
+
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
 
@@ -66,6 +68,6 @@ async function bootstrap() {
   });
   app.use(bodyParser.json({ limit: '50mb' }));
   await app.listen(config.port);
-  Logger.log("Application listening on port " + config.port);
+  logger.log("Application listening on port " + config.port);
 }
 bootstrap();

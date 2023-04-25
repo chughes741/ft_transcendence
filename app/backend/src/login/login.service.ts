@@ -9,6 +9,8 @@ import { PrismaService } from "../prisma/prisma.service";
 import { WsException } from "@nestjs/websockets";
 import { AuthRequest } from "../auth/dto";
 
+const logger = new Logger("LoginService");
+
 @Injectable()
 export class LoginService {
   constructor(private prismaService: PrismaService) {}
@@ -19,7 +21,7 @@ export class LoginService {
    */
   @UsePipes(new ValidationPipe({ transform: true }))
   async login(@Body() dto: AuthRequest) {
-    console.log(dto);
+    logger.log(dto);
 
     try {
       const user = await this.prismaService.user.create({
@@ -31,11 +33,11 @@ export class LoginService {
           avatar: dto.avatar
         }
       });
-      Logger.log("Successfully created user " + user.username + ".");
+      logger.log("Successfully created user " + user.username + ".");
       return user;
     } catch (error) {
-      Logger.log("error code: " + error.code);
-      Logger.error(error);
+      logger.log("error code: " + error.code);
+      logger.error(error);
       throw new WsException(error.code);
     }
   }

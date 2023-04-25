@@ -184,7 +184,7 @@ export class PrismaService extends PrismaClient {
    */
   async addUser(req: UserEntity): Promise<User> {
     logger.warn(`addUser:`);
-    console.log(req);
+    logger.log(req);
     if (!req.username || !req.avatar) {
       throw new Error(
         `Missing required fields: ${!!req.avatar && "avatar, "} ${
@@ -216,7 +216,7 @@ export class PrismaService extends PrismaClient {
     logger.log(`dto.owner: ${dto.owner}`);
     const userID = await this.getUserIdByNick(dto.owner);
     logger.log(`userID: ${userID}`);
-    console.log(dto);
+    logger.log(dto);
     if (dto.owner && !userID) {
       throw new Error("Invalid owner UUID");
     }

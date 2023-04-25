@@ -2,6 +2,7 @@ import {
   Body,
   Controller,
   Injectable,
+  Logger,
   UnauthorizedException,
   UploadedFile,
   UseGuards
@@ -17,6 +18,8 @@ import { ImgTransferService } from "./imgtransfer.service";
 import { imgTransferDTO } from "./dto/imgtransfer.dto";
 import TokenIsVerified from "src/tokenstorage/token-verify.service";
 import { Token } from "src/tokenstorage/token-storage.service";
+
+const logger = new Logger("ImgTransferController");
 
 const imageFileFilter = (req, file, cb) => {
   const extname = path.extname(file.originalname);
@@ -53,7 +56,7 @@ export class ImgTransferController {
     @Body() Data: imgTransferDTO
   ) {
     try {
-      console.log(this.tokenIsVerified.tokenStorage);
+      logger.log(this.tokenIsVerified.tokenStorage);
       const user = JSON.parse(Data.newData).username;
       const baseUrl = process.env.SITE_URL + "img/";
       const newImgUrl = new URL(file.filename, baseUrl).href;
@@ -73,7 +76,7 @@ export class ImgTransferController {
   @Post("testing")
   @UseGuards(TokenIsVerified)
   public async functionTesttoCall() {
-    console.log("INSIDE it WORKS");
+    logger.log("INSIDE it WORKS");
 
   }
 
