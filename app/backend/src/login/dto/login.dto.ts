@@ -19,6 +19,6 @@ export class LoginDto {
     this.username = username;
     this.password = password;
 
-    logger.log(`username: ${this.username}`);
+    logger.debug(`username: ${this.username}`);
   }
 }

@@ -33,24 +33,19 @@ export class AuthController {
   @Post("signup")
   signup(@Body() dto: AuthRequest) {
     // The barren export pattern in ./dto/index.ts allows automatic exposition
-
-    logger.log({
-      dto
-    }); // Creates an object and assigns it
-
     return this.authService.signup(dto);
   }
 
   @Get("signup")
   signup_ft(@Body() dto: AuthRequest) {
-    logger.log("Succesfully redirected!");
+    logger.debug("Succesfully redirected!");
     return dto;
   }
 
   @Get("signin")
   signin_ft(@GetUser() user) {
     // The barren export pattern in ./dto/index.ts allows automatic exposition
-    logger.log("Succesfully signed in!", { user });
+    logger.debug("Succesfully signed in!", { user });
 
     return user;
   }
@@ -72,7 +67,6 @@ export class AuthController {
   @Post("refreshToken")
   @SubscribeMessage("refresh")
   async refreshToken(@Body("refresh_token") refresh_token: Token) {
-    logger.log(refresh_token);
     return;
   }
 
@@ -81,13 +75,13 @@ export class AuthController {
     @Query("code") authorizationCode: string,
     @Query("socketId") socketId: string
   ) {
-    logger.log("Inside Generate42Token");
+    logger.debug("Inside Generate42Token");
     return await this.authService.getAuht42(socketId, authorizationCode);
   }
 
   @Get("qrCode")
   async generateQrCode() {
-    logger.log("Generating QrCode");
+    logger.debug("Generating QrCode");
     return await this.authService.enableTwoFactorAuth();
   }
 
@@ -117,7 +111,7 @@ export class AuthController {
   @Post("deleteToken")
   @UseGuards(TokenIsVerified)
   async deleteToken(@Query("socketId") socketId: string) {
-    logger.log("Token deletion engage");
+    logger.debug("Token deletion engage");
 
     this.authService.deleteToken(socketId);
     return;

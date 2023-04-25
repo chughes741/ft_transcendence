@@ -183,7 +183,7 @@ export class PrismaService extends PrismaClient {
    * @returns {Promise<User>} - A Promise that resolves to the chat member if the user is found, or an error if not found.
    */
   async addUser(req: UserEntity): Promise<User> {
-    logger.log(`addUser:`, req);
+    logger.debug(`addUser:`, req);
     if (!req.username || !req.avatar) {
       throw new Error(
         `Missing required fields: ${!!req.avatar && "avatar, "} ${
@@ -212,9 +212,9 @@ export class PrismaService extends PrismaClient {
     // Check if the owner UUID is valid
     // FIXME: this should use the userExists() method
     // TODO: remove this code when authentication is enabled
-    logger.log(`dto.owner: ${dto.owner}`);
+    logger.debug(`dto.owner: ${dto.owner}`);
     const userID = await this.getUserIdByNick(dto.owner);
-    logger.log(`userID: ${userID}`);
+    logger.debug(`userID: ${userID}`);
     if (dto.owner && !userID) {
       throw new Error("Invalid owner UUID");
     }
@@ -422,7 +422,7 @@ export class PrismaService extends PrismaClient {
     // Check if the owner UUID is valid
     const userExists = await this.userExists(dto.senderId);
     if (dto.senderId && !userExists) {
-      logger.log(`userExists: ${userExists}`);
+      logger.debug(`userExists: ${userExists}`);
       return;
     }
 
@@ -472,7 +472,6 @@ export class PrismaService extends PrismaClient {
   async GetMatchHistory(
     getMatchHistoryRequest: GetMatchHistoryRequest
   ): Promise<MatchPrismaType[]> {
-    logger.log(getMatchHistoryRequest.username);
     return await this.match.findMany({
       where: {
         OR: [
@@ -503,7 +502,6 @@ export class PrismaService extends PrismaClient {
    * @returns {Promise<User>}
    */
   async GetProfile(getProfileRequest: GetProfileRequest): Promise<User> {
-    logger.log(getProfileRequest.username);
     if (getProfileRequest.username === undefined || null) {
       throw new Error("Username is undefined");
     }
@@ -533,7 +531,6 @@ export class PrismaService extends PrismaClient {
    */
   //TODO: define a prisma type for the return
   async getFriends(getFriendsRequest: GetFriendsRequest): Promise<any[]> {
-    logger.log(getFriendsRequest.username);
     const user = await this.user.findUnique({
       where: { username: getFriendsRequest.username },
       include: {
@@ -555,7 +552,7 @@ export class PrismaService extends PrismaClient {
    * @returns {Promise<Friend>}
    */
   async addFriend(addFriendRequest: AddFriendRequest): Promise<boolean> {
-    logger.log(
+    logger.debug(
       `Adding friend ${addFriendRequest.friend} to ${addFriendRequest.username}`
     );
     try {
@@ -593,7 +590,7 @@ export class PrismaService extends PrismaClient {
         }
       });
     } catch (error) {
-      logger.log(error);
+      logger.warn(error);
       return false;
     }
   }

@@ -80,7 +80,7 @@ export class GameLogic {
     //Add new interval to scheduler
     try {
       this.schedulerRegistry.getInterval("gameUpdateInterval" + lobby.lobby_id);
-      logger.log("Error creating gameUpdateInterval");
+      logger.warn("Error creating gameUpdateInterval");
     } catch {
       this.addGameUpdateInterval(
         lobby,
@@ -138,10 +138,10 @@ export class GameLogic {
         timestamp: new Date(Date.now()),
         gameType: GameType.UNRANKED
       };
-      logger.log("Match: " + JSON.stringify(match));
+      logger.debug("Match: " + JSON.stringify(match));
       try {
         const ret = await this.prismaService.addMatch(match);
-        logger.log("Successfully added match to database");
+        logger.debug("Successfully added match to database");
       } catch (error) {
         logger.error(error);
       }
@@ -182,10 +182,6 @@ export class GameLogic {
     //Get a time difference between last update and this update
     const time_diff: number = (Date.now() - gamestate.last_update_time) / 1000;
 
-    // logger.log("padleft: " + gamestate.paddle_left.pos.y);
-    // logger.log("padright: " + gamestate.paddle_right.pos.y);
-    /** This floods the terminal */
-    // logger.log("score: " + gamestate.score[0] + " | " + gamestate.score[1]);
     //Find new ball position
     curBall.pos = Vec2.scaleAndAdd(
       prevBall.pos,
@@ -362,12 +358,12 @@ export class GameLogic {
       this.sendServerUpdate(lobby);
     }, milliseconds);
     this.schedulerRegistry.addInterval(name, interval);
-    logger.log(`Interval ${name} created`);
+    logger.debug(`Interval ${name} created`);
   }
 
   //Delete an interval
   deleteInterval(name: string) {
     this.schedulerRegistry.deleteInterval(name);
-    logger.log(`Interval ${name} deleted!`);
+    logger.debug(`Interval ${name} deleted!`);
   }
 }

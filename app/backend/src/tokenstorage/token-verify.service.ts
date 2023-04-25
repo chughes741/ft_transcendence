@@ -29,8 +29,6 @@ export default class TokenIsVerified implements CanActivate {
     const clientId = req.headers["client-id"] as string;
     const clientToken = req.headers["client-token"] as string;
 
-   // logger.log("Client ID : ", clientId, "Clietn Token : ", clientToken);
-
     // Check if token is valid
     const token = await this.tokenStorage.getTokenbySocket(clientId);
     if (!token || token.access_token !== clientToken) {
@@ -41,13 +39,12 @@ export default class TokenIsVerified implements CanActivate {
     const expiresIn = token.expires_in;
     const createdTime = token.created_at;
     const totalValidTime = expiresIn + createdTime;
-    logger.log(totalValidTime, currentTime);
     if (totalValidTime < currentTime) {
       this.tokenStorage.removeToken(clientId);
-      logger.log("Token has expired");
+      logger.warn("Token has expired");
       throw new UnauthorizedException()
     }
-    logger.log("Token verification SUCCESS");
+    logger.debug("Token verification successful");
     await this.refreshToken(clientId, token);
     return true;
   }

@@ -38,7 +38,7 @@ export class GameModuleData {
    */
   addQueue(player: GameTypes.PlayerQueue) {
     GameModuleData.queue.push(player);
-    logger.log("size of queue: " + GameModuleData.queue.length);
+    logger.debug("size of queue: " + GameModuleData.queue.length);
   }
 
   /**
@@ -58,13 +58,13 @@ export class GameModuleData {
    * @param player
    */
   removeQueueUsername(player: string) {
-    logger.log("size of queue before: " + GameModuleData.queue.length);
+    logger.debug("size of queue before: " + GameModuleData.queue.length);
 
     GameModuleData.queue = GameModuleData.queue.filter(
       (element) => element.username !== player
     );
 
-    logger.log("size of queue after: " + GameModuleData.queue.length);
+    logger.debug("size of queue after: " + GameModuleData.queue.length);
   }
 
   /**
@@ -117,7 +117,7 @@ export class GameModuleData {
         } else {
           element.gamestate.players_ready--;
         }
-        logger.log("PlayersReady: " + element.gamestate.players_ready);
+        logger.debug("PlayersReady: " + element.gamestate.players_ready);
       }
     });
   }

@@ -39,7 +39,6 @@ export class TokenStorageService {
   }
 
   async getTokenbySocket(socketID: string): Promise<Token> {
-    logger.log(this.tokens);
     return await this.tokens.get(socketID);
   }
 
@@ -54,18 +53,18 @@ export class TokenStorageService {
   addToken(socketId: string, token: Token): void {
     // Add the token to the map
     this.tokens.set(socketId, token);
-    logger.log(`Added [Token]${token.access_token} to [Socket] ${socketId}.`);
+    logger.debug(`Added [Token]${token.access_token} to [Socket] ${socketId}.`);
   }
 
   removeToken(socketId: string): void {
     if (this.tokens.has(socketId)) {
       this.tokens.delete(socketId);
-      logger.log(`Removed [Socket]:${socketId}'s token from TokenStorage.`);
+      logger.debug(`Removed [Socket]:${socketId}'s token from TokenStorage.`);
     }
   }
 
   async refresh42Token(previous: Token): Promise<Token> {
-    logger.log("Refreshing token");
+    logger.debug("Refreshing token");
     const response = await axios.post("https://api.intra.42.fr/oauth/token", {
       grant_type: "refresh_token",
       client_id: process.env.UID,
@@ -82,7 +81,7 @@ export class TokenStorageService {
       data.scope,
       data.created_at
     );
-    logger.log("Refreshed token: ", token);
+    logger.debug("Refreshed token: ", token);
     return token;
   }
 }

@@ -56,7 +56,6 @@ export class ImgTransferController {
     @Body() Data: imgTransferDTO
   ) {
     try {
-      logger.log(this.tokenIsVerified.tokenStorage);
       const user = JSON.parse(Data.newData).username;
       const baseUrl = process.env.SITE_URL + "img/";
       const newImgUrl = new URL(file.filename, baseUrl).href;
@@ -76,7 +75,7 @@ export class ImgTransferController {
   @Post("testing")
   @UseGuards(TokenIsVerified)
   public async functionTesttoCall() {
-    logger.log("INSIDE it WORKS");
+    logger.debug("INSIDE it WORKS");
   }
 
 

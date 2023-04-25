@@ -34,7 +34,7 @@ export class UserConnectionsService {
       this.userConnections.set(username, []);
     }
     this.userConnections.get(username).push(socketId);
-    logger.log(
+    logger.debug(
       `Added ${socketId} to ${username}. Now has ${
         this.getUserSockets(username).length
       } connections`
@@ -52,7 +52,7 @@ export class UserConnectionsService {
           this.userConnections.delete(username);
         }
       }
-      logger.log(
+      logger.debug(
         `Removed ${socketId} from ${username}. Now has ${connections.length} connections`
       );
     }

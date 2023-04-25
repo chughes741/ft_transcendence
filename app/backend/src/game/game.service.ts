@@ -56,7 +56,7 @@ export class GameService {
     playerPair: GameTypes.PlayerQueue[],
     player: JoinGameQueueRequest
   ) {
-    logger.log("createLobby() called");
+    logger.debug("createLobby() called");
 
     //Create a new lobby
     const newLobby = new GameTypes.gameLobby();
@@ -76,7 +76,7 @@ export class GameService {
     //TODO: Swap this to a setter function in the data module
     this.gameModuleData.addLobby(newLobby);
     // GameModuleData.lobbies.push(newLobby);
-    logger.log("Sizeof lobbies: ", GameModuleData.lobbies.length);
+    logger.debug("Sizeof lobbies: ", GameModuleData.lobbies.length);
 
     //Create payload
     const payload: LobbyCreatedEvent = {
@@ -108,7 +108,7 @@ export class GameService {
     client: Socket,
     player: JoinGameQueueRequest
   ): Promise<boolean> {
-    logger.log("joinGameQueue() called");
+    logger.debug("joinGameQueue() called");
 
     //Check if player is already in queue
     if (!this.gameModuleData.checkQueue(player.username)) {
@@ -141,7 +141,7 @@ export class GameService {
    * @returns Return bool on success?
    */
   async leaveGameQueue(player: LeaveGameQueueRequest) {
-    logger.log("leaveGameQueue() called");
+    logger.debug("leaveGameQueue() called");
 
     //Check if player is already in the queue
     if (!this.gameModuleData.checkQueue(player.username)) {
@@ -159,7 +159,7 @@ export class GameService {
   async sendGameInvite(
     payload: JoinGameInviteRequest
   ): Promise<LobbyCreatedEvent> {
-    logger.log("joinGameInvite() called");
+    logger.debug("joinGameInvite() called");
 
     //If the invited client responds then create lobby
     /** @todo  */
@@ -176,9 +176,9 @@ export class GameService {
    * @returns {Promise<boolean>}
    */
   async playerReady(payload: PlayerReadyRequest): Promise<boolean> {
-    logger.log("playerReady() called");
+    logger.debug("playerReady() called");
 
-    logger.log("lobby_id: " + this.gameModuleData.getLobby(payload.lobby_id));
+    logger.debug("lobby_id: " + this.gameModuleData.getLobby(payload.lobby_id));
     if (this.gameModuleData.getLobby(payload.lobby_id)) {
       this.gameModuleData.updatePlayerReady(payload);
       this.gameStart(payload.lobby_id);
@@ -194,7 +194,7 @@ export class GameService {
    * @async
    */
   async gameStart(lobby_id: string) {
-    logger.log("gameStart() called");
+    logger.debug("gameStart() called");
 
     // Retrieve the correct lobby
     const lobby: GameTypes.gameLobby = this.gameModuleData.getLobby(lobby_id);

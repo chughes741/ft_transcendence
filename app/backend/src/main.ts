@@ -18,7 +18,9 @@ import * as bodyParser from 'body-parser';
 const logger = new Logger("main");
 
 async function bootstrap() {
-  const app = await NestFactory.create<NestExpressApplication>(AppModule);
+  const app = await NestFactory.create<NestExpressApplication>(AppModule, {
+    logger: ["error", "warn", "log"],
+  });
 
   app.useGlobalPipes(
     new ValidationPipe({
@@ -68,6 +70,6 @@ async function bootstrap() {
   });
   app.use(bodyParser.json({ limit: '50mb' }));
   await app.listen(config.port);
-  logger.log("Application listening on port " + config.port);
+  logger.debug("Application listening on port " + config.port);
 }
 bootstrap();
