@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: backend/src/game/game.service.ts</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: backend/src/game/game.service.ts</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>import { Logger, Injectable } from "@nestjs/common";
+import { WebSocketServer, WebSocketGateway } from "@nestjs/websockets";
+import { SchedulerRegistry } from "@nestjs/schedule";
+import { Server, Socket } from "socket.io";
+import { v4 as uuidv4 } from "uuid";
+
+import { GameLogic } from "./game.logic";
+import { GameModuleData } from "./game.data";
+import * as GameTypes from "./game.types";
+import {
+  JoinGameQueueRequest,
+  LeaveGameQueueRequest,
+  PlayerReadyRequest,
+  ClientGameStateUpdateRequest,
+  JoinGameInviteRequest,
+  LobbyCreatedEvent,
+  GameEvents
+} from "kingpong-lib";
+
+const logger = new Logger("gameService");
+
+/**
+ * GameService class
+ */
+@WebSocketGateway({
+  cors: {
+    origin: "*"
+  }
+})
+@Injectable()
+export class GameService {
+  constructor(
+    private schedulerRegistry: SchedulerRegistry,
+    private gameLogic: GameLogic,
+    private gameModuleData: GameModuleData
+  ) {}
+
+  //Get local instance of websocket server
+  @WebSocketServer()
+  public server: Server;
+  private gameState: GameTypes.GameData;
+
+  /****************************************************************************/
+  /**                                     Lobby                              **/
+  /****************************************************************************/
+
+  /**
+   * Emit event to tell client that lobby has been successfully created
+   *
+   * @param {GameTypes.PlayerQueue[]} playerPair
+   * @param {JoinGameQueueRequest} player
+   * @returns {}
+   */
+  async createLobby(
+    playerPair: GameTypes.PlayerQueue[],
+    player: JoinGameQueueRequest
+  ) {
+    logger.debug("createLobby() called");
+
+    //Create a new lobby
+    const newLobby = new GameTypes.gameLobby();
+    newLobby.players = [];
+    newLobby.players.push(playerPair[0].username);
+    newLobby.players.push(playerPair[1].username);
+    newLobby.created_at = Date.now();
+    newLobby.lobby_id = uuidv4();
+
+    //Create a new websocket room and subscribe players
+    this.server.in(playerPair[0].socket_id).socketsJoin(newLobby.lobby_id);
+    this.server.in(playerPair[1].socket_id).socketsJoin(newLobby.lobby_id);
+
+    //Init new game object
+    newLobby.gamestate = this.gameLogic.initNewGame(newLobby.players);
+    //Add lobby to map of lobbies
+    /** @todo Swap this to a setter function in the data module */
+    this.gameModuleData.addLobby(newLobby);
+    // GameModuleData.lobbies.push(newLobby);
+    logger.debug("Sizeof lobbies: ", GameModuleData.lobbies.length);
+
+    //Create payload
+    const payload: LobbyCreatedEvent = {
+      lobby_id: newLobby.lobby_id,
+      opponent_username:
+        newLobby.players[0] === player.username
+          ? newLobby.players[1]
+          : newLobby.players[0],
+      player_side: newLobby.players[0] === player.username ? "left" : "right"
+    };
+
+    //Emit lobbyCreated event to room members
+    this.server.to(newLobby.lobby_id).emit(GameEvents.LobbyCreated, payload);
+  }
+
+  /****************************************************************************/
+  /**                                Queue &amp; Invite                          **/
+  /****************************************************************************/
+
+  /**
+   * Adds player to the game queue and tries to find a match
+   *
+   * @param {Socket} client
+   * @param {JoinGameQueueRequest} player
+   * @returns {Promise&lt;boolean>}
+   */
+  async joinGameQueue(
+    client: Socket,
+    player: JoinGameQueueRequest
+  ): Promise&lt;boolean> {
+    logger.debug("joinGameQueue() called");
+
+    // Check if player is already in queue
+    if (!this.gameModuleData.checkQueue(player.username)) {
+      // Create new queue member &amp; add to queue array
+      const newPlayer: GameTypes.PlayerQueue = {
+        username: player.username,
+        join_time: 0 /** @todo should be player.join_time. type needs to be swapped to number in kingpong-lib */,
+        // client_mmr: getClientMMR;
+        socket_id: client.id
+      };
+      this.gameModuleData.addQueue(newPlayer);
+    }
+
+    // Attempt to retrieve a pair of players
+    const playerPair: GameTypes.PlayerQueue[] =
+      this.gameModuleData.getPairQueue();
+
+    // If successful call createLobby()
+    if (playerPair) {
+      this.createLobby(playerPair, player);
+    }
+
+    return true;
+  }
+
+  /**
+   * Removes player from the game queue
+   *
+   * @param {LeaveGameQueueRequest} player
+   * @returns {Promise&lt;void>}
+   */
+  async leaveGameQueue(player: LeaveGameQueueRequest): Promise&lt;void> {
+    logger.debug("leaveGameQueue() called");
+
+    //Check if player is already in the queue
+    if (!this.gameModuleData.checkQueue(player.username)) {
+      this.gameModuleData.removeQueueUsername(player.username);
+    }
+  }
+
+  /**
+   * Creates a new game lobby with sender and invitee as players
+   *
+   * @param {JoinGameInviteRequest} payload
+   * @returns {Promise&lt;LobbyCreatedEvent>}
+   */
+  async sendGameInvite(
+    payload: JoinGameInviteRequest
+  ): Promise&lt;LobbyCreatedEvent> {
+    logger.debug("joinGameInvite() called");
+
+    // If the invited client responds then create lobby
+    /** @todo something? */
+    return new LobbyCreatedEvent();
+  }
+
+  /****************************************************************************/
+  /**                                     Game                               **/
+  /****************************************************************************/
+
+  /**
+   * Handle player readiness
+   *
+   * @param {PlayerReadyRequest} payload
+   * @returns {Promise&lt;boolean>}
+   */
+  async playerReady(payload: PlayerReadyRequest): Promise&lt;boolean> {
+    logger.debug("playerReady() called");
+
+    logger.debug("lobby_id: " + this.gameModuleData.getLobby(payload.lobby_id));
+    if (this.gameModuleData.getLobby(payload.lobby_id)) {
+      this.gameModuleData.updatePlayerReady(payload);
+      this.gameStart(payload.lobby_id);
+    }
+    return true;
+  }
+
+  /**
+   * Start the game if both players are ready
+   *
+   * @param {string} lobby_id
+   * @returns {Promise&lt;void>}
+   */
+  async gameStart(lobby_id: string): Promise&lt;void> {
+    logger.debug("gameStart() called");
+
+    // Retrieve the correct lobby
+    const lobby: GameTypes.gameLobby = this.gameModuleData.getLobby(lobby_id);
+    if (!lobby) return;
+    // Check if both players are ready
+    if (lobby.gamestate.players_ready === 2) {
+      this.gameLogic.gameStart(lobby);
+    }
+  }
+
+  /**
+   * Handle game state updates from the client to update paddle positions
+   *
+   * @param {ClientGameStateUpdateRequest} payload
+   * @returns {Promise&lt;void>}
+   */
+  async clientUpdate(payload: ClientGameStateUpdateRequest): Promise&lt;void> {
+    //Find the correct match using match_id and update paddle pos
+    this.gameModuleData.setPaddlePosition(payload);
+  }
+}
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="ChatGateway.html">ChatGateway</a></li><li><a href="ChatService.html">ChatService</a></li><li><a href="GameGateway.html">GameGateway</a></li><li><a href="GameModuleData.html">GameModuleData</a></li><li><a href="GameService.html">GameService</a></li><li><a href="GetFriendsRequest.html">GetFriendsRequest</a></li><li><a href="LoginGateway.html">LoginGateway</a></li><li><a href="PrismaService.html">PrismaService</a></li><li><a href="UserDto.html">UserDto</a></li><li><a href="Vec2.html">Vec2</a></li></ul><h3>Interfaces</h3><ul><li><a href="MatchPrismaType.html">MatchPrismaType</a></li><li><a href="ProfileViewModelType.html">ProfileViewModelType</a></li><li><a href="RootModelType.html">RootModelType</a></li><li><a href="RootViewModelType.html">RootViewModelType</a></li><li><a href="SettingsModelType.html">SettingsModelType</a></li><li><a href="SettingsViewModelType.html">SettingsViewModelType</a></li></ul><h3>Events</h3><ul><li><a href="global.html#event:%2522blockUser%2522">"blockUser"</a></li><li><a href="global.html#event:%2522createRoom%2522">"createRoom"</a></li><li><a href="global.html#event:%2522gameEnded%2522">"gameEnded"</a></li><li><a href="global.html#event:%2522gameStarted%2522">"gameStarted"</a></li><li><a href="global.html#event:%2522getRoomMessagesPage%2522">"getRoomMessagesPage"</a></li><li><a href="global.html#event:%2522joinRoom%2522">"joinRoom"</a></li><li><a href="global.html#event:%2522kickChatMember%2522">"kickChatMember"</a></li><li><a href="global.html#event:%2522leaveRoom%2522">"leaveRoom"</a></li><li><a href="global.html#event:%2522listAvailableChatRooms%2522">"listAvailableChatRooms"</a></li><li><a href="global.html#event:%2522listAvailableUsers%2522">"listAvailableUsers"</a></li><li><a href="global.html#event:%2522listUsers%2522">"listUsers"</a></li><li><a href="global.html#event:%2522lobbyCreated%2522">"lobbyCreated"</a></li><li><a href="global.html#event:%2522sendDirectMessage%2522">"sendDirectMessage"</a></li><li><a href="global.html#event:%2522sendMessage%2522">"sendMessage"</a></li><li><a href="global.html#event:%2522updateChatMemberStatus%2522">"updateChatMemberStatus"</a></li><li><a href="global.html#event:%2522updateChatRoom%2522">"updateChatRoom"</a></li><li><a href="global.html#event:%2522userCreation%2522">"userCreation"</a></li><li><a href="global.html#event:%2522userLogin%2522">"userLogin"</a></li></ul><h3>Global</h3><ul><li><a href="global.html#%2522blockUser%2522">"blockUser"</a></li><li><a href="global.html#%2522createRoom%2522">"createRoom"</a></li><li><a href="global.html#%2522getRoomMessagesPage%2522">"getRoomMessagesPage"</a></li><li><a href="global.html#%2522joinRoom%2522">"joinRoom"</a></li><li><a href="global.html#%2522kickChatMember%2522">"kickChatMember"</a></li><li><a href="global.html#%2522leaveRoom%2522">"leaveRoom"</a></li><li><a href="global.html#%2522listAvailableChatRooms%2522">"listAvailableChatRooms"</a></li><li><a href="global.html#%2522listAvailableUsers%2522">"listAvailableUsers"</a></li><li><a href="global.html#%2522listUsers%2522">"listUsers"</a></li><li><a href="global.html#%2522sendDirectMessage%2522">"sendDirectMessage"</a></li><li><a href="global.html#%2522sendMessage%2522">"sendMessage"</a></li><li><a href="global.html#%2522updateChatMemberStatus%2522">"updateChatMemberStatus"</a></li><li><a href="global.html#%2522updateChatRoom%2522">"updateChatRoom"</a></li><li><a href="global.html#%2522userCreation%2522">"userCreation"</a></li><li><a href="global.html#%2522userLogin%2522">"userLogin"</a></li><li><a href="global.html#Ball">Ball</a></li><li><a href="global.html#Floor">Floor</a></li><li><a href="global.html#FriendsList">FriendsList</a></li><li><a href="global.html#FriendsListRow">FriendsListRow</a></li><li><a href="global.html#GLOBAL_T_IN_DAYS">GLOBAL_T_IN_DAYS</a></li><li><a href="global.html#GetUser">GetUser</a></li><li><a href="global.html#GetUserWs">GetUserWs</a></li><li><a href="global.html#HelmetView">HelmetView</a></li><li><a href="global.html#MatchHistory">MatchHistory</a></li><li><a href="global.html#MatchHistoryRow">MatchHistoryRow</a></li><li><a href="global.html#OuterFrameBottom">OuterFrameBottom</a></li><li><a href="global.html#OuterFrameLeft">OuterFrameLeft</a></li><li><a href="global.html#OuterFrameRight">OuterFrameRight</a></li><li><a href="global.html#OuterFrameTop">OuterFrameTop</a></li><li><a href="global.html#PaddleLeft">PaddleLeft</a></li><li><a href="global.html#PaddleRight">PaddleRight</a></li><li><a href="global.html#PageState">PageState</a></li><li><a href="global.html#ProfileHeader">ProfileHeader</a></li><li><a href="global.html#ProfileViewModelContext">ProfileViewModelContext</a></li><li><a href="global.html#ProfileViewModelProvider">ProfileViewModelProvider</a></li><li><a href="global.html#RootView">RootView</a></li><li><a href="global.html#RootViewContent">RootViewContent</a></li><li><a href="global.html#RootViewModelContext">RootViewModelContext</a></li><li><a href="global.html#RootViewModelProvider">RootViewModelProvider</a></li><li><a href="global.html#SettingsViewModelContext">SettingsViewModelContext</a></li><li><a href="global.html#SettingsViewModelProvider">SettingsViewModelProvider</a></li><li><a href="global.html#useGameViewModelContext">useGameViewModelContext</a></li><li><a href="global.html#useProfileViewModelContext">useProfileViewModelContext</a></li><li><a href="global.html#useRootModel">useRootModel</a></li><li><a href="global.html#useRootViewModelContext">useRootViewModelContext</a></li><li><a href="global.html#useSettingsModel">useSettingsModel</a></li><li><a href="global.html#useSettingsViewModelContext">useSettingsViewModelContext</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.2</a> on Tue Apr 25 2023 18:48:57 GMT-0400 (Eastern Daylight Time)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>
