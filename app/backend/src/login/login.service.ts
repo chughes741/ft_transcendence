@@ -36,7 +36,7 @@ export class LoginService {
       logger.debug("Successfully created user", user.username);
       return user;
     } catch (error) {
-      logger.error(error);
+      logger.error("Problem with ValidationPipe", error);
       throw new WsException(error.code);
     }
   }

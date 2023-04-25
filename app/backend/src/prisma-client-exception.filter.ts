@@ -38,7 +38,7 @@ import { BaseWsExceptionFilter, WsException } from "@nestjs/websockets";
 @Catch(WsException)
 export class PrismaClientExceptionFilterWs extends BaseWsExceptionFilter {
   catch(exception: WsException, host: ArgumentsHost) {
-    logger.warn("Problem with WS PrismaClientExceptionFilter", exception);
+    logger.error("Problem with WS PrismaClientExceptionFilter", exception);
     const client = host.switchToWs().getClient();
     let message = exception.message.replace(/\n/g, "");
 

@@ -80,7 +80,7 @@ export class GameLogic {
     //Add new interval to scheduler
     try {
       this.schedulerRegistry.getInterval("gameUpdateInterval" + lobby.lobby_id);
-      logger.warn("Error creating gameUpdateInterval");
+      logger.error("Error creating gameUpdateInterval");
     } catch {
       this.addGameUpdateInterval(
         lobby,
@@ -143,7 +143,7 @@ export class GameLogic {
         const ret = await this.prismaService.addMatch(match);
         logger.debug("Successfully added match to database");
       } catch (error) {
-        logger.error(error);
+        logger.error("Problem with sendServerUpdate", error);
       }
 
       return;

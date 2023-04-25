@@ -37,7 +37,6 @@ import { Strategy, Profile, VerifyCallback } from "passport-42";
 //       accessToken,
 //       refreshToken,
 //     };
-//     logger.debug(user);
 
 //     done(null, user);
 //   }

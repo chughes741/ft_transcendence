@@ -590,7 +590,7 @@ export class PrismaService extends PrismaClient {
         }
       });
     } catch (error) {
-      logger.warn(error);
+      logger.error(error);
       return false;
     }
   }
@@ -772,7 +772,7 @@ export class PrismaService extends PrismaClient {
     if (!userId) {
       throw new Error("User ID is undefined");
     }
-    logger.warn(
+    logger.debug(
       `getAvailableUsers request for user ${userId} in room ${roomId}`
     );
     // Get a list of users who blocked or have been blocked by the querying user
@@ -807,7 +807,7 @@ export class PrismaService extends PrismaClient {
       ? usersNotInRoom.map((user) => user.memberId)
       : [];
 
-    logger.warn(`Blocked users:`, blockedIds);
+    logger.debug(`Blocked users:`, blockedIds);
 
     // Find users who are not in the blocked list and not in the specified room
     const availableUsers = await this.user.findMany({
@@ -817,7 +817,7 @@ export class PrismaService extends PrismaClient {
         }
       }
     });
-    logger.warn("Available users: " + availableUsers);
+    logger.debug("Available users: " + availableUsers);
 
     return availableUsers;
   }

@@ -254,7 +254,7 @@ export class ChatGateway
     logger.debug(
       `Received updateChatRoom request from ${username}, for room ${updateChatRoomRequest.roomName}`
     );
-    // FIXME: Should not have to be here
+    /** @todo fix this weird try/catch/if */
     try {
       const updatedRoom = await this.chatService.updateRoom(
         updateChatRoomRequest
@@ -263,10 +263,9 @@ export class ChatGateway
         logger.error("Error updating room", updatedRoom);
         return { error: updatedRoom.message };
       }
-      logger.warn("It worked?", updatedRoom);
       return updatedRoom;
     } catch (error) {
-      logger.error(error);
+      logger.error("Error with updateChatRoom", error);
       return { error: "Internal server error" };
     }
   }
@@ -354,7 +353,7 @@ export class ChatGateway
         userId,
         roomId
       );
-      logger.warn(`List of users:`, availableUsers);
+      logger.debug(`List of users:`, availableUsers);
       return availableUsers;
     } catch (e) {
       logger.error(`Error while getting available users: ${e}`);
@@ -519,7 +518,7 @@ export class ChatGateway
     // Find the chatMember in the returned ChatRoomEntity's ChatMemberEntity array
 
     if (ret instanceof Error) {
-      logger.error(ret);
+      logger.error("Error in joinRoom", ret);
       return { error: ret.message };
     } else if (ret) {
       const chatMember = ret.members?.find(
@@ -561,7 +560,7 @@ export class ChatGateway
     client: Socket,
     req: LeaveRoomRequest
   ): Promise<DevError | string> {
-    logger.warn(`Received leaveRoom request from ${client.id}`);
+    logger.debug(`Received leaveRoom request from ${client.id}`);
     const clientId = this.userConnectionsService.getUserBySocket(client.id);
     if (!clientId) {
       logger.error(`User ${client.id} not found`);

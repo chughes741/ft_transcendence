@@ -32,7 +32,7 @@ export default class TokenIsVerified implements CanActivate {
     // Check if token is valid
     const token = await this.tokenStorage.getTokenbySocket(clientId);
     if (!token || token.access_token !== clientToken) {
-      logger.warn("Token verification failure");
+      logger.error("Token verification failure");
       throw new UnauthorizedException();
     }
     const currentTime = Math.floor(Date.now() / 1000);
