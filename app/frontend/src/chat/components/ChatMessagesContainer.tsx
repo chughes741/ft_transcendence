@@ -7,7 +7,7 @@ import { useRoomManager } from "../lib/roomManager";
 
 const isSameDate = (date1: Date, date2: Date): boolean => {
   if (!(date1 instanceof Date) || !(date2 instanceof Date)) {
-    console.error(
+    console.warn(
       "One or both of the inputs are not Date objects:",
       date1,
       date2

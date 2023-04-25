@@ -140,7 +140,7 @@ const RoomList: React.FC = () => {
     socket.emit("listAvailableUsers", req, (users: DevError | UserEntity[]) => {
       if (handleSocketErrorResponse(users)) {
         const error = users as DevError;
-        console.error(
+        console.warn(
           `RoomList: Error fetching the available users: ${error.error}`
         );
         return;

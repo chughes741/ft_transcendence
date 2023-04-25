@@ -153,7 +153,7 @@ export default function UserListView({ userList, handleClick }: UserListProps) {
       "updateChatMemberStatus",
       req,
       (res: DevError | RoomMemberEntity) => {
-        if (handleSocketErrorResponse(res)) return console.error(res);
+        if (handleSocketErrorResponse(res)) return console.warn(res);
         console.debug(`successfully updated user ${res}`);
         updateRooms((newRooms) => {
           const newUser =
@@ -208,7 +208,7 @@ export default function UserListView({ userList, handleClick }: UserListProps) {
 
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     socket.emit("kickUser", req, (res: DevError | any) => {
-      if (handleSocketErrorResponse(res)) return console.error(res);
+      if (handleSocketErrorResponse(res)) return console.warn(res);
       console.debug(`successfully kicked user ${res}`);
       updateRooms((newRooms) => {
         if (!newRooms[currentRoomName].users[res]) return newRooms;
@@ -227,7 +227,7 @@ export default function UserListView({ userList, handleClick }: UserListProps) {
       blockee: contextMenuUsersData.username
     };
     socket.emit("blockUser", req, (res: DevError | any) => {
-      if (handleSocketErrorResponse(res)) return console.error(res);
+      if (handleSocketErrorResponse(res)) return console.warn(res);
       console.debug(`successfully blocked user ${res}`);
       updateRooms((newRooms) => {
         if (!newRooms[currentRoomName].users[res]) return newRooms;

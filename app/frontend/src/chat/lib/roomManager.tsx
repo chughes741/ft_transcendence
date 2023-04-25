@@ -241,13 +241,13 @@ export const RoomManagerProvider = ({ children }) => {
     const joinRoomPayload = { roomName, password, user: self.username };
     const joinRoomRes = await new Promise<DevError | ChatRoomPayload>(
       (resolve) => {
-        console.warn("Getting messages for room: ", roomName);
+        console.debug("Getting messages for room: ", roomName);
         socket.emit("joinRoom", joinRoomPayload, resolve);
       }
     );
 
     if (handleSocketErrorResponse(joinRoomRes)) {
-      console.error("Error response from join room: ", joinRoomRes.error);
+      console.warn("Error response from join room: ", joinRoomRes.error);
       alert(joinRoomRes.error);
       return false;
     }
@@ -263,7 +263,7 @@ export const RoomManagerProvider = ({ children }) => {
     );
 
     if (handleSocketErrorResponse(messagesRes)) {
-      console.error(
+      console.warn(
         "Error response from get room messages: ",
         messagesRes.error
       );
@@ -325,7 +325,7 @@ export const RoomManagerProvider = ({ children }) => {
         req,
         (response: DevError | ChatRoomPayload) => {
           if (handleSocketErrorResponse(response)) {
-            console.error("Error changing room status", response.error);
+            console.warn("Error changing room status", response.error);
             resolve(false);
           } else {
             console.debug("Successfully changed room status!");
