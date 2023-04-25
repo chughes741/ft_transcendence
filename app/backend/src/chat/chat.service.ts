@@ -82,7 +82,9 @@ export class ChatService {
       });
       if (roomExists) {
         // Warn the client that the room already exists
-        logger.error(`RoomCreation error: Room ${createDto.name} already exists`);
+        logger.error(
+          `RoomCreation error: Room ${createDto.name} already exists`
+        );
         return Error("Room already exists");
       }
     } catch (e) {

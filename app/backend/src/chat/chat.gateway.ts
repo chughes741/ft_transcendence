@@ -158,15 +158,12 @@ export class BlockUserRequest {
 // FIXME: uncomment the following line to enable authentication
 // @UseGuards(JwtWsAuthGuard)
 @WebSocketGateway()
-export class ChatGateway
-  implements OnGatewayConnection, OnGatewayDisconnect
-{
+export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   constructor(
     private prismaService: PrismaService,
     private chatService: ChatService,
-    private userConnectionsService: UserConnectionsService
-  ) //private tokenStorage: TokenStorageService
-  {}
+    private userConnectionsService: UserConnectionsService //private tokenStorage: TokenStorageService
+  ) {}
 
   @WebSocketServer()
   server: Server;
@@ -480,7 +477,9 @@ export class ChatGateway
 
     // Add the user to the socket room
     client.join(createDto.name);
-    logger.debug(`User ${createDto.owner} joined socket room ${createDto.name}`);
+    logger.debug(
+      `User ${createDto.owner} joined socket room ${createDto.name}`
+    );
     return ret;
   }
 

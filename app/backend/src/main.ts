@@ -19,7 +19,7 @@ const logger = new Logger("main");
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule, {
-    logger: ["error", "warn", "log"],
+    logger: ["error", "warn", "log"]
   });
 
   app.useGlobalPipes(

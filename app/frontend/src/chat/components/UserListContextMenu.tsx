@@ -132,7 +132,9 @@ const UserContextMenu: React.FC<UserContextMenuProps> = ({
               onClick: () => {
                 console.debug(`Muting user ${contextMenuData.username}...`);
                 const status = ChatMemberStatus.MUTED;
-                console.debug("duration: " + option.value + " status: " + status);
+                console.debug(
+                  "duration: " + option.value + " status: " + status
+                );
                 sendUpdateRequest(option.value, status, contextMenuData.rank);
               }
             })

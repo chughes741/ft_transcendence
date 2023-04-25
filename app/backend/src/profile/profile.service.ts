@@ -30,7 +30,9 @@ export class ProfileService {
       logger.warn("No username is provided");
       return [];
     }
-    logger.debug(`Fetching match history for ${getMatchHistoryRequest.username}`);
+    logger.debug(
+      `Fetching match history for ${getMatchHistoryRequest.username}`
+    );
     /** Fetch match history from prisma service */
     const matches = await this.prismaService.GetMatchHistory(
       getMatchHistoryRequest

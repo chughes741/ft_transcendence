@@ -130,7 +130,9 @@ const RoomList: React.FC = () => {
   useEffect(() => {
     if (!showInviteUsersModal || !contextMenuData?.name) return;
     console.debug(
-      "showInviteUsers Modal has been activated:", contextMenuData?.name);
+      "showInviteUsers Modal has been activated:",
+      contextMenuData?.name
+    );
 
     const req: ListUsersRequest = { chatRoomName: contextMenuData.name };
     console.warn(
