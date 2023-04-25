@@ -47,7 +47,6 @@ import {
 } from "../chat/chat.gateway";
 import config from "../config";
 
-/** Here for profile */
 import {
   AddFriendRequest,
   GetFriendsRequest,
@@ -55,8 +54,7 @@ import {
   GetProfileRequest
 } from "kingpong-lib";
 
-/*End of Mute and End of Ban:  */
-//Is added to the current date (now)
+/** End of Mute and End of Ban: Is added to the current date (now) */
 const GLOBAL_T_IN_DAYS = 5 /*DAYS*/ * (24 * 60 * 60 * 1000); // One day in milliseconds
 
 import { UpdateChatMemberRequest } from "src/chat/dto/userlist.dto";
@@ -71,6 +69,9 @@ interface MatchPrismaType extends Match {
   player2: User;
 }
 
+/**
+ * PrismaService class
+ */
 @Injectable()
 export class PrismaService extends PrismaClient {
   constructor() {
@@ -86,6 +87,7 @@ export class PrismaService extends PrismaClient {
 
   /**
    * To be executed in testing, or to fully cleanup the db.
+   *
    * If you're not sure, probs best not to touch it.
    */
   cleanDb() {
@@ -101,11 +103,12 @@ export class PrismaService extends PrismaClient {
       this.match.deleteMany()
     ]);
   }
+
   /**
    * Checks if a user with the given userId exists in the database.
+   *
    * @param {string} userId - The id of the user.
    * @returns {Promise&lt;boolean>} - A Promise that resolves to true if the user exists, false otherwise.
-   * @async
    */
   async userExists(userId: string): Promise&lt;boolean> {
     if (!userId) {
@@ -121,6 +124,12 @@ export class PrismaService extends PrismaClient {
     }
   }
 
+  /**
+   * Checks if a user with the given username exists in the database.
+   *
+   * @param {string} username - The username of the user.
+   * @returns {Promise&lt;boolean>} - A Promise that resolves to true if the user exists, false otherwise.
+   */
   async userNameExists(username: string): Promise&lt;boolean> {
     if (!username) {
       logger.error("userExists: User username is required");
@@ -137,6 +146,13 @@ export class PrismaService extends PrismaClient {
     }
   }
 
+  /**
+   * Checks if a user with the given email exists in the database.
+   *
+   * @param {string} userName - The username of the user.
+   * @param {string} newUsername - The new username of the user.
+   * @returns {Promise&lt;boolean>} - A Promise that resolves to true if the username was changed, false otherwise.
+   */
   async changeUserName(
     userName: string,
     newUsername: string
@@ -156,9 +172,9 @@ export class PrismaService extends PrismaClient {
 
   /**
    * Gets the user id of a user with the specified nick.
+   *
    * @param {string} nick - The user's nick.
    * @returns {Promise&lt;string>} - A Promise that resolves to the user id if the user is found, or an error if not found.
-   * @async
    */
   async getUserIdByNick(nick: string): Promise&lt;string | null> {
     if (!nick) {
@@ -174,11 +190,11 @@ export class PrismaService extends PrismaClient {
   }
 
   /**
-   * Returns a list of `limit` chat rooms members, including
-   * their username and avatar.
-   * @param roomId - id of the room
-   * @param limit - number of members to return
-   * @returns - list of members
+   * Returns a list of `limit` chat rooms members, including their username and avatar.
+   *
+   * @param {string} roomName - The name of the room.
+   * @param {number} limit - The maximum number of members to return.
+   * @returns {Promise&lt;ChatMemberPrismaType[]>} - A Promise that resolves to the chat members if the room is found, or an error if not found.
    */
   async getRoomMembers(
     roomName: string,
@@ -206,6 +222,7 @@ export class PrismaService extends PrismaClient {
 
   /**
    * Adds a user to the database
+   *
    * @param req - dto containing the room name and the user id
    * @returns {Promise&lt;User>} - A Promise that resolves to the chat member if the user is found, or an error if not found.
    */
@@ -231,14 +248,14 @@ export class PrismaService extends PrismaClient {
 
   /**
    * Creates a new chat room with the provided data.
+   *
    * @param {ChatRoomDto} dto - The data transfer object containing the chat room data.
    * @returns {Promise&lt;ChatRoom>} - A Promise that resolves to the created chat room.
-   * @async
    */
   async createChatRoom(dto: ChatRoomDto): Promise&lt;ChatRoom> {
     // Check if the owner UUID is valid
-    // FIXME: this should use the userExists() method
-    // TODO: remove this code when authentication is enabled
+    /** @todo this should use the userExists() method */
+    /** @todo remove this code when authentication is enabled */
     logger.debug(`dto.owner: ${dto.owner}`);
     const userID = await this.getUserIdByNick(dto.owner);
     logger.debug(`userID: ${userID}`);
@@ -276,8 +293,7 @@ export class PrismaService extends PrismaClient {
    * @param {string} userId - The id of the user querying the chat rooms.
    * @param {Date} [dateOldest=new Date(Date.now())] - The date of the oldest chat room retrieved thus far. Defaults to the current date and time.
    * @param {number} [pageSize=15] - The number of chat rooms to return. Defaults to 15.
-   * @returns {Promise&lt;PrismaType[]>} - A Promise that resolves to an array of chat rooms.
-   * @async
+   * @returns {Promise&lt;any>} - A Promise that resolves to an array of chat rooms.
    */
   async getAvailableChatRooms(
     userId: string,
@@ -317,10 +333,10 @@ export class PrismaService extends PrismaClient {
    * This method returns a page of messages from the database of the specified size,
    * starting with the oldest message that is older than the date provided.
    *
-   * @param id room id
-   * @param date of the oldest message retrieved thus far
-   * @param pageSize number of messages to return
-   * @returns {Promise&lt;MessageDto[]>} a page of messages
+   * @param {number} id - The ID of the chat room to retrieve messages from.
+   * @param {Date} date - The date of the oldest message retrieved thus far.
+   * @param {number} pageSize - The number of messages to return.
+   * @returns {Promise&lt;MessagePrismaType[]>} - A Promise that resolves to an array of messages.
    */
   async getChatMessagesPage(
     id: number,
@@ -382,10 +398,10 @@ export class PrismaService extends PrismaClient {
   /**
    * Gets a chat room with its member
    *
-   * @param {string} roomName
-   * @param {string} username
-   * @async
-   * @returns {Promise&lt;{ room: ChatRoom; chatMember: ChatMember } | null>}
+   * @todo Fix this functions return type
+   * 
+   * @param {string} roomName - The name of the chat room
+   * @param {string} username - The username of the member
    */
   async getChatRoomWithMember(
     roomName: string,
@@ -413,10 +429,9 @@ export class PrismaService extends PrismaClient {
   /**
    * Updates a chat room
    *
-   * @param {number} id
-   * @param {Partial&lt;UpdateChatRoomRequest>} req
-   * @async
-   * @returns {Promise&lt;ChatRoom>}
+   * @param {number} id - The id of the chat room
+   * @param {Partial&lt;UpdateChatRoomRequest>} req - The request body
+   * @returns {Promise&lt;ChatRoom>} - A Promise that resolves to the updated chat room
    */
   async updateChatRoom(
     id: number,
@@ -433,7 +448,12 @@ export class PrismaService extends PrismaClient {
     return this.chatRoom.update({ where: { id }, data });
   }
 
-  // Delete a chat room
+  /**
+   * Deletes a chat room
+   * 
+   * @param {number} id - The id of the chat room
+   * @returns {Promise&lt;ChatRoomDto>} - A Promise that resolves to the deleted chat room
+   */
   async deleteChatRoom(id: number): Promise&lt;ChatRoomDto> {
     return this.chatRoom.delete({ where: { id } });
   }
@@ -442,8 +462,7 @@ export class PrismaService extends PrismaClient {
    * Adds a message to a chat room
    *
    * @param {MessageDto} dto
-   * @async
-   * @returns {Promise&lt;MessagePrismaType>}
+   * @returns {Promise&lt;MessagePrismaType>} - A Promise that resolves to the newly created message
    */
   async addMessageToChatRoom(dto: MessageDto): Promise&lt;MessagePrismaType> {
     // Check if the owner UUID is valid
@@ -474,9 +493,8 @@ export class PrismaService extends PrismaClient {
   /**
    * Retrieves the latest message in a chat room by room ID
    *
-   * @param {number} roomId
-   * @async
-   * @returns {Promise&lt;MessagePrismaType | null>}
+   * @param {number} roomId - The ID of the chat room
+   * @returns {Promise&lt;MessagePrismaType | null>} - A Promise that resolves to the latest message in the chat room, or null if no messages exist
    */
   async getLatestMessage(roomId: number): Promise&lt;MessagePrismaType | null> {
     return this.message.findFirst({
@@ -492,9 +510,8 @@ export class PrismaService extends PrismaClient {
   /**
    * Fetches match history page from the database
    *
-   * @param {GetMatchHistoryRequest} getMatchHistoryRequest
-   * @async
-   * @returns {Promise&lt;MatchPrismaType[]>}
+   * @param {GetMatchHistoryRequest} getMatchHistoryRequest - The request body
+   * @returns {Promise&lt;MatchPrismaType[]>} - A Promise that resolves to the match history
    */
   async GetMatchHistory(
     getMatchHistoryRequest: GetMatchHistoryRequest
@@ -524,9 +541,8 @@ export class PrismaService extends PrismaClient {
   /**
    * Returns a profile from the database
    *
-   * @param {GetProfileRequest} getProfileRequest
-   * @async
-   * @returns {Promise&lt;User>}
+   * @param {GetProfileRequest} getProfileRequest - The request body
+   * @returns {Promise&lt;User>} - A Promise that resolves to the user profile
    */
   async GetProfile(getProfileRequest: GetProfileRequest): Promise&lt;User> {
     if (getProfileRequest.username === undefined || null) {
@@ -552,9 +568,9 @@ export class PrismaService extends PrismaClient {
    * Returns a users friends from the database
    *
    * @todo make a primsa type for return
-   * @param {GetFriendsRequest} getFriendsRequest
-   * @async
-   * @returns {Promise&lt;Friend[]>}
+   * 
+   * @param {GetFriendsRequest} getFriendsRequest - The request body
+   * @returns {Promise&lt;any[]>} - A Promise that resolves to the user's friends
    */
   //TODO: define a prisma type for the return
   async getFriends(getFriendsRequest: GetFriendsRequest): Promise&lt;any[]> {
@@ -574,9 +590,8 @@ export class PrismaService extends PrismaClient {
   /**
    * Adds a friend to the database
    *
-   * @param {AddFriendRequest} addFriendRequest
-   * @async
-   * @returns {Promise&lt;Friend>}
+   * @param {AddFriendRequest} addFriendRequest - The request body
+   * @returns {Promise&lt;boolean>} - A Promise that resolves to true if the friend was added successfully, false otherwise
    */
   async addFriend(addFriendRequest: AddFriendRequest): Promise&lt;boolean> {
     logger.debug(
@@ -625,9 +640,8 @@ export class PrismaService extends PrismaClient {
   /**
    * Updates a chat member's status
    *
-   * @param {UpdateChatMemberRequest} updateDto
-   * @async
-   * @returns {Promise&lt;ChatMember>}
+   * @param {UpdateChatMemberRequest} updateDto - The request body
+   * @returns {Promise&lt;ChatMemberPrismaType>} - A Promise that resolves to the updated chat member
    */
   async updateChatMemberStatus(
     updateDto: UpdateChatMemberRequest
@@ -689,10 +703,9 @@ export class PrismaService extends PrismaClient {
   /**
    * Fetches chat member by username and room name
    *
-   * @param {string} roomName
-   * @param {string} username
-   * @async
-   * @returns {Promise&lt;ChatMember>}
+   * @param {string} roomName - The room name
+   * @param {string} username - The username
+   * @returns {Promise&lt;ChatMemberPrismaType>} - A Promise that resolves to the chat member
    */
   async getChatMemberByUsername(
     roomName: string,
@@ -739,10 +752,9 @@ export class PrismaService extends PrismaClient {
   /**
    * Fetches chat member by username and room name
    *
-   * @param {string} roomName
-   * @param {string} uuid
-   * @async
-   * @returns {Promise&lt;ChatMember>}
+   * @param {string} roomName - The room name
+   * @param {string} uuid - The uuid
+   * @returns {Promise&lt;ChatMemberPrismaType>} - A Promise that resolves to the chat member
    */
   async getChatMemberByUUID(
     roomName: string,
@@ -790,10 +802,9 @@ export class PrismaService extends PrismaClient {
    * Gets a list of all users in the server that have not been blocked by the querying user,
    * and are not in the specified chat room
    *
-   * @param {string} userId
-   * @param {number} roomId
-   * @async
-   * @returns {Promise&lt;User[]>}
+   * @param {string} userId - The querying user's ID
+   * @param {number} roomId - The chat room ID
+   * @returns {Promise&lt;User[]>} - A Promise that resolves to a list of users
    */
   async getAvailableUsers(userId: string, roomId: number): Promise&lt;User[]> {
     if (!userId) {
@@ -852,10 +863,10 @@ export class PrismaService extends PrismaClient {
   /**
    * Check the status of a user in a chat room
    *
-   * @param {number} userId
-   * @param {string} roomName
-   * @async
-   * @returns {Promise&lt;{ status: ChatMemberStatus; expiration: Date | null }>}
+   * @todo Fix this functions return type
+   * 
+   * @param {string} userId - The user ID
+   * @param {string} roomName - The room name
    */
   async checkChatMemberStatus(
     userId: string, // Changed from number to string to match your User model
@@ -883,9 +894,8 @@ export class PrismaService extends PrismaClient {
   /**
    * Deletes a chat member by their ID
    *
-   * @param {number} id
-   * @async
-   * @returns {Promise&lt;void>}
+   * @param {number} id - The chat member ID
+   * @returns {Promise&lt;void>} - A Promise that resolves when the chat member is deleted
    */
   async destroyChatMember(id: number): Promise&lt;void> {
     await this.chatMember.delete({
@@ -896,10 +906,9 @@ export class PrismaService extends PrismaClient {
   /**
    * Updates the avatar URL of a user by their username
    *
-   * @param {string} userName
-   * @param {string} URL
-   * @async
-   * @returns {Promise&lt;void>}
+   * @param {string} userName - The username
+   * @param {string} URL - The avatar URL
+   * @returns {Promise&lt;void>} - A Promise that resolves when the user is updated
    */
   async updateAvatar(userName: string, URL: string) {
     const userToUpdate = await this.user.update({
@@ -913,6 +922,12 @@ export class PrismaService extends PrismaClient {
     return userToUpdate;
   }
 
+  /**
+   * Updates the status of a user by their username
+   * 
+   * @param {string} userName - The username
+   * @returns {Promise&lt;void>} - A Promise that resolves when the user is updated
+   */
   async update2FA(userName: string): Promise&lt;boolean> {
     const user = await this.user.findUnique({
       where: {
@@ -944,10 +959,12 @@ export class PrismaService extends PrismaClient {
 
   /**
    * Adds a new Direct Message chat room between two users
-   * @param {string} senderId
-   * @param {string} recipientId
-   * @async
-   * @returns {Promise&lt;ChatRoom>}
+   * 
+   * @param {string} senderId - The sender's ID
+   * @param {string} recipientId - The recipient's ID
+   * @param {string} roomName - The room name
+   * @returns {Promise&lt;ChatRoom>} - A Promise that resolves to the new chat room
+   *
    * @throws {Error} If the chat room already exists
    */
   async createDirectMessageRoom(
@@ -989,8 +1006,7 @@ export class PrismaService extends PrismaClient {
    *
    * @param {string} blockingId - The ID of the user doing the blocking.
    * @param {string} blockedId - The ID of the user being blocked.
-   * @async
-   * @returns {Promise&lt;BlockedUser>}
+   * @returns {Promise&lt;BlockedUser>} - A Promise that resolves to the new blocked user relationship.
    */
   async addBlockedUser(
     blockingId: string,
@@ -1013,8 +1029,7 @@ export class PrismaService extends PrismaClient {
    *
    * @param {string} blockingId - The ID of the user who did the blocking.
    * @param {string} blockedId - The ID of the user who was blocked.
-   * @async
-   * @returns {Promise&lt;void>}
+   * @returns {Promise&lt;void>} - A Promise that resolves when the blocked user relationship is removed.
    */
   async removeBlockedUser(
     blockingId: string,
@@ -1034,8 +1049,7 @@ export class PrismaService extends PrismaClient {
    * Retrieves the users blocked by a user.
    *
    * @param {string} userId - The ID of the user who did the blocking.
-   * @async
-   * @returns {Promise&lt;User[]>}
+   * @returns {Promise&lt;User[]>} - A Promise that resolves to an array of users who were blocked by the user.
    */
   async getUsersBlockedBy(userId: string): Promise&lt;User[]> {
     const blockedUserRelations = await this.blockedUser.findMany({
@@ -1053,6 +1067,12 @@ export class PrismaService extends PrismaClient {
     return blockedUsers;
   }
 
+  /**
+   * Retrieves the users blocking a user.
+   * 
+   * @param {string} userId - The ID of the user who was blocked.
+   * @returns {Promise&lt;User[]>} - A Promise that resolves to an array of users who did the blocking.
+   */
   async getUsersBlocking(userId: string): Promise&lt;User[]> {
     const blockingUserRelations = await this.blockedUser.findMany({
       where: {
@@ -1069,6 +1089,13 @@ export class PrismaService extends PrismaClient {
     return blockingUsers;
   }
 
+  /**
+   * Checks if a user is blocked by another user.
+   * 
+   * @param {string} blockerId - The ID of the user who did the blocking.
+   * @param {string} blockedUserId - The ID of the user who was blocked.
+   * @returns {Promise&lt;boolean>} - A Promise that resolves to true if the user is blocked by the other user, false otherwise.
+   */
   async checkIfBlocked(
     blockerId: string,
     blockedUserId: string
@@ -1085,12 +1112,16 @@ export class PrismaService extends PrismaClient {
 
   /**
    * Add a match to the database
-   * @param {string} player1Id
-   * @param {string} player2Id
-   * @param {number} scorePlayer1
-   * @param {number} scorePlayer2
-   * @async
-   * @returns {Promise&lt;Match>}
+   * 
+   * @todo fix this wonky parameter list
+   * 
+   * @param {string} player1Id - The ID of the first player
+   * @param {string} player2Id - The ID of the second player
+   * @param {number} scorePlayer1 - The score of the first player
+   * @param {number} scorePlayer2 - The score of the second player
+   * @param {Date} timestamp - The timestamp of the match
+   * @param {GameType} gameType - The game type of the match
+   * @returns {Promise&lt;Match>} - A Promise that resolves to the new match
    */
   async addMatch({
     player1Id,
@@ -1128,13 +1159,13 @@ export class PrismaService extends PrismaClient {
 </div>
 
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="ChatGateway.html">ChatGateway</a></li><li><a href="ChatService.html">ChatService</a></li><li><a href="GameGateway.html">GameGateway</a></li><li><a href="GameModuleData.html">GameModuleData</a></li><li><a href="GameService.html">GameService</a></li><li><a href="GetFriendsRequest.html">GetFriendsRequest</a></li><li><a href="LoginGateway.html">LoginGateway</a></li><li><a href="UserDto.html">UserDto</a></li><li><a href="Vec2.html">Vec2</a></li></ul><h3>Interfaces</h3><ul><li><a href="MatchPrismaType.html">MatchPrismaType</a></li><li><a href="ProfileViewModelType.html">ProfileViewModelType</a></li><li><a href="RootModelType.html">RootModelType</a></li><li><a href="RootViewModelType.html">RootViewModelType</a></li><li><a href="SettingsModelType.html">SettingsModelType</a></li><li><a href="SettingsViewModelType.html">SettingsViewModelType</a></li></ul><h3>Events</h3><ul><li><a href="global.html#event:%2522blockUser%2522">"blockUser"</a></li><li><a href="global.html#event:%2522createRoom%2522">"createRoom"</a></li><li><a href="global.html#event:%2522gameEnded%2522">"gameEnded"</a></li><li><a href="global.html#event:%2522gameStarted%2522">"gameStarted"</a></li><li><a href="global.html#event:%2522getRoomMessagesPage%2522">"getRoomMessagesPage"</a></li><li><a href="global.html#event:%2522joinRoom%2522">"joinRoom"</a></li><li><a href="global.html#event:%2522kickChatMember%2522">"kickChatMember"</a></li><li><a href="global.html#event:%2522leaveRoom%2522">"leaveRoom"</a></li><li><a href="global.html#event:%2522listAvailableChatRooms%2522">"listAvailableChatRooms"</a></li><li><a href="global.html#event:%2522listAvailableUsers%2522">"listAvailableUsers"</a></li><li><a href="global.html#event:%2522listUsers%2522">"listUsers"</a></li><li><a href="global.html#event:%2522lobbyCreated%2522">"lobbyCreated"</a></li><li><a href="global.html#event:%2522sendDirectMessage%2522">"sendDirectMessage"</a></li><li><a href="global.html#event:%2522sendMessage%2522">"sendMessage"</a></li><li><a href="global.html#event:%2522updateChatMemberStatus%2522">"updateChatMemberStatus"</a></li><li><a href="global.html#event:%2522updateChatRoom%2522">"updateChatRoom"</a></li><li><a href="global.html#event:%2522userCreation%2522">"userCreation"</a></li><li><a href="global.html#event:%2522userLogin%2522">"userLogin"</a></li></ul><h3>Global</h3><ul><li><a href="global.html#%2522blockUser%2522">"blockUser"</a></li><li><a href="global.html#%2522createRoom%2522">"createRoom"</a></li><li><a href="global.html#%2522getRoomMessagesPage%2522">"getRoomMessagesPage"</a></li><li><a href="global.html#%2522joinRoom%2522">"joinRoom"</a></li><li><a href="global.html#%2522kickChatMember%2522">"kickChatMember"</a></li><li><a href="global.html#%2522leaveRoom%2522">"leaveRoom"</a></li><li><a href="global.html#%2522listAvailableChatRooms%2522">"listAvailableChatRooms"</a></li><li><a href="global.html#%2522listAvailableUsers%2522">"listAvailableUsers"</a></li><li><a href="global.html#%2522listUsers%2522">"listUsers"</a></li><li><a href="global.html#%2522sendDirectMessage%2522">"sendDirectMessage"</a></li><li><a href="global.html#%2522sendMessage%2522">"sendMessage"</a></li><li><a href="global.html#%2522updateChatMemberStatus%2522">"updateChatMemberStatus"</a></li><li><a href="global.html#%2522updateChatRoom%2522">"updateChatRoom"</a></li><li><a href="global.html#%2522userCreation%2522">"userCreation"</a></li><li><a href="global.html#%2522userLogin%2522">"userLogin"</a></li><li><a href="global.html#Ball">Ball</a></li><li><a href="global.html#Floor">Floor</a></li><li><a href="global.html#FriendsList">FriendsList</a></li><li><a href="global.html#FriendsListRow">FriendsListRow</a></li><li><a href="global.html#GetUser">GetUser</a></li><li><a href="global.html#GetUserWs">GetUserWs</a></li><li><a href="global.html#HelmetView">HelmetView</a></li><li><a href="global.html#MatchHistory">MatchHistory</a></li><li><a href="global.html#MatchHistoryRow">MatchHistoryRow</a></li><li><a href="global.html#OuterFrameBottom">OuterFrameBottom</a></li><li><a href="global.html#OuterFrameLeft">OuterFrameLeft</a></li><li><a href="global.html#OuterFrameRight">OuterFrameRight</a></li><li><a href="global.html#OuterFrameTop">OuterFrameTop</a></li><li><a href="global.html#PaddleLeft">PaddleLeft</a></li><li><a href="global.html#PaddleRight">PaddleRight</a></li><li><a href="global.html#PageState">PageState</a></li><li><a href="global.html#ProfileHeader">ProfileHeader</a></li><li><a href="global.html#ProfileViewModelContext">ProfileViewModelContext</a></li><li><a href="global.html#ProfileViewModelProvider">ProfileViewModelProvider</a></li><li><a href="global.html#RootView">RootView</a></li><li><a href="global.html#RootViewContent">RootViewContent</a></li><li><a href="global.html#RootViewModelContext">RootViewModelContext</a></li><li><a href="global.html#RootViewModelProvider">RootViewModelProvider</a></li><li><a href="global.html#SettingsViewModelContext">SettingsViewModelContext</a></li><li><a href="global.html#SettingsViewModelProvider">SettingsViewModelProvider</a></li><li><a href="global.html#useGameViewModelContext">useGameViewModelContext</a></li><li><a href="global.html#useProfileViewModelContext">useProfileViewModelContext</a></li><li><a href="global.html#useRootModel">useRootModel</a></li><li><a href="global.html#useRootViewModelContext">useRootViewModelContext</a></li><li><a href="global.html#useSettingsModel">useSettingsModel</a></li><li><a href="global.html#useSettingsViewModelContext">useSettingsViewModelContext</a></li></ul>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="ChatGateway.html">ChatGateway</a></li><li><a href="ChatService.html">ChatService</a></li><li><a href="GameGateway.html">GameGateway</a></li><li><a href="GameModuleData.html">GameModuleData</a></li><li><a href="GameService.html">GameService</a></li><li><a href="GetFriendsRequest.html">GetFriendsRequest</a></li><li><a href="LoginGateway.html">LoginGateway</a></li><li><a href="PrismaService.html">PrismaService</a></li><li><a href="UserDto.html">UserDto</a></li><li><a href="Vec2.html">Vec2</a></li></ul><h3>Interfaces</h3><ul><li><a href="MatchPrismaType.html">MatchPrismaType</a></li><li><a href="ProfileViewModelType.html">ProfileViewModelType</a></li><li><a href="RootModelType.html">RootModelType</a></li><li><a href="RootViewModelType.html">RootViewModelType</a></li><li><a href="SettingsModelType.html">SettingsModelType</a></li><li><a href="SettingsViewModelType.html">SettingsViewModelType</a></li></ul><h3>Events</h3><ul><li><a href="global.html#event:%2522blockUser%2522">"blockUser"</a></li><li><a href="global.html#event:%2522createRoom%2522">"createRoom"</a></li><li><a href="global.html#event:%2522gameEnded%2522">"gameEnded"</a></li><li><a href="global.html#event:%2522gameStarted%2522">"gameStarted"</a></li><li><a href="global.html#event:%2522getRoomMessagesPage%2522">"getRoomMessagesPage"</a></li><li><a href="global.html#event:%2522joinRoom%2522">"joinRoom"</a></li><li><a href="global.html#event:%2522kickChatMember%2522">"kickChatMember"</a></li><li><a href="global.html#event:%2522leaveRoom%2522">"leaveRoom"</a></li><li><a href="global.html#event:%2522listAvailableChatRooms%2522">"listAvailableChatRooms"</a></li><li><a href="global.html#event:%2522listAvailableUsers%2522">"listAvailableUsers"</a></li><li><a href="global.html#event:%2522listUsers%2522">"listUsers"</a></li><li><a href="global.html#event:%2522lobbyCreated%2522">"lobbyCreated"</a></li><li><a href="global.html#event:%2522sendDirectMessage%2522">"sendDirectMessage"</a></li><li><a href="global.html#event:%2522sendMessage%2522">"sendMessage"</a></li><li><a href="global.html#event:%2522updateChatMemberStatus%2522">"updateChatMemberStatus"</a></li><li><a href="global.html#event:%2522updateChatRoom%2522">"updateChatRoom"</a></li><li><a href="global.html#event:%2522userCreation%2522">"userCreation"</a></li><li><a href="global.html#event:%2522userLogin%2522">"userLogin"</a></li></ul><h3>Global</h3><ul><li><a href="global.html#%2522blockUser%2522">"blockUser"</a></li><li><a href="global.html#%2522createRoom%2522">"createRoom"</a></li><li><a href="global.html#%2522getRoomMessagesPage%2522">"getRoomMessagesPage"</a></li><li><a href="global.html#%2522joinRoom%2522">"joinRoom"</a></li><li><a href="global.html#%2522kickChatMember%2522">"kickChatMember"</a></li><li><a href="global.html#%2522leaveRoom%2522">"leaveRoom"</a></li><li><a href="global.html#%2522listAvailableChatRooms%2522">"listAvailableChatRooms"</a></li><li><a href="global.html#%2522listAvailableUsers%2522">"listAvailableUsers"</a></li><li><a href="global.html#%2522listUsers%2522">"listUsers"</a></li><li><a href="global.html#%2522sendDirectMessage%2522">"sendDirectMessage"</a></li><li><a href="global.html#%2522sendMessage%2522">"sendMessage"</a></li><li><a href="global.html#%2522updateChatMemberStatus%2522">"updateChatMemberStatus"</a></li><li><a href="global.html#%2522updateChatRoom%2522">"updateChatRoom"</a></li><li><a href="global.html#%2522userCreation%2522">"userCreation"</a></li><li><a href="global.html#%2522userLogin%2522">"userLogin"</a></li><li><a href="global.html#Ball">Ball</a></li><li><a href="global.html#Floor">Floor</a></li><li><a href="global.html#FriendsList">FriendsList</a></li><li><a href="global.html#FriendsListRow">FriendsListRow</a></li><li><a href="global.html#GLOBAL_T_IN_DAYS">GLOBAL_T_IN_DAYS</a></li><li><a href="global.html#GetUser">GetUser</a></li><li><a href="global.html#GetUserWs">GetUserWs</a></li><li><a href="global.html#HelmetView">HelmetView</a></li><li><a href="global.html#MatchHistory">MatchHistory</a></li><li><a href="global.html#MatchHistoryRow">MatchHistoryRow</a></li><li><a href="global.html#OuterFrameBottom">OuterFrameBottom</a></li><li><a href="global.html#OuterFrameLeft">OuterFrameLeft</a></li><li><a href="global.html#OuterFrameRight">OuterFrameRight</a></li><li><a href="global.html#OuterFrameTop">OuterFrameTop</a></li><li><a href="global.html#PaddleLeft">PaddleLeft</a></li><li><a href="global.html#PaddleRight">PaddleRight</a></li><li><a href="global.html#PageState">PageState</a></li><li><a href="global.html#ProfileHeader">ProfileHeader</a></li><li><a href="global.html#ProfileViewModelContext">ProfileViewModelContext</a></li><li><a href="global.html#ProfileViewModelProvider">ProfileViewModelProvider</a></li><li><a href="global.html#RootView">RootView</a></li><li><a href="global.html#RootViewContent">RootViewContent</a></li><li><a href="global.html#RootViewModelContext">RootViewModelContext</a></li><li><a href="global.html#RootViewModelProvider">RootViewModelProvider</a></li><li><a href="global.html#SettingsViewModelContext">SettingsViewModelContext</a></li><li><a href="global.html#SettingsViewModelProvider">SettingsViewModelProvider</a></li><li><a href="global.html#useGameViewModelContext">useGameViewModelContext</a></li><li><a href="global.html#useProfileViewModelContext">useProfileViewModelContext</a></li><li><a href="global.html#useRootModel">useRootModel</a></li><li><a href="global.html#useRootViewModelContext">useRootViewModelContext</a></li><li><a href="global.html#useSettingsModel">useSettingsModel</a></li><li><a href="global.html#useSettingsViewModelContext">useSettingsViewModelContext</a></li></ul>
 </nav>
 
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.2</a> on Tue Apr 25 2023 18:30:26 GMT-0400 (Eastern Daylight Time)
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.2</a> on Tue Apr 25 2023 18:48:57 GMT-0400 (Eastern Daylight Time)
 </footer>
 
 <script> prettyPrint(); </script>
