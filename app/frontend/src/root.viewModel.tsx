@@ -25,7 +25,7 @@ export const RootViewModelProvider = ({ children }) => {
    * Redirect to 42Auth
    */
   const getSessionToken = () => {
-    console.log("get session token = ", sessionToken);
+    console.debug("get session token = ", sessionToken);
   };
 
   return (

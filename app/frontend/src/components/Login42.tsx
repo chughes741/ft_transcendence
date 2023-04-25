@@ -125,7 +125,7 @@ export default function LoginWith42Button() {
           twoFAenable: client.user.enable2fa
         };
         setSelf(userProfile.user);
-        console.log("This is thy self: " , self);
+        console.debug("self: " , self);
         onSuccess(userProfile);
       });
     } catch (error) {

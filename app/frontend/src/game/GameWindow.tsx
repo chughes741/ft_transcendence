@@ -18,7 +18,6 @@ function Ball() {
   const { gameState } = useGameViewModelContext();
 
   useFrame(() => {
-    console.log(gameState);
     mesh.current.position.x = gameState.ball_x;
     mesh.current.position.y = gameState.ball_y;
     mesh.current.position.z = 0;

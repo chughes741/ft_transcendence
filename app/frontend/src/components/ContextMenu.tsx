@@ -33,7 +33,7 @@ const ContextMenu: React.FC<ContextMenuProps> = ({
         );
 
         if (isOutsideMenu) {
-          console.log("click outside, closing context menu");
+          console.debug("click outside, closing context menu");
           setContextMenuVisible(false);
         }
         if (isOutsideSubmenu && anchorEl) {

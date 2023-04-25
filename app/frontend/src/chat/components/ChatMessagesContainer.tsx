@@ -26,7 +26,7 @@ const groupMessages = (
 ): Array<MessageType> | null => {
   const groupedMessages: Array<MessageType> = [];
   if (!messages) {
-    console.log("No messages to display");
+    console.warn("No messages to display");
     return null;
   }
 

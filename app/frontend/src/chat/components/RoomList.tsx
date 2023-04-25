@@ -129,10 +129,8 @@ const RoomList: React.FC = () => {
   // Emit a "listAvailableUsers" socket event when the roomName changes
   useEffect(() => {
     if (!showInviteUsersModal || !contextMenuData?.name) return;
-    console.log(
-      "showInviteUsers Modal has been activated, so me too: ",
-      contextMenuData?.name
-    );
+    console.debug(
+      "showInviteUsers Modal has been activated:", contextMenuData?.name);
 
     const req: ListUsersRequest = { chatRoomName: contextMenuData.name };
     console.warn(
@@ -147,8 +145,8 @@ const RoomList: React.FC = () => {
         );
         return;
       }
-      console.log("Available users: ", users);
-      console.log("Current room name: ", currentRoomName);
+      console.debug("Available users: ", users);
+      console.debug("Current room name: ", currentRoomName);
       setAvailableUsers(users);
       setSelectedUsers([]);
     });
@@ -166,8 +164,7 @@ const RoomList: React.FC = () => {
 
   useEffect(() => {
     socket.on("addedToNewChatRoom", (room) => {
-      console.log(`You have been added to a new chat room: ${room.name}`);
-      console.log(room);
+      console.debug(`You have been added to a new chat room: ${room.name}`);
       setAddedRoomName(room.name);
     });
   }, [socket]);

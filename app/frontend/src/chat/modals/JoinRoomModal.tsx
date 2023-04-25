@@ -68,7 +68,7 @@ export const JoinRoomModal: React.FC<JoinRoomModalProps> = ({
       alert("Please select a room.");
       return;
     }
-    console.log("Joining room modal: ", selectedRoom.roomName, password);
+    console.debug("Joining room modal: ", selectedRoom.roomName, password);
     onJoinRoom(selectedRoom.roomName, password);
     setSelectedRoom(null);
     setPassword("");
@@ -90,7 +90,7 @@ export const JoinRoomModal: React.FC<JoinRoomModalProps> = ({
       "listAvailableChatRooms",
       self.username,
       (rooms: AvailableRoomEntity[]) => {
-        console.log("Received available rooms: ", rooms);
+        console.debug("Received available rooms: ", rooms);
         setAvailableRooms(rooms);
       }
     );

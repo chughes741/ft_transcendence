@@ -78,7 +78,7 @@ export const ChatViewModelProvider = ({ children }) => {
 
   const selectRoom = (roomName: string) => {
     if (currentRoomName === roomName && pageState === PageState.Chat) {
-      console.log("selectRoom: Room is already selected. Toggling to Home.");
+      console.debug("selectRoom: Room is already selected. Toggling to Home.");
       setCurrentRoomName("");
       setPageState(PageState.Home);
       return;
@@ -86,7 +86,7 @@ export const ChatViewModelProvider = ({ children }) => {
     if (!rooms[roomName]) {
       return;
     }
-    console.log(`selectRoom: Room ${roomName} selected! `, rooms[roomName]);
+    console.debug(`selectRoom: Room ${roomName} selected! `, rooms[roomName]);
     setCurrentRoomName(roomName);
     setCurrentRoomMessages(rooms[roomName].messages);
     updateRooms((newRooms) => {
@@ -122,7 +122,7 @@ export const ChatViewModelProvider = ({ children }) => {
   const leaveRoom = async (): Promise<boolean> => {
     const roomName = contextMenuData.name;
 
-    console.log("Leaving room: ", roomName);
+    console.debug("Leaving room: ", roomName);
 
     return new Promise<boolean>((resolve) => {
       setContextMenuRoomsVisible(false);
@@ -130,10 +130,10 @@ export const ChatViewModelProvider = ({ children }) => {
         roomName: roomName,
         username: self.username
       };
-      console.log("Leaving room: ", req);
+      console.debug("Leaving room: ", req);
       socket.emit("leaveRoom", req, (response: DevError | string) => {
         if (handleSocketErrorResponse(response)) {
-          console.log("Error response from leave room: ", response.error);
+          console.warn("Error response from leave room: ", response.error);
           resolve(false);
         }
       });
@@ -157,20 +157,20 @@ export const ChatViewModelProvider = ({ children }) => {
         recipient: username,
         senderRank: ChatMemberRank.USER
       };
-      console.log("Sending direct message: ", req);
+      console.debug("Sending direct message: ", req);
 
       socket.emit(
         "sendDirectMessage",
         req,
         (response: ChatRoomPayload | DevError) => {
           if (handleSocketErrorResponse(response)) {
-            console.log(
+            console.warn(
               "Error response from send direct message: ",
               response.error
             );
             resolve(false);
           } else {
-            console.log(
+            console.debug(
               "Success response from send direct message: ",
               response
             );
@@ -193,12 +193,10 @@ export const ChatViewModelProvider = ({ children }) => {
     return new Promise<boolean>((resolve) => {
       socket.emit("userLogin", req, (response: DevError | string) => {
         if (typeof response === "object") {
-          console.log("Error response from user login: ", response.error);
+          console.warn("Error response from user login: ", response.error);
           resolve(false);
         } else {
-          console.log(`Logged in user ${req.username} successfully!`);
-          console.log("Success response from user login: ");
-          console.log(response);
+          console.debug(`Logged in user ${req.username} successfully!`);
           self.username = req.username;
           joinRoom("PublicRoom", "secret");
           joinRoom("PrivateRoom", "secret");
@@ -217,13 +215,13 @@ export const ChatViewModelProvider = ({ children }) => {
     return new Promise<boolean>((resolve) => {
       socket.emit("userCreation", req, (response: DevError | string) => {
         if (typeof response === "object") {
-          console.log("Error response from user creation: ", response.error);
+          console.warn("Error response from user creation: ", response.error);
           resolve(false);
           // Try to log in instead
         } else {
           self.username = req.username;
           setRooms(null);
-          console.log(`Created user ${req.username} successfully!`);
+          console.debug(`Created user ${req.username} successfully!`);
 
           // FIXME: For testing purposes only
           // Join three separate rooms on connection
@@ -317,7 +315,6 @@ export const ChatViewModelProvider = ({ children }) => {
   //     // Try to login instead
   //     const userLogged = await userLogin(req);
   //     if (!userLogged) {
-  //       console.log("Failed to create or login to user", username);
   //     }
   //   }
   // };

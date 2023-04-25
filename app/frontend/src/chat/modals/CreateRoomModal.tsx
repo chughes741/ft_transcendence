@@ -67,7 +67,7 @@ export const CreateRoomModal: React.FC<CreateRoomModalProps> = ({
       alert("Please enter a room password.");
       return;
     }
-    console.log("Creating room modal: ", roomName, roomStatus, password);
+    console.debug("Creating room modal: ", roomName, roomStatus, password);
     const roomCreated = await onCreateRoom(roomName, roomStatus, password);
     if (roomCreated) {
       setRoomName("");

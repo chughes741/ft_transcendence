@@ -216,7 +216,7 @@ function MatchHistory(): JSX.Element | null {
 function FriendsListRow(friend: ProfileEntity): JSX.Element | null {
   const { setUser } = useProfileViewModelContext();
   const handleClick = () => {
-    console.log("Clicked on friend: " + friend.username);
+    console.debug("Clicked on friend: " + friend.username);
     setUser(friend.username);
   };
 

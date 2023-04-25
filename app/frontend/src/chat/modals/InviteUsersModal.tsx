@@ -62,7 +62,7 @@ export const InviteUsersModal: React.FC<InviteUsersToRoomProps> = ({
     };
     socket.emit("inviteUsersToRoom", req, (res: boolean | null) => {
       // TODO: implement user notification behavior based on the response
-      console.log("Invite users response: ", res);
+      console.debug("Invite users response: ", res);
     });
 
     closeModal();

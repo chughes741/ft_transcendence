@@ -70,7 +70,7 @@ export const GameViewModelProvider = ({ children }) => {
     if (!displayQueue) return;
 
     socket.on(GameEvents.LobbyCreated, (payload: LobbyCreatedEvent) => {
-      console.log("lobbyCreated event received");
+      console.debug("lobbyCreated event received");
 
       setLobby(new GameTypes.Lobby());
       setLobbyId(payload.lobby_id);
@@ -95,8 +95,7 @@ export const GameViewModelProvider = ({ children }) => {
     if (!playerReady) return;
 
     socket.on(GameEvents.GameStarted, (payload: GameStartedEvent) => {
-      console.log("gameStarted event received. Payload:");
-      console.log(payload);
+      console.debug("gameStarted event received. Payload:", payload);
 
       setPlayerSide(payload.player_side);
       setDisplayGame(true);
@@ -115,8 +114,7 @@ export const GameViewModelProvider = ({ children }) => {
     if (!displayGame) return;
 
     socket.on(GameEvents.GameEnded, (payload: GameEndedEvent) => {
-      console.log("gameEnded event received. Payload:");
-      console.log(payload);
+      console.debug("gameEnded event received. Payload:", payload);
 
       setDisplayGame(false);
       setDisplayLobby(true);
@@ -154,7 +152,7 @@ export const GameViewModelProvider = ({ children }) => {
    * @async
    */
   const joinGameQueue = async () => {
-    console.log("Joining queue");
+    console.debug("Joining queue");
 
     socket.emit(
       GameEvents.JoinGameQueue,

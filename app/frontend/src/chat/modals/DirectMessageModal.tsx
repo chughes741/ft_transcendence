@@ -49,8 +49,8 @@ export const DirectMessageModal: React.FC<DirectMessageModalProps> = ({
       alert("Please select a user.");
       return;
     }
-    // FIXME: implement direct message logic
-    console.log("Sending direct message to: ", selectedUser.username);
+    /** @todo implement direct message logic */
+    console.debug("Sending direct message to: ", selectedUser.username);
 
     setSelectedUser(null);
     closeModal();
@@ -73,7 +73,7 @@ export const DirectMessageModal: React.FC<DirectMessageModalProps> = ({
     const req: ListUsersRequest = { chatRoomName: "" };
     console.warn(`RoomList: Fetching available users to DM...`, req);
     socket.emit("listAvailableUsers", req, (users: UserEntity[]) => {
-      console.log("Available users: ", users);
+      console.debug("Available users: ", users);
       setAvailableUsers(users);
       setSelectedUser(null);
     });

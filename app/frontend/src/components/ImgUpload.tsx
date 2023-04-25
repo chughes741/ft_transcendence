@@ -19,7 +19,7 @@ function ImgUpload() {
   const history = createBrowserHistory();
 
   const handleUpload = async () => {
-    console.log("handUpload Clicked", file);
+    console.debug("handleUpload Clicked");
 
     if (file) {
       //

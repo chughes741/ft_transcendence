@@ -106,7 +106,7 @@ export const RoomManagerProvider = ({ children }) => {
     setRooms((prevRooms) => {
       const newRooms = { ...prevRooms };
       if (!newRooms[roomName]) {
-        console.log("In addMemberToRoom, room not found: ", roomName);
+        console.warn("In addMemberToRoom, room not found: ", roomName);
         return newRooms;
       }
       newRooms[roomName].users[member.username] = member;
@@ -139,7 +139,7 @@ export const RoomManagerProvider = ({ children }) => {
   ): Promise<RoomType> => {
     // Validate the payload
     if (!chatRoomPayload.name) {
-      console.log("In addChatRoom, invalid payload: ", chatRoomPayload);
+      console.warn("In addChatRoom, invalid payload: ", chatRoomPayload);
       return;
     }
     const userList = await getRoomUserList(chatRoomPayload.name);
@@ -173,7 +173,7 @@ export const RoomManagerProvider = ({ children }) => {
         if (!newRooms[name]) {
           newRooms[name] = newRoom;
         }
-        console.log("Added room to rooms: ", newRooms);
+        console.debug("Added room to rooms: ", newRooms);
         resolve(newRoom);
       });
     });
@@ -183,7 +183,7 @@ export const RoomManagerProvider = ({ children }) => {
   const addMessageToRoom = (roomName: string, message: MessageType) => {
     updateRooms((newRooms) => {
       if (!newRooms[roomName]) {
-        console.log("addMessageToRoom: Room does not exist");
+        console.warn("addMessageToRoom: Room does not exist");
       } else {
         newRooms[roomName].messages.push(message);
         newRooms[roomName].latestMessage = message;
@@ -195,7 +195,7 @@ export const RoomManagerProvider = ({ children }) => {
   const addMessagesToRoom = (roomName: string, messages: MessageType[]) => {
     updateRooms((newRooms) => {
       if (!newRooms[roomName]) {
-        console.log("addMessageSSSSSSSToRoom: Room does not exist");
+        console.warn("addMessagesToRoom: Room does not exist");
       } else {
         newRooms[roomName].messages.push(...messages);
         newRooms[roomName].latestMessage = messages[messages.length - 1];
@@ -218,14 +218,14 @@ export const RoomManagerProvider = ({ children }) => {
       password: roomPassword,
       owner: self.username
     };
-    console.log("ChatPage: Creating new room", { ...roomRequest });
+    console.warn("ChatPage: Creating new room", { ...roomRequest });
 
     const response = await new Promise<DevError | ChatRoomPayload>((resolve) =>
       socket.emit("createRoom", roomRequest, resolve)
     );
 
     if (handleSocketErrorResponse(response)) {
-      console.log("Error response from join room: ", response.error);
+      console.warn("Error response from join room: ", response.error);
       return false;
     }
 
@@ -294,7 +294,7 @@ export const RoomManagerProvider = ({ children }) => {
         },
         (res: DevError | string) => {
           if (typeof res === "object" && res.error) {
-            console.log("Error response from send message: ", res.error);
+            console.warn("Error response from send message: ", res.error);
             resolve(false);
           }
         }
@@ -310,9 +310,7 @@ export const RoomManagerProvider = ({ children }) => {
     newPassword?: string
   ): Promise<boolean> => {
     return new Promise<boolean>((resolve) => {
-      console.log(`Changing room status of ${roomName} to ${newStatus}`);
-      console.log(`Old password: ${oldPassword}`);
-      console.log(`New password: ${newPassword}`);
+      console.warn(`Changing room status of ${roomName} to ${newStatus}`);
 
       const req: UpdateChatRoomRequest = {
         roomName,
@@ -321,7 +319,7 @@ export const RoomManagerProvider = ({ children }) => {
         oldPassword,
         newPassword
       };
-      console.log(`Request: `, req);
+      console.debug(`Request: `, req);
       socket.emit(
         "updateChatRoom",
         req,
@@ -330,7 +328,7 @@ export const RoomManagerProvider = ({ children }) => {
             console.error("Error changing room status", response.error);
             resolve(false);
           } else {
-            console.log("Successfully changed room status!");
+            console.debug("Successfully changed room status!");
             updateRooms((newRooms) => {
               newRooms[roomName].status = newStatus;
             });

@@ -52,9 +52,9 @@ export const ProfileViewModelProvider = ({ children }) => {
    * @todo Change MatchHistoryItem to MatchHistoryEntity once kingpong-lib is updated
    */
   const getMatchHistory = async (): Promise<void> => {
-    console.log("getMatchHistory", user);
+    console.debug("getMatchHistory", user);
     if (!user || user === "") {
-      console.log("No user found");
+      console.warn("No user found");
       return;
     }
     socket.emit(
@@ -95,7 +95,7 @@ export const ProfileViewModelProvider = ({ children }) => {
     if (user === null) {
       return;
     }
-    console.log("getProfile", user);
+    console.debug("getProfile", user);
     socket.emit(
       ProfileEvents.GetProfile,
       { username: user },
@@ -114,7 +114,7 @@ export const ProfileViewModelProvider = ({ children }) => {
     if (user === null) {
       return;
     }
-    console.log("getFriendsRequest", user);
+    console.debug("getFriendsRequest", user);
     socket.emit(
       ProfileEvents.GetFriends,
       { username: user },
@@ -135,7 +135,7 @@ export const ProfileViewModelProvider = ({ children }) => {
     if (username === null || friend === null) {
       return;
     }
-    console.log("addFriend", username, friend);
+    console.debug("addFriend", username, friend);
     socket.emit(ProfileEvents.AddFriend, {
       username: username,
       friend: friend

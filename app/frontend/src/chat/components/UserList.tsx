@@ -58,8 +58,7 @@ export default function UserListView({ userList, handleClick }: UserListProps) {
   const sortUsers = () => {
     if (Object.values(userList).length === 0) return [];
     const users = Object.values(userList);
-    console.log(`renderSortedUsers: ${users.length} users`);
-    console.log(users);
+    console.debug(`renderSortedUsers: ${users.length} users`);
     if (users.length === 0) return null;
 
     const filteredUsers = users.filter(
@@ -148,14 +147,14 @@ export default function UserListView({ userList, handleClick }: UserListProps) {
       memberToUpdateRank: newRank,
       duration
     };
-    console.log("Updating chat member...", req);
+    console.debug("Updating chat member...", req);
 
     socket.emit(
       "updateChatMemberStatus",
       req,
       (res: DevError | RoomMemberEntity) => {
         if (handleSocketErrorResponse(res)) return console.error(res);
-        console.log(`successfully updated user ${res}`);
+        console.debug(`successfully updated user ${res}`);
         updateRooms((newRooms) => {
           const newUser =
             newRooms[currentRoomName].users[contextMenuUsersData.username];
@@ -173,33 +172,33 @@ export default function UserListView({ userList, handleClick }: UserListProps) {
   };
 
   const onViewProfile = () => {
-    console.log("View Profile");
+    console.debug("View Profile");
     setUser(contextMenuUsersData.username);
     setPageState(PageState.Profile);
     setContextMenuUsersVisible(false);
   };
 
   const onInviteToGame = () => {
-    console.log("Invite to game");
+    console.debug("Invite to game");
     setPageState(PageState.Game);
     setCurrentRoomName("");
     setContextMenuUsersVisible(false);
   };
 
   const onSendDirectMessage = () => {
-    console.log("Send Direct Message");
+    console.debug("Send Direct Message");
     setContextMenuUsersVisible(false);
     sendDirectMessage(contextMenuUsersData.username);
   };
 
   const onAddFriend = () => {
-    console.log("Add friend");
+    console.debug("Add friend");
     addFriend(self.username, contextMenuUsersData.username);
     setContextMenuUsersVisible(false);
   };
 
   const onKickUser = () => {
-    console.log("Kick User");
+    console.debug("Kick User");
     const req: KickMemberRequest = {
       memberToKickUsername: contextMenuUsersData.username,
       memberToKickRank: contextMenuUsersData.rank,
@@ -210,7 +209,7 @@ export default function UserListView({ userList, handleClick }: UserListProps) {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     socket.emit("kickUser", req, (res: DevError | any) => {
       if (handleSocketErrorResponse(res)) return console.error(res);
-      console.log(`successfully kicked user ${res}`);
+      console.debug(`successfully kicked user ${res}`);
       updateRooms((newRooms) => {
         if (!newRooms[currentRoomName].users[res]) return newRooms;
         delete newRooms[currentRoomName].users[res];
@@ -222,14 +221,14 @@ export default function UserListView({ userList, handleClick }: UserListProps) {
   };
 
   const onBlockUser = () => {
-    console.log("Block User");
+    console.debug("Block User");
     const req: BlockUserRequest = {
       blocker: self.username,
       blockee: contextMenuUsersData.username
     };
     socket.emit("blockUser", req, (res: DevError | any) => {
       if (handleSocketErrorResponse(res)) return console.error(res);
-      console.log(`successfully blocked user ${res}`);
+      console.debug(`successfully blocked user ${res}`);
       updateRooms((newRooms) => {
         if (!newRooms[currentRoomName].users[res]) return newRooms;
         delete newRooms[currentRoomName].users[res];
