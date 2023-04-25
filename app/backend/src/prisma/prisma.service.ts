@@ -1089,4 +1089,18 @@ export class PrismaService extends PrismaClient {
 
     return newMatch;
   }
+
+  async setQrCode(name : string, qrcode : string) 
+  {
+    /*
+    this.user.update({
+      where: {
+        username : name
+      },
+      data: {
+        qrcode : qrcode
+      }
+    })*/
+  }
+
 }

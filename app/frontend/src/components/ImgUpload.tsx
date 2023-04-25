@@ -20,35 +20,45 @@ function ImgUpload() {
   //Upload image on submitgit
   const handleUpload = async () => {
     if (file) {
-      //Create a form data for img transfer
-      const formData = new FormData();
-      formData.append("file", file); //Append the image
-      //     REPLACE WITH CONTEXT USERNAME HERE
-      const newdata = { username: self.username };
-      formData.append("newData", JSON.stringify(newdata));
+      try {
+        const formData = new FormData();
+        formData.append("file", file); //Append the image
+        //     REPLACE WITH CONTEXT USERNAME HERE
+        const newdata = { username: self.username };
+        formData.append("newData", JSON.stringify(newdata));
+        console.log(formData);
 
-      //Post image in formData.
-      const response = await fetch("/imgtransfer/upload", {
-        method: "POST",
-        headers,
-        body: formData
-      });
-
-      //IF UnAuthorized : MUST FLUSH THE session TOKEN and bring back to login page
-      const data = await response.json();
-      if (data.statusCode && data.statusCode === 401) {
-        //Deletes token in backend
-        await fetch(`/auth/deleteToken?socketId=${socket.id}`, {
+        console.log("Headers", headers);
+        //Post image in formData.
+        const response = await fetch("/imgtransfer/upload", {
           method: "POST",
-          headers
+          headers,
+          body: formData,
         });
-        //Return to login
-        setSessionToken("");
-        setPageState(PageState.Auth);
-        history.push("/auth");
-        setFullscreen(true);
-        setSelf({ username: "", avatar: "", createdAt: "", status: 0 });
-        return;
+        //Create a form data for img transfer
+
+        //IF UnAuthorized : MUST FLUSH THE session TOKEN and bring back to login page
+        if (response.ok)
+          return ;
+        const data = await response.json();
+        if (data.statusCode && data.statusCode === 401) {
+          //Deletes token in backend
+          await fetch(`/auth/deleteToken?socketId=${socket.id}`, {
+            method: "POST",
+            headers
+          });
+          //Return to login
+          setSessionToken("");
+          setPageState(PageState.Auth);
+          history.push("/auth");
+          setFullscreen(true);
+          setSelf({ username: "", avatar: "", createdAt: "", status: 0 });
+          return;
+        }
+      }
+      catch(error)
+      {
+        console.log("Maybe", error)
       }
     }
   };

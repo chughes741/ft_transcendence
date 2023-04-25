@@ -15,7 +15,8 @@ function VerifyQRCode() {
     setFullscreen,
     sessionToken,
     setSelf,
-    setSessionToken
+    setSessionToken,
+    self
   } = useRootViewModelContext();
 
   const [qrCode, setQRCode] = useState<string | null>(null);
@@ -49,7 +50,7 @@ function VerifyQRCode() {
 
   const handleVerifyQRCode = async (): Promise<boolean> => {
     try {
-      const url = `/auth/verifyQrCode?secret=${secret}&code=${code}`;
+      const url = `/auth/verifyQrCode?secret=${secret}&code=${code}&username=${null}`;
       const response = await fetch(url, {
         method: "GET",
         headers: {
@@ -59,17 +60,6 @@ function VerifyQRCode() {
         }
       });
       const data = await response.json();
-      if (data.validated) {
-        setErrorMessage("");
-        alert("Verification successful!");
-        setFullscreen(false);
-        setPageState(PageState.Home);
-        return true;
-      } else {
-        alert("There was an error with the code you provided");
-        setErrorMessage(data.message);
-        return false;
-      }
       if (data.statusCode && data.statusCode === 401) {
         //UNAUTHORIZED EXCEPTION
         //MUST FLUSH THE session TOKEN and bring back to login page
@@ -83,6 +73,17 @@ function VerifyQRCode() {
         setFullscreen(true);
         setSelf({ username: "", avatar: "", createdAt: "", status: 0 });
         return;
+      }
+      if (data.validated) {
+        setErrorMessage("");
+        alert("Verification successful!");
+        setFullscreen(false);
+        setPageState(PageState.Home);
+        return true;
+      } else {
+        alert("There was an error with the code you provided");
+        setErrorMessage(data.message);
+        return false;
       }
     } catch (error) {
       return false;

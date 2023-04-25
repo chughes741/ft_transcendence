@@ -107,9 +107,10 @@ export class AuthController {
   @UseGuards(TokenIsVerified)
   async verifyQrCode(
     @Query("secret") secret: string,
-    @Query("code") code: string
+    @Query("code") code: string,
+    @Query("username") username,
   ) {
-    return await this.authService.verifyQrCode(secret, code);
+    return await this.authService.verifyQrCode(secret, code, username);
   }
 
   @Get("update2FA")

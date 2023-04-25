@@ -60,14 +60,22 @@ export class AuthService {
     return token;
   }
 
-  async verifyQrCode(base32secret: string, enteredToken: string) {
-    const verified = speakeasy.totp.verify({
-      secret: base32secret,
-      encoding: "base32",
-      token: enteredToken
-    });
-    if (verified) return { validated: true };
-    return { validated: false };
+  async verifyQrCode(base32secret: string, enteredToken: string, username : string) {
+    if (username)
+    {
+      
+    }
+    else
+    {
+      const verified = speakeasy.totp.verify({
+        secret: base32secret,
+        encoding: "base32",
+        token: enteredToken
+      });
+      if (verified) return { validated: true };
+      return { validated: false };
+    }
+    
   }
 
   async update2FA(username: string) {
