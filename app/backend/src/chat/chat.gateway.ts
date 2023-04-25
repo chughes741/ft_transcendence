@@ -2,7 +2,6 @@ import { Logger } from "@nestjs/common";
 import {
   OnGatewayConnection,
   OnGatewayDisconnect,
-  OnGatewayInit,
   SubscribeMessage,
   WebSocketGateway,
   WebSocketServer
@@ -20,7 +19,6 @@ import { ChatMemberStatus, UserStatus } from "@prisma/client";
 import { KickMemberRequest, UpdateChatMemberRequest } from "./dto/userlist.dto";
 
 import { AuthRequest } from "../auth/dto";
-import { TokenStorageService } from "src/tokenstorage/token-storage.service";
 
 // FIXME: temporary error type until we can share btw back and frontend
 export type DevError = {
