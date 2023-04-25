@@ -7,19 +7,16 @@ import {
 } from "@nestjs/websockets";
 import { Server, Socket } from "socket.io";
 import { GameService } from "./game.service";
-import { Logger } from "@nestjs/common";
 import {
   ClientGameStateUpdateRequest,
   JoinGameInviteRequest,
   LeaveGameQueueRequest,
   LobbyCreatedEvent,
-  PlayerReadyRequest
+  PlayerReadyRequest,
+  JoinGameQueueRequest,
+  GameEvents
 } from "kingpong-lib";
 import { GameModuleData } from "./game.data";
-import { JoinGameQueueRequest, GameEvents } from "kingpong-lib";
-
-/** Create logger for module */
-const logger = new Logger("gameGateway");
 
 /**
  * Websocket gateway for game module

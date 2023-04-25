@@ -7,7 +7,6 @@ import { PageState } from "src/root.model";
 import { headers } from "./Login42";
 import { socket } from "src/contexts/WebSocket.context";
 import { createBrowserHistory } from "history";
-import { ProfileEntity } from "kingpong-lib";
 
 function ImgUpload() {
   const [file, setFile] = useState(null); //Contains the img file

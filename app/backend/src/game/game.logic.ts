@@ -1,25 +1,12 @@
-import { Logger } from "@nestjs/common";
-import { Injectable } from "@nestjs/common";
+import { Logger, Injectable } from "@nestjs/common";
 import { SchedulerRegistry } from "@nestjs/schedule";
 import { GameConfig, PaddleConfig, BallConfig } from "./config/game.config";
 import { WebSocketServer, WebSocketGateway } from "@nestjs/websockets";
 import { Server } from "socket.io";
 import { Vec2 } from "./vector";
-import {
-  GameData,
-  BallData,
-  gameLobby,
-  PaddleData,
-  MatchType
-} from "./game.types";
+import { GameData, BallData, gameLobby, MatchType } from "./game.types";
 import { degToRad, checkIntersect } from "./game.utils";
-import {
-  ServerGameStateUpdateEvent,
-  GameEvents,
-  GameState,
-  GameEndedEvent,
-  Ball
-} from "kingpong-lib";
+import { GameEvents, GameState } from "kingpong-lib";
 import { GameType } from "@prisma/client";
 import { PrismaService } from "../prisma/prisma.service";
 
@@ -352,7 +339,6 @@ export class GameLogic {
     name: string,
     milliseconds: number
   ) {
-    const lobby_id: string = lobby.lobby_id;
     //Set callback function to gamestate
     const interval = setInterval(() => {
       this.sendServerUpdate(lobby);

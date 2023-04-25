@@ -1,7 +1,7 @@
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import { useGameViewModelContext } from "../game.viewModel";
-import { Divider, Icon } from "@mui/material";
+import { Divider } from "@mui/material";
 /**
  * ScoreBoard component
  *
@@ -9,8 +9,7 @@ import { Divider, Icon } from "@mui/material";
  * @returns {JSX.Element}
  */
 export default function ScoreBoard() {
-  const { scoreLeft, setScoreLeft, scoreRight, setScoreRight } =
-    useGameViewModelContext();
+  const { scoreLeft, scoreRight } = useGameViewModelContext();
 
   return (
     <Box sx={{ flexGrow: 0 }}>

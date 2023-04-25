@@ -67,6 +67,7 @@ export class ImgTransferController {
       this.imgtransferService.updateProfilePic(user, data);
       return newImgUrl;
     } catch (error) {
+      logger.error("Error with uploadUserImage", error);
       if (error instanceof UnauthorizedException) return error;
       return "Failed to upload";
     }

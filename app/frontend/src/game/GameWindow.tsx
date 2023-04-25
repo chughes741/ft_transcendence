@@ -1,5 +1,5 @@
-import React, { useRef, useContext, useEffect } from "react";
-import { Canvas, useFrame, ThreeElements, useThree } from "@react-three/fiber";
+import { useRef, useEffect } from "react";
+import { Canvas, useFrame } from "@react-three/fiber";
 import { Mesh } from "three";
 
 import { socket } from "src/contexts/WebSocket.context";

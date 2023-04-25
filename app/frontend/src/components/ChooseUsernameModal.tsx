@@ -9,7 +9,6 @@ import {
   TextField
 } from "@mui/material";
 import { useRootViewModelContext } from "../root.context";
-import { UserStatus } from "kingpong-lib";
 
 interface ChooseUsernameModalProps {
   showModal: boolean;

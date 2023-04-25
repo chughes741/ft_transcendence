@@ -14,9 +14,9 @@ export class Token {
   constructor(
     access_token: string,
     refresh_token: string,
-    token_type: string = "bearer",
-    expires_in: number = 7200,
-    scope: string = "public",
+    token_type = "bearer",
+    expires_in = 7200,
+    scope = "public",
 
     created_at: number = Date.now()
   ) {

@@ -1,7 +1,6 @@
 import React from "react";
 import { Box } from "@mui/system";
 import "./GameLoader.tsx.css";
-import { Button } from "@mui/material";
 
 interface Props {
   setInQueue: React.Dispatch<React.SetStateAction<boolean>>;

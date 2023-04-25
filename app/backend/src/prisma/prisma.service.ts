@@ -6,7 +6,6 @@ import {
   ChatMemberStatus,
   ChatRoom,
   ChatRoomStatus,
-  GameType,
   Match,
   Prisma,
   PrismaClient,

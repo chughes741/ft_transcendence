@@ -6,9 +6,7 @@ import {
   GameEndedEvent,
   GameEvents,
   GameStartedEvent,
-  LobbyCreatedEvent,
-  ServerGameStateUpdateEvent,
-  GameState
+  LobbyCreatedEvent
 } from "kingpong-lib";
 import { useRootViewModelContext } from "src/root.context";
 
@@ -24,36 +22,20 @@ export const GameViewModelProvider = ({ children }) => {
   const gameModel = useGameModel();
 
   const {
-    lobby,
     setLobby,
     lobbyId,
     matchId,
-    setMatchId,
     setLobbyId,
-    playerSide,
     setPlayerSide,
     playerReady,
     setPlayerReady,
-    opponentUsername,
     setOpponentUsername,
     displayQueue,
     setDisplayQueue,
-    inQueue,
     setInQueue,
-    displayLobby,
     setDisplayLobby,
-    displayReady,
-    setDisplayReady,
     displayGame,
-    setDisplayGame,
-    displayScore,
-    setDisplayScore,
-    scoreLeft,
-    setScoreLeft,
-    scoreRight,
-    setScoreRight,
-    gameState,
-    setGameState
+    setDisplayGame
   } = gameModel;
 
   const { self } = useRootViewModelContext();

@@ -57,8 +57,6 @@ const UserContextMenu: React.FC<UserContextMenuProps> = ({
   onViewProfile,
   onInviteToGame,
   onSendDirectMessage,
-  onAddFriend,
-  onKickUser,
   onBlockUser,
   sendUpdateRequest,
   onPromoteToAdmin,

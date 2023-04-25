@@ -6,11 +6,11 @@ import {
   Collapse,
   List,
   ListItemButton,
-  ListItemText
+  ListItemText,
+  Snackbar
 } from "@mui/material";
 import { useChatContext } from "../chat.context";
 
-import { Snackbar } from "@mui/material";
 import Alert from "@mui/material/Alert";
 
 import { socket } from "../../contexts/WebSocket.context";
@@ -22,7 +22,6 @@ import { UserEntity, InviteUsersModal } from "../modals/InviteUsersModal";
 import { JoinRoomModal } from "../modals/JoinRoomModal";
 import { handleSocketErrorResponse } from "../lib/helperFunctions";
 import {
-  ChatMemberRank,
   ChatRoomStatus,
   DevError,
   ListUsersRequest,

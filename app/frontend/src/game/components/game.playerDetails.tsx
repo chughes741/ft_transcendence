@@ -1,10 +1,7 @@
-import Avatar from "@mui/material/Avatar";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
-import { useContext } from "react";
 import { useGameViewModelContext } from "../game.viewModel";
 import { useRootViewModelContext } from "src/root.context";
-import { FaBox } from "react-icons/fa";
 
 /**
  * PlayerDetail component

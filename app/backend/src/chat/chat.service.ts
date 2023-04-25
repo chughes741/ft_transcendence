@@ -11,7 +11,6 @@ import {
   BlockedUser
 } from "@prisma/client";
 import { PrismaService } from "../prisma/prisma.service";
-import { UserConnectionsService } from "../user-connections.service";
 import {
   BlockUserRequest,
   ChatMemberPrismaType,
@@ -28,7 +27,6 @@ import { MessageEntity } from "./entities/message.entity";
 import { KickMemberRequest, UpdateChatMemberRequest } from "./dto/userlist.dto";
 import { ChatMemberEntity } from "./entities/message.entity";
 import { AuthRequest, UserEntity } from "../auth/dto";
-import { TokenStorageService } from "src/tokenstorage/token-storage.service";
 
 const logger = new Logger("ChatService");
 
