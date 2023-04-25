@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: backend/src/game/vector.ts</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: backend/src/game/vector.ts</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/**
+ *
+ */
+export class Vec2 {
+  public x: number;
+  public y: number;
+
+  constructor(X?: number, Y?: number) {
+    this.x = X;
+    this.y = Y;
+  }
+
+  /**
+   * Add a and b
+   * @param {Vec2} a
+   * @param {Vec2} b
+   * @returns {Vec2} - resultant vector
+   */
+  static add(a: Vec2, b: Vec2): Vec2 {
+    return new Vec2(a.x + b.x, a.y + b.y);
+  }
+
+  /**
+   * Subract b from a
+   * @param {Vec2} a
+   * @param {Vec2} b
+   * @returns {Vec2} - resultant vector
+   */
+  static sub(a: Vec2, b: Vec2): Vec2 {
+    return new Vec2(a.x - b.x, a.y - b.y);
+  }
+
+  /**
+   * Scale a by factor
+   * @param {Vec2} a
+   * @param {number} factor - factor to scale a by
+   * @returns {Vec2} - resultant vector
+   */
+  static scale(a: Vec2, factor: number): Vec2 {
+    return new Vec2(a.x * factor, a.y * factor);
+  }
+
+  /**
+   * Scale b by factor then add it to a
+   * @param {Vec2} a
+   * @param {Vec2} b
+   * @param {number} factor - factor to scale b by
+   * @returns {Vec2}
+   */
+  static scaleAndAdd(a: Vec2, b: Vec2, factor: number): Vec2 {
+    return Vec2.add(a, Vec2.scale(b, factor));
+  }
+
+  /**
+   * Normalize the vectors length to 1
+   * @param {Vec2} a
+   * @returns {Vec2} - normalized vector
+   */
+  static normalize(a: Vec2): Vec2 {
+    const mag: number = Vec2.len(a);
+
+    if (mag === 0) return new Vec2(0, 0);
+
+    return new Vec2(a.x / mag, a.y / mag);
+  }
+
+  /**
+   * Calculates length of a vector
+   * @param {Vec2} a
+   * @returns {number} - length of vector
+   */
+  static len(a: Vec2): number {
+    return Math.sqrt(Math.pow(a.x, 2) + Math.pow(a.y, 2));
+  }
+}
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="GameGateway.html">GameGateway</a></li><li><a href="GameModuleData.html">GameModuleData</a></li><li><a href="GameService.html">GameService</a></li><li><a href="GetFriendsRequest.html">GetFriendsRequest</a></li><li><a href="LoginGateway.html">LoginGateway</a></li><li><a href="UserDto.html">UserDto</a></li><li><a href="Vec2.html">Vec2</a></li></ul><h3>Interfaces</h3><ul><li><a href="MatchPrismaType.html">MatchPrismaType</a></li><li><a href="ProfileViewModelType.html">ProfileViewModelType</a></li><li><a href="RootModelType.html">RootModelType</a></li><li><a href="RootViewModelType.html">RootViewModelType</a></li><li><a href="SettingsModelType.html">SettingsModelType</a></li><li><a href="SettingsViewModelType.html">SettingsViewModelType</a></li></ul><h3>Events</h3><ul><li><a href="global.html#event:%2522listAvailableChatRooms%2522Getallavailablechatroomsfromtheserver,andsendthemtotheclient,excludingtheonestheuserisalreadyin.Infosentbacktotheclient:-roomname-roomstatus-roomowner-amountofroommembers">"listAvailableChatRooms"
+Get all available chat rooms from the server, and send them to the client,
+excluding the ones the user is already in.
+Info sent back to the client:
+ - room name
+ - room status
+ - room owner
+ - amount of room members</a></li><li><a href="global.html#event:%2522updateChatRoom%2522Updatethestatusofachatroommember.">"updateChatRoom"
+Update the status of a chat room member.</a></li><li><a href="global.html#event:%2522gameEnded%2522">"gameEnded"</a></li><li><a href="global.html#event:%2522gameStarted%2522">"gameStarted"</a></li><li><a href="global.html#event:%2522lobbyCreated%2522">"lobbyCreated"</a></li></ul><h3>Global</h3><ul><li><a href="global.html#Ball">Ball</a></li><li><a href="global.html#Floor">Floor</a></li><li><a href="global.html#FriendsList">FriendsList</a></li><li><a href="global.html#FriendsListRow">FriendsListRow</a></li><li><a href="global.html#GetUser">GetUser</a></li><li><a href="global.html#GetUserWs">GetUserWs</a></li><li><a href="global.html#HelmetView">HelmetView</a></li><li><a href="global.html#MatchHistory">MatchHistory</a></li><li><a href="global.html#MatchHistoryRow">MatchHistoryRow</a></li><li><a href="global.html#OuterFrameBottom">OuterFrameBottom</a></li><li><a href="global.html#OuterFrameLeft">OuterFrameLeft</a></li><li><a href="global.html#OuterFrameRight">OuterFrameRight</a></li><li><a href="global.html#OuterFrameTop">OuterFrameTop</a></li><li><a href="global.html#PaddleLeft">PaddleLeft</a></li><li><a href="global.html#PaddleRight">PaddleRight</a></li><li><a href="global.html#PageState">PageState</a></li><li><a href="global.html#ProfileHeader">ProfileHeader</a></li><li><a href="global.html#ProfileViewModelContext">ProfileViewModelContext</a></li><li><a href="global.html#ProfileViewModelProvider">ProfileViewModelProvider</a></li><li><a href="global.html#RootView">RootView</a></li><li><a href="global.html#RootViewContent">RootViewContent</a></li><li><a href="global.html#RootViewModelContext">RootViewModelContext</a></li><li><a href="global.html#RootViewModelProvider">RootViewModelProvider</a></li><li><a href="global.html#SettingsViewModelContext">SettingsViewModelContext</a></li><li><a href="global.html#SettingsViewModelProvider">SettingsViewModelProvider</a></li><li><a href="global.html#addQueue">addQueue</a></li><li><a href="global.html#clientUpdate">clientUpdate</a></li><li><a href="global.html#createLobby">createLobby</a></li><li><a href="global.html#gameStart">gameStart</a></li><li><a href="global.html#getPairQueue">getPairQueue</a></li><li><a href="global.html#joinGameQueue">joinGameQueue</a></li><li><a href="global.html#removeQueue">removeQueue</a></li><li><a href="global.html#sendGameInvite">sendGameInvite</a></li><li><a href="global.html#useGameViewModelContext">useGameViewModelContext</a></li><li><a href="global.html#useProfileViewModelContext">useProfileViewModelContext</a></li><li><a href="global.html#useRootModel">useRootModel</a></li><li><a href="global.html#useRootViewModelContext">useRootViewModelContext</a></li><li><a href="global.html#useSettingsModel">useSettingsModel</a></li><li><a href="global.html#useSettingsViewModelContext">useSettingsViewModelContext</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.2</a> on Tue Apr 25 2023 17:54:44 GMT-0400 (Eastern Daylight Time)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>
