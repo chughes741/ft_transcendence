@@ -60,11 +60,14 @@ export default function LoginWith42Button() {
   } = useRootViewModelContext();
 
   const history = createBrowserHistory();
+
+  // TODO: find a way to refresh the page and not go throught Login.. Session Token is always set to null, not working
   if (sessionToken) {
-    // add a check if the toke is still valid
+    console.log("Session Token", sessionToken);
     history.go(-3);
     return;
   }
+
   const [isLoading, setIsLoading] = useState(false);
 
   const populateProfile = (data: AuthEntity): ProfileEntity => {
@@ -80,6 +83,7 @@ export default function LoginWith42Button() {
   // on success, set the session token and the self, and redirects to /
   const onSuccess = (data: dataResponse) => {
     setSessionToken(data.token);
+    setSelf(data.user);
     if (data.twoFAenable) setPageState(PageState.QRCode);
     else {
       history.replace("/");
@@ -87,22 +91,26 @@ export default function LoginWith42Button() {
     }
   };
 
-  // here is the useEffect to handle if there is an auth code, handles the call the backend with the auth code and socket id,
-  // and gets the response as an auth entity, containing a user and a session token
+  // LOGIN: here is the useEffect, and fonctions to handle reception of the 42 auth code.
+  // Requests to backend using the auth code and socket id,
+  // Receives response as an auth entity, containing a user and a session token
   // if it is the first connection, handles the change username modal and set the username in the db
-  // if 2fa is enabled, request the 2fa validation before completion
+  // if 2fa is enabled, request the 2fa Qrcode validation before completion
 
   const handleAuthorizationCode = useCallback(async (): Promise<boolean> => {
-    const searchParams = new URLSearchParams(window.location.search);
-    const authorizationCode = searchParams.get("code");
+    const searchParams = new URLSearchParams(window.location.search); //Get string url info from new window
+
+    const authorizationCode = searchParams.get("code"); //Get code querry from 42 auth page
     if (!authorizationCode) {
       new Error("Authorization code not found");
       return;
     }
     try {
+      //Enables socket connection
       socket.on("connect", async () => {
         const url = `http://localhost:3000/auth/token?code=${authorizationCode}&socketId=${socket.id}`;
 
+        //Calls backend with our newly found 42 Authorization code
         const data = await fetch(url, {
           method: "GET",
           headers: {
@@ -114,22 +122,31 @@ export default function LoginWith42Button() {
           new Error(error);
           return;
         }
+        //Data received from the backend fetch by 42 api
         const client = await data.json();
-        if (client.user.firstConnection) setShowChooseUsernameModal(true);
+        if (client.user.firstConnection)
+          setShowChooseUsernameModal(
+            true
+          ); //Choose username on first connection
         else setFullscreen(false);
+        //Creates the headers that will enable token authentification
         headers["client-id"] = socket.id;
-        headers["client-token"] = client.token;
+        headers["client-token"] = client.token; //42 Token
         const userProfile: dataResponse = {
           user: populateProfile(client),
           token: client.token,
           twoFAenable: client.user.enable2fa
         };
-        setSelf(userProfile.user);
-        console.log("This is thy self: " , self);
+        //Set self for frontend usage
+        self.username = userProfile.user.username;
+        self.avatar = userProfile.user.avatar;
+        self.createdAt = userProfile.user.createdAt;
+        self.status = userProfile.user.status;
+        //console.log("This is thy self: ", self);
         onSuccess(userProfile);
       });
     } catch (error) {
-      new Error(error);
+      console.log("Entering site");
     }
   }, [socket, headers, onSuccess]);
 

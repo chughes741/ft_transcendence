@@ -29,6 +29,16 @@ export class AuthController {
   // Here, private means that authService is a member attribute
   constructor(private authService: AuthService) {}
 
+  @Post("testing")
+  @UseGuards(TokenIsVerified)
+  public async functionTesttoCall() {
+    try {
+      return true;
+    } catch (error) {
+      return false;
+    }
+  }
+
   @HttpCode(HttpStatus.CREATED)
   @Post("signup")
   signup(@Body() dto: AuthRequest) {
@@ -112,7 +122,6 @@ export class AuthController {
   ) {
     return await this.authService.verifyQrCode(secret, code);
   }
-
 
   @Get("update2FA")
   @UseGuards(TokenIsVerified)

@@ -16,7 +16,6 @@ import * as path from "path";
 import { ImgTransferService } from "./imgtransfer.service";
 import { imgTransferDTO } from "./dto/imgtransfer.dto";
 import TokenIsVerified from "src/tokenstorage/token-verify.service";
-import { Token } from "src/tokenstorage/token-storage.service";
 
 const imageFileFilter = (req, file, cb) => {
   const extname = path.extname(file.originalname);
@@ -34,7 +33,7 @@ export class ImgTransferController {
   constructor(
     private imgtransferService: ImgTransferService,
     private tokenIsVerified: TokenIsVerified
-    ) {}
+  ) {}
 
   @Post("upload")
   @UseInterceptors(
@@ -48,6 +47,7 @@ export class ImgTransferController {
       fileFilter: imageFileFilter
     })
   )
+  @UseGuards(TokenIsVerified)
   public async uploadUserImage(
     @UploadedFile() file: Express.Multer.File,
     @Body() Data: imgTransferDTO
@@ -69,13 +69,4 @@ export class ImgTransferController {
       return "Failed to upload";
     }
   }
-
-  @Post("testing")
-  @UseGuards(TokenIsVerified)
-  public async functionTesttoCall() {
-    console.log("INSIDE it WORKS");
-
-  }
-
-
 }

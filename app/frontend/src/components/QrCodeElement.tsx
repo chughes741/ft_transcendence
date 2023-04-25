@@ -5,10 +5,9 @@ import { PageState } from "src/root.model";
 import { useRootViewModelContext } from "src/root.context";
 import "./Login42.tsx.css";
 import "./QrCodeElement.tsx.css";
-import { socket } from 'src/contexts/WebSocket.context';
-import { headers } from './Login42';
-import {createBrowserHistory} from "history";
-
+import { socket } from "src/contexts/WebSocket.context";
+import { headers } from "./Login42";
+import { createBrowserHistory } from "history";
 
 function VerifyQRCode() {
   const {
@@ -16,7 +15,7 @@ function VerifyQRCode() {
     setFullscreen,
     sessionToken,
     setSelf,
-    setSessionToken,
+    setSessionToken
   } = useRootViewModelContext();
 
   const [qrCode, setQRCode] = useState<string | null>(null);
@@ -39,8 +38,8 @@ function VerifyQRCode() {
         }
       });
       const data = await response.json();
-      setQRCode(data['qrcode']);
-      setSecret(data['secret']);
+      setQRCode(data["qrcode"]);
+      setSecret(data["secret"]);
 
       return true;
     } catch (error) {
@@ -54,10 +53,10 @@ function VerifyQRCode() {
       const response = await fetch(url, {
         method: "GET",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
           "client-id": socket.id,
-          "client-token": sessionToken,
-        },
+          "client-token": sessionToken
+        }
       });
       const data = await response.json();
       if (data.validated) {
@@ -71,18 +70,18 @@ function VerifyQRCode() {
         setErrorMessage(data.message);
         return false;
       }
-      if (data.statusCode && data.statusCode === 401) //UNAUTHORIZED EXCEPTION
-      {
+      if (data.statusCode && data.statusCode === 401) {
+        //UNAUTHORIZED EXCEPTION
         //MUST FLUSH THE session TOKEN and bring back to login page
         await fetch(`/auth/deleteToken?socketId=${socket.id}`, {
-          method: 'POST',
+          method: "POST",
           headers
         });
-        setSessionToken("")
+        setSessionToken("");
         setPageState(PageState.Auth);
-        history.push('/auth');
+        history.push("/auth");
         setFullscreen(true);
-        setSelf({ username : "", avatar: "", createdAt: "", status: 0});
+        setSelf({ username: "", avatar: "", createdAt: "", status: 0 });
         return;
       }
     } catch (error) {
