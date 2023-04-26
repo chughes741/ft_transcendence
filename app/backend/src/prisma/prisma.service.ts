@@ -263,13 +263,13 @@ export class PrismaService extends PrismaClient {
    * Get ${pageSize} chat rooms older than the date provided.
    *
    * @param {string} userId - The id of the user querying the chat rooms.
-   * @param {Date} [dateOldest=new Date(Date.now())] - The date of the oldest chat room retrieved thus far. Defaults to the current date and time.
+   * @param {Date} [dateOldest=new Date()] - The date of the oldest chat room retrieved thus far. Defaults to the current date and time.
    * @param {number} [pageSize=15] - The number of chat rooms to return. Defaults to 15.
    * @returns {Promise<any>} - A Promise that resolves to an array of chat rooms.
    */
   async getAvailableChatRooms(
     userId: string,
-    dateOldest: Date = new Date(Date.now()),
+    dateOldest: Date = new Date(),
     pageSize = 50
     // TODO: define PrismaType for this
   ): Promise<any> {
