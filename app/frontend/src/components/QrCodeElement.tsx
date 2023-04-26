@@ -15,6 +15,7 @@ function VerifyQRCode() {
     setFullscreen,
     sessionToken,
     setSelf,
+    self,
     setSessionToken,
     fullscreen
   } = useRootViewModelContext();
@@ -61,7 +62,7 @@ function VerifyQRCode() {
 
   const handleVerifyQRCode = async (): Promise<boolean> => {
     try {
-      const url = `/auth/verifyQrCode?secret=${secret}&code=${code}&username=${null}`;
+      const url = `/auth/verifyQrCode?secret=${secret}&code=${code}&username=${self.username}`;
       const response = await fetch(url, {
         method: "GET",
         headers: {
@@ -139,7 +140,7 @@ function VerifyQRCode() {
             Authenticate me
           </Box>
         </Box>
-        <Box sx={{alignSelf:"flex-start"}} onClick={cancel}>CANCAELLLLL</Box>
+        <Box sx={{ alignSelf: "flex-start" }} onClick={cancel}>CANCAELLLLL</Box>
       </Box>
     </>
   );
