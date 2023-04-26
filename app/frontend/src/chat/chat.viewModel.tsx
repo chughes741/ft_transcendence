@@ -215,7 +215,7 @@ export const ChatViewModelProvider = ({ children }) => {
             console.debug("Success response from get rooms: ", response);
             for (const room of response) {
               await addChatRoom(room);
-              await handleFetchRoomMessagesPage(room.name, new Date(), 50);
+              handleFetchRoomMessagesPage(room.name, new Date(), 50);
             }
             resolve(true);
           }
@@ -274,9 +274,8 @@ export const ChatViewModelProvider = ({ children }) => {
   /*   useEffects   */
   /******************/
 
-  // Login to the Chat
+  // Login to the Chat Gateway
   useEffect(() => {
-    // Try to create a temporary user
     if (self.username) {
       setRooms(() => {
         return {};
