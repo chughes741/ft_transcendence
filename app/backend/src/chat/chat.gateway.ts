@@ -439,7 +439,6 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
         username
       )
     );
-
     return username;
   }
 
@@ -482,6 +481,30 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
       `User ${createDto.owner} joined socket room ${createDto.name}`
     );
     return ret;
+  }
+
+  /**
+   * Get a list of chat rooms of which the user is a member.
+   * If the user is not a member of any rooms, return an empty array.
+   * If there is an error, return it.
+   *
+   * @event "getRoomsOf"
+   * @param {Socket} client - socket.io client
+   * @param {string} username
+   * @returns {ChatRoomEntity[] | DevError} - list of chat rooms or error
+   */
+  @SubscribeMessage("getRoomsOf")
+  async getRoomsMemberOf(
+    client: Socket,
+    username: string
+  ): Promise<ChatRoomEntity[] | DevError> {
+    logger.debug(`Received getRoomsMemberOf request from ${username}`);
+    const rooms = await this.chatService.getRoomsOf(username);
+    if (rooms instanceof Error) {
+      return { error: rooms.message };
+    }
+    rooms.forEach((room) => client.join(room.name));
+    return rooms;
   }
 
   /**
@@ -649,7 +672,9 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     client: Socket,
     payload: ListUsersRequest
   ): Promise<ChatMemberEntity[]> {
-    logger.debug(`Received listUsers request from ${client.id}, sending list`);
+    logger.debug(
+      `Received listUsers request from ${client.id} for ${payload.chatRoomName}`
+    );
     const list: ChatMemberEntity[] = await this.chatService.getUserList(
       payload.chatRoomName
     );
@@ -804,13 +829,13 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
    * @event "blockUser"
    * @param {Socket} client - socket.io client
    * @param {BlockUserRequest} req - block user request
-   * @returns {DevError | { success: string }} - success message or error
+   * @returns {DevError | DevSuccess} - success message or error
    */
   @SubscribeMessage("blockUser")
   async blockUser(
     client: Socket,
     req: BlockUserRequest
-  ): Promise<DevError | { success: string }> {
+  ): Promise<DevError | DevSuccess> {
     logger.debug(
       `Received blockUser request from ${req.blocker} to block ${req.blockee}`
     );

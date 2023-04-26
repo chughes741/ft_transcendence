@@ -69,7 +69,8 @@ export const ChatViewModelProvider = ({ children }) => {
     handleJoinRoom: joinRoom,
     handleSendRoomMessage: sendRoomMessage,
     handleCreateNewRoom: createNewRoom,
-    handleChangeRoomStatus
+    handleChangeRoomStatus,
+    handleFetchRoomMessagesPage
   } = useRoomManager();
 
   /**********************/
@@ -193,45 +194,33 @@ export const ChatViewModelProvider = ({ children }) => {
     return new Promise<boolean>((resolve) => {
       socket.emit("userLogin", req, (response: DevError | string) => {
         if (typeof response === "object") {
-          console.warn("Error response from user login: ", response.error);
+          console.warn(
+            "Error response from chat gateway login: ",
+            response.error
+          );
           resolve(false);
         } else {
-          console.debug(`Logged in user ${req.username} successfully!`);
           self.username = req.username;
-          joinRoom("PublicRoom", "secret");
-          joinRoom("PrivateRoom", "secret");
-          joinRoom("PasswordProtectedRoom", "secret");
-          joinRoom("test", "secret");
-          joinRoom("asdf", "secret");
           resolve(true);
         }
       });
-    });
-  };
-
-  const createUser = async (req: AuthRequest): Promise<boolean> => {
-    if (!req || !req.username || req.username === "")
-      return Promise.resolve(false);
-    return new Promise<boolean>((resolve) => {
-      socket.emit("userCreation", req, (response: DevError | string) => {
-        if (typeof response === "object") {
-          console.warn("Error response from user creation: ", response.error);
-          resolve(false);
-          // Try to log in instead
-        } else {
-          self.username = req.username;
-          setRooms(null);
-          console.debug(`Created user ${req.username} successfully!`);
-
-          // FIXME: For testing purposes only
-          // Join three separate rooms on connection
-          joinRoom("PublicRoom", "secret");
-          joinRoom("PrivateRoom", "secret");
-          joinRoom("PasswordProtectedRoom", "secret");
-          joinRoom("PasswordProtectedRoomFromCreateUser", "secret");
-          resolve(true);
+      socket.emit(
+        "getRoomsOf",
+        self.username,
+        async (response: ChatRoomPayload[] | DevError) => {
+          if (handleSocketErrorResponse(response)) {
+            console.warn("Error response from get rooms: ", response.error);
+            resolve(false);
+          } else {
+            console.debug("Success response from get rooms: ", response);
+            for (const room of response) {
+              await addChatRoom(room);
+              handleFetchRoomMessagesPage(room.name, new Date(), 50);
+            }
+            resolve(true);
+          }
         }
-      });
+      );
     });
   };
 
@@ -285,9 +274,8 @@ export const ChatViewModelProvider = ({ children }) => {
   /*   useEffects   */
   /******************/
 
-  // Login to the Chat
+  // Login to the Chat Gateway
   useEffect(() => {
-    // Try to create a temporary user
     if (self.username) {
       setRooms(() => {
         return {};

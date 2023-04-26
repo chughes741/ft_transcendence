@@ -46,12 +46,7 @@ export class ChatService {
       ? latestMessage.createdAt
       : room.createdAt;
     const roomMembers = await this.prismaService.getRoomMembers(room.name);
-    /** @todo fix avatars */
-    const avatars = roomMembers.map((member) =>
-      member.member.avatar === "default_avatar.png"
-        ? `https://i.pravatar.cc/150?u=${member.member.username}`
-        : member.member.avatar
-    );
+    const avatars = roomMembers.map((member) => member.member.avatar);
 
     return {
       name: room.name,
@@ -776,5 +771,52 @@ export class ChatService {
       logger.error("Error blocking user", error);
       return error;
     }
+  }
+
+  /**
+   * Get a list of chat rooms of which the user is a member.
+   *  - If the user is a member of no rooms, return an empty list
+   *  - If the user does not exist, return an error
+   *
+   * @param {BlockUserRequest} req - The blocker and blockee
+   * @returns {Promise<BlockedUser | Error>} - The blocked user
+   */
+  async getRoomsOf(username: string): Promise<ChatRoomEntity[] | Error> {
+    let rooms: ChatRoom[] = [];
+    try {
+      rooms = await this.prismaService.chatRoom.findMany({
+        where: {
+          members: {
+            some: {
+              member: {
+                username
+              },
+              status: {
+                not: ChatMemberStatus.BANNED
+              }
+            }
+          }
+        }
+      });
+    } catch (error) {
+      error.message = `Error retrieving rooms of ${username}`;
+      logger.error(error.message);
+      return error;
+    }
+
+    const roomsOfUser: ChatRoomEntity[] = (
+      await Promise.all(
+        rooms.map(async (room) => {
+          const roomEntity = await this.getChatRoomEntity(
+            room,
+            ChatMemberRank.USER
+          );
+          return roomEntity instanceof Error ? null : roomEntity;
+        })
+      )
+    ).filter((roomEntity): roomEntity is ChatRoomEntity => roomEntity !== null);
+    // omg what did JS make me do..? @oddtiming
+
+    return roomsOfUser;
   }
 }

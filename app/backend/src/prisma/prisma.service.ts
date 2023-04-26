@@ -26,9 +26,6 @@ import {
   GetProfileRequest
 } from "kingpong-lib";
 
-/** End of Mute and End of Ban: Is added to the current date (now) */
-const GLOBAL_T_IN_DAYS = 5 /*DAYS*/ * (24 * 60 * 60 * 1000); // One day in milliseconds
-
 import { UpdateChatMemberRequest } from "src/chat/dto/userlist.dto";
 import { UserEntity } from "../auth/dto";
 import { MatchType } from "../game/game.types";
@@ -263,13 +260,13 @@ export class PrismaService extends PrismaClient {
    * Get ${pageSize} chat rooms older than the date provided.
    *
    * @param {string} userId - The id of the user querying the chat rooms.
-   * @param {Date} [dateOldest=new Date(Date.now())] - The date of the oldest chat room retrieved thus far. Defaults to the current date and time.
+   * @param {Date} [dateOldest=new Date()] - The date of the oldest chat room retrieved thus far. Defaults to the current date and time.
    * @param {number} [pageSize=15] - The number of chat rooms to return. Defaults to 15.
    * @returns {Promise<any>} - A Promise that resolves to an array of chat rooms.
    */
   async getAvailableChatRooms(
     userId: string,
-    dateOldest: Date = new Date(Date.now()),
+    dateOldest: Date = new Date(),
     pageSize = 50
     // TODO: define PrismaType for this
   ): Promise<any> {
