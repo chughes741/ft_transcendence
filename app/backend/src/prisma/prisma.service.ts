@@ -1089,7 +1089,7 @@ export class PrismaService extends PrismaClient {
     return newMatch;
   }
 
-  async setQrCode(name: string, code: string) {
+  async setQrCode(name: string, code: string): Promise<User> {
     return this.user.update({
       where: {
         username: name
@@ -1100,13 +1100,22 @@ export class PrismaService extends PrismaClient {
     })
   }
 
-  async getQrCode(name: string) {
+  async getQrCode(name: string): Promise<string> {
     const user = await this.user.findUnique({
       where: {
         username: name
       }
     })
     return user.qrcode
+  }
+
+  async getEnable2Fa(name: string): Promise<boolean> {
+    const user = await this.user.findUnique({
+      where: {
+        username: name
+      }
+    });
+    return user.enable2fa
   }
 
 }

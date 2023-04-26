@@ -163,4 +163,9 @@ export class AuthService {
   async deleteToken(socketID: string) {
     this.tokenClass.tokenStorage.removeToken(socketID);
   }
+
+  async getEnable2fa(username: string): Promise<boolean> {
+    return await this.prisma.getEnable2Fa(username);
+  }
+
 }
