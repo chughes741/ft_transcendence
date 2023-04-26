@@ -15,5 +15,61 @@
     "templates": {
         "cleverLinks": false,
         "monospaceLinks": false
+    },
+    "opts": {
+        "template": "node_modules/docdash",
+        "encoding": "utf8",
+        "destination": "../docs/",
+        "recurse": true,
+        "verbose": true,
+        "README": "../README.md"
+    },
+    "docdash": {
+        "static": false,
+        "sort": true,
+        "sectionOrder": [
+             "Classes",
+             "Modules",
+             "Externals",
+             "Events",
+             "Namespaces",
+             "Mixins",
+             "Tutorials",
+             "Interfaces"
+        ],
+        "disqus": "",
+        "openGraph": {
+            "title": "Kingpong Docs",
+            "type": "website",
+            "image": "",
+            "site_name": "",
+            "url": "https://chughes741.github.io/ft_transcendence"
+        },
+        "meta": {
+            "title": "Kingpong",
+            "description": "Documentation for the kingpong website",
+            "keyword": ""
+        },
+        "search": true,
+        "commonNav": true,
+        "collapse": false,
+        "wrap": false,
+        "typedefs": false,
+        "navLevel": 1,
+        "private": false,
+        "removeQuotes": "none",
+        "scripts": [],
+        "ShortenTypes": false,
+        "menu": {
+            "Project Website": {
+                "href":"https://myproject.com",
+                "target":"_blank",
+                "class":"menu-item",
+                "id":"website_link"
+            }
+        },
+        "scopeInOutputPath": true,
+        "nameInOutputPath": true,
+        "versionInOutputPath": true
     }
 }

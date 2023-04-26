@@ -1,23 +1,53 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    
     <meta charset="utf-8">
-    <title>JSDoc: Class: ChatService</title>
-
-    <script src="scripts/prettify/prettify.js"> </script>
-    <script src="scripts/prettify/lang-css.js"> </script>
+    <title>ChatService - Kingpong</title>
+    
+    <meta name="description" content="Documentation for the kingpong website" />
+    
+    
+    
+    <meta property="og:title" content="Kingpong Docs"/>
+    <meta property="og:type" content="website"/>
+    <meta property="og:image" content=""/>
+    
+    <meta property="og:url" content="https://chughes741.github.io/ft_transcendence"/>
+    
+    <script src="scripts/prettify/prettify.js"></script>
+    <script src="scripts/prettify/lang-css.js"></script>
     <!--[if lt IE 9]>
       <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
     <![endif]-->
-    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
-    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+    <link type="text/css" rel="stylesheet" href="styles/prettify.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc.css">
+    <script src="scripts/nav.js" defer></script>
+    
+    <script src="scripts/commonNav.js" defer></script>
+    
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 </head>
-
 <body>
 
-<div id="main">
+<input type="checkbox" id="nav-trigger" class="nav-trigger" />
+<label for="nav-trigger" class="navicon-button x">
+  <div class="navicon"></div>
+</label>
 
-    <h1 class="page-title">Class: ChatService</h1>
+<label for="nav-trigger" class="overlay"></label>
+
+<nav >
+    
+    <input type="text" id="nav-search" placeholder="Search" />
+    
+    
+</nav>
+
+<div id="main">
+    
+    <h1 class="page-title">ChatService</h1>
+    
 
     
 
@@ -28,66 +58,35 @@
 
 <header>
     
-        <h2><span class="attribs"><span class="type-signature"></span></span>ChatService<span class="signature">()</span><span class="type-signature"></span></h2>
+        <h2>
         
-            <div class="class-description">Chat service</div>
+            ChatService
+        
+        </h2>
+        
+            <div class="class-description usertext">Chat service</div>
         
     
 </header>
 
 <article>
-    <div class="container-overview">
     
+        <div class="container-overview">
         
+            
 
     
     <h2>Constructor</h2>
     
 
-    
     <h4 class="name" id="ChatService"><span class="type-signature"></span>new ChatService<span class="signature">()</span><span class="type-signature"></span></h4>
-    
 
     
-
-
-
-
-
-
-
-
-
-
-
 
 
 
 
 <dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
     
 
     
@@ -102,6 +101,30 @@
     
 
     
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
 </dl>
 
 
@@ -123,18 +146,29 @@
 
 
 
+
+
+
+
+
+
+
+
+
+
+        
+        </div>
     
-    </div>
 
     
 
     
 
     
-
+    
     
 
-    
+     
 
     
 
@@ -148,106 +182,20 @@
 
     
 
-    
-    <h4 class="name" id="blockUser"><span class="type-signature">(async) </span>blockUser<span class="signature">(req)</span><span class="type-signature"> &rarr; {Promise.&lt;(BlockedUser|Error)>}</span></h4>
-    
+    <h4 class="name" id="blockUser"><span class="type-signature type-signature-async">(async) </span>blockUser<span class="signature">(req)</span><span class="type-signature"> &rarr; {Promise.&lt;(BlockedUser|Error)>}</span></h4>
 
     
-
-
-
-<div class="description">
-    Block a user. The user will not be able to send messages to the user who blocked them
-
-If the blocker or blockee does not exist, return an error
-If the blocker and blockee are already blocking each other, return the existing block
-</div>
-
-
-
-
-
-
-
-
-
-    <h5>Parameters:</h5>
-    
-
-<table class="params">
-    <thead>
-    <tr>
-        
-        <th>Name</th>
-        
-
-        <th>Type</th>
-
-        
-
-        
-
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    
-
-        <tr>
-            
-                <td class="name"><code>req</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">BlockUserRequest</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last">The blocker and blockee</td>
-        </tr>
-
-    
-    </tbody>
-</table>
-
-
 
 
 
 
 <dl class="details">
-
     
+    <dt class="tag-description">Description:</dt>
+    <dd class="tag-description"><ul class="dummy"><li>Block a user. The user will not be able to send messages to the user who blocked them
 
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
+If the blocker or blockee does not exist, return an error
+If the blocker and blockee are already blocking each other, return the existing block</li></ul></dd>
     
 
     
@@ -262,6 +210,30 @@ If the blocker and blockee are already blocking each other, return the existing 
     
 
     
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
 </dl>
 
 
@@ -276,64 +248,7 @@ If the blocker and blockee are already blocking each other, return the existing 
 
 
 
-
-
-<h5>Returns:</h5>
-
-        
-<div class="param-desc">
-    - The blocked user
-</div>
-
-
-
-<dl>
-    <dt>
-        Type
-    </dt>
-    <dd>
-        
-<span class="param-type">Promise.&lt;(BlockedUser|Error)></span>
-
-
-    </dd>
-</dl>
-
-    
-
-
-
-
-
-        
-            
-
-    
-
-    
-    <h4 class="name" id="blockUser"><span class="type-signature">(async) </span>blockUser<span class="signature">(req)</span><span class="type-signature"> &rarr; {Promise.&lt;(BlockedUser|Error)>}</span></h4>
-    
-
-    
-
-
-
-<div class="description">
-    Block a user. The user will not be able to send messages to the user who blocked them
-
-If the blocker or blockee does not exist, return an error
-If the blocker and blockee are already blocking each other, return the existing block
-</div>
-
-
-
-
-
-
-
-
-
-    <h5>Parameters:</h5>
+    <h5 class="h5-parameters">Parameters:</h5>
     
 
 <table class="params">
@@ -367,6 +282,7 @@ If the blocker and blockee are already blocking each other, return the existing 
 <span class="param-type">BlockUserRequest</span>
 
 
+
             
             </td>
 
@@ -386,30 +302,61 @@ If the blocker and blockee are already blocking each other, return the existing 
 
 
 
+
+
+
+
+
+
+
+
+
+
+<h5 class="h5-returns">Returns:</h5>
+
+        
+<div class="param-desc">
+    - The blocked user
+</div>
+
+
+
+<dl class="param-type">
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">Promise.&lt;(BlockedUser|Error)></span>
+
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="blockUser"><span class="type-signature type-signature-async">(async) </span>blockUser<span class="signature">(req)</span><span class="type-signature"> &rarr; {Promise.&lt;(BlockedUser|Error)>}</span></h4>
+
+    
+
+
+
+
 <dl class="details">
-
     
+    <dt class="tag-description">Description:</dt>
+    <dd class="tag-description"><ul class="dummy"><li>Block a user. The user will not be able to send messages to the user who blocked them
 
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
+If the blocker or blockee does not exist, return an error
+If the blocker and blockee are already blocking each other, return the existing block</li></ul></dd>
     
 
     
@@ -424,6 +371,30 @@ If the blocker and blockee are already blocking each other, return the existing 
     
 
     
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
 </dl>
 
 
@@ -438,63 +409,7 @@ If the blocker and blockee are already blocking each other, return the existing 
 
 
 
-
-
-<h5>Returns:</h5>
-
-        
-<div class="param-desc">
-    - The blocked user
-</div>
-
-
-
-<dl>
-    <dt>
-        Type
-    </dt>
-    <dd>
-        
-<span class="param-type">Promise.&lt;(BlockedUser|Error)></span>
-
-
-    </dd>
-</dl>
-
-    
-
-
-
-
-
-        
-            
-
-    
-
-    
-    <h4 class="name" id="checkAndUpdateUserStatus"><span class="type-signature">(async) </span>checkAndUpdateUserStatus<span class="signature">(uuid, roomName)</span><span class="type-signature"> &rarr; {Promise.&lt;ChatMemberStatus>}</span></h4>
-    
-
-    
-
-
-
-<div class="description">
-    Check and update the user's status
-
-If the user is muted and the mute has expired, update the user's status to OK
-</div>
-
-
-
-
-
-
-
-
-
-    <h5>Parameters:</h5>
+    <h5 class="h5-parameters">Parameters:</h5>
     
 
 <table class="params">
@@ -519,13 +434,14 @@ If the user is muted and the mute has expired, update the user's status to OK
 
         <tr>
             
-                <td class="name"><code>uuid</code></td>
+                <td class="name"><code>req</code></td>
             
 
             <td class="type">
             
                 
-<span class="param-type">string</span>
+<span class="param-type">BlockUserRequest</span>
+
 
 
             
@@ -535,30 +451,7 @@ If the user is muted and the mute has expired, update the user's status to OK
 
             
 
-            <td class="description last">The user's UUID</td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>roomName</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">string</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last">The name of the chat room</td>
+            <td class="description last">The blocker and blockee</td>
         </tr>
 
     
@@ -570,30 +463,60 @@ If the user is muted and the mute has expired, update the user's status to OK
 
 
 
+
+
+
+
+
+
+
+
+
+
+<h5 class="h5-returns">Returns:</h5>
+
+        
+<div class="param-desc">
+    - The blocked user
+</div>
+
+
+
+<dl class="param-type">
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">Promise.&lt;(BlockedUser|Error)></span>
+
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="checkAndUpdateUserStatus"><span class="type-signature type-signature-async">(async) </span>checkAndUpdateUserStatus<span class="signature">(uuid, roomName)</span><span class="type-signature"> &rarr; {Promise.&lt;ChatMemberStatus>}</span></h4>
+
+    
+
+
+
+
 <dl class="details">
-
     
+    <dt class="tag-description">Description:</dt>
+    <dd class="tag-description"><ul class="dummy"><li>Check and update the user's status
 
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
+If the user is muted and the mute has expired, update the user's status to OK</li></ul></dd>
     
 
     
@@ -608,6 +531,30 @@ If the user is muted and the mute has expired, update the user's status to OK
     
 
     
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
 </dl>
 
 
@@ -622,63 +569,7 @@ If the user is muted and the mute has expired, update the user's status to OK
 
 
 
-
-
-<h5>Returns:</h5>
-
-        
-<div class="param-desc">
-    - The user's status
-</div>
-
-
-
-<dl>
-    <dt>
-        Type
-    </dt>
-    <dd>
-        
-<span class="param-type">Promise.&lt;ChatMemberStatus></span>
-
-
-    </dd>
-</dl>
-
-    
-
-
-
-
-
-        
-            
-
-    
-
-    
-    <h4 class="name" id="checkAndUpdateUserStatus"><span class="type-signature">(async) </span>checkAndUpdateUserStatus<span class="signature">(uuid, roomName)</span><span class="type-signature"> &rarr; {Promise.&lt;ChatMemberStatus>}</span></h4>
-    
-
-    
-
-
-
-<div class="description">
-    Check and update the user's status
-
-If the user is muted and the mute has expired, update the user's status to OK
-</div>
-
-
-
-
-
-
-
-
-
-    <h5>Parameters:</h5>
+    <h5 class="h5-parameters">Parameters:</h5>
     
 
 <table class="params">
@@ -712,6 +603,7 @@ If the user is muted and the mute has expired, update the user's status to OK
 <span class="param-type">string</span>
 
 
+
             
             </td>
 
@@ -735,6 +627,7 @@ If the user is muted and the mute has expired, update the user's status to OK
 <span class="param-type">string</span>
 
 
+
             
             </td>
 
@@ -754,30 +647,60 @@ If the user is muted and the mute has expired, update the user's status to OK
 
 
 
+
+
+
+
+
+
+
+
+
+
+<h5 class="h5-returns">Returns:</h5>
+
+        
+<div class="param-desc">
+    - The user's status
+</div>
+
+
+
+<dl class="param-type">
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">Promise.&lt;ChatMemberStatus></span>
+
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="checkAndUpdateUserStatus"><span class="type-signature type-signature-async">(async) </span>checkAndUpdateUserStatus<span class="signature">(uuid, roomName)</span><span class="type-signature"> &rarr; {Promise.&lt;ChatMemberStatus>}</span></h4>
+
+    
+
+
+
+
 <dl class="details">
-
     
+    <dt class="tag-description">Description:</dt>
+    <dd class="tag-description"><ul class="dummy"><li>Check and update the user's status
 
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
+If the user is muted and the mute has expired, update the user's status to OK</li></ul></dd>
     
 
     
@@ -792,6 +715,30 @@ If the user is muted and the mute has expired, update the user's status to OK
     
 
     
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
 </dl>
 
 
@@ -806,65 +753,7 @@ If the user is muted and the mute has expired, update the user's status to OK
 
 
 
-
-
-<h5>Returns:</h5>
-
-        
-<div class="param-desc">
-    - The user's status
-</div>
-
-
-
-<dl>
-    <dt>
-        Type
-    </dt>
-    <dd>
-        
-<span class="param-type">Promise.&lt;ChatMemberStatus></span>
-
-
-    </dd>
-</dl>
-
-    
-
-
-
-
-
-        
-            
-
-    
-
-    
-    <h4 class="name" id="createRoom"><span class="type-signature">(async) </span>createRoom<span class="signature">(createDto)</span><span class="type-signature"> &rarr; {Promise.&lt;(ChatRoomEntity|Error)>}</span></h4>
-    
-
-    
-
-
-
-<div class="description">
-    Create a new chat room.
-
-If the room already exists, return an error.
-If the room does not exist, add it to the database and send a confirmation
-message to the client.
-</div>
-
-
-
-
-
-
-
-
-
-    <h5>Parameters:</h5>
+    <h5 class="h5-parameters">Parameters:</h5>
     
 
 <table class="params">
@@ -889,10 +778,16 @@ message to the client.
 
         <tr>
             
-                <td class="name"><code>createDto</code></td>
+                <td class="name"><code>uuid</code></td>
             
 
             <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+
             
             </td>
 
@@ -900,7 +795,31 @@ message to the client.
 
             
 
-            <td class="description last">The room name, status, and password</td>
+            <td class="description last">The user's UUID</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>roomName</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The name of the chat room</td>
         </tr>
 
     
@@ -912,30 +831,62 @@ message to the client.
 
 
 
+
+
+
+
+
+
+
+
+
+
+<h5 class="h5-returns">Returns:</h5>
+
+        
+<div class="param-desc">
+    - The user's status
+</div>
+
+
+
+<dl class="param-type">
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">Promise.&lt;ChatMemberStatus></span>
+
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="createRoom"><span class="type-signature type-signature-async">(async) </span>createRoom<span class="signature">(createDto)</span><span class="type-signature"> &rarr; {Promise.&lt;(ChatRoomEntity|Error)>}</span></h4>
+
+    
+
+
+
+
 <dl class="details">
-
     
+    <dt class="tag-description">Description:</dt>
+    <dd class="tag-description"><ul class="dummy"><li>Create a new chat room.
 
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
+If the room already exists, return an error.
+If the room does not exist, add it to the database and send a confirmation
+message to the client.</li></ul></dd>
     
 
     
@@ -950,6 +901,30 @@ message to the client.
     
 
     
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
 </dl>
 
 
@@ -964,65 +939,7 @@ message to the client.
 
 
 
-
-
-<h5>Returns:</h5>
-
-        
-<div class="param-desc">
-    - The room entity or an error
-</div>
-
-
-
-<dl>
-    <dt>
-        Type
-    </dt>
-    <dd>
-        
-<span class="param-type">Promise.&lt;(ChatRoomEntity|Error)></span>
-
-
-    </dd>
-</dl>
-
-    
-
-
-
-
-
-        
-            
-
-    
-
-    
-    <h4 class="name" id="createRoom"><span class="type-signature">(async) </span>createRoom<span class="signature">(createDto)</span><span class="type-signature"> &rarr; {Promise.&lt;(ChatRoomEntity|Error)>}</span></h4>
-    
-
-    
-
-
-
-<div class="description">
-    Create a new chat room.
-
-If the room already exists, return an error.
-If the room does not exist, add it to the database and send a confirmation
-message to the client.
-</div>
-
-
-
-
-
-
-
-
-
-    <h5>Parameters:</h5>
+    <h5 class="h5-parameters">Parameters:</h5>
     
 
 <table class="params">
@@ -1070,30 +987,62 @@ message to the client.
 
 
 
+
+
+
+
+
+
+
+
+
+
+<h5 class="h5-returns">Returns:</h5>
+
+        
+<div class="param-desc">
+    - The room entity or an error
+</div>
+
+
+
+<dl class="param-type">
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">Promise.&lt;(ChatRoomEntity|Error)></span>
+
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="createRoom"><span class="type-signature type-signature-async">(async) </span>createRoom<span class="signature">(createDto)</span><span class="type-signature"> &rarr; {Promise.&lt;(ChatRoomEntity|Error)>}</span></h4>
+
+    
+
+
+
+
 <dl class="details">
-
     
+    <dt class="tag-description">Description:</dt>
+    <dd class="tag-description"><ul class="dummy"><li>Create a new chat room.
 
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
+If the room already exists, return an error.
+If the room does not exist, add it to the database and send a confirmation
+message to the client.</li></ul></dd>
     
 
     
@@ -1108,6 +1057,30 @@ message to the client.
     
 
     
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
 </dl>
 
 
@@ -1122,64 +1095,7 @@ message to the client.
 
 
 
-
-
-<h5>Returns:</h5>
-
-        
-<div class="param-desc">
-    - The room entity or an error
-</div>
-
-
-
-<dl>
-    <dt>
-        Type
-    </dt>
-    <dd>
-        
-<span class="param-type">Promise.&lt;(ChatRoomEntity|Error)></span>
-
-
-    </dd>
-</dl>
-
-    
-
-
-
-
-
-        
-            
-
-    
-
-    
-    <h4 class="name" id="createTempUser"><span class="type-signature">(async) </span>createTempUser<span class="signature">(req)</span><span class="type-signature"> &rarr; {Promise.&lt;(UserEntity|Error)>}</span></h4>
-    
-
-    
-
-
-
-<div class="description">
-    Temporary function to create a user
-
-If the user already exists, return an error
-If the user does not exist, add it to the database and send a confirmation
-</div>
-
-
-
-
-
-
-
-
-
-    <h5>Parameters:</h5>
+    <h5 class="h5-parameters">Parameters:</h5>
     
 
 <table class="params">
@@ -1204,15 +1120,10 @@ If the user does not exist, add it to the database and send a confirmation
 
         <tr>
             
-                <td class="name"><code>req</code></td>
+                <td class="name"><code>createDto</code></td>
             
 
             <td class="type">
-            
-                
-<span class="param-type">AuthRequest</span>
-
-
             
             </td>
 
@@ -1220,7 +1131,7 @@ If the user does not exist, add it to the database and send a confirmation
 
             
 
-            <td class="description last">The user's username, avatar, email, first name, and last name</td>
+            <td class="description last">The room name, status, and password</td>
         </tr>
 
     
@@ -1232,30 +1143,61 @@ If the user does not exist, add it to the database and send a confirmation
 
 
 
+
+
+
+
+
+
+
+
+
+
+<h5 class="h5-returns">Returns:</h5>
+
+        
+<div class="param-desc">
+    - The room entity or an error
+</div>
+
+
+
+<dl class="param-type">
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">Promise.&lt;(ChatRoomEntity|Error)></span>
+
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="createTempUser"><span class="type-signature type-signature-async">(async) </span>createTempUser<span class="signature">(req)</span><span class="type-signature"> &rarr; {Promise.&lt;(UserEntity|Error)>}</span></h4>
+
+    
+
+
+
+
 <dl class="details">
-
     
+    <dt class="tag-description">Description:</dt>
+    <dd class="tag-description"><ul class="dummy"><li>Temporary function to create a user
 
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
+If the user already exists, return an error
+If the user does not exist, add it to the database and send a confirmation</li></ul></dd>
     
 
     
@@ -1270,6 +1212,30 @@ If the user does not exist, add it to the database and send a confirmation
     
 
     
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
     <dt class="tag-todo">To Do:</dt>
     <dd class="tag-todo">
         <ul>
@@ -1291,64 +1257,7 @@ If the user does not exist, add it to the database and send a confirmation
 
 
 
-
-
-<h5>Returns:</h5>
-
-        
-<div class="param-desc">
-    - The user or an error
-</div>
-
-
-
-<dl>
-    <dt>
-        Type
-    </dt>
-    <dd>
-        
-<span class="param-type">Promise.&lt;(UserEntity|Error)></span>
-
-
-    </dd>
-</dl>
-
-    
-
-
-
-
-
-        
-            
-
-    
-
-    
-    <h4 class="name" id="createTempUser"><span class="type-signature">(async) </span>createTempUser<span class="signature">(req)</span><span class="type-signature"> &rarr; {Promise.&lt;(UserEntity|Error)>}</span></h4>
-    
-
-    
-
-
-
-<div class="description">
-    Temporary function to create a user
-
-If the user already exists, return an error
-If the user does not exist, add it to the database and send a confirmation
-</div>
-
-
-
-
-
-
-
-
-
-    <h5>Parameters:</h5>
+    <h5 class="h5-parameters">Parameters:</h5>
     
 
 <table class="params">
@@ -1380,6 +1289,7 @@ If the user does not exist, add it to the database and send a confirmation
             
                 
 <span class="param-type">AuthRequest</span>
+
 
 
             
@@ -1401,30 +1311,61 @@ If the user does not exist, add it to the database and send a confirmation
 
 
 
+
+
+
+
+
+
+
+
+
+
+<h5 class="h5-returns">Returns:</h5>
+
+        
+<div class="param-desc">
+    - The user or an error
+</div>
+
+
+
+<dl class="param-type">
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">Promise.&lt;(UserEntity|Error)></span>
+
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="createTempUser"><span class="type-signature type-signature-async">(async) </span>createTempUser<span class="signature">(req)</span><span class="type-signature"> &rarr; {Promise.&lt;(UserEntity|Error)>}</span></h4>
+
+    
+
+
+
+
 <dl class="details">
-
     
+    <dt class="tag-description">Description:</dt>
+    <dd class="tag-description"><ul class="dummy"><li>Temporary function to create a user
 
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
+If the user already exists, return an error
+If the user does not exist, add it to the database and send a confirmation</li></ul></dd>
     
 
     
@@ -1432,6 +1373,30 @@ If the user does not exist, add it to the database and send a confirmation
     <dd class="tag-source"><ul class="dummy"><li>
         <a href="backend_src_chat_chat.service.ts.html">backend/src/chat/chat.service.ts</a>, <a href="backend_src_chat_chat.service.ts.html#line777">line 777</a>
     </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
     
 
     
@@ -1460,63 +1425,7 @@ If the user does not exist, add it to the database and send a confirmation
 
 
 
-
-
-<h5>Returns:</h5>
-
-        
-<div class="param-desc">
-    - The user or an error
-</div>
-
-
-
-<dl>
-    <dt>
-        Type
-    </dt>
-    <dd>
-        
-<span class="param-type">Promise.&lt;(UserEntity|Error)></span>
-
-
-    </dd>
-</dl>
-
-    
-
-
-
-
-
-        
-            
-
-    
-
-    
-    <h4 class="name" id="devUserLogin"><span class="type-signature">(async) </span>devUserLogin<span class="signature">(req)</span><span class="type-signature"> &rarr; {Promise.&lt;(string|Error)>}</span></h4>
-    
-
-    
-
-
-
-<div class="description">
-    Temporary function to login a user
-
-If the user does not exist, return an error
-</div>
-
-
-
-
-
-
-
-
-
-    <h5>Parameters:</h5>
+    <h5 class="h5-parameters">Parameters:</h5>
     
 
 <table class="params">
@@ -1550,6 +1459,7 @@ If the user does not exist, return an error
 <span class="param-type">AuthRequest</span>
 
 
+
             
             </td>
 
@@ -1557,7 +1467,7 @@ If the user does not exist, return an error
 
             
 
-            <td class="description last">The user's username</td>
+            <td class="description last">The user's username, avatar, email, first name, and last name</td>
         </tr>
 
     
@@ -1569,30 +1479,60 @@ If the user does not exist, return an error
 
 
 
+
+
+
+
+
+
+
+
+
+
+<h5 class="h5-returns">Returns:</h5>
+
+        
+<div class="param-desc">
+    - The user or an error
+</div>
+
+
+
+<dl class="param-type">
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">Promise.&lt;(UserEntity|Error)></span>
+
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="devUserLogin"><span class="type-signature type-signature-async">(async) </span>devUserLogin<span class="signature">(req)</span><span class="type-signature"> &rarr; {Promise.&lt;(string|Error)>}</span></h4>
+
+    
+
+
+
+
 <dl class="details">
-
     
+    <dt class="tag-description">Description:</dt>
+    <dd class="tag-description"><ul class="dummy"><li>Temporary function to login a user
 
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
+If the user does not exist, return an error</li></ul></dd>
     
 
     
@@ -1607,6 +1547,30 @@ If the user does not exist, return an error
     
 
     
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
     <dt class="tag-todo">To Do:</dt>
     <dd class="tag-todo">
         <ul>
@@ -1628,63 +1592,7 @@ If the user does not exist, return an error
 
 
 
-
-
-<h5>Returns:</h5>
-
-        
-<div class="param-desc">
-    - The username or an error
-</div>
-
-
-
-<dl>
-    <dt>
-        Type
-    </dt>
-    <dd>
-        
-<span class="param-type">Promise.&lt;(string|Error)></span>
-
-
-    </dd>
-</dl>
-
-    
-
-
-
-
-
-        
-            
-
-    
-
-    
-    <h4 class="name" id="devUserLogin"><span class="type-signature">(async) </span>devUserLogin<span class="signature">(req)</span><span class="type-signature"> &rarr; {Promise.&lt;(string|Error)>}</span></h4>
-    
-
-    
-
-
-
-<div class="description">
-    Temporary function to login a user
-
-If the user does not exist, return an error
-</div>
-
-
-
-
-
-
-
-
-
-    <h5>Parameters:</h5>
+    <h5 class="h5-parameters">Parameters:</h5>
     
 
 <table class="params">
@@ -1718,6 +1626,7 @@ If the user does not exist, return an error
 <span class="param-type">AuthRequest</span>
 
 
+
             
             </td>
 
@@ -1737,30 +1646,60 @@ If the user does not exist, return an error
 
 
 
+
+
+
+
+
+
+
+
+
+
+<h5 class="h5-returns">Returns:</h5>
+
+        
+<div class="param-desc">
+    - The username or an error
+</div>
+
+
+
+<dl class="param-type">
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">Promise.&lt;(string|Error)></span>
+
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="devUserLogin"><span class="type-signature type-signature-async">(async) </span>devUserLogin<span class="signature">(req)</span><span class="type-signature"> &rarr; {Promise.&lt;(string|Error)>}</span></h4>
+
+    
+
+
+
+
 <dl class="details">
-
     
+    <dt class="tag-description">Description:</dt>
+    <dd class="tag-description"><ul class="dummy"><li>Temporary function to login a user
 
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
+If the user does not exist, return an error</li></ul></dd>
     
 
     
@@ -1768,6 +1707,30 @@ If the user does not exist, return an error
     <dd class="tag-source"><ul class="dummy"><li>
         <a href="backend_src_chat_chat.service.ts.html">backend/src/chat/chat.service.ts</a>, <a href="backend_src_chat_chat.service.ts.html#line789">line 789</a>
     </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
     
 
     
@@ -1796,61 +1759,7 @@ If the user does not exist, return an error
 
 
 
-
-
-<h5>Returns:</h5>
-
-        
-<div class="param-desc">
-    - The username or an error
-</div>
-
-
-
-<dl>
-    <dt>
-        Type
-    </dt>
-    <dd>
-        
-<span class="param-type">Promise.&lt;(string|Error)></span>
-
-
-    </dd>
-</dl>
-
-    
-
-
-
-
-
-        
-            
-
-    
-
-    
-    <h4 class="name" id="getRoomMessagesPage"><span class="type-signature">(async) </span>getRoomMessagesPage<span class="signature">(roomName, date, pageSize)</span><span class="type-signature"> &rarr; {Promise.&lt;Array.&lt;MessageEntity>>}</span></h4>
-    
-
-    
-
-
-
-<div class="description">
-    get a page of messages from a room
-</div>
-
-
-
-
-
-
-
-
-
-    <h5>Parameters:</h5>
+    <h5 class="h5-parameters">Parameters:</h5>
     
 
 <table class="params">
@@ -1875,13 +1784,14 @@ If the user does not exist, return an error
 
         <tr>
             
-                <td class="name"><code>roomName</code></td>
+                <td class="name"><code>req</code></td>
             
 
             <td class="type">
             
                 
-<span class="param-type">string</span>
+<span class="param-type">AuthRequest</span>
+
 
 
             
@@ -1891,53 +1801,7 @@ If the user does not exist, return an error
 
             
 
-            <td class="description last">The room name</td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>date</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">Date</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last">The date to start the page from</td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>pageSize</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">number</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last">The number of messages to return</td>
+            <td class="description last">The user's username</td>
         </tr>
 
     
@@ -1949,30 +1813,58 @@ If the user does not exist, return an error
 
 
 
+
+
+
+
+
+
+
+
+
+
+<h5 class="h5-returns">Returns:</h5>
+
+        
+<div class="param-desc">
+    - The username or an error
+</div>
+
+
+
+<dl class="param-type">
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">Promise.&lt;(string|Error)></span>
+
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="getRoomMessagesPage"><span class="type-signature type-signature-async">(async) </span>getRoomMessagesPage<span class="signature">(roomName, date, pageSize)</span><span class="type-signature"> &rarr; {Promise.&lt;Array.&lt;MessageEntity>>}</span></h4>
+
+    
+
+
+
+
 <dl class="details">
-
     
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
+    <dt class="tag-description">Description:</dt>
+    <dd class="tag-description"><ul class="dummy"><li>get a page of messages from a room</li></ul></dd>
     
 
     
@@ -1987,6 +1879,30 @@ If the user does not exist, return an error
     
 
     
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
 </dl>
 
 
@@ -2001,61 +1917,7 @@ If the user does not exist, return an error
 
 
 
-
-
-<h5>Returns:</h5>
-
-        
-<div class="param-desc">
-    - The messages
-</div>
-
-
-
-<dl>
-    <dt>
-        Type
-    </dt>
-    <dd>
-        
-<span class="param-type">Promise.&lt;Array.&lt;MessageEntity>></span>
-
-
-    </dd>
-</dl>
-
-    
-
-
-
-
-
-        
-            
-
-    
-
-    
-    <h4 class="name" id="getRoomMessagesPage"><span class="type-signature">(async) </span>getRoomMessagesPage<span class="signature">(roomName, date, pageSize)</span><span class="type-signature"> &rarr; {Promise.&lt;Array.&lt;MessageEntity>>}</span></h4>
-    
-
-    
-
-
-
-<div class="description">
-    get a page of messages from a room
-</div>
-
-
-
-
-
-
-
-
-
-    <h5>Parameters:</h5>
+    <h5 class="h5-parameters">Parameters:</h5>
     
 
 <table class="params">
@@ -2089,6 +1951,7 @@ If the user does not exist, return an error
 <span class="param-type">string</span>
 
 
+
             
             </td>
 
@@ -2110,6 +1973,7 @@ If the user does not exist, return an error
             
                 
 <span class="param-type">Date</span>
+
 
 
             
@@ -2135,6 +1999,7 @@ If the user does not exist, return an error
 <span class="param-type">number</span>
 
 
+
             
             </td>
 
@@ -2154,30 +2019,58 @@ If the user does not exist, return an error
 
 
 
+
+
+
+
+
+
+
+
+
+
+<h5 class="h5-returns">Returns:</h5>
+
+        
+<div class="param-desc">
+    - The messages
+</div>
+
+
+
+<dl class="param-type">
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">Promise.&lt;Array.&lt;MessageEntity>></span>
+
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="getRoomMessagesPage"><span class="type-signature type-signature-async">(async) </span>getRoomMessagesPage<span class="signature">(roomName, date, pageSize)</span><span class="type-signature"> &rarr; {Promise.&lt;Array.&lt;MessageEntity>>}</span></h4>
+
+    
+
+
+
+
 <dl class="details">
-
     
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
+    <dt class="tag-description">Description:</dt>
+    <dd class="tag-description"><ul class="dummy"><li>get a page of messages from a room</li></ul></dd>
     
 
     
@@ -2192,6 +2085,30 @@ If the user does not exist, return an error
     
 
     
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
 </dl>
 
 
@@ -2206,63 +2123,7 @@ If the user does not exist, return an error
 
 
 
-
-
-<h5>Returns:</h5>
-
-        
-<div class="param-desc">
-    - The messages
-</div>
-
-
-
-<dl>
-    <dt>
-        Type
-    </dt>
-    <dd>
-        
-<span class="param-type">Promise.&lt;Array.&lt;MessageEntity>></span>
-
-
-    </dd>
-</dl>
-
-    
-
-
-
-
-
-        
-            
-
-    
-
-    
-    <h4 class="name" id="getUserList"><span class="type-signature">(async) </span>getUserList<span class="signature">(chatRoomName)</span><span class="type-signature"> &rarr; {Promise.&lt;Array.&lt;ChatMemberEntity>>}</span></h4>
-    
-
-    
-
-
-
-<div class="description">
-    Get the list of users in a chat room
-
-If the room does not exist, return an error
-</div>
-
-
-
-
-
-
-
-
-
-    <h5>Parameters:</h5>
+    <h5 class="h5-parameters">Parameters:</h5>
     
 
 <table class="params">
@@ -2287,13 +2148,14 @@ If the room does not exist, return an error
 
         <tr>
             
-                <td class="name"><code>chatRoomName</code></td>
+                <td class="name"><code>roomName</code></td>
             
 
             <td class="type">
             
                 
 <span class="param-type">string</span>
+
 
 
             
@@ -2303,7 +2165,55 @@ If the room does not exist, return an error
 
             
 
-            <td class="description last">The name of the chat room</td>
+            <td class="description last">The room name</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>date</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Date</span>
+
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The date to start the page from</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>pageSize</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">number</span>
+
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The number of messages to return</td>
         </tr>
 
     
@@ -2315,30 +2225,60 @@ If the room does not exist, return an error
 
 
 
+
+
+
+
+
+
+
+
+
+
+<h5 class="h5-returns">Returns:</h5>
+
+        
+<div class="param-desc">
+    - The messages
+</div>
+
+
+
+<dl class="param-type">
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">Promise.&lt;Array.&lt;MessageEntity>></span>
+
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="getUserList"><span class="type-signature type-signature-async">(async) </span>getUserList<span class="signature">(chatRoomName)</span><span class="type-signature"> &rarr; {Promise.&lt;Array.&lt;ChatMemberEntity>>}</span></h4>
+
+    
+
+
+
+
 <dl class="details">
-
     
+    <dt class="tag-description">Description:</dt>
+    <dd class="tag-description"><ul class="dummy"><li>Get the list of users in a chat room
 
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
+If the room does not exist, return an error</li></ul></dd>
     
 
     
@@ -2353,6 +2293,30 @@ If the room does not exist, return an error
     
 
     
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
 </dl>
 
 
@@ -2367,63 +2331,7 @@ If the room does not exist, return an error
 
 
 
-
-
-<h5>Returns:</h5>
-
-        
-<div class="param-desc">
-    - The list of users in the chat room
-</div>
-
-
-
-<dl>
-    <dt>
-        Type
-    </dt>
-    <dd>
-        
-<span class="param-type">Promise.&lt;Array.&lt;ChatMemberEntity>></span>
-
-
-    </dd>
-</dl>
-
-    
-
-
-
-
-
-        
-            
-
-    
-
-    
-    <h4 class="name" id="getUserList"><span class="type-signature">(async) </span>getUserList<span class="signature">(chatRoomName)</span><span class="type-signature"> &rarr; {Promise.&lt;Array.&lt;ChatMemberEntity>>}</span></h4>
-    
-
-    
-
-
-
-<div class="description">
-    Get the list of users in a chat room
-
-If the room does not exist, return an error
-</div>
-
-
-
-
-
-
-
-
-
-    <h5>Parameters:</h5>
+    <h5 class="h5-parameters">Parameters:</h5>
     
 
 <table class="params">
@@ -2457,6 +2365,7 @@ If the room does not exist, return an error
 <span class="param-type">string</span>
 
 
+
             
             </td>
 
@@ -2476,30 +2385,60 @@ If the room does not exist, return an error
 
 
 
+
+
+
+
+
+
+
+
+
+
+<h5 class="h5-returns">Returns:</h5>
+
+        
+<div class="param-desc">
+    - The list of users in the chat room
+</div>
+
+
+
+<dl class="param-type">
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">Promise.&lt;Array.&lt;ChatMemberEntity>></span>
+
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="getUserList"><span class="type-signature type-signature-async">(async) </span>getUserList<span class="signature">(chatRoomName)</span><span class="type-signature"> &rarr; {Promise.&lt;Array.&lt;ChatMemberEntity>>}</span></h4>
+
+    
+
+
+
+
 <dl class="details">
-
     
+    <dt class="tag-description">Description:</dt>
+    <dd class="tag-description"><ul class="dummy"><li>Get the list of users in a chat room
 
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
+If the room does not exist, return an error</li></ul></dd>
     
 
     
@@ -2514,6 +2453,30 @@ If the room does not exist, return an error
     
 
     
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
 </dl>
 
 
@@ -2528,9 +2491,71 @@ If the room does not exist, return an error
 
 
 
+    <h5 class="h5-parameters">Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>chatRoomName</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
 
 
-<h5>Returns:</h5>
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The name of the chat room</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5 class="h5-returns">Returns:</h5>
 
         
 <div class="param-desc">
@@ -2539,13 +2564,14 @@ If the room does not exist, return an error
 
 
 
-<dl>
+<dl class="param-type">
     <dt>
         Type
     </dt>
     <dd>
         
 <span class="param-type">Promise.&lt;Array.&lt;ChatMemberEntity>></span>
+
 
 
     </dd>
@@ -2555,24 +2581,61 @@ If the room does not exist, return an error
 
 
 
-
-
         
             
 
     
 
-    
-    <h4 class="name" id="handleChatMember"><span class="type-signature">(async) </span>handleChatMember<span class="signature">(user, roomId)</span><span class="type-signature"> &rarr; {Promise.&lt;ChatMember>}</span></h4>
-    
+    <h4 class="name" id="handleChatMember"><span class="type-signature type-signature-async">(async) </span>handleChatMember<span class="signature">(user, roomId)</span><span class="type-signature"> &rarr; {Promise.&lt;ChatMember>}</span></h4>
 
     
 
 
 
-<div class="description">
-    Handles chat member creation
-</div>
+
+<dl class="details">
+    
+    <dt class="tag-description">Description:</dt>
+    <dd class="tag-description"><ul class="dummy"><li>Handles chat member creation</li></ul></dd>
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="backend_src_chat_chat.service.ts.html">backend/src/chat/chat.service.ts</a>, <a href="backend_src_chat_chat.service.ts.html#line145">line 145</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
 
 
 
@@ -2582,7 +2645,11 @@ If the room does not exist, return an error
 
 
 
-    <h5>Parameters:</h5>
+
+
+
+
+    <h5 class="h5-parameters">Parameters:</h5>
     
 
 <table class="params">
@@ -2616,6 +2683,7 @@ If the room does not exist, return an error
 <span class="param-type">string</span>
 
 
+
             
             </td>
 
@@ -2639,6 +2707,7 @@ If the room does not exist, return an error
 <span class="param-type">number</span>
 
 
+
             
             </td>
 
@@ -2658,45 +2727,6 @@ If the room does not exist, return an error
 
 
 
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="backend_src_chat_chat.service.ts.html">backend/src/chat/chat.service.ts</a>, <a href="backend_src_chat_chat.service.ts.html#line145">line 145</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
 
 
 
@@ -2707,12 +2737,7 @@ If the room does not exist, return an error
 
 
 
-
-
-
-
-
-<h5>Returns:</h5>
+<h5 class="h5-returns">Returns:</h5>
 
         
 <div class="param-desc">
@@ -2721,13 +2746,14 @@ If the room does not exist, return an error
 
 
 
-<dl>
+<dl class="param-type">
     <dt>
         Type
     </dt>
     <dd>
         
 <span class="param-type">Promise.&lt;ChatMember></span>
+
 
 
     </dd>
@@ -2737,24 +2763,61 @@ If the room does not exist, return an error
 
 
 
-
-
         
             
 
     
 
-    
-    <h4 class="name" id="handlePasswordVerification"><span class="type-signature">(async) </span>handlePasswordVerification<span class="signature">(room, password)</span><span class="type-signature"> &rarr; {Promise.&lt;void>}</span></h4>
-    
+    <h4 class="name" id="handlePasswordVerification"><span class="type-signature type-signature-async">(async) </span>handlePasswordVerification<span class="signature">(room, password)</span><span class="type-signature"> &rarr; {Promise.&lt;void>}</span></h4>
 
     
 
 
 
-<div class="description">
-    Handles password verification for a room
-</div>
+
+<dl class="details">
+    
+    <dt class="tag-description">Description:</dt>
+    <dd class="tag-description"><ul class="dummy"><li>Handles password verification for a room</li></ul></dd>
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="backend_src_chat_chat.service.ts.html">backend/src/chat/chat.service.ts</a>, <a href="backend_src_chat_chat.service.ts.html#line130">line 130</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
 
 
 
@@ -2764,7 +2827,11 @@ If the room does not exist, return an error
 
 
 
-    <h5>Parameters:</h5>
+
+
+
+
+    <h5 class="h5-parameters">Parameters:</h5>
     
 
 <table class="params">
@@ -2798,6 +2865,7 @@ If the room does not exist, return an error
 <span class="param-type">ChatRoom</span>
 
 
+
             
             </td>
 
@@ -2821,6 +2889,7 @@ If the room does not exist, return an error
 <span class="param-type">string</span>
 
 
+
             
             </td>
 
@@ -2840,45 +2909,6 @@ If the room does not exist, return an error
 
 
 
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="backend_src_chat_chat.service.ts.html">backend/src/chat/chat.service.ts</a>, <a href="backend_src_chat_chat.service.ts.html#line130">line 130</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
 
 
 
@@ -2889,12 +2919,7 @@ If the room does not exist, return an error
 
 
 
-
-
-
-
-
-<h5>Returns:</h5>
+<h5 class="h5-returns">Returns:</h5>
 
         
 <div class="param-desc">
@@ -2903,13 +2928,14 @@ If the room does not exist, return an error
 
 
 
-<dl>
+<dl class="param-type">
     <dt>
         Type
     </dt>
     <dd>
         
 <span class="param-type">Promise.&lt;void></span>
+
 
 
     </dd>
@@ -2919,24 +2945,61 @@ If the room does not exist, return an error
 
 
 
-
-
         
             
 
     
 
-    
-    <h4 class="name" id="handleRoomCreation"><span class="type-signature">(async) </span>handleRoomCreation<span class="signature">(roomName, user)</span><span class="type-signature"> &rarr; {Promise.&lt;ChatRoom>}</span></h4>
-    
+    <h4 class="name" id="handleRoomCreation"><span class="type-signature type-signature-async">(async) </span>handleRoomCreation<span class="signature">(roomName, user)</span><span class="type-signature"> &rarr; {Promise.&lt;ChatRoom>}</span></h4>
 
     
 
 
 
-<div class="description">
-    Handles the creation of a new chat room
-</div>
+
+<dl class="details">
+    
+    <dt class="tag-description">Description:</dt>
+    <dd class="tag-description"><ul class="dummy"><li>Handles the creation of a new chat room</li></ul></dd>
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="backend_src_chat_chat.service.ts.html">backend/src/chat/chat.service.ts</a>, <a href="backend_src_chat_chat.service.ts.html#line107">line 107</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
 
 
 
@@ -2946,7 +3009,11 @@ If the room does not exist, return an error
 
 
 
-    <h5>Parameters:</h5>
+
+
+
+
+    <h5 class="h5-parameters">Parameters:</h5>
     
 
 <table class="params">
@@ -2980,6 +3047,7 @@ If the room does not exist, return an error
 <span class="param-type">string</span>
 
 
+
             
             </td>
 
@@ -3003,6 +3071,7 @@ If the room does not exist, return an error
 <span class="param-type">string</span>
 
 
+
             
             </td>
 
@@ -3022,45 +3091,6 @@ If the room does not exist, return an error
 
 
 
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="backend_src_chat_chat.service.ts.html">backend/src/chat/chat.service.ts</a>, <a href="backend_src_chat_chat.service.ts.html#line107">line 107</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
 
 
 
@@ -3071,12 +3101,7 @@ If the room does not exist, return an error
 
 
 
-
-
-
-
-
-<h5>Returns:</h5>
+<h5 class="h5-returns">Returns:</h5>
 
         
 <div class="param-desc">
@@ -3085,13 +3110,14 @@ If the room does not exist, return an error
 
 
 
-<dl>
+<dl class="param-type">
     <dt>
         Type
     </dt>
     <dd>
         
 <span class="param-type">Promise.&lt;ChatRoom></span>
+
 
 
     </dd>
@@ -3101,112 +3127,24 @@ If the room does not exist, return an error
 
 
 
-
-
         
             
 
     
 
-    
-    <h4 class="name" id="inviteUsersToRoom"><span class="type-signature">(async) </span>inviteUsersToRoom<span class="signature">(req)</span><span class="type-signature"> &rarr; {Promise.&lt;(Array.&lt;ChatMemberEntity>|Error)>}</span></h4>
-    
+    <h4 class="name" id="inviteUsersToRoom"><span class="type-signature type-signature-async">(async) </span>inviteUsersToRoom<span class="signature">(req)</span><span class="type-signature"> &rarr; {Promise.&lt;(Array.&lt;ChatMemberEntity>|Error)>}</span></h4>
 
     
-
-
-
-<div class="description">
-    Invite users to a chat room
-
-If the room does not exist, return an error
-</div>
-
-
-
-
-
-
-
-
-
-    <h5>Parameters:</h5>
-    
-
-<table class="params">
-    <thead>
-    <tr>
-        
-        <th>Name</th>
-        
-
-        <th>Type</th>
-
-        
-
-        
-
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    
-
-        <tr>
-            
-                <td class="name"><code>req</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">InviteUsersToRoomRequest</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last">The room to invite users to and the list of users to invite</td>
-        </tr>
-
-    
-    </tbody>
-</table>
-
-
 
 
 
 
 <dl class="details">
-
     
+    <dt class="tag-description">Description:</dt>
+    <dd class="tag-description"><ul class="dummy"><li>Invite users to a chat room
 
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
+If the room does not exist, return an error</li></ul></dd>
     
 
     
@@ -3221,6 +3159,30 @@ If the room does not exist, return an error
     
 
     
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
 </dl>
 
 
@@ -3235,63 +3197,7 @@ If the room does not exist, return an error
 
 
 
-
-
-<h5>Returns:</h5>
-
-        
-<div class="param-desc">
-    - The list of users invited to the room
-</div>
-
-
-
-<dl>
-    <dt>
-        Type
-    </dt>
-    <dd>
-        
-<span class="param-type">Promise.&lt;(Array.&lt;ChatMemberEntity>|Error)></span>
-
-
-    </dd>
-</dl>
-
-    
-
-
-
-
-
-        
-            
-
-    
-
-    
-    <h4 class="name" id="inviteUsersToRoom"><span class="type-signature">(async) </span>inviteUsersToRoom<span class="signature">(req)</span><span class="type-signature"> &rarr; {Promise.&lt;(Array.&lt;ChatMemberEntity>|Error)>}</span></h4>
-    
-
-    
-
-
-
-<div class="description">
-    Invite users to a chat room
-
-If the room does not exist, return an error
-</div>
-
-
-
-
-
-
-
-
-
-    <h5>Parameters:</h5>
+    <h5 class="h5-parameters">Parameters:</h5>
     
 
 <table class="params">
@@ -3325,6 +3231,7 @@ If the room does not exist, return an error
 <span class="param-type">InviteUsersToRoomRequest</span>
 
 
+
             
             </td>
 
@@ -3344,30 +3251,60 @@ If the room does not exist, return an error
 
 
 
+
+
+
+
+
+
+
+
+
+
+<h5 class="h5-returns">Returns:</h5>
+
+        
+<div class="param-desc">
+    - The list of users invited to the room
+</div>
+
+
+
+<dl class="param-type">
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">Promise.&lt;(Array.&lt;ChatMemberEntity>|Error)></span>
+
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="inviteUsersToRoom"><span class="type-signature type-signature-async">(async) </span>inviteUsersToRoom<span class="signature">(req)</span><span class="type-signature"> &rarr; {Promise.&lt;(Array.&lt;ChatMemberEntity>|Error)>}</span></h4>
+
+    
+
+
+
+
 <dl class="details">
-
     
+    <dt class="tag-description">Description:</dt>
+    <dd class="tag-description"><ul class="dummy"><li>Invite users to a chat room
 
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
+If the room does not exist, return an error</li></ul></dd>
     
 
     
@@ -3382,6 +3319,30 @@ If the room does not exist, return an error
     
 
     
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
 </dl>
 
 
@@ -3396,9 +3357,71 @@ If the room does not exist, return an error
 
 
 
+    <h5 class="h5-parameters">Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>req</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">InviteUsersToRoomRequest</span>
 
 
-<h5>Returns:</h5>
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The room to invite users to and the list of users to invite</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5 class="h5-returns">Returns:</h5>
 
         
 <div class="param-desc">
@@ -3407,13 +3430,14 @@ If the room does not exist, return an error
 
 
 
-<dl>
+<dl class="param-type">
     <dt>
         Type
     </dt>
     <dd>
         
 <span class="param-type">Promise.&lt;(Array.&lt;ChatMemberEntity>|Error)></span>
+
 
 
     </dd>
@@ -3423,24 +3447,61 @@ If the room does not exist, return an error
 
 
 
-
-
         
             
 
     
 
-    
     <h4 class="name" id="isPast"><span class="type-signature"></span>isPast<span class="signature">(date)</span><span class="type-signature"> &rarr; {boolean}</span></h4>
-    
 
     
 
 
 
-<div class="description">
-    Checks if date is in the past
-</div>
+
+<dl class="details">
+    
+    <dt class="tag-description">Description:</dt>
+    <dd class="tag-description"><ul class="dummy"><li>Checks if date is in the past</li></ul></dd>
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="backend_src_chat_chat.service.ts.html">backend/src/chat/chat.service.ts</a>, <a href="backend_src_chat_chat.service.ts.html#line96">line 96</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
 
 
 
@@ -3450,7 +3511,11 @@ If the room does not exist, return an error
 
 
 
-    <h5>Parameters:</h5>
+
+
+
+
+    <h5 class="h5-parameters">Parameters:</h5>
     
 
 <table class="params">
@@ -3484,6 +3549,7 @@ If the room does not exist, return an error
 <span class="param-type">Date</span>
 
 
+
             
             </td>
 
@@ -3503,45 +3569,6 @@ If the room does not exist, return an error
 
 
 
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="backend_src_chat_chat.service.ts.html">backend/src/chat/chat.service.ts</a>, <a href="backend_src_chat_chat.service.ts.html#line96">line 96</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
 
 
 
@@ -3552,12 +3579,7 @@ If the room does not exist, return an error
 
 
 
-
-
-
-
-
-<h5>Returns:</h5>
+<h5 class="h5-returns">Returns:</h5>
 
         
 <div class="param-desc">
@@ -3566,13 +3588,14 @@ If the room does not exist, return an error
 
 
 
-<dl>
+<dl class="param-type">
     <dt>
         Type
     </dt>
     <dd>
         
 <span class="param-type">boolean</span>
+
 
 
     </dd>
@@ -3582,115 +3605,27 @@ If the room does not exist, return an error
 
 
 
-
-
         
             
 
     
 
-    
-    <h4 class="name" id="joinRoom"><span class="type-signature">(async) </span>joinRoom<span class="signature">(joinDto)</span><span class="type-signature"> &rarr; {Promise.&lt;(ChatRoomEntity|Error)>}</span></h4>
-    
+    <h4 class="name" id="joinRoom"><span class="type-signature type-signature-async">(async) </span>joinRoom<span class="signature">(joinDto)</span><span class="type-signature"> &rarr; {Promise.&lt;(ChatRoomEntity|Error)>}</span></h4>
 
     
-
-
-
-<div class="description">
-    Join a chat room
-
-If the room doesn't exist, create it as a public room
-If the room exists and is password protected, check the password
-   If the password is incorrect, return an error
-If the room exists and is public, join it
-</div>
-
-
-
-
-
-
-
-
-
-    <h5>Parameters:</h5>
-    
-
-<table class="params">
-    <thead>
-    <tr>
-        
-        <th>Name</th>
-        
-
-        <th>Type</th>
-
-        
-
-        
-
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    
-
-        <tr>
-            
-                <td class="name"><code>joinDto</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">JoinRoomDto</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last">The room name, password, and user</td>
-        </tr>
-
-    
-    </tbody>
-</table>
-
-
 
 
 
 
 <dl class="details">
-
     
+    <dt class="tag-description">Description:</dt>
+    <dd class="tag-description"><ul class="dummy"><li>Join a chat room
 
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
+If the room doesn't exist, create it as a public room
+If the room exists and is password protected, check the password
+   If the password is incorrect, return an error
+If the room exists and is public, join it</li></ul></dd>
     
 
     
@@ -3705,6 +3640,30 @@ If the room exists and is public, join it
     
 
     
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
 </dl>
 
 
@@ -3719,66 +3678,7 @@ If the room exists and is public, join it
 
 
 
-
-
-<h5>Returns:</h5>
-
-        
-<div class="param-desc">
-    - The room entity or an error
-</div>
-
-
-
-<dl>
-    <dt>
-        Type
-    </dt>
-    <dd>
-        
-<span class="param-type">Promise.&lt;(ChatRoomEntity|Error)></span>
-
-
-    </dd>
-</dl>
-
-    
-
-
-
-
-
-        
-            
-
-    
-
-    
-    <h4 class="name" id="joinRoom"><span class="type-signature">(async) </span>joinRoom<span class="signature">(joinDto)</span><span class="type-signature"> &rarr; {Promise.&lt;(ChatRoomEntity|Error)>}</span></h4>
-    
-
-    
-
-
-
-<div class="description">
-    Join a chat room
-
-If the room doesn't exist, create it as a public room
-If the room exists and is password protected, check the password
-   If the password is incorrect, return an error
-If the room exists and is public, join it
-</div>
-
-
-
-
-
-
-
-
-
-    <h5>Parameters:</h5>
+    <h5 class="h5-parameters">Parameters:</h5>
     
 
 <table class="params">
@@ -3812,6 +3712,7 @@ If the room exists and is public, join it
 <span class="param-type">JoinRoomDto</span>
 
 
+
             
             </td>
 
@@ -3831,30 +3732,63 @@ If the room exists and is public, join it
 
 
 
+
+
+
+
+
+
+
+
+
+
+<h5 class="h5-returns">Returns:</h5>
+
+        
+<div class="param-desc">
+    - The room entity or an error
+</div>
+
+
+
+<dl class="param-type">
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">Promise.&lt;(ChatRoomEntity|Error)></span>
+
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="joinRoom"><span class="type-signature type-signature-async">(async) </span>joinRoom<span class="signature">(joinDto)</span><span class="type-signature"> &rarr; {Promise.&lt;(ChatRoomEntity|Error)>}</span></h4>
+
+    
+
+
+
+
 <dl class="details">
-
     
+    <dt class="tag-description">Description:</dt>
+    <dd class="tag-description"><ul class="dummy"><li>Join a chat room
 
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
+If the room doesn't exist, create it as a public room
+If the room exists and is password protected, check the password
+   If the password is incorrect, return an error
+If the room exists and is public, join it</li></ul></dd>
     
 
     
@@ -3869,6 +3803,30 @@ If the room exists and is public, join it
     
 
     
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
 </dl>
 
 
@@ -3883,64 +3841,7 @@ If the room exists and is public, join it
 
 
 
-
-
-<h5>Returns:</h5>
-
-        
-<div class="param-desc">
-    - The room entity or an error
-</div>
-
-
-
-<dl>
-    <dt>
-        Type
-    </dt>
-    <dd>
-        
-<span class="param-type">Promise.&lt;(ChatRoomEntity|Error)></span>
-
-
-    </dd>
-</dl>
-
-    
-
-
-
-
-
-        
-            
-
-    
-
-    
-    <h4 class="name" id="kickMember"><span class="type-signature">(async) </span>kickMember<span class="signature">(kickDto)</span><span class="type-signature"> &rarr; {Promise.&lt;(ChatMemberEntity|Error)>}</span></h4>
-    
-
-    
-
-
-
-<div class="description">
-    Kick a chat member
-
-If the member to kick is the owner, return an error
-If the member requesting the kick is a user, return an error
-</div>
-
-
-
-
-
-
-
-
-
-    <h5>Parameters:</h5>
+    <h5 class="h5-parameters">Parameters:</h5>
     
 
 <table class="params">
@@ -3965,13 +3866,14 @@ If the member requesting the kick is a user, return an error
 
         <tr>
             
-                <td class="name"><code>kickDto</code></td>
+                <td class="name"><code>joinDto</code></td>
             
 
             <td class="type">
             
                 
-<span class="param-type">KickMemberRequest</span>
+<span class="param-type">JoinRoomDto</span>
+
 
 
             
@@ -3981,7 +3883,7 @@ If the member requesting the kick is a user, return an error
 
             
 
-            <td class="description last">The member to kick, the member requesting the kick, and the new status</td>
+            <td class="description last">The room name, password, and user</td>
         </tr>
 
     
@@ -3993,30 +3895,61 @@ If the member requesting the kick is a user, return an error
 
 
 
+
+
+
+
+
+
+
+
+
+
+<h5 class="h5-returns">Returns:</h5>
+
+        
+<div class="param-desc">
+    - The room entity or an error
+</div>
+
+
+
+<dl class="param-type">
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">Promise.&lt;(ChatRoomEntity|Error)></span>
+
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="kickMember"><span class="type-signature type-signature-async">(async) </span>kickMember<span class="signature">(kickDto)</span><span class="type-signature"> &rarr; {Promise.&lt;(ChatMemberEntity|Error)>}</span></h4>
+
+    
+
+
+
+
 <dl class="details">
-
     
+    <dt class="tag-description">Description:</dt>
+    <dd class="tag-description"><ul class="dummy"><li>Kick a chat member
 
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
+If the member to kick is the owner, return an error
+If the member requesting the kick is a user, return an error</li></ul></dd>
     
 
     
@@ -4031,6 +3964,30 @@ If the member requesting the kick is a user, return an error
     
 
     
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
 </dl>
 
 
@@ -4045,64 +4002,7 @@ If the member requesting the kick is a user, return an error
 
 
 
-
-
-<h5>Returns:</h5>
-
-        
-<div class="param-desc">
-    - The updated chat member
-</div>
-
-
-
-<dl>
-    <dt>
-        Type
-    </dt>
-    <dd>
-        
-<span class="param-type">Promise.&lt;(ChatMemberEntity|Error)></span>
-
-
-    </dd>
-</dl>
-
-    
-
-
-
-
-
-        
-            
-
-    
-
-    
-    <h4 class="name" id="kickMember"><span class="type-signature">(async) </span>kickMember<span class="signature">(kickDto)</span><span class="type-signature"> &rarr; {Promise.&lt;(ChatMemberEntity|Error)>}</span></h4>
-    
-
-    
-
-
-
-<div class="description">
-    Kick a chat member
-
-If the member to kick is the owner, return an error
-If the member requesting the kick is a user, return an error
-</div>
-
-
-
-
-
-
-
-
-
-    <h5>Parameters:</h5>
+    <h5 class="h5-parameters">Parameters:</h5>
     
 
 <table class="params">
@@ -4136,6 +4036,7 @@ If the member requesting the kick is a user, return an error
 <span class="param-type">KickMemberRequest</span>
 
 
+
             
             </td>
 
@@ -4155,30 +4056,61 @@ If the member requesting the kick is a user, return an error
 
 
 
+
+
+
+
+
+
+
+
+
+
+<h5 class="h5-returns">Returns:</h5>
+
+        
+<div class="param-desc">
+    - The updated chat member
+</div>
+
+
+
+<dl class="param-type">
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">Promise.&lt;(ChatMemberEntity|Error)></span>
+
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="kickMember"><span class="type-signature type-signature-async">(async) </span>kickMember<span class="signature">(kickDto)</span><span class="type-signature"> &rarr; {Promise.&lt;(ChatMemberEntity|Error)>}</span></h4>
+
+    
+
+
+
+
 <dl class="details">
-
     
+    <dt class="tag-description">Description:</dt>
+    <dd class="tag-description"><ul class="dummy"><li>Kick a chat member
 
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
+If the member to kick is the owner, return an error
+If the member requesting the kick is a user, return an error</li></ul></dd>
     
 
     
@@ -4193,6 +4125,30 @@ If the member requesting the kick is a user, return an error
     
 
     
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
 </dl>
 
 
@@ -4207,61 +4163,7 @@ If the member requesting the kick is a user, return an error
 
 
 
-
-
-<h5>Returns:</h5>
-
-        
-<div class="param-desc">
-    - The updated chat member
-</div>
-
-
-
-<dl>
-    <dt>
-        Type
-    </dt>
-    <dd>
-        
-<span class="param-type">Promise.&lt;(ChatMemberEntity|Error)></span>
-
-
-    </dd>
-</dl>
-
-    
-
-
-
-
-
-        
-            
-
-    
-
-    
-    <h4 class="name" id="leaveRoom"><span class="type-signature">(async) </span>leaveRoom<span class="signature">(req)</span><span class="type-signature"> &rarr; {Promise.&lt;(ChatMember|Error)>}</span></h4>
-    
-
-    
-
-
-
-<div class="description">
-    Leave a chat room
-</div>
-
-
-
-
-
-
-
-
-
-    <h5>Parameters:</h5>
+    <h5 class="h5-parameters">Parameters:</h5>
     
 
 <table class="params">
@@ -4286,13 +4188,14 @@ If the member requesting the kick is a user, return an error
 
         <tr>
             
-                <td class="name"><code>req</code></td>
+                <td class="name"><code>kickDto</code></td>
             
 
             <td class="type">
             
                 
-<span class="param-type">LeaveRoomRequest</span>
+<span class="param-type">KickMemberRequest</span>
+
 
 
             
@@ -4302,7 +4205,7 @@ If the member requesting the kick is a user, return an error
 
             
 
-            <td class="description last">The room name and username</td>
+            <td class="description last">The member to kick, the member requesting the kick, and the new status</td>
         </tr>
 
     
@@ -4314,30 +4217,58 @@ If the member requesting the kick is a user, return an error
 
 
 
+
+
+
+
+
+
+
+
+
+
+<h5 class="h5-returns">Returns:</h5>
+
+        
+<div class="param-desc">
+    - The updated chat member
+</div>
+
+
+
+<dl class="param-type">
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">Promise.&lt;(ChatMemberEntity|Error)></span>
+
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="leaveRoom"><span class="type-signature type-signature-async">(async) </span>leaveRoom<span class="signature">(req)</span><span class="type-signature"> &rarr; {Promise.&lt;(ChatMember|Error)>}</span></h4>
+
+    
+
+
+
+
 <dl class="details">
-
     
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
+    <dt class="tag-description">Description:</dt>
+    <dd class="tag-description"><ul class="dummy"><li>Leave a chat room</li></ul></dd>
     
 
     
@@ -4352,6 +4283,30 @@ If the member requesting the kick is a user, return an error
     
 
     
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
 </dl>
 
 
@@ -4366,61 +4321,7 @@ If the member requesting the kick is a user, return an error
 
 
 
-
-
-<h5>Returns:</h5>
-
-        
-<div class="param-desc">
-    - The chat member or an error
-</div>
-
-
-
-<dl>
-    <dt>
-        Type
-    </dt>
-    <dd>
-        
-<span class="param-type">Promise.&lt;(ChatMember|Error)></span>
-
-
-    </dd>
-</dl>
-
-    
-
-
-
-
-
-        
-            
-
-    
-
-    
-    <h4 class="name" id="leaveRoom"><span class="type-signature">(async) </span>leaveRoom<span class="signature">(req)</span><span class="type-signature"> &rarr; {Promise.&lt;(ChatMember|Error)>}</span></h4>
-    
-
-    
-
-
-
-<div class="description">
-    Leave a chat room
-</div>
-
-
-
-
-
-
-
-
-
-    <h5>Parameters:</h5>
+    <h5 class="h5-parameters">Parameters:</h5>
     
 
 <table class="params">
@@ -4454,6 +4355,7 @@ If the member requesting the kick is a user, return an error
 <span class="param-type">LeaveRoomRequest</span>
 
 
+
             
             </td>
 
@@ -4473,30 +4375,58 @@ If the member requesting the kick is a user, return an error
 
 
 
+
+
+
+
+
+
+
+
+
+
+<h5 class="h5-returns">Returns:</h5>
+
+        
+<div class="param-desc">
+    - The chat member or an error
+</div>
+
+
+
+<dl class="param-type">
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">Promise.&lt;(ChatMember|Error)></span>
+
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="leaveRoom"><span class="type-signature type-signature-async">(async) </span>leaveRoom<span class="signature">(req)</span><span class="type-signature"> &rarr; {Promise.&lt;(ChatMember|Error)>}</span></h4>
+
+    
+
+
+
+
 <dl class="details">
-
     
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
+    <dt class="tag-description">Description:</dt>
+    <dd class="tag-description"><ul class="dummy"><li>Leave a chat room</li></ul></dd>
     
 
     
@@ -4511,6 +4441,30 @@ If the member requesting the kick is a user, return an error
     
 
     
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
 </dl>
 
 
@@ -4525,65 +4479,7 @@ If the member requesting the kick is a user, return an error
 
 
 
-
-
-<h5>Returns:</h5>
-
-        
-<div class="param-desc">
-    - The chat member or an error
-</div>
-
-
-
-<dl>
-    <dt>
-        Type
-    </dt>
-    <dd>
-        
-<span class="param-type">Promise.&lt;(ChatMember|Error)></span>
-
-
-    </dd>
-</dl>
-
-    
-
-
-
-
-
-        
-            
-
-    
-
-    
-    <h4 class="name" id="sendDirectMessage"><span class="type-signature">(async) </span>sendDirectMessage<span class="signature">(req)</span><span class="type-signature"> &rarr; {Promise.&lt;(ChatRoomEntity|Error)>}</span></h4>
-    
-
-    
-
-
-
-<div class="description">
-    Send a Direct Message to a user
-
-If the sender or recipient does not exist, return an error
-If the recipient has blocked the sender, return an error
-If a dialogue room between the sender and the recipient already exists, return the existing room
-</div>
-
-
-
-
-
-
-
-
-
-    <h5>Parameters:</h5>
+    <h5 class="h5-parameters">Parameters:</h5>
     
 
 <table class="params">
@@ -4614,7 +4510,8 @@ If a dialogue room between the sender and the recipient already exists, return t
             <td class="type">
             
                 
-<span class="param-type">SendDirectMessageRequest</span>
+<span class="param-type">LeaveRoomRequest</span>
+
 
 
             
@@ -4624,7 +4521,7 @@ If a dialogue room between the sender and the recipient already exists, return t
 
             
 
-            <td class="description last">The sender and recipient of the message</td>
+            <td class="description last">The room name and username</td>
         </tr>
 
     
@@ -4636,30 +4533,62 @@ If a dialogue room between the sender and the recipient already exists, return t
 
 
 
+
+
+
+
+
+
+
+
+
+
+<h5 class="h5-returns">Returns:</h5>
+
+        
+<div class="param-desc">
+    - The chat member or an error
+</div>
+
+
+
+<dl class="param-type">
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">Promise.&lt;(ChatMember|Error)></span>
+
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="sendDirectMessage"><span class="type-signature type-signature-async">(async) </span>sendDirectMessage<span class="signature">(req)</span><span class="type-signature"> &rarr; {Promise.&lt;(ChatRoomEntity|Error)>}</span></h4>
+
+    
+
+
+
+
 <dl class="details">
-
     
+    <dt class="tag-description">Description:</dt>
+    <dd class="tag-description"><ul class="dummy"><li>Send a Direct Message to a user
 
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
+If the sender or recipient does not exist, return an error
+If the recipient has blocked the sender, return an error
+If a dialogue room between the sender and the recipient already exists, return the existing room</li></ul></dd>
     
 
     
@@ -4674,6 +4603,30 @@ If a dialogue room between the sender and the recipient already exists, return t
     
 
     
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
 </dl>
 
 
@@ -4688,65 +4641,7 @@ If a dialogue room between the sender and the recipient already exists, return t
 
 
 
-
-
-<h5>Returns:</h5>
-
-        
-<div class="param-desc">
-    - The dialogue room between the sender and the recipient
-</div>
-
-
-
-<dl>
-    <dt>
-        Type
-    </dt>
-    <dd>
-        
-<span class="param-type">Promise.&lt;(ChatRoomEntity|Error)></span>
-
-
-    </dd>
-</dl>
-
-    
-
-
-
-
-
-        
-            
-
-    
-
-    
-    <h4 class="name" id="sendDirectMessage"><span class="type-signature">(async) </span>sendDirectMessage<span class="signature">(req)</span><span class="type-signature"> &rarr; {Promise.&lt;(ChatRoomEntity|Error)>}</span></h4>
-    
-
-    
-
-
-
-<div class="description">
-    Send a Direct Message to a user
-
-If the sender or recipient does not exist, return an error
-If the recipient has blocked the sender, return an error
-If a dialogue room between the sender and the recipient already exists, return the existing room
-</div>
-
-
-
-
-
-
-
-
-
-    <h5>Parameters:</h5>
+    <h5 class="h5-parameters">Parameters:</h5>
     
 
 <table class="params">
@@ -4780,6 +4675,7 @@ If a dialogue room between the sender and the recipient already exists, return t
 <span class="param-type">SendDirectMessageRequest</span>
 
 
+
             
             </td>
 
@@ -4799,30 +4695,62 @@ If a dialogue room between the sender and the recipient already exists, return t
 
 
 
+
+
+
+
+
+
+
+
+
+
+<h5 class="h5-returns">Returns:</h5>
+
+        
+<div class="param-desc">
+    - The dialogue room between the sender and the recipient
+</div>
+
+
+
+<dl class="param-type">
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">Promise.&lt;(ChatRoomEntity|Error)></span>
+
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="sendDirectMessage"><span class="type-signature type-signature-async">(async) </span>sendDirectMessage<span class="signature">(req)</span><span class="type-signature"> &rarr; {Promise.&lt;(ChatRoomEntity|Error)>}</span></h4>
+
+    
+
+
+
+
 <dl class="details">
-
     
+    <dt class="tag-description">Description:</dt>
+    <dd class="tag-description"><ul class="dummy"><li>Send a Direct Message to a user
 
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
+If the sender or recipient does not exist, return an error
+If the recipient has blocked the sender, return an error
+If a dialogue room between the sender and the recipient already exists, return the existing room</li></ul></dd>
     
 
     
@@ -4837,6 +4765,30 @@ If a dialogue room between the sender and the recipient already exists, return t
     
 
     
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
 </dl>
 
 
@@ -4851,64 +4803,7 @@ If a dialogue room between the sender and the recipient already exists, return t
 
 
 
-
-
-<h5>Returns:</h5>
-
-        
-<div class="param-desc">
-    - The dialogue room between the sender and the recipient
-</div>
-
-
-
-<dl>
-    <dt>
-        Type
-    </dt>
-    <dd>
-        
-<span class="param-type">Promise.&lt;(ChatRoomEntity|Error)></span>
-
-
-    </dd>
-</dl>
-
-    
-
-
-
-
-
-        
-            
-
-    
-
-    
-    <h4 class="name" id="sendMessage"><span class="type-signature">(async) </span>sendMessage<span class="signature">(sendDto)</span><span class="type-signature"> &rarr; {Promise.&lt;(Error|MessageEntity)>}</span></h4>
-    
-
-    
-
-
-
-<div class="description">
-    Send a message to a chat room.
-
-If the room does not exist, return an error.
-If the message is successfully added to the database, return the room name
-</div>
-
-
-
-
-
-
-
-
-
-    <h5>Parameters:</h5>
+    <h5 class="h5-parameters">Parameters:</h5>
     
 
 <table class="params">
@@ -4933,13 +4828,14 @@ If the message is successfully added to the database, return the room name
 
         <tr>
             
-                <td class="name"><code>sendDto</code></td>
+                <td class="name"><code>req</code></td>
             
 
             <td class="type">
             
                 
-<span class="param-type">SendMessageDto</span>
+<span class="param-type">SendDirectMessageRequest</span>
+
 
 
             
@@ -4949,7 +4845,7 @@ If the message is successfully added to the database, return the room name
 
             
 
-            <td class="description last">The message to send</td>
+            <td class="description last">The sender and recipient of the message</td>
         </tr>
 
     
@@ -4961,30 +4857,61 @@ If the message is successfully added to the database, return the room name
 
 
 
+
+
+
+
+
+
+
+
+
+
+<h5 class="h5-returns">Returns:</h5>
+
+        
+<div class="param-desc">
+    - The dialogue room between the sender and the recipient
+</div>
+
+
+
+<dl class="param-type">
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">Promise.&lt;(ChatRoomEntity|Error)></span>
+
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="sendMessage"><span class="type-signature type-signature-async">(async) </span>sendMessage<span class="signature">(sendDto)</span><span class="type-signature"> &rarr; {Promise.&lt;(Error|MessageEntity)>}</span></h4>
+
+    
+
+
+
+
 <dl class="details">
-
     
+    <dt class="tag-description">Description:</dt>
+    <dd class="tag-description"><ul class="dummy"><li>Send a message to a chat room.
 
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
+If the room does not exist, return an error.
+If the message is successfully added to the database, return the room name</li></ul></dd>
     
 
     
@@ -4999,6 +4926,30 @@ If the message is successfully added to the database, return the room name
     
 
     
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
 </dl>
 
 
@@ -5013,64 +4964,7 @@ If the message is successfully added to the database, return the room name
 
 
 
-
-
-<h5>Returns:</h5>
-
-        
-<div class="param-desc">
-    - The message or an error
-</div>
-
-
-
-<dl>
-    <dt>
-        Type
-    </dt>
-    <dd>
-        
-<span class="param-type">Promise.&lt;(Error|MessageEntity)></span>
-
-
-    </dd>
-</dl>
-
-    
-
-
-
-
-
-        
-            
-
-    
-
-    
-    <h4 class="name" id="sendMessage"><span class="type-signature">(async) </span>sendMessage<span class="signature">(sendDto)</span><span class="type-signature"> &rarr; {Promise.&lt;(Error|MessageEntity)>}</span></h4>
-    
-
-    
-
-
-
-<div class="description">
-    Send a message to a chat room.
-
-If the room does not exist, return an error.
-If the message is successfully added to the database, return the room name
-</div>
-
-
-
-
-
-
-
-
-
-    <h5>Parameters:</h5>
+    <h5 class="h5-parameters">Parameters:</h5>
     
 
 <table class="params">
@@ -5104,6 +4998,7 @@ If the message is successfully added to the database, return the room name
 <span class="param-type">SendMessageDto</span>
 
 
+
             
             </td>
 
@@ -5123,30 +5018,61 @@ If the message is successfully added to the database, return the room name
 
 
 
+
+
+
+
+
+
+
+
+
+
+<h5 class="h5-returns">Returns:</h5>
+
+        
+<div class="param-desc">
+    - The message or an error
+</div>
+
+
+
+<dl class="param-type">
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">Promise.&lt;(Error|MessageEntity)></span>
+
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="sendMessage"><span class="type-signature type-signature-async">(async) </span>sendMessage<span class="signature">(sendDto)</span><span class="type-signature"> &rarr; {Promise.&lt;(Error|MessageEntity)>}</span></h4>
+
+    
+
+
+
+
 <dl class="details">
-
     
+    <dt class="tag-description">Description:</dt>
+    <dd class="tag-description"><ul class="dummy"><li>Send a message to a chat room.
 
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
+If the room does not exist, return an error.
+If the message is successfully added to the database, return the room name</li></ul></dd>
     
 
     
@@ -5161,6 +5087,30 @@ If the message is successfully added to the database, return the room name
     
 
     
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
 </dl>
 
 
@@ -5175,64 +5125,7 @@ If the message is successfully added to the database, return the room name
 
 
 
-
-
-<h5>Returns:</h5>
-
-        
-<div class="param-desc">
-    - The message or an error
-</div>
-
-
-
-<dl>
-    <dt>
-        Type
-    </dt>
-    <dd>
-        
-<span class="param-type">Promise.&lt;(Error|MessageEntity)></span>
-
-
-    </dd>
-</dl>
-
-    
-
-
-
-
-
-        
-            
-
-    
-
-    
-    <h4 class="name" id="updateMemberStatus"><span class="type-signature">(async) </span>updateMemberStatus<span class="signature">(updateDto)</span><span class="type-signature"> &rarr; {Promise.&lt;ChatMemberPrismaType>}</span></h4>
-    
-
-    
-
-
-
-<div class="description">
-    Update the status of a chat member
-
-If the member to update is the owner, return an error
-If the member requesting the update is a user, return an error
-</div>
-
-
-
-
-
-
-
-
-
-    <h5>Parameters:</h5>
+    <h5 class="h5-parameters">Parameters:</h5>
     
 
 <table class="params">
@@ -5257,13 +5150,14 @@ If the member requesting the update is a user, return an error
 
         <tr>
             
-                <td class="name"><code>updateDto</code></td>
+                <td class="name"><code>sendDto</code></td>
             
 
             <td class="type">
             
                 
-<span class="param-type">UpdateChatMemberRequest</span>
+<span class="param-type">SendMessageDto</span>
+
 
 
             
@@ -5273,7 +5167,7 @@ If the member requesting the update is a user, return an error
 
             
 
-            <td class="description last">The member to update, the member requesting the update, and the new status</td>
+            <td class="description last">The message to send</td>
         </tr>
 
     
@@ -5285,30 +5179,61 @@ If the member requesting the update is a user, return an error
 
 
 
+
+
+
+
+
+
+
+
+
+
+<h5 class="h5-returns">Returns:</h5>
+
+        
+<div class="param-desc">
+    - The message or an error
+</div>
+
+
+
+<dl class="param-type">
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">Promise.&lt;(Error|MessageEntity)></span>
+
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="updateMemberStatus"><span class="type-signature type-signature-async">(async) </span>updateMemberStatus<span class="signature">(updateDto)</span><span class="type-signature"> &rarr; {Promise.&lt;ChatMemberPrismaType>}</span></h4>
+
+    
+
+
+
+
 <dl class="details">
-
     
+    <dt class="tag-description">Description:</dt>
+    <dd class="tag-description"><ul class="dummy"><li>Update the status of a chat member
 
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
+If the member to update is the owner, return an error
+If the member requesting the update is a user, return an error</li></ul></dd>
     
 
     
@@ -5323,6 +5248,30 @@ If the member requesting the update is a user, return an error
     
 
     
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
 </dl>
 
 
@@ -5337,64 +5286,7 @@ If the member requesting the update is a user, return an error
 
 
 
-
-
-<h5>Returns:</h5>
-
-        
-<div class="param-desc">
-    - The updated chat member
-</div>
-
-
-
-<dl>
-    <dt>
-        Type
-    </dt>
-    <dd>
-        
-<span class="param-type">Promise.&lt;ChatMemberPrismaType></span>
-
-
-    </dd>
-</dl>
-
-    
-
-
-
-
-
-        
-            
-
-    
-
-    
-    <h4 class="name" id="updateMemberStatus"><span class="type-signature">(async) </span>updateMemberStatus<span class="signature">(updateDto)</span><span class="type-signature"> &rarr; {Promise.&lt;ChatMemberPrismaType>}</span></h4>
-    
-
-    
-
-
-
-<div class="description">
-    Update the status of a chat member
-
-If the member to update is the owner, return an error
-If the member requesting the update is a user, return an error
-</div>
-
-
-
-
-
-
-
-
-
-    <h5>Parameters:</h5>
+    <h5 class="h5-parameters">Parameters:</h5>
     
 
 <table class="params">
@@ -5428,6 +5320,7 @@ If the member requesting the update is a user, return an error
 <span class="param-type">UpdateChatMemberRequest</span>
 
 
+
             
             </td>
 
@@ -5447,30 +5340,61 @@ If the member requesting the update is a user, return an error
 
 
 
+
+
+
+
+
+
+
+
+
+
+<h5 class="h5-returns">Returns:</h5>
+
+        
+<div class="param-desc">
+    - The updated chat member
+</div>
+
+
+
+<dl class="param-type">
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">Promise.&lt;ChatMemberPrismaType></span>
+
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="updateMemberStatus"><span class="type-signature type-signature-async">(async) </span>updateMemberStatus<span class="signature">(updateDto)</span><span class="type-signature"> &rarr; {Promise.&lt;ChatMemberPrismaType>}</span></h4>
+
+    
+
+
+
+
 <dl class="details">
-
     
+    <dt class="tag-description">Description:</dt>
+    <dd class="tag-description"><ul class="dummy"><li>Update the status of a chat member
 
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
+If the member to update is the owner, return an error
+If the member requesting the update is a user, return an error</li></ul></dd>
     
 
     
@@ -5485,6 +5409,30 @@ If the member requesting the update is a user, return an error
     
 
     
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
 </dl>
 
 
@@ -5499,61 +5447,7 @@ If the member requesting the update is a user, return an error
 
 
 
-
-
-<h5>Returns:</h5>
-
-        
-<div class="param-desc">
-    - The updated chat member
-</div>
-
-
-
-<dl>
-    <dt>
-        Type
-    </dt>
-    <dd>
-        
-<span class="param-type">Promise.&lt;ChatMemberPrismaType></span>
-
-
-    </dd>
-</dl>
-
-    
-
-
-
-
-
-        
-            
-
-    
-
-    
-    <h4 class="name" id="updateRoom"><span class="type-signature">(async) </span>updateRoom<span class="signature">(req)</span><span class="type-signature"> &rarr; {Promise.&lt;(ChatRoomEntity|Error)>}</span></h4>
-    
-
-    
-
-
-
-<div class="description">
-    Update a Chat Room
-</div>
-
-
-
-
-
-
-
-
-
-    <h5>Parameters:</h5>
+    <h5 class="h5-parameters">Parameters:</h5>
     
 
 <table class="params">
@@ -5578,13 +5472,14 @@ If the member requesting the update is a user, return an error
 
         <tr>
             
-                <td class="name"><code>req</code></td>
+                <td class="name"><code>updateDto</code></td>
             
 
             <td class="type">
             
                 
-<span class="param-type">UpdateChatRoomRequest</span>
+<span class="param-type">UpdateChatMemberRequest</span>
+
 
 
             
@@ -5594,7 +5489,7 @@ If the member requesting the update is a user, return an error
 
             
 
-            <td class="description last">The room name, status, username, old password, and new password</td>
+            <td class="description last">The member to update, the member requesting the update, and the new status</td>
         </tr>
 
     
@@ -5606,30 +5501,58 @@ If the member requesting the update is a user, return an error
 
 
 
+
+
+
+
+
+
+
+
+
+
+<h5 class="h5-returns">Returns:</h5>
+
+        
+<div class="param-desc">
+    - The updated chat member
+</div>
+
+
+
+<dl class="param-type">
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">Promise.&lt;ChatMemberPrismaType></span>
+
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="updateRoom"><span class="type-signature type-signature-async">(async) </span>updateRoom<span class="signature">(req)</span><span class="type-signature"> &rarr; {Promise.&lt;(ChatRoomEntity|Error)>}</span></h4>
+
+    
+
+
+
+
 <dl class="details">
-
     
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
+    <dt class="tag-description">Description:</dt>
+    <dd class="tag-description"><ul class="dummy"><li>Update a Chat Room</li></ul></dd>
     
 
     
@@ -5644,6 +5567,30 @@ If the member requesting the update is a user, return an error
     
 
     
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
 </dl>
 
 
@@ -5658,61 +5605,7 @@ If the member requesting the update is a user, return an error
 
 
 
-
-
-<h5>Returns:</h5>
-
-        
-<div class="param-desc">
-    - The updated room or an error
-</div>
-
-
-
-<dl>
-    <dt>
-        Type
-    </dt>
-    <dd>
-        
-<span class="param-type">Promise.&lt;(ChatRoomEntity|Error)></span>
-
-
-    </dd>
-</dl>
-
-    
-
-
-
-
-
-        
-            
-
-    
-
-    
-    <h4 class="name" id="updateRoom"><span class="type-signature">(async) </span>updateRoom<span class="signature">(req)</span><span class="type-signature"> &rarr; {Promise.&lt;(ChatRoomEntity|Error)>}</span></h4>
-    
-
-    
-
-
-
-<div class="description">
-    Update a Chat Room
-</div>
-
-
-
-
-
-
-
-
-
-    <h5>Parameters:</h5>
+    <h5 class="h5-parameters">Parameters:</h5>
     
 
 <table class="params">
@@ -5746,6 +5639,7 @@ If the member requesting the update is a user, return an error
 <span class="param-type">UpdateChatRoomRequest</span>
 
 
+
             
             </td>
 
@@ -5765,30 +5659,58 @@ If the member requesting the update is a user, return an error
 
 
 
+
+
+
+
+
+
+
+
+
+
+<h5 class="h5-returns">Returns:</h5>
+
+        
+<div class="param-desc">
+    - The updated room or an error
+</div>
+
+
+
+<dl class="param-type">
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">Promise.&lt;(ChatRoomEntity|Error)></span>
+
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="updateRoom"><span class="type-signature type-signature-async">(async) </span>updateRoom<span class="signature">(req)</span><span class="type-signature"> &rarr; {Promise.&lt;(ChatRoomEntity|Error)>}</span></h4>
+
+    
+
+
+
+
 <dl class="details">
-
     
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
+    <dt class="tag-description">Description:</dt>
+    <dd class="tag-description"><ul class="dummy"><li>Update a Chat Room</li></ul></dd>
     
 
     
@@ -5803,6 +5725,30 @@ If the member requesting the update is a user, return an error
     
 
     
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
 </dl>
 
 
@@ -5817,9 +5763,71 @@ If the member requesting the update is a user, return an error
 
 
 
+    <h5 class="h5-parameters">Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>req</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">UpdateChatRoomRequest</span>
 
 
-<h5>Returns:</h5>
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The room name, status, username, old password, and new password</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5 class="h5-returns">Returns:</h5>
 
         
 <div class="param-desc">
@@ -5828,7 +5836,7 @@ If the member requesting the update is a user, return an error
 
 
 
-<dl>
+<dl class="param-type">
     <dt>
         Type
     </dt>
@@ -5837,12 +5845,11 @@ If the member requesting the update is a user, return an error
 <span class="param-type">Promise.&lt;(ChatRoomEntity|Error)></span>
 
 
+
     </dd>
 </dl>
 
     
-
-
 
 
 
@@ -5859,19 +5866,23 @@ If the member requesting the update is a user, return an error
 
 
 
+    
+    
 </div>
-
-<nav>
-    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="ChatGateway.html">ChatGateway</a></li><li><a href="ChatService.html">ChatService</a></li><li><a href="GameGateway.html">GameGateway</a></li><li><a href="GameModuleData.html">GameModuleData</a></li><li><a href="GameService.html">GameService</a></li><li><a href="GetFriendsRequest.html">GetFriendsRequest</a></li><li><a href="LoginGateway.html">LoginGateway</a></li><li><a href="PrismaService.html">PrismaService</a></li><li><a href="UserDto.html">UserDto</a></li><li><a href="Vec2.html">Vec2</a></li></ul><h3>Interfaces</h3><ul><li><a href="MatchPrismaType.html">MatchPrismaType</a></li><li><a href="ProfileViewModelType.html">ProfileViewModelType</a></li><li><a href="RootModelType.html">RootModelType</a></li><li><a href="RootViewModelType.html">RootViewModelType</a></li><li><a href="SettingsModelType.html">SettingsModelType</a></li><li><a href="SettingsViewModelType.html">SettingsViewModelType</a></li></ul><h3>Events</h3><ul><li><a href="global.html#event:%2522blockUser%2522">"blockUser"</a></li><li><a href="global.html#event:%2522createRoom%2522">"createRoom"</a></li><li><a href="global.html#event:%2522gameEnded%2522">"gameEnded"</a></li><li><a href="global.html#event:%2522gameStarted%2522">"gameStarted"</a></li><li><a href="global.html#event:%2522getRoomMessagesPage%2522">"getRoomMessagesPage"</a></li><li><a href="global.html#event:%2522joinRoom%2522">"joinRoom"</a></li><li><a href="global.html#event:%2522kickChatMember%2522">"kickChatMember"</a></li><li><a href="global.html#event:%2522leaveRoom%2522">"leaveRoom"</a></li><li><a href="global.html#event:%2522listAvailableChatRooms%2522">"listAvailableChatRooms"</a></li><li><a href="global.html#event:%2522listAvailableUsers%2522">"listAvailableUsers"</a></li><li><a href="global.html#event:%2522listUsers%2522">"listUsers"</a></li><li><a href="global.html#event:%2522lobbyCreated%2522">"lobbyCreated"</a></li><li><a href="global.html#event:%2522sendDirectMessage%2522">"sendDirectMessage"</a></li><li><a href="global.html#event:%2522sendMessage%2522">"sendMessage"</a></li><li><a href="global.html#event:%2522updateChatMemberStatus%2522">"updateChatMemberStatus"</a></li><li><a href="global.html#event:%2522updateChatRoom%2522">"updateChatRoom"</a></li><li><a href="global.html#event:%2522userCreation%2522">"userCreation"</a></li><li><a href="global.html#event:%2522userLogin%2522">"userLogin"</a></li></ul><h3>Global</h3><ul><li><a href="global.html#%2522blockUser%2522">"blockUser"</a></li><li><a href="global.html#%2522createRoom%2522">"createRoom"</a></li><li><a href="global.html#%2522getRoomMessagesPage%2522">"getRoomMessagesPage"</a></li><li><a href="global.html#%2522joinRoom%2522">"joinRoom"</a></li><li><a href="global.html#%2522kickChatMember%2522">"kickChatMember"</a></li><li><a href="global.html#%2522leaveRoom%2522">"leaveRoom"</a></li><li><a href="global.html#%2522listAvailableChatRooms%2522">"listAvailableChatRooms"</a></li><li><a href="global.html#%2522listAvailableUsers%2522">"listAvailableUsers"</a></li><li><a href="global.html#%2522listUsers%2522">"listUsers"</a></li><li><a href="global.html#%2522sendDirectMessage%2522">"sendDirectMessage"</a></li><li><a href="global.html#%2522sendMessage%2522">"sendMessage"</a></li><li><a href="global.html#%2522updateChatMemberStatus%2522">"updateChatMemberStatus"</a></li><li><a href="global.html#%2522updateChatRoom%2522">"updateChatRoom"</a></li><li><a href="global.html#%2522userCreation%2522">"userCreation"</a></li><li><a href="global.html#%2522userLogin%2522">"userLogin"</a></li><li><a href="global.html#Ball">Ball</a></li><li><a href="global.html#Floor">Floor</a></li><li><a href="global.html#FriendsList">FriendsList</a></li><li><a href="global.html#FriendsListRow">FriendsListRow</a></li><li><a href="global.html#GLOBAL_T_IN_DAYS">GLOBAL_T_IN_DAYS</a></li><li><a href="global.html#GetUser">GetUser</a></li><li><a href="global.html#GetUserWs">GetUserWs</a></li><li><a href="global.html#HelmetView">HelmetView</a></li><li><a href="global.html#MatchHistory">MatchHistory</a></li><li><a href="global.html#MatchHistoryRow">MatchHistoryRow</a></li><li><a href="global.html#OuterFrameBottom">OuterFrameBottom</a></li><li><a href="global.html#OuterFrameLeft">OuterFrameLeft</a></li><li><a href="global.html#OuterFrameRight">OuterFrameRight</a></li><li><a href="global.html#OuterFrameTop">OuterFrameTop</a></li><li><a href="global.html#PaddleLeft">PaddleLeft</a></li><li><a href="global.html#PaddleRight">PaddleRight</a></li><li><a href="global.html#PageState">PageState</a></li><li><a href="global.html#ProfileHeader">ProfileHeader</a></li><li><a href="global.html#ProfileViewModelContext">ProfileViewModelContext</a></li><li><a href="global.html#ProfileViewModelProvider">ProfileViewModelProvider</a></li><li><a href="global.html#RootView">RootView</a></li><li><a href="global.html#RootViewContent">RootViewContent</a></li><li><a href="global.html#RootViewModelContext">RootViewModelContext</a></li><li><a href="global.html#RootViewModelProvider">RootViewModelProvider</a></li><li><a href="global.html#SettingsViewModelContext">SettingsViewModelContext</a></li><li><a href="global.html#SettingsViewModelProvider">SettingsViewModelProvider</a></li><li><a href="global.html#useGameViewModelContext">useGameViewModelContext</a></li><li><a href="global.html#useProfileViewModelContext">useProfileViewModelContext</a></li><li><a href="global.html#useRootModel">useRootModel</a></li><li><a href="global.html#useRootViewModelContext">useRootViewModelContext</a></li><li><a href="global.html#useSettingsModel">useSettingsModel</a></li><li><a href="global.html#useSettingsViewModelContext">useSettingsViewModelContext</a></li></ul>
-</nav>
 
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.2</a> on Tue Apr 25 2023 18:48:57 GMT-0400 (Eastern Daylight Time)
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 4.0.2</a> on Tue Apr 25 2023 20:32:20 GMT-0400 (Eastern Daylight Time) using the <a href="https://github.com/clenemt/docdash">docdash</a> theme.
 </footer>
 
-<script> prettyPrint(); </script>
-<script src="scripts/linenumber.js"> </script>
+<script>prettyPrint();</script>
+<script src="scripts/polyfill.js"></script>
+<script src="scripts/linenumber.js"></script>
+
+<script src="scripts/search.js" defer></script>
+
+
+
 </body>
 </html>
