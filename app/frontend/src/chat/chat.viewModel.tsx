@@ -285,43 +285,21 @@ export const ChatViewModelProvider = ({ children }) => {
   /*   useEffects   */
   /******************/
 
-  // FIXME: temporary addition for dev build to test user creation
-  // TODO: remove this when user creation is implemented
-  // useEffect(() => {
-  //   if (socket && !self.username) {
-  //     self.username = "schlurp";
-  //   }
-  // }, [socket, ""]);
+  // Login to the Chat
+  useEffect(() => {
+    // Try to create a temporary user
+    if (self.username) {
+      setRooms(() => {
+        return {};
+      });
 
-  // FIXME: temporary addition for dev build to test user creation
-  // If no user is logged in, try to create a temporary user
-  // useEffect(() => {
-  //   // Try to create a temporary user
-  //   if (self.username) {
-  //     setRooms(() => {
-  //       return {};
-  //     });
-
-  // const createTempUser = async (username: string): Promise<void> => {
-  //   const req: AuthRequest = {
-  //     username,
-  //     firstName: "Schl",
-  //     lastName: "urp",
-  //     email: `${username}@schluuuuu.uuuuurp`,
-  //     avatar: `https://i.pravatar.cc/150?img=${username}`
-  //   };
-  //   const userCreated = await createUser(req);
-  //   if (!userCreated) {
-  //     // Try to login instead
-  //     const userLogged = await userLogin(req);
-  //     if (!userLogged) {
-  //     }
-  //   }
-  // };
-
-  // createTempUser(self.username);
-  // }
-  // }, [self.username, ""]);
+      const req: AuthRequest = {
+        username: self.username,
+        avatar: self.avatar
+      };
+      userLogin(req);
+    }
+  }, [self.username, ""]);
 
   return (
     <ChatContext.Provider

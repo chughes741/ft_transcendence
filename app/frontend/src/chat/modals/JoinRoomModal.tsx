@@ -85,6 +85,7 @@ export const JoinRoomModal: React.FC<JoinRoomModalProps> = ({
   };
 
   useEffect(() => {
+    console.debug("JoinRoomModal: ", self.username);
     // Send a socket event to get the list of available rooms
     socket.emit(
       "listAvailableChatRooms",
@@ -130,15 +131,15 @@ export const JoinRoomModal: React.FC<JoinRoomModalProps> = ({
             >
               <AvatarGroup total={option.nbMembers + 1}>
                 <UserStatusBadge
-                  status={option.owner.status}
+                  status={option.owner?.status}
                   anchorOrigin={{
                     vertical: "top",
                     horizontal: "left"
                   }}
                 >
                   <Avatar
-                    src={option.owner.avatar}
-                    alt={option.owner.username}
+                    src={option.owner?.avatar}
+                    alt={option.owner?.username}
                   />
                 </UserStatusBadge>
               </AvatarGroup>

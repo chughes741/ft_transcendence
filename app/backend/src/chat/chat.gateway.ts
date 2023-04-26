@@ -164,7 +164,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   constructor(
     private prismaService: PrismaService,
     private chatService: ChatService,
-    private userConnectionsService: UserConnectionsService //private tokenStorage: TokenStorageService
+    private userConnectionsService: UserConnectionsService
   ) {}
 
   @WebSocketServer()
@@ -176,7 +176,6 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
   async handleDisconnect(client: Socket) {
     // Remove the user connection
-    //await this.tokenStorage.removeToken(client.id);
     const connections = this.userConnectionsService.removeUserConnection(
       client.id,
       client.id
@@ -197,7 +196,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   }
 
   // Create a sendEventToAllUserSockets(member.username, "newChatRoomMember", newMember) function
-  /* eslint-disable-next-line -- This function is not responsible for payload validation*/
+  /* eslint-disable-next-line -- This function is not responsible for payload validation */
   async sendEventToAllUserSockets(username: string, event: string, data: any) {
     logger.debug(`Sending event ${event} to user ${username}`);
     const userSockets = this.userConnectionsService.getUserSockets(username);
@@ -284,14 +283,13 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
    * @param {Socket} client - socket.io client
    * @param {string} username - username of the user
    * @param {string} roomName - name of the room
-   * @returns {AvailableRoomEntity[] | UserEntity[]} - available rooms or users
+   * @returns {AvailableRoomEntity[]} - available rooms
    */
   @SubscribeMessage("listAvailableChatRooms")
   async listAvailableChatRooms(
     client: Socket,
-    username: string,
-    roomName: string // Add roomName parameter
-  ): Promise<AvailableRoomEntity[] | UserEntity[]> {
+    username: string
+  ): Promise<AvailableRoomEntity[]> {
     // Update the return type
     const userId = await this.prismaService.getUserIdByNick(username);
     logger.debug(
@@ -301,20 +299,6 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
       return [];
     }
 
-    // If roomName is empty, return available users
-    if (!roomName) {
-      const availableUsers = await this.prismaService.getAvailableUsers(
-        userId,
-        null
-      );
-      return availableUsers.map((user) => ({
-        username: user.username,
-        avatar: user.avatar,
-        status: user.status
-      }));
-    }
-
-    // Otherwise, return available rooms
     const availableRooms = await this.prismaService.getAvailableChatRooms(
       userId
     );
@@ -411,7 +395,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
    * @returns {DevError | string}
    */
   @SubscribeMessage("userLogin")
-  async devUserLogin(
+  async chatGatewayLogin(
     client: Socket,
     req: AuthRequest
   ): Promise<{ error: string } | string> {
@@ -529,7 +513,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
     /** @todo move this to a "getChatRoomMessages" handler */
     // Assign the user id to the dto instead of the socket id
-    dto.user = username;
+    // dto.user = username;
     const ret = await this.chatService.joinRoom(dto);
     // Find the user's ChatMember entity by finding the room name and the user id in the database
 
@@ -816,7 +800,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
   /**
    * Block a user from sending you direct messages
-   * 
+   *
    * @event "blockUser"
    * @param {Socket} client - socket.io client
    * @param {BlockUserRequest} req - block user request

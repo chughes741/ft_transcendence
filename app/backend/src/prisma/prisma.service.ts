@@ -371,7 +371,7 @@ export class PrismaService extends PrismaClient {
    * Gets a chat room with its member
    *
    * @todo Fix this functions return type
-   * 
+   *
    * @param {string} roomName - The name of the chat room
    * @param {string} username - The username of the member
    */
@@ -422,7 +422,7 @@ export class PrismaService extends PrismaClient {
 
   /**
    * Deletes a chat room
-   * 
+   *
    * @param {number} id - The id of the chat room
    * @returns {Promise<ChatRoomDto>} - A Promise that resolves to the deleted chat room
    */
@@ -540,7 +540,7 @@ export class PrismaService extends PrismaClient {
    * Returns a users friends from the database
    *
    * @todo make a primsa type for return
-   * 
+   *
    * @param {GetFriendsRequest} getFriendsRequest - The request body
    * @returns {Promise<any[]>} - A Promise that resolves to the user's friends
    */
@@ -836,7 +836,7 @@ export class PrismaService extends PrismaClient {
    * Check the status of a user in a chat room
    *
    * @todo Fix this functions return type
-   * 
+   *
    * @param {string} userId - The user ID
    * @param {string} roomName - The room name
    */
@@ -896,7 +896,7 @@ export class PrismaService extends PrismaClient {
 
   /**
    * Updates the status of a user by their username
-   * 
+   *
    * @param {string} userName - The username
    * @returns {Promise<void>} - A Promise that resolves when the user is updated
    */
@@ -931,7 +931,7 @@ export class PrismaService extends PrismaClient {
 
   /**
    * Adds a new Direct Message chat room between two users
-   * 
+   *
    * @param {string} senderId - The sender's ID
    * @param {string} recipientId - The recipient's ID
    * @param {string} roomName - The room name
@@ -1041,7 +1041,7 @@ export class PrismaService extends PrismaClient {
 
   /**
    * Retrieves the users blocking a user.
-   * 
+   *
    * @param {string} userId - The ID of the user who was blocked.
    * @returns {Promise<User[]>} - A Promise that resolves to an array of users who did the blocking.
    */
@@ -1063,7 +1063,7 @@ export class PrismaService extends PrismaClient {
 
   /**
    * Checks if a user is blocked by another user.
-   * 
+   *
    * @param {string} blockerId - The ID of the user who did the blocking.
    * @param {string} blockedUserId - The ID of the user who was blocked.
    * @returns {Promise<boolean>} - A Promise that resolves to true if the user is blocked by the other user, false otherwise.
@@ -1084,9 +1084,9 @@ export class PrismaService extends PrismaClient {
 
   /**
    * Add a match to the database
-   * 
+   *
    * @todo fix this wonky parameter list
-   * 
+   *
    * @param {string} player1Id - The ID of the first player
    * @param {string} player2Id - The ID of the second player
    * @param {number} scorePlayer1 - The score of the first player

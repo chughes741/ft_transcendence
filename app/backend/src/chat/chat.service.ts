@@ -118,7 +118,7 @@ export class ChatService {
 
   /**
    * Checks if date is in the past
-   * 
+   *
    * @param {Date} date - The date to check
    * @returns {boolean} - True if date is in the past, false otherwise
    */
@@ -129,7 +129,7 @@ export class ChatService {
 
   /**
    * Handles the creation of a new chat room
-   * 
+   *
    * @param {string} roomName - The name of the room to create
    * @param {string} user - The user creating the room
    * @returns {Promise<ChatRoom>} - The created room
@@ -156,10 +156,10 @@ export class ChatService {
 
   /**
    * Handles password verification for a room
-   * 
+   *
    * @param {ChatRoom} room - The room to verify
    * @param {string} password - The password to verify
-   * @returns {Promise<void>} - Resolves if password is correct, rejects otherwise 
+   * @returns {Promise<void>} - Resolves if password is correct, rejects otherwise
    */
   private async handlePasswordVerification(
     room: ChatRoom,
@@ -175,7 +175,7 @@ export class ChatService {
 
   /**
    * Handles chat member creation
-   * 
+   *
    * @param {string} user - The user to create
    * @param {number} roomId - The room to add the user to
    * @returns {Promise<ChatMember>} - The created chat member
@@ -185,6 +185,9 @@ export class ChatService {
     roomId: number
   ): Promise<ChatMember> {
     const userId = await this.prismaService.getUserIdByNick(user);
+    if (!userId) {
+      throw Error(`User ${user} does not exist`);
+    }
     let chatMember = await this.prismaService.chatMember.findFirst({
       where: { memberId: userId, roomId: roomId }
     });
@@ -207,12 +210,14 @@ export class ChatService {
    * If the room exists and is password protected, check the password
    *    If the password is incorrect, return an error
    * If the room exists and is public, join it
-   * 
+   *
    * @param {JoinRoomDto} joinDto - The room name, password, and user
    * @returns {Promise<ChatRoomEntity | Error>} - The room entity or an error
    */
   async joinRoom(joinDto: JoinRoomDto): Promise<ChatRoomEntity | Error> {
     const { roomName, password, user } = joinDto;
+    logger.debug(`User ${user} attempting to join room ${roomName}`);
+
     let room: ChatRoom;
 
     try {
@@ -253,7 +258,7 @@ export class ChatService {
 
   /**
    * Leave a chat room
-   * 
+   *
    * @param {LeaveRoomRequest} req - The room name and username
    * @returns {Promise<ChatMember | Error>} - The chat member or an error
    */
@@ -282,7 +287,7 @@ export class ChatService {
 
   /**
    * Update a Chat Room
-   * 
+   *
    * @param {UpdateChatRoomRequest} req - The room name, status, username, old password, and new password
    * @returns {Promise<ChatRoomEntity | Error>} - The updated room or an error
    */
@@ -343,7 +348,7 @@ export class ChatService {
 
   /**
    * get a page of messages from a room
-   * 
+   *
    * @param {string} roomName - The room name
    * @param {Date} date - The date to start the page from
    * @param {number} pageSize - The number of messages to return
@@ -419,7 +424,7 @@ export class ChatService {
    * If the user already exists, return an error
    * If the user does not exist, add it to the database and send a confirmation
    * @todo Remove this function and replace it with a proper user creation
-   * 
+   *
    * @param {AuthRequest} req - The user's username, avatar, email, first name, and last name
    * @returns {Promise<UserEntity | Error>} - The user or an error
    */
@@ -467,10 +472,10 @@ export class ChatService {
 
   /**
    * Temporary function to login a user
-   * 
+   *
    * If the user does not exist, return an error
    * @todo remove this function when authentication is enabled
-   * 
+   *
    * @param {AuthRequest} req - The user's username
    * @returns {Promise<string | Error>} - The username or an error
    */
@@ -491,9 +496,9 @@ export class ChatService {
 
   /**
    * Get the list of users in a chat room
-   * 
+   *
    * If the room does not exist, return an error
-   * 
+   *
    * @param {string} chatRoomName - The name of the chat room
    * @returns {Promise<ChatMemberEntity[]>} - The list of users in the chat room
    */
@@ -511,9 +516,9 @@ export class ChatService {
 
   /**
    * Check and update the user's status
-   * 
+   *
    * If the user is muted and the mute has expired, update the user's status to OK
-   * 
+   *
    * @param {string} uuid - The user's UUID
    * @param {string} roomName - The name of the chat room
    * @returns {Promise<ChatMemberStatus>} - The user's status
@@ -559,10 +564,10 @@ export class ChatService {
 
   /**
    * Update the status of a chat member
-   * 
+   *
    * If the member to update is the owner, return an error
    * If the member requesting the update is a user, return an error
-   * 
+   *
    * @param {UpdateChatMemberRequest} updateDto - The member to update, the member requesting the update, and the new status
    * @returns {Promise<ChatMemberPrismaType>} - The updated chat member
    */
@@ -593,10 +598,10 @@ export class ChatService {
 
   /**
    * Kick a chat member
-   * 
+   *
    * If the member to kick is the owner, return an error
    * If the member requesting the kick is a user, return an error
-   * 
+   *
    * @param {KickMemberRequest} kickDto - The member to kick, the member requesting the kick, and the new status
    * @returns {Promise<ChatMemberEntity | Error>} - The updated chat member
    */
@@ -633,9 +638,9 @@ export class ChatService {
 
   /**
    * Invite users to a chat room
-   * 
+   *
    * If the room does not exist, return an error
-   * 
+   *
    * @param {InviteUsersToRoomRequest} req - The room to invite users to and the list of users to invite
    * @returns {Promise<ChatMemberEntity[] | Error>} - The list of users invited to the room
    */
@@ -675,11 +680,11 @@ export class ChatService {
 
   /**
    * Send a Direct Message to a user
-   * 
+   *
    * If the sender or recipient does not exist, return an error
    * If the recipient has blocked the sender, return an error
    * If a dialogue room between the sender and the recipient already exists, return the existing room
-   * 
+   *
    * @param {SendDirectMessageRequest} req - The sender and recipient of the message
    * @returns {Promise<ChatRoomEntity | Error>} - The dialogue room between the sender and the recipient
    */
@@ -728,10 +733,10 @@ export class ChatService {
 
   /**
    * Block a user. The user will not be able to send messages to the user who blocked them
-   * 
+   *
    * If the blocker or blockee does not exist, return an error
    * If the blocker and blockee are already blocking each other, return the existing block
-   * 
+   *
    * @param {BlockUserRequest} req - The blocker and blockee
    * @returns {Promise<BlockedUser | Error>} - The blocked user
    */
