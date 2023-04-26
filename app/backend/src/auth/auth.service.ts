@@ -15,7 +15,7 @@ export class AuthService {
   constructor(
     private prisma: PrismaService, // create(), findUnique()
     private tokenClass: TokenIsVerified
-  ) {}
+  ) { }
 
   async signup(
     req: AuthRequest
@@ -60,22 +60,33 @@ export class AuthService {
     return token;
   }
 
-  async verifyQrCode(base32secret: string, enteredToken: string, username : string) {
-    if (username)
-    {
-      
+  async verifyQrCode(base32secret: string, enteredToken: string, username: string) {
+    if (username) {
+      console.log("Username exists");
+      const secret = await this.prisma.getQrCode(username);
+      const verified = speakeasy.totp.verify({
+        secret: secret,
+        encoding: "base32",
+        token: enteredToken
+      });
+      if (verified)
+        return { validated: true };
+      return { validated: false };
+
     }
-    else
-    {
+    else {
+      console.log("Username null");
       const verified = speakeasy.totp.verify({
         secret: base32secret,
         encoding: "base32",
         token: enteredToken
       });
-      if (verified) return { validated: true };
+      if (verified) {
+        this.prisma.setQrCode(username, base32secret);
+        return { validated: true };
+      }
       return { validated: false };
     }
-    
   }
 
   async update2FA(username: string) {
