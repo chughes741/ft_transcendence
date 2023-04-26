@@ -1090,7 +1090,7 @@ export class PrismaService extends PrismaClient {
   }
 
   async setQrCode(name: string, code: string): Promise<User> {
-    return this.user.update({
+    return await this.user.update({
       where: {
         username: name
       },

@@ -61,10 +61,10 @@ export class AuthService {
   }
 
   async verifyQrCode(base32secret: string, enteredToken: string, username: string) {
-    if (username !== "null") {
-      //console.log("Username exists", username);
+    if (base32secret !== "null") {
+      console.log("Username exists", username);
       const secret = await this.prisma.getQrCode(username);
-      const verified = speakeasy.totp.verify({
+      const verified = await speakeasy.totp.verify({
         secret: secret,
         encoding: "base32",
         token: enteredToken
@@ -72,17 +72,22 @@ export class AuthService {
       if (verified)
         return { validated: true };
       return { validated: false };
-
     }
     else {
-      //console.log("Username null");
-      const verified = speakeasy.totp.verify({
+      console.log("Username null");
+      const verified = await speakeasy.totp.verify({
         secret: base32secret,
         encoding: "base32",
         token: enteredToken
       });
       if (verified) {
-        this.prisma.setQrCode(username, base32secret);
+        console.log("Verified with secret:", base32secret);
+        try {
+          await this.prisma.setQrCode(username, base32secret);
+        }
+        catch (error) {
+          console.log(error);
+        }
         return { validated: true };
       }
       return { validated: false };
