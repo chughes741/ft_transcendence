@@ -3,7 +3,7 @@
 <head>
     
     <meta charset="utf-8">
-    <title>GameGateway - Kingpong</title>
+    <title>ProfileService - Kingpong</title>
     
     <meta name="description" content="Documentation for the kingpong website" />
     
@@ -46,7 +46,7 @@
 
 <div id="main">
     
-    <h1 class="page-title">GameGateway</h1>
+    <h1 class="page-title">ProfileService</h1>
     
 
     
@@ -60,11 +60,11 @@
     
         <h2>
         
-            GameGateway
+            ProfileService
         
         </h2>
         
-            <div class="class-description usertext">Websocket gateway for game module</div>
+            <div class="class-description usertext">Service for profile related requests</div>
         
     
 </header>
@@ -79,7 +79,7 @@
     <h2>Constructor</h2>
     
 
-    <h4 class="name" id="GameGateway"><span class="type-signature"></span>new GameGateway<span class="signature">()</span><span class="type-signature"></span></h4>
+    <h4 class="name" id="ProfileService"><span class="type-signature"></span>new ProfileService<span class="signature">()</span><span class="type-signature"></span></h4>
 
     
 
@@ -92,7 +92,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="backend_src_game_game.gateway.ts.html">backend/src/game/game.gateway.ts</a>, <a href="backend_src_game_game.gateway.ts.html#line16">line 16</a>
+        <a href="backend_src_profile_profile.service.ts.html">backend/src/profile/profile.service.ts</a>, <a href="backend_src_profile_profile.service.ts.html#line14">line 14</a>
     </li></ul></dd>
     
 
@@ -182,7 +182,7 @@
 
     
 
-    <h4 class="name" id="clientUpdate"><span class="type-signature type-signature-async">(async) </span>clientUpdate<span class="signature">(payload)</span><span class="type-signature"></span></h4>
+    <h4 class="name" id="addFriend"><span class="type-signature"></span>addFriend<span class="signature">(addFriendRequest)</span><span class="type-signature"> &rarr; {boolean}</span></h4>
 
     
 
@@ -192,13 +192,13 @@
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li>Handle game state updates from clients</li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li>Adds a friend to a users friend list</li></ul></dd>
     
 
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="backend_src_game_game.gateway.ts.html">backend/src/game/game.gateway.ts</a>, <a href="backend_src_game_game.gateway.ts.html#line73">line 73</a>
+        <a href="backend_src_profile_profile.service.ts.html">backend/src/profile/profile.service.ts</a>, <a href="backend_src_profile_profile.service.ts.html#line119">line 119</a>
     </li></ul></dd>
     
 
@@ -270,13 +270,13 @@
 
         <tr>
             
-                <td class="name"><code>payload</code></td>
+                <td class="name"><code>addFriendRequest</code></td>
             
 
             <td class="type">
             
                 
-<span class="param-type">ClientGameStateUpdateRequest</span>
+<span class="param-type">AddFriendRequest</span>
 
 
 
@@ -300,315 +300,6 @@
 
 
 
-
-<h5 class="h5-listens">Listens to Events:</h5>
-<ul>
-    <li>GameEvents.event:ClientGameStateUpdate</li>
-</ul>
-
-
-
-
-
-
-
-
-
-
-
-
-        
-            
-
-    
-
-    <h4 class="name" id="clientUpdate"><span class="type-signature type-signature-async">(async) </span>clientUpdate<span class="signature">(payload)</span><span class="type-signature"></span></h4>
-
-    
-
-
-
-
-<dl class="details">
-    
-    <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li>Handle game state updates from clients</li></ul></dd>
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="backend_src_game_game.gateway.ts.html">backend/src/game/game.gateway.ts</a>, <a href="backend_src_game_game.gateway.ts.html#line158">line 158</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-
-
-
-
-
-
-
-    <h5 class="h5-parameters">Parameters:</h5>
-    
-
-<table class="params">
-    <thead>
-    <tr>
-        
-        <th>Name</th>
-        
-
-        <th>Type</th>
-
-        
-
-        
-
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    
-
-        <tr>
-            
-                <td class="name"><code>payload</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">ClientGameStateUpdateRequest</span>
-
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last"></td>
-        </tr>
-
-    
-    </tbody>
-</table>
-
-
-
-
-
-
-
-
-<h5 class="h5-listens">Listens to Events:</h5>
-<ul>
-    <li>GameEvents.event:ClientGameStateUpdate</li>
-</ul>
-
-
-
-
-
-
-
-
-
-
-
-
-        
-            
-
-    
-
-    <h4 class="name" id="joinGameQueue"><span class="type-signature type-signature-async">(async) </span>joinGameQueue<span class="signature">(payload, client)</span><span class="type-signature"> &rarr; {Promise.&lt;boolean>}</span></h4>
-
-    
-
-
-
-
-<dl class="details">
-    
-    <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li>Handle the join queue event</li></ul></dd>
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="backend_src_game_game.gateway.ts.html">backend/src/game/game.gateway.ts</a>, <a href="backend_src_game_game.gateway.ts.html#line44">line 44</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-
-
-
-
-
-
-
-    <h5 class="h5-parameters">Parameters:</h5>
-    
-
-<table class="params">
-    <thead>
-    <tr>
-        
-        <th>Name</th>
-        
-
-        <th>Type</th>
-
-        
-
-        
-
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    
-
-        <tr>
-            
-                <td class="name"><code>payload</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">JoinGameQueueRequest</span>
-
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last"></td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>client</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">Socket</span>
-
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last"></td>
-        </tr>
-
-    
-    </tbody>
-</table>
-
-
-
-
-
-
-
-
-<h5 class="h5-listens">Listens to Events:</h5>
-<ul>
-    <li>GameEvents.event:JoinGameQueue</li>
-</ul>
 
 
 
@@ -621,6 +312,10 @@
 <h5 class="h5-returns">Returns:</h5>
 
         
+<div class="param-desc">
+    - Add successful
+</div>
+
 
 
 <dl class="param-type">
@@ -629,7 +324,7 @@
     </dt>
     <dd>
         
-<span class="param-type">Promise.&lt;boolean></span>
+<span class="param-type">boolean</span>
 
 
 
@@ -645,7 +340,7 @@
 
     
 
-    <h4 class="name" id="joinGameQueue"><span class="type-signature type-signature-async">(async) </span>joinGameQueue<span class="signature">(payload, client)</span><span class="type-signature"> &rarr; {Promise.&lt;boolean>}</span></h4>
+    <h4 class="name" id="addFriend"><span class="type-signature"></span>addFriend<span class="signature">(addFriendRequest)</span><span class="type-signature"> &rarr; {boolean}</span></h4>
 
     
 
@@ -655,13 +350,13 @@
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li>Handle the join queue event</li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li>Adds a friend to a users friend list</li></ul></dd>
     
 
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="backend_src_game_game.gateway.ts.html">backend/src/game/game.gateway.ts</a>, <a href="backend_src_game_game.gateway.ts.html#line134">line 134</a>
+        <a href="backend_src_profile_profile.service.ts.html">backend/src/profile/profile.service.ts</a>, <a href="backend_src_profile_profile.service.ts.html#line179">line 179</a>
     </li></ul></dd>
     
 
@@ -733,37 +428,13 @@
 
         <tr>
             
-                <td class="name"><code>payload</code></td>
+                <td class="name"><code>addFriendRequest</code></td>
             
 
             <td class="type">
             
                 
-<span class="param-type">JoinGameQueueRequest</span>
-
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last"></td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>client</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">Socket</span>
+<span class="param-type">AddFriendRequest</span>
 
 
 
@@ -788,11 +459,6 @@
 
 
 
-<h5 class="h5-listens">Listens to Events:</h5>
-<ul>
-    <li>GameEvents.event:JoinGameQueue</li>
-</ul>
-
 
 
 
@@ -804,6 +470,10 @@
 <h5 class="h5-returns">Returns:</h5>
 
         
+<div class="param-desc">
+    - Add successful
+</div>
+
 
 
 <dl class="param-type">
@@ -812,7 +482,7 @@
     </dt>
     <dd>
         
-<span class="param-type">Promise.&lt;boolean></span>
+<span class="param-type">boolean</span>
 
 
 
@@ -828,7 +498,7 @@
 
     
 
-    <h4 class="name" id="leaveGameQueue"><span class="type-signature type-signature-async">(async) </span>leaveGameQueue<span class="signature">(client, payload)</span><span class="type-signature"></span></h4>
+    <h4 class="name" id="getFriends"><span class="type-signature type-signature-async">(async) </span>getFriends<span class="signature">(getFriendsRequest)</span><span class="type-signature"> &rarr; {Promise.&lt;(Array.&lt;ProfileEntity>|null)>}</span></h4>
 
     
 
@@ -838,13 +508,13 @@
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li>Handle the leave queue event</li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li>Get a list of all users friends</li></ul></dd>
     
 
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="backend_src_game_game.gateway.ts.html">backend/src/game/game.gateway.ts</a>, <a href="backend_src_game_game.gateway.ts.html#line53">line 53</a>
+        <a href="backend_src_profile_profile.service.ts.html">backend/src/profile/profile.service.ts</a>, <a href="backend_src_profile_profile.service.ts.html#line79">line 79</a>
     </li></ul></dd>
     
 
@@ -916,37 +586,13 @@
 
         <tr>
             
-                <td class="name"><code>client</code></td>
+                <td class="name"><code>getFriendsRequest</code></td>
             
 
             <td class="type">
             
                 
-<span class="param-type">Socket</span>
-
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last"></td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>payload</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">LeaveGameQueueRequest</span>
+<span class="param-type"><a href="GetFriendsRequest.html">GetFriendsRequest</a></span>
 
 
 
@@ -970,315 +616,6 @@
 
 
 
-
-<h5 class="h5-listens">Listens to Events:</h5>
-<ul>
-    <li>GameEvents.event:LeaveGameQueue</li>
-</ul>
-
-
-
-
-
-
-
-
-
-
-
-
-        
-            
-
-    
-
-    <h4 class="name" id="leaveGameQueue"><span class="type-signature type-signature-async">(async) </span>leaveGameQueue<span class="signature">(client, payload)</span><span class="type-signature"></span></h4>
-
-    
-
-
-
-
-<dl class="details">
-    
-    <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li>Handle the leave queue event</li></ul></dd>
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="backend_src_game_game.gateway.ts.html">backend/src/game/game.gateway.ts</a>, <a href="backend_src_game_game.gateway.ts.html#line143">line 143</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-
-
-
-
-
-
-
-    <h5 class="h5-parameters">Parameters:</h5>
-    
-
-<table class="params">
-    <thead>
-    <tr>
-        
-        <th>Name</th>
-        
-
-        <th>Type</th>
-
-        
-
-        
-
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    
-
-        <tr>
-            
-                <td class="name"><code>client</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">Socket</span>
-
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last"></td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>payload</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">LeaveGameQueueRequest</span>
-
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last"></td>
-        </tr>
-
-    
-    </tbody>
-</table>
-
-
-
-
-
-
-
-
-<h5 class="h5-listens">Listens to Events:</h5>
-<ul>
-    <li>GameEvents.event:LeaveGameQueue</li>
-</ul>
-
-
-
-
-
-
-
-
-
-
-
-
-        
-            
-
-    
-
-    <h4 class="name" id="playerReady"><span class="type-signature type-signature-async">(async) </span>playerReady<span class="signature">(payload)</span><span class="type-signature"> &rarr; {Promise.&lt;boolean>}</span></h4>
-
-    
-
-
-
-
-<dl class="details">
-    
-    <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li>Handle playerReady event and start game when both players ready</li></ul></dd>
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="backend_src_game_game.gateway.ts.html">backend/src/game/game.gateway.ts</a>, <a href="backend_src_game_game.gateway.ts.html#line65">line 65</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-
-
-
-
-
-
-
-    <h5 class="h5-parameters">Parameters:</h5>
-    
-
-<table class="params">
-    <thead>
-    <tr>
-        
-        <th>Name</th>
-        
-
-        <th>Type</th>
-
-        
-
-        
-
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    
-
-        <tr>
-            
-                <td class="name"><code>payload</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">PlayerReadyRequest</span>
-
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last"></td>
-        </tr>
-
-    
-    </tbody>
-</table>
-
-
-
-
-
-
-
-
-<h5 class="h5-listens">Listens to Events:</h5>
-<ul>
-    <li>GameEvents.event:PlayerReady</li>
-</ul>
 
 
 
@@ -1299,7 +636,7 @@
     </dt>
     <dd>
         
-<span class="param-type">Promise.&lt;boolean></span>
+<span class="param-type">Promise.&lt;(Array.&lt;ProfileEntity>|null)></span>
 
 
 
@@ -1315,7 +652,7 @@
 
     
 
-    <h4 class="name" id="sendGameInvite"><span class="type-signature type-signature-async">(async) </span>sendGameInvite<span class="signature">(joinGameInviteDto)</span><span class="type-signature"> &rarr; {Promise.&lt;LobbyCreatedEvent>}</span></h4>
+    <h4 class="name" id="getFriends"><span class="type-signature type-signature-async">(async) </span>getFriends<span class="signature">(getFriendsRequest)</span><span class="type-signature"> &rarr; {Promise.&lt;(Array.&lt;ProfileEntity>|null)>}</span></h4>
 
     
 
@@ -1325,13 +662,13 @@
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li>Handle direct game invite event</li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li>Get a list of all users friends</li></ul></dd>
     
 
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="backend_src_game_game.gateway.ts.html">backend/src/game/game.gateway.ts</a>, <a href="backend_src_game_game.gateway.ts.html#line34">line 34</a>
+        <a href="backend_src_profile_profile.service.ts.html">backend/src/profile/profile.service.ts</a>, <a href="backend_src_profile_profile.service.ts.html#line162">line 162</a>
     </li></ul></dd>
     
 
@@ -1403,13 +740,13 @@
 
         <tr>
             
-                <td class="name"><code>joinGameInviteDto</code></td>
+                <td class="name"><code>getFriendsRequest</code></td>
             
 
             <td class="type">
             
                 
-<span class="param-type">JoinGameInviteDto</span>
+<span class="param-type"><a href="GetFriendsRequest.html">GetFriendsRequest</a></span>
 
 
 
@@ -1434,10 +771,159 @@
 
 
 
-<h5 class="h5-listens">Listens to Events:</h5>
-<ul>
-    <li>event:sendGameInvite</li>
-</ul>
+
+
+
+
+
+
+
+
+<h5 class="h5-returns">Returns:</h5>
+
+        
+
+
+<dl class="param-type">
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">Promise.&lt;(Array.&lt;ProfileEntity>|null)></span>
+
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="getMatchHistory"><span class="type-signature type-signature-async">(async) </span>getMatchHistory<span class="signature">(getMatchHistoryRequest)</span><span class="type-signature"> &rarr; {Promise.&lt;Array.&lt;MatchHistoryItem>>}</span></h4>
+
+    
+
+
+
+
+<dl class="details">
+    
+    <dt class="tag-description">Description:</dt>
+    <dd class="tag-description"><ul class="dummy"><li>Fetches match history of requested player</li></ul></dd>
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="backend_src_profile_profile.service.ts.html">backend/src/profile/profile.service.ts</a>, <a href="backend_src_profile_profile.service.ts.html#line25">line 25</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <h5 class="h5-parameters">Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>getMatchHistoryRequest</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">GetMatchHistoryRequest</span>
+
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+
 
 
 
@@ -1458,7 +944,799 @@
     </dt>
     <dd>
         
-<span class="param-type">Promise.&lt;LobbyCreatedEvent></span>
+<span class="param-type">Promise.&lt;Array.&lt;MatchHistoryItem>></span>
+
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="getMatchHistory"><span class="type-signature type-signature-async">(async) </span>getMatchHistory<span class="signature">(getMatchHistoryRequest)</span><span class="type-signature"> &rarr; {Promise.&lt;Array.&lt;MatchHistoryItem>>}</span></h4>
+
+    
+
+
+
+
+<dl class="details">
+    
+    <dt class="tag-description">Description:</dt>
+    <dd class="tag-description"><ul class="dummy"><li>Fetches match history of requested player</li></ul></dd>
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="backend_src_profile_profile.service.ts.html">backend/src/profile/profile.service.ts</a>, <a href="backend_src_profile_profile.service.ts.html#line144">line 144</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <h5 class="h5-parameters">Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>getMatchHistoryRequest</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">GetMatchHistoryRequest</span>
+
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5 class="h5-returns">Returns:</h5>
+
+        
+
+
+<dl class="param-type">
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">Promise.&lt;Array.&lt;MatchHistoryItem>></span>
+
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="getProfile"><span class="type-signature type-signature-async">(async) </span>getProfile<span class="signature">(getProfileRequest)</span><span class="type-signature"> &rarr; {Promise.&lt;ProfileEntity>}</span></h4>
+
+    
+
+
+
+
+<dl class="details">
+    
+    <dt class="tag-description">Description:</dt>
+    <dd class="tag-description"><ul class="dummy"><li>Fetches profile information from storage</li></ul></dd>
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="backend_src_profile_profile.service.ts.html">backend/src/profile/profile.service.ts</a>, <a href="backend_src_profile_profile.service.ts.html#line52">line 52</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <h5 class="h5-parameters">Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>getProfileRequest</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">GetProfileRequest</span>
+
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5 class="h5-returns">Returns:</h5>
+
+        
+
+
+<dl class="param-type">
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">Promise.&lt;ProfileEntity></span>
+
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="getProfile"><span class="type-signature type-signature-async">(async) </span>getProfile<span class="signature">(getProfileRequest)</span><span class="type-signature"> &rarr; {Promise.&lt;ProfileEntity>}</span></h4>
+
+    
+
+
+
+
+<dl class="details">
+    
+    <dt class="tag-description">Description:</dt>
+    <dd class="tag-description"><ul class="dummy"><li>Fetches profile information from storage</li></ul></dd>
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="backend_src_profile_profile.service.ts.html">backend/src/profile/profile.service.ts</a>, <a href="backend_src_profile_profile.service.ts.html#line153">line 153</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <h5 class="h5-parameters">Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>getProfileRequest</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">GetProfileRequest</span>
+
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5 class="h5-returns">Returns:</h5>
+
+        
+
+
+<dl class="param-type">
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">Promise.&lt;ProfileEntity></span>
+
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="updateProfile"><span class="type-signature"></span>updateProfile<span class="signature">(updateProfileRequest)</span><span class="type-signature"> &rarr; {boolean}</span></h4>
+
+    
+
+
+
+
+<dl class="details">
+    
+    <dt class="tag-description">Description:</dt>
+    <dd class="tag-description"><ul class="dummy"><li>Makes an update request to the database for a users profile</li></ul></dd>
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="backend_src_profile_profile.service.ts.html">backend/src/profile/profile.service.ts</a>, <a href="backend_src_profile_profile.service.ts.html#line109">line 109</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-todo">To Do:</dt>
+    <dd class="tag-todo">
+        <ul>
+            <li>Implement</li>
+        </ul>
+    </dd>
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <h5 class="h5-parameters">Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>updateProfileRequest</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">UpdateProfileRequest</span>
+
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5 class="h5-returns">Returns:</h5>
+
+        
+<div class="param-desc">
+    - Update successful
+</div>
+
+
+
+<dl class="param-type">
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">boolean</span>
+
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="updateProfile"><span class="type-signature"></span>updateProfile<span class="signature">(updateProfileRequest)</span><span class="type-signature"> &rarr; {boolean}</span></h4>
+
+    
+
+
+
+
+<dl class="details">
+    
+    <dt class="tag-description">Description:</dt>
+    <dd class="tag-description"><ul class="dummy"><li>Makes an update request to the database for a users profile</li></ul></dd>
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="backend_src_profile_profile.service.ts.html">backend/src/profile/profile.service.ts</a>, <a href="backend_src_profile_profile.service.ts.html#line171">line 171</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-todo">To Do:</dt>
+    <dd class="tag-todo">
+        <ul>
+            <li>Implement</li>
+        </ul>
+    </dd>
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <h5 class="h5-parameters">Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>updateProfileRequest</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">UpdateProfileRequest</span>
+
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5 class="h5-returns">Returns:</h5>
+
+        
+<div class="param-desc">
+    - Update successful
+</div>
+
+
+
+<dl class="param-type">
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">boolean</span>
 
 
 

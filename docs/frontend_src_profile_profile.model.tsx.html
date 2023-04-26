@@ -3,7 +3,7 @@
 <head>
     
     <meta charset="utf-8">
-    <title>frontend/src/game/components/game.loadingPage.tsx - Kingpong</title>
+    <title>frontend/src/profile/profile.model.tsx - Kingpong</title>
     
     <meta name="description" content="Documentation for the kingpong website" />
     
@@ -46,7 +46,7 @@
 
 <div id="main">
     
-    <h1 class="page-title">frontend/src/game/components/game.loadingPage.tsx</h1>
+    <h1 class="page-title">frontend/src/profile/profile.model.tsx</h1>
     
 
     
@@ -56,34 +56,39 @@
     
     <section>
         <article>
-            <pre class="prettyprint source linenums"><code>import { Box } from "@mui/system";
-import "./game.loadingPage.tsx.css";
+            <pre class="prettyprint source linenums"><code>import { useState } from "react";
+import { MatchHistoryItem, ProfileEntity } from "kingpong-lib";
 
-/**
- * Component that renders the loading page for the game
- *
- * @returns {JSX.Element}
- */
-export default function LoadingPage() {
-  return (
-    &lt;>
-      &lt;Box className="body-page">
-        &lt;Box className="body-text">
-          &lt;h2 data-text="Looking for a match...">Looking for a match...&lt;/h2>
-        &lt;/Box>
-        &lt;Box className="body-loader">
-          &lt;Box className="loader">
-            &lt;Box className="paddle" />
-            &lt;Box className="ball" />
-            &lt;Box className="ball bottom" />
-            &lt;Box className="shadow" />
-            &lt;Box className="table" />
-          &lt;/Box>
-        &lt;/Box>
-      &lt;/Box>
-    &lt;/>
-  );
+/** Profile model type */
+export interface ProfileModelType {
+  user: string /** User ID of profile to load */;
+  setUser: (user: string) => void;
+  profile: ProfileEntity /** Profile to display */;
+  setProfile: (profile: ProfileEntity) => void;
+  matchHistory: MatchHistoryItem[] /** Match history to display */;
+  setMatchHistory: (matchHistory: MatchHistoryItem[]) => void;
+  friends: ProfileEntity[] /** Friends list to display */;
+  setFriends: (friends: ProfileEntity[]) => void;
 }
+
+/** Profile model */
+export const useProfileModel = (): ProfileModelType => {
+  const [user, setUser] = useState&lt;string>(null);
+  const [profile, setProfile] = useState&lt;ProfileEntity>(null);
+  const [matchHistory, setMatchHistory] = useState&lt;MatchHistoryItem[]>(null);
+  const [friends, setFriends] = useState&lt;ProfileEntity[]>(null);
+
+  return {
+    user,
+    setUser,
+    profile,
+    setProfile,
+    matchHistory,
+    setMatchHistory,
+    friends,
+    setFriends
+  };
+};
 </code></pre>
         </article>
     </section>
