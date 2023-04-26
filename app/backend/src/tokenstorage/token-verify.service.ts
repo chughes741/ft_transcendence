@@ -25,12 +25,12 @@ export default class TokenIsVerified implements CanActivate {
     let clientToken: string;
     if (isWebSocket) {
       console.log("Websockets found")
-      const client = context.switchToWs().getClient();
+      const client = await context.switchToWs().getClient();
       const newheaders = client.handshake.headers;
       //console.log("CLIENT: ", client)
       //console.log("QUERRY : ", client.handshake.QUERRY)
-      clientId = client.id as string;
-      clientToken = newheaders.clienttoken as string;
+      clientId = await client.id as string;
+      clientToken = await newheaders.clienttoken as string;
     }
     else {
       const req = context.switchToHttp().getRequest();
@@ -49,6 +49,8 @@ export default class TokenIsVerified implements CanActivate {
       logger.error("Token verification Failure");
       throw new UnauthorizedException();
     }
+    console.log("Token is same")
+
     const currentTime = Math.floor(Date.now() / 1000);
     const expiresIn = token.expires_in;
     const createdTime = token.created_at;
@@ -58,8 +60,8 @@ export default class TokenIsVerified implements CanActivate {
       logger.warn("Token has expired");
       throw new UnauthorizedException();
     }
+    console.log("Token is verified")
     logger.debug("Token verification Success");
-
     await this.refreshToken(clientId, token);
     return true;
   }

@@ -16,8 +16,6 @@ import { TokenStorageService } from "src/tokenstorage/token-storage.service";
     ChatService,
     UserConnectionsService,
     PrismaService,
-    TokenIsVerified,
-    TokenStorageService
   ]
 })
 export class ChatModule { }
