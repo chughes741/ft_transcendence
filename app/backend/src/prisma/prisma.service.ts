@@ -26,9 +26,6 @@ import {
   GetProfileRequest
 } from "kingpong-lib";
 
-/** End of Mute and End of Ban: Is added to the current date (now) */
-const GLOBAL_T_IN_DAYS = 5 /*DAYS*/ * (24 * 60 * 60 * 1000); // One day in milliseconds
-
 import { UpdateChatMemberRequest } from "src/chat/dto/userlist.dto";
 import { UserEntity } from "../auth/dto";
 import { MatchType } from "../game/game.types";

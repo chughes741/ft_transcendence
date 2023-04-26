@@ -1,5 +1,4 @@
 /** Libraries */
-import { useEffect } from "react";
 import { Box, Container } from "@mui/material";
 
 /** Providers */

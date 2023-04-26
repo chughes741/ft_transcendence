@@ -829,13 +829,13 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
    * @event "blockUser"
    * @param {Socket} client - socket.io client
    * @param {BlockUserRequest} req - block user request
-   * @returns {DevError | { success: string }} - success message or error
+   * @returns {DevError | DevSuccess} - success message or error
    */
   @SubscribeMessage("blockUser")
   async blockUser(
     client: Socket,
     req: BlockUserRequest
-  ): Promise<DevError | { success: string }> {
+  ): Promise<DevError | DevSuccess> {
     logger.debug(
       `Received blockUser request from ${req.blocker} to block ${req.blockee}`
     );

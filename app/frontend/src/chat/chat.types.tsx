@@ -47,6 +47,9 @@ export type MessageType = {
 export type DevError = {
   error: string;
 };
+export type DevSuccess = {
+  success: string;
+};
 
 export interface ChatMemberEntity {
   username: string;
