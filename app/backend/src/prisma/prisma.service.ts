@@ -270,7 +270,7 @@ export class PrismaService extends PrismaClient {
   async getAvailableChatRooms(
     userId: string,
     dateOldest: Date = new Date(Date.now()),
-    pageSize = 15
+    pageSize = 50
     // TODO: define PrismaType for this
   ): Promise<any> {
     // Check if the user exists
@@ -282,13 +282,15 @@ export class PrismaService extends PrismaClient {
     if (!user) {
       return new Error("Invalid user ID");
     }
-    return this.chatRoom.findMany({
+    const rooms = await this.chatRoom.findMany({
       where: {
         AND: [
           {
-            status: { not: ChatRoomStatus.PRIVATE || ChatRoomStatus.DIALOGUE }
+            status: {
+              notIn: [ChatRoomStatus.PRIVATE, ChatRoomStatus.DIALOGUE]
+            }
           },
-          { members: { every: { member: { id: { not: userId } } } } },
+          { members: { none: { member: { id: userId } } } },
           { createdAt: { lt: dateOldest } }
         ]
       },
@@ -299,6 +301,7 @@ export class PrismaService extends PrismaClient {
       orderBy: { createdAt: "desc" },
       take: pageSize
     });
+    return rooms;
   }
 
   /**
