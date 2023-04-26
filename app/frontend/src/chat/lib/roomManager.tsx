@@ -133,6 +133,13 @@ export const RoomManagerProvider = ({ children }) => {
     });
   };
 
+  const getTargetOfDirectMessage = (roomName: string) => {
+    const roomNameSplit = roomName.split("$");
+    const target =
+      roomNameSplit[0] === self.username ? roomNameSplit[1] : roomNameSplit[0];
+    return target;
+  };
+
   // Adds a new room to the rooms state variable
   const addChatRoom = async (
     chatRoomPayload: ChatRoomPayload
@@ -159,6 +166,10 @@ export const RoomManagerProvider = ({ children }) => {
 
       const newRoom = {
         name: name,
+        displayName:
+          status === ChatRoomStatus.DIALOGUE
+            ? getTargetOfDirectMessage(name)
+            : name,
         status: status,
         rank: queryingUserRank,
         latestMessage: convertedLatestMessage,

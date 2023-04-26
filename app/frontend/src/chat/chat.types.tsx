@@ -84,6 +84,7 @@ export interface ChatRoomPayload {
 
 export type RoomType = {
   name: string;
+  displayName: string; // For DIALOGUE rooms, this is the name of the other user
   status: ChatRoomStatus;
   rank: ChatMemberRank;
   messages: MessageType[];
