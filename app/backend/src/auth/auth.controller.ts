@@ -27,7 +27,7 @@ const logger = new Logger("AuthController");
 @ApiTags("auth")
 export class AuthController {
   // Here, private means that authService is a member attribute
-  constructor(private authService: AuthService) {}
+  constructor(private authService: AuthService) { }
 
   @Post("testing")
   @UseGuards(TokenIsVerified)
@@ -127,4 +127,11 @@ export class AuthController {
     this.authService.deleteToken(socketId);
     return;
   }
+
+  @Get("getEnable2fa")
+  @UseGuards(TokenIsVerified)
+  async getEnable2fa(@Query("username") username: string) {
+    return await this.authService.getEnable2fa(username);
+  }
+
 }
