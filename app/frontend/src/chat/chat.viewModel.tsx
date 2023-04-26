@@ -213,6 +213,7 @@ export const ChatViewModelProvider = ({ children }) => {
     if (!req || !req.username || req.username === "")
       return Promise.resolve(false);
     return new Promise<boolean>((resolve) => {
+      console.log("Inside UserCreation socket info", socket);
       socket.emit("userCreation", req, (response: DevError | string) => {
         if (typeof response === "object") {
           console.warn("Error response from user creation: ", response.error);

@@ -1,4 +1,4 @@
-import { Logger } from "@nestjs/common";
+import { Logger, UseGuards } from "@nestjs/common";
 import {
   OnGatewayConnection,
   OnGatewayDisconnect,
@@ -21,6 +21,7 @@ import { KickMemberRequest, UpdateChatMemberRequest } from "./dto/userlist.dto";
 
 import { AuthRequest } from "../auth/dto";
 import { TokenStorageService } from "src/tokenstorage/token-storage.service";
+import TokenIsVerified from "src/tokenstorage/token-verify.service";
 
 // FIXME: temporary error type until we can share btw back and frontend
 export type DevError = {
@@ -163,7 +164,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     private prismaService: PrismaService,
     private chatService: ChatService,
     private userConnectionsService: UserConnectionsService //private tokenStorage: TokenStorageService
-  ) {}
+  ) { }
 
   @WebSocketServer()
   server: Server;
@@ -454,16 +455,16 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
    * @returns DevError or room name
    */
   @SubscribeMessage("createRoom")
+  @UseGuards(TokenIsVerified)
   async createRoom(
     client: Socket,
     createDto: CreateChatRoomDto
   ): Promise<ChatRoomEntity | DevError> {
     // Log the request
+    console.log(client);
     logger.debug(
-      `Received createRoom request from ${createDto.owner} for room ${
-        createDto.name
-      }: ${createDto.status} ${
-        createDto.password ? `, with password ${createDto.password}.` : "."
+      `Received createRoom request from ${createDto.owner} for room ${createDto.name
+      }: ${createDto.status} ${createDto.password ? `, with password ${createDto.password}.` : "."
       }`
     );
 
@@ -503,8 +504,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
       client.id
     );
     logger.debug(
-      `Received joinRoom request from ${username} for room ${dto.roomName} ${
-        dto.password ? `: with password ${dto.password}` : ""
+      `Received joinRoom request from ${username} for room ${dto.roomName} ${dto.password ? `: with password ${dto.password}` : ""
       }`
     );
 

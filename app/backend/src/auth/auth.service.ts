@@ -60,6 +60,14 @@ export class AuthService {
     return token;
   }
 
+  async confirmID(previousID: string, newID: string) {
+    const token: Token = await this.tokenClass.tokenStorage.getTokenbySocket(previousID);
+    console.log("Previous Token", token);
+    await this.tokenClass.tokenStorage.removeToken(previousID);
+    await this.tokenClass.tokenStorage.addToken(newID, token);
+    return;
+  }
+
   async verifyQrCode(base32secret: string, enteredToken: string, username: string) {
     if (base32secret === "null") {
       const secret = await this.prisma.getQrCode(username);
@@ -94,11 +102,13 @@ export class AuthService {
     }
   }
 
+  //Swithc on/off enable 2fa
   async update2FA(username: string) {
     const enable: boolean = await this.prisma.update2FA(username);
     return { enable2fa: enable };
   }
 
+  //Will refresh token 
   async checkToRefresh(token: Token): Promise<Token> {
     if (token.expires_in < 7000)
       return await this.tokenClass.tokenStorage.refresh42Token(token);

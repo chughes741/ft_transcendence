@@ -80,6 +80,15 @@ export class AuthController {
     return;
   }
 
+  @Post("confirmID")
+  async confirmID(
+    @Query("previousID") previousID: string,
+    @Query("newID") newID: string,) {
+    console.log("SOCKET IDS BACKEND", previousID, newID);
+    this.authService.confirmID(previousID, newID);
+    return;
+  }
+
   @Get("token")
   async generate42Token(
     @Query("code") authorizationCode: string,

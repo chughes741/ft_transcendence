@@ -1,7 +1,7 @@
 import { createContext, useContext, useEffect, useRef } from "react";
 import { io, Socket } from "socket.io-client";
 
-const socket = io("http://localhost:3000");
+let socket = io("http://localhost:3000");
 
 export type EventHandler = (...args: unknown[]) => void;
 
@@ -11,12 +11,38 @@ export interface WebSocketContextValue {
   removeSocketListener: (eventName: string, handler?: EventHandler) => void;
 }
 
+//Interface for socket Headers
+export interface SocketHeaders {
+  clientId: string | null;
+  clientToken: string | null;
+}
+
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const WebSocketContext = createContext<WebSocketContextValue>(null as any);
 
 interface WebSocketProviderProps {
   children: React.ReactNode;
 }
+
+
+//Function to recreate socket with propers headers
+export async function createSocketWithHeaders(headers: SocketHeaders) {
+  await socket.disconnect();
+  // Close the socket connection
+  await socket.close();
+  console.log("INSIDE CREATESOCKET WITH HEADERS");
+  const extraHeaders = {};
+  if (headers.clientId) {
+    extraHeaders["client-id"] = headers.clientId;
+  }
+  if (headers.clientToken) {
+    extraHeaders["client-token"] = headers.clientToken;
+  }
+  socket = await io("http://localhost:3000", {
+    extraHeaders,
+  });
+}
+
 
 const WebSocketProvider: React.FC<WebSocketProviderProps> = ({ children }) => {
   const eventHandlers = useRef(new Map<string, EventHandler[]>());
@@ -39,6 +65,38 @@ const WebSocketProvider: React.FC<WebSocketProviderProps> = ({ children }) => {
       }
     }
   };
+  const value: WebSocketContextValue = {
+    socket,
+    addSocketListener,
+    removeSocketListener
+  };
+  /*
+    async function createSocketWithHeaders(headers: SocketHeaders) {
+      await value.socket.disconnect();
+      console.log("INSIDE CREATESOCKET WITH HEADERS");
+      const extraHeaders = {};
+      if (headers.clientId) {
+        extraHeaders["client-id"] = headers.clientId;
+      }
+      if (headers.clientToken) {
+        extraHeaders["client-token"] = headers.clientToken;
+      }
+      value.socket = await io("http://localhost:3000", {
+        extraHeaders,
+      });
+  }*/
+  useEffect(() => {
+    console.log("Inside WebsocketProvider UserEffect")
+
+
+    if (socket) {
+      value.socket = socket;
+      value.socket.on("FirstConnect", () => {
+        value.socket = socket;
+      });
+    }
+  }, [socket]);
+
 
   useEffect(() => {
     return () => {
@@ -53,12 +111,6 @@ const WebSocketProvider: React.FC<WebSocketProviderProps> = ({ children }) => {
       socket.close();
     };
   }, []);
-
-  const value: WebSocketContextValue = {
-    socket,
-    addSocketListener,
-    removeSocketListener
-  };
 
   return (
     <WebSocketContext.Provider value={value}>

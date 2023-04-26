@@ -4,7 +4,7 @@ import { ProfileEntity } from "kingpong-lib";
 import { PageState } from "src/root.model";
 import { useRootViewModelContext } from "src/root.context";
 import "./Login42.tsx.css";
-import { socket } from "../contexts/WebSocket.context";
+import { SocketHeaders, createSocketWithHeaders, socket } from "../contexts/WebSocket.context";
 import { createBrowserHistory } from "history";
 
 const CLIENT_ID =
@@ -81,7 +81,22 @@ export default function LoginWith42Button() {
   };
 
   // on success, set the session token and the self, and redirects to /
-  const onSuccess = (data: dataResponse) => {
+  const onSuccess = async (data: dataResponse) => {
+
+    await createSocketWithHeaders({ clientId: headers["client-id"], clientToken: headers["client-token"] });
+    console.log("First try to socket ", socket.id)
+    socket.on("connect", async () => {
+      console.log("Sconde try to socket ", socket.id)
+
+      console.log("SOCKET IDS", headers["client-id"], socket.id);
+      const url = `http://localhost:3000/auth/confirmID?previousID=${headers["client-id"]}&newID=${socket.id}`;
+      //Calls backend with our newly found 42 Authorization code
+      const response = await fetch(url, {
+        method: "POST",
+      });
+      headers["client-id"] = socket.id;
+
+    });
     setSessionToken(data.token);
     setSelf(data.user);
     if (data.twoFAenable) setPageState(PageState.QRCode);

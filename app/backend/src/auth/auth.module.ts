@@ -20,4 +20,4 @@ import TokenIsVerified from "src/tokenstorage/token-verify.service";
     TokenIsVerified
   ]
 })
-export class AuthModule {}
+export class AuthModule { }
