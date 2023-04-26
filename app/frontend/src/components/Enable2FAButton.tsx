@@ -90,7 +90,7 @@ export default function TwoFactorButton({ enabled }: Props) {
 
   const onToggle = async () => {
     // if (ta fonction me dit que le 2fa est pas enabled)
-    setFullscreen(!fullscreen);
+    setFullscreen(true);
     setPageState(PageState.QRCode)
     setQr((prevQr) => !prevQr);
     handleCloseSettings();
@@ -108,21 +108,6 @@ export default function TwoFactorButton({ enabled }: Props) {
       >
         {enabled ? "Disable Two Factor" : "Enable Two Factor"}
       </Button>
-      {/*{qr ? (*/}
-      {/*  <Box*/}
-      {/*    sx={{*/}
-      {/*      width: "100vw",*/}
-      {/*      height: "100vh",*/}
-      {/*      display: "flex",*/}
-      {/*      alignItems: "center",*/}
-      {/*      justifyContent: "center"*/}
-      {/*    }}*/}
-      {/*  >*/}
-      {/*    <VerifyQRCode />{" "}*/}
-      {/*  </Box>*/}
-      {/*) : (*/}
-      {/*  <></>*/}
-      {/*)}*/}
     </>
   );
 }

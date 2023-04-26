@@ -16,7 +16,7 @@ function VerifyQRCode() {
     sessionToken,
     setSelf,
     setSessionToken,
-    self
+    fullscreen
   } = useRootViewModelContext();
 
   const [qrCode, setQRCode] = useState<string | null>(null);
@@ -24,7 +24,18 @@ function VerifyQRCode() {
   const [errorMessage, setErrorMessage] = useState<string>("");
   const [secret, setSecret] = useState<string | null>(null);
   const history = createBrowserHistory();
+  const [isCancelled, setCancelled] = useState<boolean>(false)
 
+  const cancel = () => {
+    history.back();
+    setFullscreen(false);
+    console.log("Fullscreen", fullscreen) //THE FUXK WHY IS THE FULLSCREEN STILL TRUE!!!!!
+    setCancelled(true);
+    return;
+  }
+
+  if (isCancelled)
+    return;
   setFullscreen(true);
 
   const handleGetQRCode = async (): Promise<boolean> => {
@@ -78,7 +89,7 @@ function VerifyQRCode() {
         setErrorMessage("");
         alert("Verification successful!");
         setFullscreen(false);
-        setPageState(PageState.Home);
+        history.back();
         return true;
       } else {
         alert("There was an error with the code you provided");
@@ -128,6 +139,7 @@ function VerifyQRCode() {
             Authenticate me
           </Box>
         </Box>
+        <Box sx={{alignSelf:"flex-start"}} onClick={cancel}>CANCAELLLLL</Box>
       </Box>
     </>
   );
