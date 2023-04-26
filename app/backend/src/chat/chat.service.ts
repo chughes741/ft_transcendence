@@ -726,7 +726,7 @@ export class ChatService {
     const newRoom = await this.prismaService.createDirectMessageRoom(
       senderId,
       recipientId,
-      `${sender}-${recipient}-${Date.now()}`
+      `${sender}$${recipient}$${Date.now()}`
     );
     return this.getChatRoomEntity(newRoom, ChatMemberRank.USER);
   }
