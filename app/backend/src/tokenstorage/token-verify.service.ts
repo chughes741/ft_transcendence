@@ -2,6 +2,7 @@ import { CanActivate, Injectable, Logger } from "@nestjs/common";
 import { Token, TokenStorageService } from "./token-storage.service";
 import { UnauthorizedException } from "@nestjs/common";
 import { ExecutionContext } from "@nestjs/common";
+import { WebSocketServer } from '@nestjs/websockets';
 
 const logger = new Logger("TokenVerification");
 
@@ -16,14 +17,34 @@ export default class TokenIsVerified implements CanActivate {
   }
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
-    const req = context.switchToHttp().getRequest();
-    const clientId = req.headers["client-id"] as string;
-    const clientToken = req.headers["client-token"] as string;
 
-    logger.debug("Client ID : ", clientId, "Client Token : ", clientToken);
+    console.log("Tokens :", this.tokenStorage.tokens);
+
+    const isWebSocket = context.getType() === 'ws';
+    let clientId: string;
+    let clientToken: string;
+    if (isWebSocket) {
+      console.log("Websockets found")
+      const client = context.switchToWs().getClient();
+      const newheaders = client.handshake.headers;
+      //console.log("CLIENT: ", client)
+      //console.log("QUERRY : ", client.handshake.QUERRY)
+      clientId = client.id as string;
+      clientToken = newheaders.clienttoken as string;
+    }
+    else {
+      const req = context.switchToHttp().getRequest();
+      clientId = req.headers["client-id"] as string;
+      clientToken = req.headers["client-token"] as string;
+    }
+    logger.log("Client ID : ", clientId, "Client Token : ", clientToken);
+    //const clientId = req.headers["client-id"] as string;
+    //const clientToken = req.headers["client-token"] as string;
+
 
     // Check if token is valid
     const token = await this.tokenStorage.getTokenbySocket(clientId);
+    console.log("Stored token", token);
     if (!token || token.access_token !== clientToken) {
       logger.error("Token verification Failure");
       throw new UnauthorizedException();

@@ -39,7 +39,9 @@ export async function createSocketWithHeaders(headers: SocketHeaders) {
     extraHeaders["client-token"] = headers.clientToken;
   }
   socket = await io("http://localhost:3000", {
-    extraHeaders,
+    extraHeaders: {
+      clientToken: headers.clientToken
+    },
   });
 }
 

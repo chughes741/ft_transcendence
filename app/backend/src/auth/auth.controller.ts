@@ -129,7 +129,6 @@ export class AuthController {
   }
 
   @Post("deleteToken")
-  @UseGuards(TokenIsVerified)
   async deleteToken(@Query("socketId") socketId: string) {
     logger.debug("Token deletion engage");
 

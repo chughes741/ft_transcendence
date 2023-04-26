@@ -627,6 +627,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     Takes a ChatmemberPrismaType array and transforms it into a ChatMemberEntity[], expected by the client
   */
 
+  @UseGuards(TokenIsVerified)
   @SubscribeMessage("listUsers")
   async listUsers(
     client: Socket,
