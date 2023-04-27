@@ -28,9 +28,7 @@ interface WebSocketProviderProps {
 //Function to recreate socket with propers headers
 export async function createSocketWithHeaders(headers: SocketHeaders) {
   await socket.disconnect();
-  // Close the socket connection
   await socket.close();
-  console.log("INSIDE CREATESOCKET WITH HEADERS");
   const extraHeaders = {};
   if (headers.clientId) {
     extraHeaders["client-id"] = headers.clientId;
@@ -44,7 +42,6 @@ export async function createSocketWithHeaders(headers: SocketHeaders) {
     },
   });
 }
-
 
 const WebSocketProvider: React.FC<WebSocketProviderProps> = ({ children }) => {
   const eventHandlers = useRef(new Map<string, EventHandler[]>());
@@ -72,25 +69,9 @@ const WebSocketProvider: React.FC<WebSocketProviderProps> = ({ children }) => {
     addSocketListener,
     removeSocketListener
   };
-  /*
-    async function createSocketWithHeaders(headers: SocketHeaders) {
-      await value.socket.disconnect();
-      console.log("INSIDE CREATESOCKET WITH HEADERS");
-      const extraHeaders = {};
-      if (headers.clientId) {
-        extraHeaders["client-id"] = headers.clientId;
-      }
-      if (headers.clientToken) {
-        extraHeaders["client-token"] = headers.clientToken;
-      }
-      value.socket = await io("http://localhost:3000", {
-        extraHeaders,
-      });
-  }*/
+
   useEffect(() => {
-    console.log("Inside WebsocketProvider UserEffect")
-
-
+    //console.log("Inside WebsocketProvider UserEffect")
     if (socket) {
       value.socket = socket;
       value.socket.on("FirstConnect", () => {

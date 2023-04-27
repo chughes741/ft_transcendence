@@ -117,7 +117,6 @@ export const RoomManagerProvider = ({ children }) => {
 
   const getRoomUserList = async (roomName: string) => {
     return new Promise<{ [key: string]: ChatMemberEntity }>((resolve) => {
-      console.log("Headers : ", headers)
       socket.emit(
         "listUsers",
         { chatRoomName: roomName },

@@ -84,11 +84,8 @@ export default function LoginWith42Button() {
   const onSuccess = async (data: dataResponse) => {
 
     await createSocketWithHeaders({ clientId: headers["client-id"], clientToken: headers["client-token"] });
-    console.log("First try to socket ", socket.id)
     socket.on("connect", async () => {
-      console.log("Sconde try to socket ", socket.id)
-
-      console.log("SOCKET IDS", headers["client-id"], socket.id);
+      //console.log("SOCKET IDS", headers["client-id"], socket.id);
       const url = `http://localhost:3000/auth/confirmID?previousID=${headers["client-id"]}&newID=${socket.id}`;
       //Calls backend with our newly found 42 Authorization code
       const response = await fetch(url, {
@@ -144,9 +141,9 @@ export default function LoginWith42Button() {
         else setFullscreen(false);
         //Creates the headers that will enable token authentification
         headers["client-id"] = socket.id;
-        headers["client-token"] = client.token; 
+        headers["client-token"] = client.token;
 
-    
+
 
         //PrepInfo
         const userProfile: dataResponse = {

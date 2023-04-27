@@ -18,13 +18,13 @@ export default class TokenIsVerified implements CanActivate {
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
 
-    console.log("Tokens :", this.tokenStorage.tokens);
+    //console.log("Tokens :", this.tokenStorage.tokens);
 
     const isWebSocket = context.getType() === 'ws';
     let clientId: string;
     let clientToken: string;
     if (isWebSocket) {
-      console.log("Websockets found")
+      //console.log("Websockets found")
       const client = await context.switchToWs().getClient();
       const newheaders = client.handshake.headers;
       //console.log("CLIENT: ", client)
@@ -37,19 +37,15 @@ export default class TokenIsVerified implements CanActivate {
       clientId = req.headers["client-id"] as string;
       clientToken = req.headers["client-token"] as string;
     }
-    logger.log("Client ID : ", clientId, "Client Token : ", clientToken);
-    //const clientId = req.headers["client-id"] as string;
-    //const clientToken = req.headers["client-token"] as string;
-
+    //    logger.log("Client ID : ", clientId, "Client Token : ", clientToken);
 
     // Check if token is valid
     const token = await this.tokenStorage.getTokenbySocket(clientId);
-    console.log("Stored token", token);
+    //console.log("Stored token", token);
     if (!token || token.access_token !== clientToken) {
       logger.error("Token verification Failure");
       throw new UnauthorizedException();
     }
-    console.log("Token is same")
 
     const currentTime = Math.floor(Date.now() / 1000);
     const expiresIn = token.expires_in;
@@ -60,7 +56,7 @@ export default class TokenIsVerified implements CanActivate {
       logger.warn("Token has expired");
       throw new UnauthorizedException();
     }
-    console.log("Token is verified")
+    console.log("Token verification Success");
     logger.debug("Token verification Success");
     await this.refreshToken(clientId, token);
     return true;

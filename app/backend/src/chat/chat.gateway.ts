@@ -1,4 +1,4 @@
-import { Logger, UseGuards } from "@nestjs/common";
+import { Logger, UnauthorizedException, UseGuards } from "@nestjs/common";
 import {
   OnGatewayConnection,
   OnGatewayDisconnect,
@@ -460,28 +460,32 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     client: Socket,
     createDto: CreateChatRoomDto
   ): Promise<ChatRoomEntity | DevError> {
-    // Log the request
-    console.log(client);
-    logger.debug(
-      `Received createRoom request from ${createDto.owner} for room ${createDto.name
-      }: ${createDto.status} ${createDto.password ? `, with password ${createDto.password}.` : "."
-      }`
-    );
+    try {
+      // Log the request
+      //console.log(client);
+      logger.debug(
+        `Received createRoom request from ${createDto.owner} for room ${createDto.name
+        }: ${createDto.status} ${createDto.password ? `, with password ${createDto.password}.` : "."
+        }`);
 
-    // Add the room to the database
-    const ret = await this.chatService.createRoom(createDto);
+      // Add the room to the database
+      const ret = await this.chatService.createRoom(createDto);
 
-    // If the room already exists, return an error
-    if (ret instanceof Error) {
-      return { error: ret.message };
+      // If the room already exists, return an error
+      if (ret instanceof Error) {
+        return { error: ret.message };
+      }
+
+      // Add the user to the socket room
+      client.join(createDto.name);
+      logger.debug(
+        `User ${createDto.owner} joined socket room ${createDto.name}`
+      );
+      return ret;
+    } catch (Error) {
+      if (Error instanceof UnauthorizedException)
+        client.emit('unauthorized');
     }
-
-    // Add the user to the socket room
-    client.join(createDto.name);
-    logger.debug(
-      `User ${createDto.owner} joined socket room ${createDto.name}`
-    );
-    return ret;
   }
 
   /**

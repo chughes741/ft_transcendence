@@ -29,9 +29,10 @@ export const RootViewModelProvider = ({ children }) => {
   const { addSocketListener, removeSocketListener } = useWebSocketContext();
   const history = createBrowserHistory();
 
+  //LOGIC after authorized message is received:
+  ///Flush token, flush Profile attributes,  and returns to login
   const handleUnauthorized = () => {
     const { setSessionToken, setPageState, setFullscreen, setSelf } = useRootViewModelContext();
-    console.log("Unauthorized Token declared")
     fetch(`/auth/deleteToken?socketId=${socket.id}`, {
       method: 'POST',
     });
@@ -40,13 +41,11 @@ export const RootViewModelProvider = ({ children }) => {
     history.push("/auth");
     setFullscreen(true);
     setSelf({ username: "", avatar: "", createdAt: "", status: 0 });
-    console.log("Unauthorized Token declared")
   }
 
-  addSocketListener("unauthorized", handleUnauthorized);
-
+  //Listens to unauthorized error message sent by the backend
   useEffect(() => {
-
+    addSocketListener("unauthorized", handleUnauthorized);
     return () => {
       removeSocketListener("unauthorized")
     }
