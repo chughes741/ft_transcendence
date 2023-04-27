@@ -17,6 +17,7 @@ import LoginWith42Button from "./components/Login42";
 import { ChooseUsernameModal } from "./components/ChooseUsernameModal";
 import GameWindow from "./game/game.view";
 import VerifyQRCode from "./components/QrCodeElement";
+import LogginQrCode from "./components/LogginQrCode";
 
 /**
  * Root view content
@@ -32,6 +33,9 @@ function RootViewContent(): JSX.Element {
       return <LoginWith42Button />;
     }
     case PageState.QRCode: {
+      return <LogginQrCode />;
+    }
+    case PageState.Enable2fa: {
       return <VerifyQRCode />;
     }
     case PageState.Home: {

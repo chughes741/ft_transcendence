@@ -9,7 +9,7 @@ import { socket } from "src/contexts/WebSocket.context";
 import { headers } from "./Login42";
 import { createBrowserHistory } from "history";
 
-export default function VerifyQRCode() {
+export default function LogginQrCode() {
   const {
     setPageState,
     setFullscreen,
@@ -75,7 +75,7 @@ export default function VerifyQRCode() {
 
   const handleVerifyQRCode = async (): Promise<boolean> => {
     try {
-      const url = `/auth/verifyQrCode?secret=${secret}&code=${code}&username=${self.username}`;
+      const url = `/auth/verifyQrCode?secret=${null}&code=${code}&username=${self.username}`;
       const response = await fetch(url, {
         method: "GET",
         headers: {
@@ -85,6 +85,13 @@ export default function VerifyQRCode() {
         }
       });
       const data = await response.json();
+      if (data.validated) {
+        setErrorMessage("");
+        alert("Verification successful!");
+        setFullscreen(false);
+        history.back();
+        return true;
+      }
       if (data.statusCode && data.statusCode === 401) {
         //UNAUTHORIZED EXCEPTION
         //MUST FLUSH THE session TOKEN and bring back to login page
@@ -99,13 +106,7 @@ export default function VerifyQRCode() {
         setSelf({ username: "", avatar: "", createdAt: "", status: 0 });
         return;
       }
-      if (data.validated) {
-        setErrorMessage("");
-        alert("Verification successful!");
-        setFullscreen(false);
-        history.back();
-        return true;
-      } else {
+      else {
         alert("There was an error with the code you provided");
         setErrorMessage(data.message);
         return false;
@@ -123,19 +124,6 @@ export default function VerifyQRCode() {
     <>
       <Box className="body-page-auth qr-body-page">
         <Box className="lines">
-          <Box className="line" />
-          <Box className="line" />
-          <Box className="line" />
-        </Box>
-        <Box className="login-details">
-          <Box className="title-qr">Verify QR Code</Box>
-          {qrCode && (
-            <img
-              className="image-qr"
-              src={qrCode}
-              alt="QR Code"
-            />
-          )}
           <Input
             className="input-verify-qr"
             type="text"
@@ -152,9 +140,8 @@ export default function VerifyQRCode() {
           >
             Authenticate me
           </Box>
-        </Box>
-        <Box sx={{ alignSelf: "flex-start" }} onClick={cancel}>CANCAELLLLL</Box>
-      </Box>
+        </Box >
+      </Box >
     </>
   );
 }
