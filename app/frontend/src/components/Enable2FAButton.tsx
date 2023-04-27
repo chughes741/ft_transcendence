@@ -124,7 +124,6 @@ export default function TwoFactorButton({ enabled }: Props) {
     getEnable2Fa().then();
   }, []);
 
-
   return (
     <>
       <Button

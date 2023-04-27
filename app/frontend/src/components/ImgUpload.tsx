@@ -33,13 +33,12 @@ function ImgUpload() {
         const response = await fetch("/imgtransfer/upload", {
           method: "POST",
           headers,
-          body: formData,
+          body: formData
         });
         //Create a form data for img transfer
 
         //IF UnAuthorized : MUST FLUSH THE session TOKEN and bring back to login page
-        if (response.ok)
-          return ;
+        if (response.ok) return;
         const data = await response.json();
         if (data.statusCode && data.statusCode === 401) {
           //Deletes token in backend
@@ -55,10 +54,8 @@ function ImgUpload() {
           setSelf({ username: "", avatar: "", createdAt: "", status: 0 });
           return;
         }
-      }
-      catch(error)
-      {
-        console.log("Maybe", error)
+      } catch (error) {
+        console.log("Maybe", error);
       }
     }
   };

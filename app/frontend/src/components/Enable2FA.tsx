@@ -10,13 +10,8 @@ import { headers } from "./Auth";
 import { createBrowserHistory } from "history";
 
 export default function Enable2FA() {
-  const {
-    setPageState,
-    sessionToken,
-    setSelf,
-    self,
-    setSessionToken,
-  } = useRootViewModelContext();
+  const { setPageState, sessionToken, setSelf, self, setSessionToken } =
+    useRootViewModelContext();
 
   const [qrCode, setQRCode] = useState<string | null>(null);
   const [code, setCode] = useState<string>("");

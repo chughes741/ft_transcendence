@@ -27,7 +27,7 @@ const logger = new Logger("AuthController");
 @ApiTags("auth")
 export class AuthController {
   // Here, private means that authService is a member attribute
-  constructor(private authService: AuthService) { }
+  constructor(private authService: AuthService) {}
 
   @Post("testing")
   @UseGuards(TokenIsVerified)
@@ -108,7 +108,7 @@ export class AuthController {
   async verifyQrCode(
     @Query("secret") secret: string,
     @Query("code") code: string,
-    @Query("username") username,
+    @Query("username") username
   ) {
     return await this.authService.verifyQrCode(secret, code, username);
   }
@@ -133,5 +133,4 @@ export class AuthController {
   async getEnable2fa(@Query("username") username: string) {
     return await this.authService.getEnable2fa(username);
   }
-
 }

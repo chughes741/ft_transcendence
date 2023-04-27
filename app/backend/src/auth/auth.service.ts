@@ -15,7 +15,7 @@ export class AuthService {
   constructor(
     private prisma: PrismaService, // create(), findUnique()
     private tokenClass: TokenIsVerified
-  ) { }
+  ) {}
 
   async signup(
     req: AuthRequest
@@ -60,20 +60,26 @@ export class AuthService {
     return token;
   }
 
-  async verifyQrCode(base32secret: string, enteredToken: string, username: string) {
+  async verifyQrCode(
+    base32secret: string,
+    enteredToken: string,
+    username: string
+  ) {
     if (base32secret === "null") {
       const secret = await this.prisma.getQrCode(username);
-      console.log("Fetch previous secret to compare it with token", enteredToken, secret);
+      console.log(
+        "Fetch previous secret to compare it with token",
+        enteredToken,
+        secret
+      );
       const verified = await speakeasy.totp.verify({
         secret: secret,
         encoding: "base32",
         token: enteredToken
       });
-      if (verified)
-        return { validated: true };
+      if (verified) return { validated: true };
       return { validated: false };
-    }
-    else {
+    } else {
       console.log("New secret hanshake:", enteredToken, base32secret);
       const verified = await speakeasy.totp.verify({
         secret: base32secret,
@@ -85,8 +91,7 @@ export class AuthService {
           await this.prisma.setQrCode(username, base32secret);
           await this.prisma.update2FA(username);
           return { validated: true };
-        }
-        catch (error) {
+        } catch (error) {
           console.log(error);
         }
       }
@@ -170,9 +175,8 @@ export class AuthService {
   }
 
   async getEnable2fa(username: string) {
-    if (await this.prisma.getEnable2Fa(username) === true)
+    if ((await this.prisma.getEnable2Fa(username)) === true)
       return JSON.stringify({ validated: true });
     return JSON.stringify({ validated: false });
   }
-
 }
