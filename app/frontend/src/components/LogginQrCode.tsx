@@ -124,21 +124,6 @@ export default function LogginQrCode() {
     <>
       <Box className="body-page-auth qr-body-page">
         <Box className="lines">
-          {/*
-          <Box className="line" />
-          <Box className="line" />
-          <Box className="line" />
-        </Box>
-        <Box className="login-details">
-          <Box className="title-qr">Verify QR Code</Box>
-          {qrCode && (
-            <img
-              className="image-qr"
-              src={qrCode}
-              alt="QR Code"
-            />
-          )}
-          */}
           <Input
             className="input-verify-qr"
             type="text"

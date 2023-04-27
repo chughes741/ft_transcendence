@@ -68,7 +68,7 @@
 //   );
 // }
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { ArrowBack, ArrowBackIosNew } from "@mui/icons-material";
 import { Button, Box } from "@mui/material";
 import { useRootViewModelContext } from "src/root.context";
@@ -76,7 +76,7 @@ import { PageState } from "src/root.model";
 import { headers } from "./Login42";
 import { socket } from "src/contexts/WebSocket.context";
 import VerifyQRCode from "src/components/QrCodeElement";
-import {useSettingsViewModelContext} from "./settings/settings.viewModel";
+import { useSettingsViewModelContext } from "./settings/settings.viewModel";
 
 interface Props {
   enabled: boolean;
@@ -85,25 +85,43 @@ interface Props {
 export default function TwoFactorButton({ enabled }: Props) {
   const [isLoading, setIsLoading] = useState(false);
   const [qr, setQr] = useState<boolean>(false);
-  const { setPageState, fullscreen, setFullscreen} = useRootViewModelContext();
+  const { setPageState, fullscreen, setFullscreen, self, sessionToken } = useRootViewModelContext();
   const { handleCloseSettings } = useSettingsViewModelContext();
+  const [enable2fa, setEnable2fa] = useState<boolean>(false);
 
   const onToggle = async () => {
     // if (ta fonction me dit que le 2fa est pas enabled)
     setFullscreen(true);
-    setPageState(PageState.QRCode)
+    setPageState(PageState.Enable2fa)
     setQr((prevQr) => !prevQr);
     handleCloseSettings();
-
     // sinon juste le disabler
   };
+
+  //Gets the 2fa value upon rendering the component
+  useEffect(() => {
+    async function getenable2Fa() {
+      const url = `/auth/getEnable2fa?username=${self.username}`
+      const enable = await fetch(url, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          "client-id": socket.id,
+          "client-token": sessionToken
+        }
+      });
+      const data = await enable.json();
+      setEnable2fa(data.validated);
+    }
+    getenable2Fa();
+  }, []);
 
   return (
     <>
       <Button
         variant="contained"
         onClick={onToggle}
-        startIcon={enabled ? <ArrowBack /> : <ArrowBackIosNew />}
+        startIcon={enable2fa ? <ArrowBack /> : <ArrowBackIosNew />}
         disabled={isLoading}
       >
         {enabled ? "Disable Two Factor" : "Enable Two Factor"}

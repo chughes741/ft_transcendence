@@ -129,7 +129,7 @@ export class AuthController {
   }
 
   @Get("getEnable2fa")
-  @UseGuards(TokenIsVerified)
+  //@UseGuards(TokenIsVerified)
   async getEnable2fa(@Query("username") username: string) {
     return await this.authService.getEnable2fa(username);
   }

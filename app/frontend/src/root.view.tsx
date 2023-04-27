@@ -35,6 +35,9 @@ function RootViewContent(): JSX.Element {
     case PageState.QRCode: {
       return <LogginQrCode />;
     }
+    case PageState.Enable2fa: {
+      return <VerifyQRCode />;
+    }
     case PageState.Home: {
       return <div></div>;
     }
