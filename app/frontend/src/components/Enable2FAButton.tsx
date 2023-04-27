@@ -70,12 +70,10 @@
 
 import React, { useEffect, useState } from "react";
 import { ArrowBack, ArrowBackIosNew } from "@mui/icons-material";
-import { Button, Box } from "@mui/material";
+import { Button } from "@mui/material";
 import { useRootViewModelContext } from "src/root.context";
 import { PageState } from "src/root.model";
-import { headers } from "./Login42";
 import { socket } from "src/contexts/WebSocket.context";
-import VerifyQRCode from "src/components/QrCodeElement";
 import { useSettingsViewModelContext } from "./settings/settings.viewModel";
 
 interface Props {
@@ -85,23 +83,33 @@ interface Props {
 export default function TwoFactorButton({ enabled }: Props) {
   const [isLoading, setIsLoading] = useState(false);
   const [qr, setQr] = useState<boolean>(false);
-  const { setPageState, fullscreen, setFullscreen, self, sessionToken } = useRootViewModelContext();
+  const { setPageState, self, sessionToken } = useRootViewModelContext();
   const { handleCloseSettings } = useSettingsViewModelContext();
   const [enable2fa, setEnable2fa] = useState<boolean>(false);
 
   const onToggle = async () => {
-    // if (ta fonction me dit que le 2fa est pas enabled)
-    setFullscreen(true);
-    setPageState(PageState.Enable2fa)
-    setQr((prevQr) => !prevQr);
-    handleCloseSettings();
-    // sinon juste le disabler
+    if (!enable2fa) {
+      setPageState(PageState.Enable2FA);
+      setQr((prevQr) => !prevQr);
+      handleCloseSettings();
+    } else {
+      setEnable2fa(false);
+      const url = `/auth/update2FA?username=${self.username}`;
+      await fetch(url, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          "client-id": socket.id,
+          "client-token": sessionToken
+        }
+      });
+    }
   };
 
   //Gets the 2fa value upon rendering the component
   useEffect(() => {
-    async function getenable2Fa() {
-      const url = `/auth/getEnable2fa?username=${self.username}`
+    async function getEnable2Fa() {
+      const url = `/auth/getEnable2fa?username=${self.username}`;
       const enable = await fetch(url, {
         method: "GET",
         headers: {
@@ -113,8 +121,9 @@ export default function TwoFactorButton({ enabled }: Props) {
       const data = await enable.json();
       setEnable2fa(data.validated);
     }
-    getenable2Fa();
+    getEnable2Fa().then();
   }, []);
+
 
   return (
     <>
@@ -124,7 +133,7 @@ export default function TwoFactorButton({ enabled }: Props) {
         startIcon={enable2fa ? <ArrowBack /> : <ArrowBackIosNew />}
         disabled={isLoading}
       >
-        {enabled ? "Disable Two Factor" : "Enable Two Factor"}
+        {enable2fa ? "Disable Two Factor" : "Enable Two Factor"}
       </Button>
     </>
   );

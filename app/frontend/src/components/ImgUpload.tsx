@@ -4,7 +4,7 @@ import { PhotoCamera } from "@mui/icons-material";
 import { useState } from "react";
 import { useRootViewModelContext } from "src/root.context";
 import { PageState } from "src/root.model";
-import { headers } from "./Login42";
+import { headers } from "./Auth";
 import { socket } from "src/contexts/WebSocket.context";
 import { createBrowserHistory } from "history";
 

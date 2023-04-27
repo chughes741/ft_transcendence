@@ -12,9 +12,8 @@ export enum PageState {
   Game = "Game",
   Chat = "Chat",
   Profile = "Profile",
-  Loader = "Loader",
-  QRCode = "QRCode",
-  Enable2fa = "Enable2fa"
+  Verify2FA = "Verify2FA",
+  Enable2FA = "Enable2FA"
 }
 
 /**
