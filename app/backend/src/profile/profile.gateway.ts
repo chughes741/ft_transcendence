@@ -15,6 +15,9 @@ import {
 import { ProfileService } from "./profile.service";
 import { GetFriendsRequest } from "./profile.dto";
 
+/**
+ * Gateway for profile related requests
+ */
 @WebSocketGateway()
 export class ProfileGateway {
   constructor(private readonly profileService: ProfileService) {}
@@ -22,9 +25,9 @@ export class ProfileGateway {
   /**
    * Gateway for requesting a players match history
    *
+   * @listens ProfileEvents.GetMatchHistory
    * @param {GetMatchHistoryRequest} getMatchHistoryRequest
-   * @async
-   * @returns {Promise<MatchHistoryItem[]>}
+   * @returns {Promise<MatchHistoryItem[]>} - Requested users match history
    */
   @SubscribeMessage(ProfileEvents.GetMatchHistory)
   async getMatchHistory(
@@ -36,8 +39,8 @@ export class ProfileGateway {
   /**
    * Returns profile information to display on a profile page
    *
+   * @listens ProfileEvents.GetProfile
    * @param {GetProfileRequest} getProfileRequest
-   * @async
    * @return {Promise<ProfileEntity | null>} - Requested users profile
    */
   @SubscribeMessage(ProfileEvents.GetProfile)
@@ -50,8 +53,9 @@ export class ProfileGateway {
   /**
    * Returns profile information of users friends
    *
+   * @todo add getFriendsRequest to kingpong-lib
+   * @listens "getFriendsRequest"
    * @param {GetFriendsRequest} getFriendsRequest
-   * @async
    * @returns {Promise<ProfileEntity[] | null>} - Requested users friends
    */
   @SubscribeMessage("getFriendsRequest")
@@ -64,6 +68,7 @@ export class ProfileGateway {
   /**
    * Updates users profile information
    *
+   * @listens ProfileEvents.UpdateProfile
    * @param {UpdateProfileRequest} updateProfileRequest
    * @returns {boolean} - Update successful
    */
@@ -77,6 +82,7 @@ export class ProfileGateway {
   /**
    * Add a friend to a users friend list
    *
+   * @listens ProfileEvents.AddFriend
    * @param {AddFriendRequest} addFriendRequest
    * @returns {boolean} - Add friend successful
    */

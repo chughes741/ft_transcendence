@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    
+    <meta charset="utf-8">
+    <title>frontend/src/profile/profile.view.tsx - Kingpong</title>
+    
+    <meta name="description" content="Documentation for the kingpong website" />
+    
+    
+    
+    <meta property="og:title" content="Kingpong Docs"/>
+    <meta property="og:type" content="website"/>
+    <meta property="og:image" content=""/>
+    
+    <meta property="og:url" content="https://chughes741.github.io/ft_transcendence"/>
+    
+    <script src="scripts/prettify/prettify.js"></script>
+    <script src="scripts/prettify/lang-css.js"></script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc.css">
+    <script src="scripts/nav.js" defer></script>
+    
+    <script src="scripts/commonNav.js" defer></script>
+    
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body>
+
+<input type="checkbox" id="nav-trigger" class="nav-trigger" />
+<label for="nav-trigger" class="navicon-button x">
+  <div class="navicon"></div>
+</label>
+
+<label for="nav-trigger" class="overlay"></label>
+
+<nav >
+    
+    <input type="text" id="nav-search" placeholder="Search" />
+    
+    
+</nav>
+
+<div id="main">
+    
+    <h1 class="page-title">frontend/src/profile/profile.view.tsx</h1>
+    
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/** MUI */
+import {
+  Avatar,
+  MenuItem,
+  ListItemText,
+  Paper,
+  Typography,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Grid,
+  Badge,
+  styled
+} from "@mui/material";
+
+/** Shared Library */
+import { MatchHistoryItem, ProfileEntity, UserStatus } from "kingpong-lib";
+
+/** View Model */
+import { useProfileViewModelContext } from "src/profile/profile.viewModel";
+import React from "react";
+
+type StyledBadgeProps = {
+  status: UserStatus;
+};
+
+/** Styled Badge */
+const StyledBadge = styled(Badge)&lt;StyledBadgeProps>(({ theme, status }) => ({
+  "&amp; .MuiBadge-badge": {
+    backgroundColor:
+      status === UserStatus.ONLINE
+        ? "#44b700"
+        : status === UserStatus.OFFLINE
+        ? "#ff0000"
+        : "#ffa500",
+    color:
+      status === UserStatus.ONLINE
+        ? "#44b700"
+        : status === UserStatus.OFFLINE
+        ? "#ff0000"
+        : "#ffa500",
+    boxShadow: `0 0 0 4px ${theme.palette.background.paper}`
+  }
+}));
+
+/**
+ * Creates profile page header
+ *
+ * @returns {JSX.Element | null}
+ */
+function ProfileHeader(): JSX.Element | null {
+  const { profile, matchHistory, getWinPercentage, getLossPercentage } =
+    useProfileViewModelContext();
+
+  return (
+    &lt;>
+      {profile &amp;&amp; (
+        &lt;Paper>
+          &lt;Grid
+            container
+            sx={{ padding: "1rem", alignItems: "center" }}
+          >
+            &lt;Grid
+              item
+              xs={6}
+              sx={{
+                display: "flex",
+                justifyContent: "end",
+                paddingRight: "1vw"
+              }}
+            >
+              &lt;StyledBadge
+                overlap="circular"
+                anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
+                badgeContent=" "
+                status={profile.status}
+              >
+                &lt;Avatar
+                  src={profile.avatar}
+                  sx={{ width: "7rem", height: "7rem" }}
+                >&lt;/Avatar>
+              &lt;/StyledBadge>
+            &lt;/Grid>
+            &lt;Grid
+              container
+              item
+              xs={6}
+            >
+              &lt;Grid
+                item
+                xs={12}
+              >
+                &lt;Typography variant="h5">{profile.username}&lt;/Typography>
+              &lt;/Grid>
+              &lt;Grid
+                item
+                xs={12}
+              >
+                &lt;Typography>Joined: {profile.createdAt}&lt;/Typography>
+              &lt;/Grid>
+              &lt;Grid
+                item
+                xs={12}
+              >
+                &lt;Typography>
+                  Matches played:{" "}
+                  {matchHistory &amp;&amp; matchHistory.length
+                    ? matchHistory.length
+                    : "0"}
+                &lt;/Typography>
+              &lt;/Grid>
+              &lt;Grid
+                item
+                xs={12}
+              >
+                &lt;Typography>Win percentage: {getWinPercentage()}%&lt;/Typography>
+              &lt;/Grid>
+              &lt;Grid
+                item
+                xs={12}
+              >
+                &lt;Typography>Loss percentage: {getLossPercentage()}%&lt;/Typography>
+              &lt;/Grid>
+            &lt;/Grid>
+          &lt;/Grid>
+        &lt;/Paper>
+      )}
+    &lt;/>
+  );
+}
+
+/**
+ * Creates a TableRow with a MatchHistoryItem
+ *
+ * @param {MatchHistoryItem} row
+ * @returns {JSX.Element | null}
+ */
+function MatchHistoryRow(row: MatchHistoryItem): JSX.Element | null {
+  return (
+    &lt;>
+      &lt;TableRow
+        id="profile-match-history-row"
+        sx={{
+          bgcolor:
+            row.score_player1 > row.score_player2 ? "info.dark" : "error.dark",
+          "&amp;:hover": {
+            opacity: [0.9, 0.8, 0.7]
+          }
+        }}
+      >
+        &lt;TableCell
+          align="center"
+          component="th"
+          scope="row"
+        >
+          {row.game_type}
+        &lt;/TableCell>
+        &lt;TableCell align="center">
+          {row.player1}
+          &lt;br />
+          {row.player2}
+        &lt;/TableCell>
+        &lt;TableCell align="center">
+          {row.score_player1}-{row.score_player2}
+        &lt;/TableCell>
+        &lt;TableCell align="center">{row.date}&lt;/TableCell>
+      &lt;/TableRow>
+    &lt;/>
+  );
+}
+
+/**
+ * Loads match history component
+ *
+ * @returns {JSX.Element | null}
+ */
+function MatchHistory(): JSX.Element | null {
+  const { matchHistory } = useProfileViewModelContext();
+
+  // Data column names
+  const cell_names = ["Match type", "Players", "Results", "Date"];
+
+  return (
+    &lt;>
+      &lt;TableContainer
+        id="profile-match-history"
+        component={Paper}
+      >
+        &lt;Table>
+          &lt;TableHead>
+            &lt;TableRow>
+              {cell_names.map((cell) => (
+                &lt;TableCell align="center">{cell}&lt;/TableCell>
+              ))}
+            &lt;/TableRow>
+          &lt;/TableHead>
+          {matchHistory &amp;&amp; matchHistory.length > 0 &amp;&amp; (
+            &lt;TableBody>
+              {matchHistory.map((row) => MatchHistoryRow(row))}
+            &lt;/TableBody>
+          )}
+        &lt;/Table>
+      &lt;/TableContainer>
+    &lt;/>
+  );
+}
+
+/**
+ * Creates a TableRow with a ProfileEntity
+ *
+ * @param {ProfileEntity} friend
+ * @returns {JSX.Element | null}
+ */
+function FriendsListRow(friend: ProfileEntity): JSX.Element | null {
+  const { setUser } = useProfileViewModelContext();
+
+  const handleClick = () => {
+    console.debug("Clicked on friend: " + friend.username);
+    setUser(friend.username);
+  };
+
+  return (
+    &lt;>
+      &lt;MenuItem
+        onClick={() => handleClick()}
+        sx={{ padding: "0.5rem" }}
+      >
+        &lt;StyledBadge
+          overlap="circular"
+          anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
+          variant="dot"
+          status={friend.status}
+        >
+          &lt;Avatar
+            alt={friend.username}
+            src={friend.avatar}
+            sx={{ width: "2rem", height: "2rem" }}
+          />
+        &lt;/StyledBadge>
+        &lt;ListItemText
+          sx={{ ml: "1rem" }}
+          primary={friend.username}
+        />
+      &lt;/MenuItem>
+    &lt;/>
+  );
+}
+
+/**
+ * Loads friends list component
+ *
+ * @returns {JSX.Element | null}
+ */
+function FriendsList(): JSX.Element | null {
+  const { friends } = useProfileViewModelContext();
+
+  return (
+    &lt;>
+      &lt;TableContainer component={Paper}>
+        &lt;Table>
+          &lt;TableHead>
+            &lt;TableRow>
+              &lt;TableCell align="center">Friends&lt;/TableCell>
+            &lt;/TableRow>
+          &lt;/TableHead>
+          {friends &amp;&amp; friends.length > 0 &amp;&amp; (
+            &lt;TableBody>
+              {friends.map((friend) => FriendsListRow(friend))}
+            &lt;/TableBody>
+          )}
+        &lt;/Table>
+      &lt;/TableContainer>
+    &lt;/>
+  );
+}
+
+/**
+ * Loads profile page
+ *
+ * @returns {JSX.Element | null}
+ */
+export default function ProfileView(): JSX.Element | null {
+  return (
+    &lt;>
+      &lt;Grid
+        container
+        rowSpacing={2}
+        columnSpacing={1}
+        width="80%"
+      >
+        &lt;Grid
+          item
+          xs={12}
+        >
+          &lt;ProfileHeader />
+        &lt;/Grid>
+        &lt;Grid
+          item
+          xs={8}
+        >
+          &lt;MatchHistory />
+        &lt;/Grid>
+        &lt;Grid
+          item
+          xs={4}
+        >
+          &lt;FriendsList />
+        &lt;/Grid>
+      &lt;/Grid>
+    &lt;/>
+  );
+}
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+    
+    
+</div>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 4.0.2</a> on Tue Apr 25 2023 20:32:20 GMT-0400 (Eastern Daylight Time) using the <a href="https://github.com/clenemt/docdash">docdash</a> theme.
+</footer>
+
+<script>prettyPrint();</script>
+<script src="scripts/polyfill.js"></script>
+<script src="scripts/linenumber.js"></script>
+
+<script src="scripts/search.js" defer></script>
+
+
+
+</body>
+</html>

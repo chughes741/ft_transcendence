@@ -36,6 +36,11 @@ export interface RoomManagerContextType {
     oldPassword?: string,
     newPassword?: string
   ) => Promise<boolean>;
+  handleFetchRoomMessagesPage: (
+    roomName: string,
+    date: Date,
+    pageSize: number
+  ) => Promise<MessageType[]>;
   updateRooms: (updateFn: (rooms: RoomMap) => void) => void;
   convertMessagePayloadToMessageType: (
     messagePayload: MessagePayload
@@ -133,6 +138,13 @@ export const RoomManagerProvider = ({ children }) => {
     });
   };
 
+  const getTargetOfDirectMessage = (roomName: string) => {
+    const roomNameSplit = roomName.split("$");
+    const target =
+      roomNameSplit[0] === self.username ? roomNameSplit[1] : roomNameSplit[0];
+    return target;
+  };
+
   // Adds a new room to the rooms state variable
   const addChatRoom = async (
     chatRoomPayload: ChatRoomPayload
@@ -159,6 +171,10 @@ export const RoomManagerProvider = ({ children }) => {
 
       const newRoom = {
         name: name,
+        displayName:
+          status === ChatRoomStatus.DIALOGUE
+            ? getTargetOfDirectMessage(name)
+            : name,
         status: status,
         rank: queryingUserRank,
         latestMessage: convertedLatestMessage,
@@ -187,7 +203,7 @@ export const RoomManagerProvider = ({ children }) => {
       } else {
         newRooms[roomName].messages.push(message);
         newRooms[roomName].latestMessage = message;
-        newRooms[roomName].lastActivity = new Date(Date.now());
+        newRooms[roomName].lastActivity = new Date();
       }
     });
   };
@@ -201,7 +217,7 @@ export const RoomManagerProvider = ({ children }) => {
         newRooms[roomName].latestMessage = messages[messages.length - 1];
         newRooms[roomName].lastActivity = newRooms[roomName].latestMessage
           ? newRooms[roomName].latestMessage
-          : new Date(Date.now());
+          : new Date();
       }
     });
   };
@@ -257,20 +273,18 @@ export const RoomManagerProvider = ({ children }) => {
     const messageRequest = { roomName, date: new Date(), pageSize: 50 };
     const messagesRes = await new Promise<DevError | MessagePayload[]>(
       (resolve) => {
-        console.warn("Getting messages for room: ", roomName);
         socket.emit("getRoomMessagesPage", messageRequest, resolve);
       }
     );
 
     if (handleSocketErrorResponse(messagesRes)) {
-      console.warn(
+      console.error(
         "Error response from get room messages: ",
         messagesRes.error
       );
       alert(messagesRes.error);
       return false;
     }
-    console.warn("Got messages for room: ", roomName, messagesRes);
 
     const messages = (messagesRes as MessagePayload[]).map((message) =>
       convertMessagePayloadToMessageType(message)
@@ -278,6 +292,31 @@ export const RoomManagerProvider = ({ children }) => {
     addMessagesToRoom(roomName, messages);
 
     return true;
+  };
+
+  const handleFetchRoomMessagesPage = async (
+    roomName: string,
+    date: Date,
+    pageSize: number
+  ): Promise<MessageType[]> => {
+    const messageRequest = { roomName, date, pageSize };
+    const messagesRes = await new Promise<DevError | MessagePayload[]>(
+      (resolve) => {
+        socket.emit("getRoomMessagesPage", messageRequest, resolve);
+      }
+    );
+    if (handleSocketErrorResponse(messagesRes)) {
+      console.error(
+        "Error response from get room messages: ",
+        messagesRes.error
+      );
+    }
+
+    const messages = (messagesRes as MessagePayload[]).map((message) =>
+      convertMessagePayloadToMessageType(message)
+    );
+    addMessagesToRoom(roomName, messages);
+    return messages;
   };
 
   const handleSendRoomMessage = async (
@@ -349,6 +388,7 @@ export const RoomManagerProvider = ({ children }) => {
         addChatRoom,
         addMessageToRoom,
         addMessagesToRoom,
+        handleFetchRoomMessagesPage,
         updateRooms,
         convertMessagePayloadToMessageType,
         handleJoinRoom,

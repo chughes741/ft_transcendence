@@ -19,17 +19,12 @@ import {
 } from "../chat/chat.gateway";
 import config from "../config";
 
-/** Here for profile */
 import {
   AddFriendRequest,
   GetFriendsRequest,
   GetMatchHistoryRequest,
   GetProfileRequest
 } from "kingpong-lib";
-
-/*End of Mute and End of Ban:  */
-//Is added to the current date (now)
-const GLOBAL_T_IN_DAYS = 5 /*DAYS*/ * (24 * 60 * 60 * 1000); // One day in milliseconds
 
 import { UpdateChatMemberRequest } from "src/chat/dto/userlist.dto";
 import { UserEntity } from "../auth/dto";
@@ -43,6 +38,9 @@ interface MatchPrismaType extends Match {
   player2: User;
 }
 
+/**
+ * PrismaService class
+ */
 @Injectable()
 export class PrismaService extends PrismaClient {
   constructor() {
@@ -58,6 +56,7 @@ export class PrismaService extends PrismaClient {
 
   /**
    * To be executed in testing, or to fully cleanup the db.
+   *
    * If you're not sure, probs best not to touch it.
    */
   cleanDb() {
@@ -73,11 +72,12 @@ export class PrismaService extends PrismaClient {
       this.match.deleteMany()
     ]);
   }
+
   /**
    * Checks if a user with the given userId exists in the database.
+   *
    * @param {string} userId - The id of the user.
    * @returns {Promise<boolean>} - A Promise that resolves to true if the user exists, false otherwise.
-   * @async
    */
   async userExists(userId: string): Promise<boolean> {
     if (!userId) {
@@ -93,6 +93,12 @@ export class PrismaService extends PrismaClient {
     }
   }
 
+  /**
+   * Checks if a user with the given username exists in the database.
+   *
+   * @param {string} username - The username of the user.
+   * @returns {Promise<boolean>} - A Promise that resolves to true if the user exists, false otherwise.
+   */
   async userNameExists(username: string): Promise<boolean> {
     if (!username) {
       logger.error("userExists: User username is required");
@@ -109,6 +115,13 @@ export class PrismaService extends PrismaClient {
     }
   }
 
+  /**
+   * Checks if a user with the given email exists in the database.
+   *
+   * @param {string} userName - The username of the user.
+   * @param {string} newUsername - The new username of the user.
+   * @returns {Promise<boolean>} - A Promise that resolves to true if the username was changed, false otherwise.
+   */
   async changeUserName(
     userName: string,
     newUsername: string
@@ -128,9 +141,9 @@ export class PrismaService extends PrismaClient {
 
   /**
    * Gets the user id of a user with the specified nick.
+   *
    * @param {string} nick - The user's nick.
    * @returns {Promise<string>} - A Promise that resolves to the user id if the user is found, or an error if not found.
-   * @async
    */
   async getUserIdByNick(nick: string): Promise<string | null> {
     if (!nick) {
@@ -146,11 +159,11 @@ export class PrismaService extends PrismaClient {
   }
 
   /**
-   * Returns a list of `limit` chat rooms members, including
-   * their username and avatar.
-   * @param roomId - id of the room
-   * @param limit - number of members to return
-   * @returns - list of members
+   * Returns a list of `limit` chat rooms members, including their username and avatar.
+   *
+   * @param {string} roomName - The name of the room.
+   * @param {number} limit - The maximum number of members to return.
+   * @returns {Promise<ChatMemberPrismaType[]>} - A Promise that resolves to the chat members if the room is found, or an error if not found.
    */
   async getRoomMembers(
     roomName: string,
@@ -178,6 +191,7 @@ export class PrismaService extends PrismaClient {
 
   /**
    * Adds a user to the database
+   *
    * @param req - dto containing the room name and the user id
    * @returns {Promise<User>} - A Promise that resolves to the chat member if the user is found, or an error if not found.
    */
@@ -202,14 +216,14 @@ export class PrismaService extends PrismaClient {
 
   /**
    * Creates a new chat room with the provided data.
+   *
    * @param {ChatRoomDto} dto - The data transfer object containing the chat room data.
    * @returns {Promise<ChatRoom>} - A Promise that resolves to the created chat room.
-   * @async
    */
   async createChatRoom(dto: ChatRoomDto): Promise<ChatRoom> {
     // Check if the owner UUID is valid
-    // FIXME: this should use the userExists() method
-    // TODO: remove this code when authentication is enabled
+    /** @todo this should use the userExists() method */
+    /** @todo remove this code when authentication is enabled */
     logger.debug(`dto.owner: ${dto.owner}`);
     const userID = await this.getUserIdByNick(dto.owner);
     logger.debug(`userID: ${userID}`);
@@ -245,15 +259,14 @@ export class PrismaService extends PrismaClient {
    * Get ${pageSize} chat rooms older than the date provided.
    *
    * @param {string} userId - The id of the user querying the chat rooms.
-   * @param {Date} [dateOldest=new Date(Date.now())] - The date of the oldest chat room retrieved thus far. Defaults to the current date and time.
+   * @param {Date} [dateOldest=new Date()] - The date of the oldest chat room retrieved thus far. Defaults to the current date and time.
    * @param {number} [pageSize=15] - The number of chat rooms to return. Defaults to 15.
-   * @returns {Promise<PrismaType[]>} - A Promise that resolves to an array of chat rooms.
-   * @async
+   * @returns {Promise<any>} - A Promise that resolves to an array of chat rooms.
    */
   async getAvailableChatRooms(
     userId: string,
-    dateOldest: Date = new Date(Date.now()),
-    pageSize = 15
+    dateOldest: Date = new Date(),
+    pageSize = 50
     // TODO: define PrismaType for this
   ): Promise<any> {
     // Check if the user exists
@@ -265,13 +278,15 @@ export class PrismaService extends PrismaClient {
     if (!user) {
       return new Error("Invalid user ID");
     }
-    return this.chatRoom.findMany({
+    const rooms = await this.chatRoom.findMany({
       where: {
         AND: [
           {
-            status: { not: ChatRoomStatus.PRIVATE || ChatRoomStatus.DIALOGUE }
+            status: {
+              notIn: [ChatRoomStatus.PRIVATE, ChatRoomStatus.DIALOGUE]
+            }
           },
-          { members: { every: { member: { id: { not: userId } } } } },
+          { members: { none: { member: { id: userId } } } },
           { createdAt: { lt: dateOldest } }
         ]
       },
@@ -282,16 +297,17 @@ export class PrismaService extends PrismaClient {
       orderBy: { createdAt: "desc" },
       take: pageSize
     });
+    return rooms;
   }
 
   /**
    * This method returns a page of messages from the database of the specified size,
    * starting with the oldest message that is older than the date provided.
    *
-   * @param id room id
-   * @param date of the oldest message retrieved thus far
-   * @param pageSize number of messages to return
-   * @returns {Promise<MessageDto[]>} a page of messages
+   * @param {number} id - The ID of the chat room to retrieve messages from.
+   * @param {Date} date - The date of the oldest message retrieved thus far.
+   * @param {number} pageSize - The number of messages to return.
+   * @returns {Promise<MessagePrismaType[]>} - A Promise that resolves to an array of messages.
    */
   async getChatMessagesPage(
     id: number,
@@ -353,10 +369,10 @@ export class PrismaService extends PrismaClient {
   /**
    * Gets a chat room with its member
    *
-   * @param {string} roomName
-   * @param {string} username
-   * @async
-   * @returns {Promise<{ room: ChatRoom; chatMember: ChatMember } | null>}
+   * @todo Fix this functions return type
+   *
+   * @param {string} roomName - The name of the chat room
+   * @param {string} username - The username of the member
    */
   async getChatRoomWithMember(
     roomName: string,
@@ -384,10 +400,9 @@ export class PrismaService extends PrismaClient {
   /**
    * Updates a chat room
    *
-   * @param {number} id
-   * @param {Partial<UpdateChatRoomRequest>} req
-   * @async
-   * @returns {Promise<ChatRoom>}
+   * @param {number} id - The id of the chat room
+   * @param {Partial<UpdateChatRoomRequest>} req - The request body
+   * @returns {Promise<ChatRoom>} - A Promise that resolves to the updated chat room
    */
   async updateChatRoom(
     id: number,
@@ -404,7 +419,12 @@ export class PrismaService extends PrismaClient {
     return this.chatRoom.update({ where: { id }, data });
   }
 
-  // Delete a chat room
+  /**
+   * Deletes a chat room
+   *
+   * @param {number} id - The id of the chat room
+   * @returns {Promise<ChatRoomDto>} - A Promise that resolves to the deleted chat room
+   */
   async deleteChatRoom(id: number): Promise<ChatRoomDto> {
     return this.chatRoom.delete({ where: { id } });
   }
@@ -413,8 +433,7 @@ export class PrismaService extends PrismaClient {
    * Adds a message to a chat room
    *
    * @param {MessageDto} dto
-   * @async
-   * @returns {Promise<MessagePrismaType>}
+   * @returns {Promise<MessagePrismaType>} - A Promise that resolves to the newly created message
    */
   async addMessageToChatRoom(dto: MessageDto): Promise<MessagePrismaType> {
     // Check if the owner UUID is valid
@@ -445,9 +464,8 @@ export class PrismaService extends PrismaClient {
   /**
    * Retrieves the latest message in a chat room by room ID
    *
-   * @param {number} roomId
-   * @async
-   * @returns {Promise<MessagePrismaType | null>}
+   * @param {number} roomId - The ID of the chat room
+   * @returns {Promise<MessagePrismaType | null>} - A Promise that resolves to the latest message in the chat room, or null if no messages exist
    */
   async getLatestMessage(roomId: number): Promise<MessagePrismaType | null> {
     return this.message.findFirst({
@@ -463,9 +481,8 @@ export class PrismaService extends PrismaClient {
   /**
    * Fetches match history page from the database
    *
-   * @param {GetMatchHistoryRequest} getMatchHistoryRequest
-   * @async
-   * @returns {Promise<MatchPrismaType[]>}
+   * @param {GetMatchHistoryRequest} getMatchHistoryRequest - The request body
+   * @returns {Promise<MatchPrismaType[]>} - A Promise that resolves to the match history
    */
   async GetMatchHistory(
     getMatchHistoryRequest: GetMatchHistoryRequest
@@ -495,9 +512,8 @@ export class PrismaService extends PrismaClient {
   /**
    * Returns a profile from the database
    *
-   * @param {GetProfileRequest} getProfileRequest
-   * @async
-   * @returns {Promise<User>}
+   * @param {GetProfileRequest} getProfileRequest - The request body
+   * @returns {Promise<User>} - A Promise that resolves to the user profile
    */
   async GetProfile(getProfileRequest: GetProfileRequest): Promise<User> {
     if (getProfileRequest.username === undefined || null) {
@@ -523,9 +539,9 @@ export class PrismaService extends PrismaClient {
    * Returns a users friends from the database
    *
    * @todo make a primsa type for return
-   * @param {GetFriendsRequest} getFriendsRequest
-   * @async
-   * @returns {Promise<Friend[]>}
+   *
+   * @param {GetFriendsRequest} getFriendsRequest - The request body
+   * @returns {Promise<any[]>} - A Promise that resolves to the user's friends
    */
   //TODO: define a prisma type for the return
   async getFriends(getFriendsRequest: GetFriendsRequest): Promise<any[]> {
@@ -545,9 +561,8 @@ export class PrismaService extends PrismaClient {
   /**
    * Adds a friend to the database
    *
-   * @param {AddFriendRequest} addFriendRequest
-   * @async
-   * @returns {Promise<Friend>}
+   * @param {AddFriendRequest} addFriendRequest - The request body
+   * @returns {Promise<boolean>} - A Promise that resolves to true if the friend was added successfully, false otherwise
    */
   async addFriend(addFriendRequest: AddFriendRequest): Promise<boolean> {
     logger.debug(
@@ -596,9 +611,8 @@ export class PrismaService extends PrismaClient {
   /**
    * Updates a chat member's status
    *
-   * @param {UpdateChatMemberRequest} updateDto
-   * @async
-   * @returns {Promise<ChatMember>}
+   * @param {UpdateChatMemberRequest} updateDto - The request body
+   * @returns {Promise<ChatMemberPrismaType>} - A Promise that resolves to the updated chat member
    */
   async updateChatMemberStatus(
     updateDto: UpdateChatMemberRequest
@@ -660,10 +674,9 @@ export class PrismaService extends PrismaClient {
   /**
    * Fetches chat member by username and room name
    *
-   * @param {string} roomName
-   * @param {string} username
-   * @async
-   * @returns {Promise<ChatMember>}
+   * @param {string} roomName - The room name
+   * @param {string} username - The username
+   * @returns {Promise<ChatMemberPrismaType>} - A Promise that resolves to the chat member
    */
   async getChatMemberByUsername(
     roomName: string,
@@ -710,10 +723,9 @@ export class PrismaService extends PrismaClient {
   /**
    * Fetches chat member by username and room name
    *
-   * @param {string} roomName
-   * @param {string} uuid
-   * @async
-   * @returns {Promise<ChatMember>}
+   * @param {string} roomName - The room name
+   * @param {string} uuid - The uuid
+   * @returns {Promise<ChatMemberPrismaType>} - A Promise that resolves to the chat member
    */
   async getChatMemberByUUID(
     roomName: string,
@@ -761,10 +773,9 @@ export class PrismaService extends PrismaClient {
    * Gets a list of all users in the server that have not been blocked by the querying user,
    * and are not in the specified chat room
    *
-   * @param {string} userId
-   * @param {number} roomId
-   * @async
-   * @returns {Promise<User[]>}
+   * @param {string} userId - The querying user's ID
+   * @param {number} roomId - The chat room ID
+   * @returns {Promise<User[]>} - A Promise that resolves to a list of users
    */
   async getAvailableUsers(userId: string, roomId: number): Promise<User[]> {
     if (!userId) {
@@ -823,10 +834,10 @@ export class PrismaService extends PrismaClient {
   /**
    * Check the status of a user in a chat room
    *
-   * @param {number} userId
-   * @param {string} roomName
-   * @async
-   * @returns {Promise<{ status: ChatMemberStatus; expiration: Date | null }>}
+   * @todo Fix this functions return type
+   *
+   * @param {string} userId - The user ID
+   * @param {string} roomName - The room name
    */
   async checkChatMemberStatus(
     userId: string, // Changed from number to string to match your User model
@@ -854,9 +865,8 @@ export class PrismaService extends PrismaClient {
   /**
    * Deletes a chat member by their ID
    *
-   * @param {number} id
-   * @async
-   * @returns {Promise<void>}
+   * @param {number} id - The chat member ID
+   * @returns {Promise<void>} - A Promise that resolves when the chat member is deleted
    */
   async destroyChatMember(id: number): Promise<void> {
     await this.chatMember.delete({
@@ -867,10 +877,9 @@ export class PrismaService extends PrismaClient {
   /**
    * Updates the avatar URL of a user by their username
    *
-   * @param {string} userName
-   * @param {string} URL
-   * @async
-   * @returns {Promise<void>}
+   * @param {string} userName - The username
+   * @param {string} URL - The avatar URL
+   * @returns {Promise<void>} - A Promise that resolves when the user is updated
    */
   async updateAvatar(userName: string, URL: string) {
     const userToUpdate = await this.user.update({
@@ -884,6 +893,12 @@ export class PrismaService extends PrismaClient {
     return userToUpdate;
   }
 
+  /**
+   * Updates the status of a user by their username
+   *
+   * @param {string} userName - The username
+   * @returns {Promise<void>} - A Promise that resolves when the user is updated
+   */
   async update2FA(userName: string): Promise<boolean> {
     const user = await this.user.findUnique({
       where: {
@@ -915,10 +930,12 @@ export class PrismaService extends PrismaClient {
 
   /**
    * Adds a new Direct Message chat room between two users
-   * @param {string} senderId
-   * @param {string} recipientId
-   * @async
-   * @returns {Promise<ChatRoom>}
+   *
+   * @param {string} senderId - The sender's ID
+   * @param {string} recipientId - The recipient's ID
+   * @param {string} roomName - The room name
+   * @returns {Promise<ChatRoom>} - A Promise that resolves to the new chat room
+   *
    * @throws {Error} If the chat room already exists
    */
   async createDirectMessageRoom(
@@ -960,8 +977,7 @@ export class PrismaService extends PrismaClient {
    *
    * @param {string} blockingId - The ID of the user doing the blocking.
    * @param {string} blockedId - The ID of the user being blocked.
-   * @async
-   * @returns {Promise<BlockedUser>}
+   * @returns {Promise<BlockedUser>} - A Promise that resolves to the new blocked user relationship.
    */
   async addBlockedUser(
     blockingId: string,
@@ -984,8 +1000,7 @@ export class PrismaService extends PrismaClient {
    *
    * @param {string} blockingId - The ID of the user who did the blocking.
    * @param {string} blockedId - The ID of the user who was blocked.
-   * @async
-   * @returns {Promise<void>}
+   * @returns {Promise<void>} - A Promise that resolves when the blocked user relationship is removed.
    */
   async removeBlockedUser(
     blockingId: string,
@@ -1005,8 +1020,7 @@ export class PrismaService extends PrismaClient {
    * Retrieves the users blocked by a user.
    *
    * @param {string} userId - The ID of the user who did the blocking.
-   * @async
-   * @returns {Promise<User[]>}
+   * @returns {Promise<User[]>} - A Promise that resolves to an array of users who were blocked by the user.
    */
   async getUsersBlockedBy(userId: string): Promise<User[]> {
     const blockedUserRelations = await this.blockedUser.findMany({
@@ -1024,6 +1038,12 @@ export class PrismaService extends PrismaClient {
     return blockedUsers;
   }
 
+  /**
+   * Retrieves the users blocking a user.
+   *
+   * @param {string} userId - The ID of the user who was blocked.
+   * @returns {Promise<User[]>} - A Promise that resolves to an array of users who did the blocking.
+   */
   async getUsersBlocking(userId: string): Promise<User[]> {
     const blockingUserRelations = await this.blockedUser.findMany({
       where: {
@@ -1040,6 +1060,13 @@ export class PrismaService extends PrismaClient {
     return blockingUsers;
   }
 
+  /**
+   * Checks if a user is blocked by another user.
+   *
+   * @param {string} blockerId - The ID of the user who did the blocking.
+   * @param {string} blockedUserId - The ID of the user who was blocked.
+   * @returns {Promise<boolean>} - A Promise that resolves to true if the user is blocked by the other user, false otherwise.
+   */
   async checkIfBlocked(
     blockerId: string,
     blockedUserId: string
@@ -1056,12 +1083,16 @@ export class PrismaService extends PrismaClient {
 
   /**
    * Add a match to the database
-   * @param {string} player1Id
-   * @param {string} player2Id
-   * @param {number} scorePlayer1
-   * @param {number} scorePlayer2
-   * @async
-   * @returns {Promise<Match>}
+   *
+   * @todo fix this wonky parameter list
+   *
+   * @param {string} player1Id - The ID of the first player
+   * @param {string} player2Id - The ID of the second player
+   * @param {number} scorePlayer1 - The score of the first player
+   * @param {number} scorePlayer2 - The score of the second player
+   * @param {Date} timestamp - The timestamp of the match
+   * @param {GameType} gameType - The game type of the match
+   * @returns {Promise<Match>} - A Promise that resolves to the new match
    */
   async addMatch({
     player1Id,

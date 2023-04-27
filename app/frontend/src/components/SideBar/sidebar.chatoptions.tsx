@@ -25,7 +25,7 @@ export default function SidebarChatOptions() {
     >
       <ButtonFunky
         icon={<Chat />}
-        content="Message a friend"
+        content="Send a message"
         width={"100%"}
         onClick={() => setShowDirectMessageModal(true)}
       />

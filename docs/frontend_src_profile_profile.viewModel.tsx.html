@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    
+    <meta charset="utf-8">
+    <title>frontend/src/profile/profile.viewModel.tsx - Kingpong</title>
+    
+    <meta name="description" content="Documentation for the kingpong website" />
+    
+    
+    
+    <meta property="og:title" content="Kingpong Docs"/>
+    <meta property="og:type" content="website"/>
+    <meta property="og:image" content=""/>
+    
+    <meta property="og:url" content="https://chughes741.github.io/ft_transcendence"/>
+    
+    <script src="scripts/prettify/prettify.js"></script>
+    <script src="scripts/prettify/lang-css.js"></script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc.css">
+    <script src="scripts/nav.js" defer></script>
+    
+    <script src="scripts/commonNav.js" defer></script>
+    
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body>
+
+<input type="checkbox" id="nav-trigger" class="nav-trigger" />
+<label for="nav-trigger" class="navicon-button x">
+  <div class="navicon"></div>
+</label>
+
+<label for="nav-trigger" class="overlay"></label>
+
+<nav >
+    
+    <input type="text" id="nav-search" placeholder="Search" />
+    
+    
+</nav>
+
+<div id="main">
+    
+    <h1 class="page-title">frontend/src/profile/profile.viewModel.tsx</h1>
+    
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>import React, { createContext, useContext, useEffect } from "react";
+
+/** Module Imports */
+import { socket } from "src/contexts/WebSocket.context";
+
+/** Temporary data type import */
+import { MatchHistoryItem, ProfileEntity, ProfileEvents } from "kingpong-lib";
+import { ProfileModelType, useProfileModel } from "./profile.model";
+
+/** ProfileViewModelType */
+export interface ProfileViewModelType extends ProfileModelType {
+  getMatchHistory: () => Promise&lt;void>;
+  getProfile: () => Promise&lt;void>;
+  getFriends: () => Promise&lt;void>;
+  addFriend: (username: string, friend: string) => Promise&lt;void>;
+  getWinPercentage: () => number;
+  getLossPercentage: () => number;
+}
+
+/** ProfileViewModelContext */
+export const ProfileViewModelContext: React.Context&lt;ProfileViewModelType | null> =
+  createContext&lt;ProfileViewModelType | null>(null);
+
+/**
+ * Provides the ProfileViewModelContext to the ProfileView
+ *
+ * @returns {JSX.Element}
+ */
+export const ProfileViewModelProvider = ({ children }) => {
+  const {
+    user,
+    setUser,
+    profile,
+    setProfile,
+    matchHistory,
+    setMatchHistory,
+    friends,
+    setFriends
+  } = useProfileModel();
+
+  /**
+   * Sends a getMatchHistory request to the server
+   *
+   * @todo Change MatchHistoryItem to MatchHistoryEntity once kingpong-lib is updated
+   *
+   * @returns {Promise&lt;void>}
+   */
+  const getMatchHistory = async (): Promise&lt;void> => {
+    console.debug("getMatchHistory", user);
+    if (!user || user === "") {
+      console.warn("No user found");
+      return;
+    }
+
+    socket.emit(
+      ProfileEvents.GetMatchHistory,
+      { username: user, number_of_items: 50 },
+      (matchHistoryItems: MatchHistoryItem[]) => {
+        setMatchHistory(matchHistoryItems);
+      }
+    );
+  };
+
+  /**
+   * Generates a win percentage based on the match history
+   *
+   * @returns {number} - Win percentage
+   */
+  const getWinPercentage = () => {
+    if (!matchHistory) return;
+
+    let numWins = 0;
+    for (let i = 0; i &lt; matchHistory.length; i++) {
+      if (matchHistory[i].score_player1 > matchHistory[i].score_player2)
+        numWins++;
+    }
+
+    let percent: number = (numWins / matchHistory.length) * 100;
+    if (isNaN(percent)) percent = 0;
+
+    return percent;
+  };
+
+  /**
+   * Generates a loss percentage based on the match history
+   *
+   * @returns {number} - Loss percentage
+   */
+  const getLossPercentage = () => {
+    if (!matchHistory) return;
+
+    let numLosses = 0;
+    for (let i = 0; i &lt; matchHistory.length; i++) {
+      if (matchHistory[i].score_player1 &lt; matchHistory[i].score_player2)
+        numLosses++;
+    }
+
+    let percent: number = (numLosses / matchHistory.length) * 100;
+    if (isNaN(percent)) percent = 0;
+
+    return percent;
+  };
+
+  /**
+   * Sends a getProfile request to the server
+   *
+   * @returns {Promise&lt;void>}
+   */
+  const getProfile = async (): Promise&lt;void> => {
+    if (user === null) return;
+
+    console.debug("getProfile", user);
+    socket.emit(
+      ProfileEvents.GetProfile,
+      { username: user },
+      (profileEntity: ProfileEntity) => {
+        setProfile(profileEntity);
+      }
+    );
+  };
+
+  /**
+   * Sends a getFriends request to the server
+   *
+   * @todo Change message name to enum once kingpong-lib is updated
+   *
+   * @returns {Promise&lt;void>}
+   */
+  const getFriends = async (): Promise&lt;void> => {
+    if (user === null) return;
+
+    console.debug("getFriendsRequest", user);
+    socket.emit(
+      ProfileEvents.GetFriends,
+      { username: user },
+      (friends: ProfileEntity[]) => {
+        setFriends(friends);
+      }
+    );
+  };
+
+  /**
+   * Adds a friend to friends list
+   *
+   * @param {string} username - Username of the user
+   * @param {string} friend - Username of the friend
+   * @returns {Promise&lt;void>}
+   */
+  const addFriend = async (username: string, friend: string): Promise&lt;void> => {
+    if (username === null || friend === null) return;
+
+    console.debug("addFriend", username, friend);
+    socket.emit(ProfileEvents.AddFriend, {
+      username: username,
+      friend: friend
+    });
+  };
+
+  /** Update MatchHistory and Profile when user changes */
+  useEffect(() => {
+    getMatchHistory().then();
+    getProfile().then();
+    getFriends().then();
+  }, [user]);
+
+  return (
+    &lt;ProfileViewModelContext.Provider
+      value={{
+        user,
+        setUser,
+        profile,
+        setProfile,
+        matchHistory,
+        setMatchHistory,
+        friends,
+        setFriends,
+        getMatchHistory,
+        getProfile,
+        getFriends,
+        addFriend,
+        getWinPercentage,
+        getLossPercentage
+      }}
+    >
+      {children}
+    &lt;/ProfileViewModelContext.Provider>
+  );
+};
+
+/**
+ * Returns the ProfileViewModelContext
+ *
+ * @returns {ProfileViewModelType}
+ */
+export const useProfileViewModelContext = (): ProfileViewModelType => {
+  const context = useContext(ProfileViewModelContext);
+
+  if (context === undefined) {
+    throw new Error(
+      "useProfileViewModelContext must be used within a ProfileViewModelProvider"
+    );
+  }
+
+  return context;
+};
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+    
+    
+</div>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 4.0.2</a> on Tue Apr 25 2023 20:32:20 GMT-0400 (Eastern Daylight Time) using the <a href="https://github.com/clenemt/docdash">docdash</a> theme.
+</footer>
+
+<script>prettyPrint();</script>
+<script src="scripts/polyfill.js"></script>
+<script src="scripts/linenumber.js"></script>
+
+<script src="scripts/search.js" defer></script>
+
+
+
+</body>
+</html>
