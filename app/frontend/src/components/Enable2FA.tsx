@@ -3,28 +3,29 @@ import { Box } from "@mui/system";
 import React, { useEffect, useState } from "react";
 import { PageState } from "src/root.model";
 import { useRootViewModelContext } from "src/root.context";
-import "./Login42.tsx.css";
-import "./QrCodeElement.tsx.css";
+import "./Auth.tsx.css";
+import "./Enable2FA.tsx.css";
 import { socket } from "src/contexts/WebSocket.context";
-import { headers } from "./Login42";
+import { headers } from "./Auth";
 import { createBrowserHistory } from "history";
 
-function VerifyQRCode() {
-  const {
-    setPageState,
-    setFullscreen,
-    sessionToken,
-    setSelf,
-    setSessionToken
-  } = useRootViewModelContext();
+export default function Enable2FA() {
+  const { setPageState, sessionToken, setSelf, self, setSessionToken } =
+    useRootViewModelContext();
 
   const [qrCode, setQRCode] = useState<string | null>(null);
   const [code, setCode] = useState<string>("");
   const [errorMessage, setErrorMessage] = useState<string>("");
   const [secret, setSecret] = useState<string | null>(null);
   const history = createBrowserHistory();
+  const [isCancelled, setCancelled] = useState<boolean>(false);
 
-  setFullscreen(true);
+  const cancel = () => {
+    history.back();
+    //Here we need to be able not to go forward, history.destroy next or smthg
+    setCancelled(true);
+    return;
+  };
 
   const handleGetQRCode = async (): Promise<boolean> => {
     try {
@@ -49,7 +50,7 @@ function VerifyQRCode() {
 
   const handleVerifyQRCode = async (): Promise<boolean> => {
     try {
-      const url = `/auth/verifyQrCode?secret=${secret}&code=${code}`;
+      const url = `/auth/verifyQrCode?secret=${secret}&code=${code}&username=${self.username}`;
       const response = await fetch(url, {
         method: "GET",
         headers: {
@@ -59,17 +60,6 @@ function VerifyQRCode() {
         }
       });
       const data = await response.json();
-      if (data.validated) {
-        setErrorMessage("");
-        alert("Verification successful!");
-        setFullscreen(false);
-        setPageState(PageState.Home);
-        return true;
-      } else {
-        alert("There was an error with the code you provided");
-        setErrorMessage(data.message);
-        return false;
-      }
       if (data.statusCode && data.statusCode === 401) {
         //UNAUTHORIZED EXCEPTION
         //MUST FLUSH THE session TOKEN and bring back to login page
@@ -80,9 +70,18 @@ function VerifyQRCode() {
         setSessionToken("");
         setPageState(PageState.Auth);
         history.push("/auth");
-        setFullscreen(true);
         setSelf({ username: "", avatar: "", createdAt: "", status: 0 });
         return;
+      }
+      if (data.validated) {
+        setErrorMessage("");
+        alert("Verification successful!");
+        history.back();
+        return true;
+      } else {
+        alert("There was an error with the code you provided");
+        setErrorMessage(data.message);
+        return false;
       }
     } catch (error) {
       return false;
@@ -127,8 +126,13 @@ function VerifyQRCode() {
             Authenticate me
           </Box>
         </Box>
+        <Box
+          sx={{ alignSelf: "flex-start" }}
+          onClick={cancel}
+        >
+          CANCELLLLL
+        </Box>
       </Box>
     </>
   );
 }
-export default VerifyQRCode;

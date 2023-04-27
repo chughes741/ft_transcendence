@@ -18,7 +18,7 @@ export class GameModuleData {
 
   /**
    * Check if a given user is already in the queue
-   * 
+   *
    * @param {string} username
    * @returns {GameTypes.PlayerQueue}
    */
@@ -33,7 +33,7 @@ export class GameModuleData {
 
   /**
    * Adds player to game queue
-   * 
+   *
    * @param {GameTypes.PlayerQueue} player
    * @returns {}
    */
@@ -44,7 +44,7 @@ export class GameModuleData {
 
   /**
    * Removes player from queue given a player object
-   * 
+   *
    * @param {GameTypes.PlayerQueue} player
    * @returns {}
    */
@@ -56,7 +56,7 @@ export class GameModuleData {
 
   /**
    * Removes a player from queue given a username
-   * 
+   *
    * @param {string} player
    * @returns {}
    */
@@ -72,7 +72,7 @@ export class GameModuleData {
 
   /**
    * Attempts to return a pair of players from the queue
-   * 
+   *
    * @returns {GameTypes.PlayerQueue[]}
    */
   getPairQueue(): GameTypes.PlayerQueue[] {
@@ -92,7 +92,7 @@ export class GameModuleData {
 
   /**
    * Sets the position of the paddle for a given player in a given lobby
-   * 
+   *
    * @param {ClientGameStateUpdateRequest} payload
    * @returns {}
    */
@@ -112,7 +112,7 @@ export class GameModuleData {
 
   /**
    * Update the player ready status for a player in specified lobby
-   * 
+   *
    * @param {PlayerReadyRequest} payload
    * @returns {}
    */
@@ -131,7 +131,7 @@ export class GameModuleData {
 
   /**
    * Retrieve the lobby object that corresponds to the given lobby id
-   * 
+   *
    * @param {string} lobby_id
    * @returns {GameTypes.gameLobby | null}
    */
@@ -148,7 +148,7 @@ export class GameModuleData {
 
   /**
    * Adds a lobby to the list of lobbies
-   * 
+   *
    * @param {GameTypes.gameLobby} lobby
    * @returns {boolean}
    */
