@@ -62,7 +62,6 @@ export default function Auth() {
   const history = createBrowserHistory();
   //TODO check this so it redirects if youre already sign in
   useEffect(() => {
-    console.log("dasjdaskldjas");
     if (sessionToken) {
       setPageState(PageState.Home);
       return;

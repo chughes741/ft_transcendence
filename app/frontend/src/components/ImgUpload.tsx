@@ -26,9 +26,9 @@ function ImgUpload() {
         //     REPLACE WITH CONTEXT USERNAME HERE
         const newdata = { username: self.username };
         formData.append("newData", JSON.stringify(newdata));
-        console.log(formData);
+        console.debug(formData);
 
-        console.log("Headers", headers);
+        console.debug("Headers", headers);
         //Post image in formData.
         const response = await fetch("/imgtransfer/upload", {
           method: "POST",
@@ -55,7 +55,7 @@ function ImgUpload() {
           return;
         }
       } catch (error) {
-        console.log("Maybe", error);
+        console.debug("Maybe", error);
       }
     }
   };

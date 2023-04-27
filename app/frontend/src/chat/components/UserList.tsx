@@ -227,13 +227,14 @@ export default function UserListView({ userList, handleClick }: UserListProps) {
       blocker: self.username,
       blockee: contextMenuUsersData.username
     };
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     socket.emit("blockUser", req, (res: DevError | DevSuccess) => {
       if (handleSocketErrorResponse(res)) return console.warn(res);
       console.debug(`successfully blocked user ${res}`);
       updateRooms((newRooms) => {
-        if (!newRooms[currentRoomName].users[res]) return newRooms;
-        delete newRooms[currentRoomName].users[res];
+        if (!newRooms[currentRoomName].users[req.blockee]) return newRooms;
+        delete newRooms[currentRoomName].users[req.blockee];
         return newRooms;
       });
     });
