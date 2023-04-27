@@ -3,8 +3,8 @@ import { Box, Button } from "@mui/material";
 import { ProfileEntity } from "kingpong-lib";
 import { PageState } from "src/root.model";
 import { useRootViewModelContext } from "src/root.context";
-import "./Login42.tsx.css";
-import { SocketHeaders, createSocketWithHeaders, socket } from "../contexts/WebSocket.context";
+import "./Auth.tsx.css";
+import { createSocketWithHeaders, socket } from "../contexts/WebSocket.context";
 import { createBrowserHistory } from "history";
 
 const CLIENT_ID =
@@ -48,25 +48,26 @@ export const headers = {
   "client-token": null
 };
 
-export default function LoginWith42Button() {
+export default function Auth() {
   const {
     setShowChooseUsernameModal,
-    setFullscreen,
     sessionToken,
     setSessionToken,
     setSelf,
     self,
+    setFullscreen,
     setPageState
   } = useRootViewModelContext();
 
   const history = createBrowserHistory();
-
-  // TODO: find a way to refresh the page and not go throught Login.. Session Token is always set to null, not working
-  if (sessionToken) {
-    console.log("Session Token", sessionToken);
-    history.go(-3);
-    return;
-  }
+  //TODO check this so it redirects if youre already sign in
+  useEffect(() => {
+    console.log("dasjdaskldjas");
+    if (sessionToken) {
+      setPageState(PageState.Home);
+      return;
+    }
+  }, []);
 
   const [isLoading, setIsLoading] = useState(false);
 
@@ -96,9 +97,8 @@ export default function LoginWith42Button() {
     });
     setSessionToken(data.token);
     setSelf(data.user);
-    if (data.twoFAenable) setPageState(PageState.QRCode);
+    if (data.twoFAenable) setPageState(PageState.Verify2FA);
     else {
-      history.replace("/");
       setPageState(PageState.Home);
     }
   };
@@ -138,7 +138,7 @@ export default function LoginWith42Button() {
         const client = await data.json();
         if (client.user.firstConnection) setShowChooseUsernameModal(true);
         //Choose username on first connection
-        else setFullscreen(false);
+        else setFullscreen(false); // TODO is this necessary??
         //Creates the headers that will enable token authentification
         headers["client-id"] = socket.id;
         headers["client-token"] = client.token;
@@ -156,14 +156,12 @@ export default function LoginWith42Button() {
         self.avatar = userProfile.user.avatar;
         self.createdAt = userProfile.user.createdAt;
         self.status = userProfile.user.status;
-
         onSuccess(userProfile);
       });
     } catch (error) {
-      console.log("Entering site");
+      console.debug(error);
     }
-
-  }, [socket, headers, onSuccess]);
+  }, [socket, headers]);
 
   useEffect(() => {
     handleAuthorizationCode().then();

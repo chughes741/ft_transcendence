@@ -1,15 +1,15 @@
-import { Input } from "@mui/material";
-import { Box } from "@mui/system";
-import React, { useEffect, useState } from "react";
-import { PageState } from "src/root.model";
-import { useRootViewModelContext } from "src/root.context";
-import "./Login42.tsx.css";
-import "./QrCodeElement.tsx.css";
-import { socket } from "src/contexts/WebSocket.context";
-import { headers } from "./Login42";
-import { createBrowserHistory } from "history";
+import {Input} from "@mui/material";
+import {Box} from "@mui/system";
+import React, {useEffect, useState} from "react";
+import {PageState} from "src/root.model";
+import {useRootViewModelContext} from "src/root.context";
+import "./Auth.tsx.css";
+import "./Enable2FA.tsx.css";
+import {socket} from "src/contexts/WebSocket.context";
+import {headers} from "./Auth";
+import {createBrowserHistory} from "history";
 
-export default function LogginQrCode() {
+export default function Verify2FA() {
   const {
     setPageState,
     setFullscreen,
@@ -28,15 +28,11 @@ export default function LogginQrCode() {
   const [isCancelled, setCancelled] = useState<boolean>(false)
 
   const cancel = () => {
-    history.back();
-    setFullscreen(false);
-    console.log("Fullscreen", fullscreen) //THE FUXK WHY IS THE FULLSCREEN STILL TRUE!!!!!
+    history.replace("/auth");
     setCancelled(true);
     return;
   }
 
-  if (isCancelled)
-    return;
   setFullscreen(true);
 
   const handleGetQRCode = async (): Promise<boolean> => {
@@ -89,7 +85,7 @@ export default function LogginQrCode() {
         setErrorMessage("");
         alert("Verification successful!");
         setFullscreen(false);
-        history.back();
+        setPageState(PageState.Home);
         return true;
       }
       if (data.statusCode && data.statusCode === 401) {
@@ -101,7 +97,6 @@ export default function LogginQrCode() {
         });
         setSessionToken("");
         setPageState(PageState.Auth);
-        history.push("/auth");
         setFullscreen(true);
         setSelf({ username: "", avatar: "", createdAt: "", status: 0 });
         return;

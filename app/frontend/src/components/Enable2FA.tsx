@@ -3,21 +3,19 @@ import { Box } from "@mui/system";
 import React, { useEffect, useState } from "react";
 import { PageState } from "src/root.model";
 import { useRootViewModelContext } from "src/root.context";
-import "./Login42.tsx.css";
-import "./QrCodeElement.tsx.css";
+import "./Auth.tsx.css";
+import "./Enable2FA.tsx.css";
 import { socket } from "src/contexts/WebSocket.context";
-import { headers } from "./Login42";
+import { headers } from "./Auth";
 import { createBrowserHistory } from "history";
 
-export default function VerifyQRCode() {
+export default function Enable2FA() {
   const {
     setPageState,
-    setFullscreen,
     sessionToken,
     setSelf,
     self,
     setSessionToken,
-    fullscreen
   } = useRootViewModelContext();
 
   const [qrCode, setQRCode] = useState<string | null>(null);
@@ -25,19 +23,14 @@ export default function VerifyQRCode() {
   const [errorMessage, setErrorMessage] = useState<string>("");
   const [secret, setSecret] = useState<string | null>(null);
   const history = createBrowserHistory();
-  const [isCancelled, setCancelled] = useState<boolean>(false)
+  const [isCancelled, setCancelled] = useState<boolean>(false);
 
   const cancel = () => {
     history.back();
-    setFullscreen(false);
-    console.log("Fullscreen", fullscreen) //THE FUXK WHY IS THE FULLSCREEN STILL TRUE!!!!!
+    //Here we need to be able not to go forward, history.destroy next or smthg
     setCancelled(true);
     return;
-  }
-
-  if (isCancelled)
-    return;
-  setFullscreen(true);
+  };
 
   const handleGetQRCode = async (): Promise<boolean> => {
     try {
@@ -95,14 +88,12 @@ export default function VerifyQRCode() {
         setSessionToken("");
         setPageState(PageState.Auth);
         history.push("/auth");
-        setFullscreen(true);
         setSelf({ username: "", avatar: "", createdAt: "", status: 0 });
         return;
       }
       if (data.validated) {
         setErrorMessage("");
         alert("Verification successful!");
-        setFullscreen(false);
         history.back();
         return true;
       } else {
@@ -153,7 +144,12 @@ export default function VerifyQRCode() {
             Authenticate me
           </Box>
         </Box>
-        <Box sx={{ alignSelf: "flex-start" }} onClick={cancel}>CANCAELLLLL</Box>
+        <Box
+          sx={{ alignSelf: "flex-start" }}
+          onClick={cancel}
+        >
+          CANCELLLLL
+        </Box>
       </Box>
     </>
   );

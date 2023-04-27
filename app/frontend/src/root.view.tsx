@@ -13,11 +13,11 @@ import { ChatView } from "./chat/chat.view";
 import ProfileView from "./profile/profile.view";
 import { HelmetView } from "./components/Helmet";
 import SettingsView from "./components/settings/settings.view";
-import LoginWith42Button from "./components/Login42";
+import Auth from "./components/Auth";
 import { ChooseUsernameModal } from "./components/ChooseUsernameModal";
 import GameWindow from "./game/game.view";
-import VerifyQRCode from "./components/QrCodeElement";
-import LogginQrCode from "./components/LogginQrCode";
+import Enable2FA from "./components/Enable2FA";
+import Verify2FA from "./components/Verify2FA";
 
 /**
  * Root view content
@@ -26,28 +26,35 @@ import LogginQrCode from "./components/LogginQrCode";
  */
 
 function RootViewContent(): JSX.Element {
-  const { pageState } = useRootViewModelContext();
+  const { pageState, setFullscreen } = useRootViewModelContext();
 
   switch (pageState) {
     case PageState.Auth: {
-      return <LoginWith42Button />;
+      setFullscreen(true);
+      return <Auth />;
     }
-    case PageState.QRCode: {
-      return <LogginQrCode />;
+    case PageState.Verify2FA: {
+      setFullscreen(true);
+      return <Verify2FA />;
     }
-    case PageState.Enable2fa: {
-      return <VerifyQRCode />;
+    case PageState.Enable2FA: {
+      setFullscreen(true);
+      return <Enable2FA />;
     }
     case PageState.Home: {
+      setFullscreen(false);
       return <div></div>;
     }
     case PageState.Game: {
+      setFullscreen(false);
       return <GameWindow />;
     }
     case PageState.Chat: {
+      setFullscreen(false);
       return <ChatView />;
     }
     case PageState.Profile: {
+      setFullscreen(false);
       return <ProfileView />;
     }
     default: {
@@ -65,26 +72,26 @@ export function RootView(): JSX.Element {
   const {
     /* Fullscreen */
     fullscreen,
-    setFullscreen,
+    // setFullscreen,
     /* Username */
     showChooseUsernameModal
   } = useRootViewModelContext();
 
-  const handleKeyDown = (event: KeyboardEvent) => {
-    if (event.key === "Escape" && fullscreen) {
-      setFullscreen(false);
-    }
-  };
+  // const handleKeyDown = (event: KeyboardEvent) => {
+  //   if (event.key === "Escape" && fullscreen) {
+  //     setFullscreen(false);
+  //   }
+  // };
 
   /** Add event listener for keydown event */
-  useEffect(() => {
-    window.addEventListener("keydown", handleKeyDown);
-
-    /** Cleanup event listener on unmount */
-    return () => {
-      window.removeEventListener("keydown", handleKeyDown);
-    };
-  }, [fullscreen]);
+  // useEffect(() => {
+  //   window.addEventListener("keydown", handleKeyDown);
+  //
+  //   /** Cleanup event listener on unmount */
+  //   return () => {
+  //     window.removeEventListener("keydown", handleKeyDown);
+  //   };
+  // }, [fullscreen]);
 
   return (
     <>

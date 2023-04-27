@@ -1,8 +1,8 @@
-import React, { useEffect } from "react";
-import { Action, BrowserHistory, Location } from "history";
-import { Router } from "react-router-dom";
-import { PageState } from "./root.model";
-import { useRootViewModelContext } from "./root.context";
+import React, {useEffect} from "react";
+import {Action, BrowserHistory, Location} from "history";
+import {Router} from "react-router-dom";
+import {PageState} from "./root.model";
+import {useRootViewModelContext} from "./root.context";
 
 interface CustomRouterProps {
   basename?: string;
@@ -22,7 +22,7 @@ export const CustomBrowserRouter: React.FC<CustomRouterProps> = (
     action: props.history.action,
     location: props.history.location
   });
-  const { pageState, setPageState } = useRootViewModelContext();
+  const { pageState, setPageState, setFullscreen } = useRootViewModelContext();
 
   useEffect(() => {
     const unlisten = props.history.listen(({ location: location }) => {
@@ -30,8 +30,8 @@ export const CustomBrowserRouter: React.FC<CustomRouterProps> = (
         case "/auth":
           setPageState(PageState.Auth);
           break;
-        case "/qrcode":
-          setPageState(PageState.QRCode);
+        case "/verify2fa":
+          setPageState(PageState.Verify2FA);
           break;
         case "/":
           setPageState(PageState.Home);
@@ -44,6 +44,9 @@ export const CustomBrowserRouter: React.FC<CustomRouterProps> = (
           break;
         case "/profile":
           setPageState(PageState.Profile);
+          break;
+        case "/enable2fa":
+          setPageState(PageState.Enable2FA);
           break;
         default:
           break;
@@ -61,9 +64,14 @@ export const CustomBrowserRouter: React.FC<CustomRouterProps> = (
           props.history.push("/auth");
         }
         break;
-      case PageState.QRCode:
-        if (props.history.location.pathname !== "/qrcode") {
-          props.history.push("/qrcode");
+      case PageState.Verify2FA:
+        if (props.history.location.pathname !== "/verify2fa") {
+          props.history.push("/verify2fa");
+        }
+        break;
+      case PageState.Enable2FA:
+        if (props.history.location.pathname !== "/enable2fa") {
+          props.history.push("/enable2fa");
         }
         break;
       case PageState.Home:
