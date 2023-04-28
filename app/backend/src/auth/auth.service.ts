@@ -144,7 +144,7 @@ export class AuthService {
       const userName = response2.data.login + response2.data.id;
 
       this.tokenClass.tokenStorage.addToken(clientId, token);
-      const theuser = await this.signin({
+      const user = await this.signin({
         username: userName,
         avatar: response2.data.image.link,
         firstName: response2.data.first_name,
@@ -154,12 +154,12 @@ export class AuthService {
       });
       logger.debug("Token:", token.access_token);
       const authEntity: AuthEntity = {
-        user: theuser,
+        user: user,
         token: token.access_token
       };
       return authEntity;
     } catch (error) {
-      logger.log("Axios request silenced");
+      logger.debug("Axios request silenced");
     }
   }
 
