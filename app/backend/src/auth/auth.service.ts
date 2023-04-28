@@ -15,7 +15,7 @@ export class AuthService {
   constructor(
     private prisma: PrismaService, // create(), findUnique()
     private tokenClass: TokenIsVerified
-  ) {}
+  ) { }
 
   async signup(
     req: AuthRequest
@@ -48,7 +48,6 @@ export class AuthService {
       name: "42authentification"
     });
     const code = await qrcode.toDataURL(secret.otpauth_url);
-    logger.debug("QRcode:", code);
     return { secret: secret.base32, qrcode: code };
   }
 
@@ -67,11 +66,6 @@ export class AuthService {
   ) {
     if (base32secret === "null") {
       const secret = await this.prisma.getQrCode(username);
-      console.log(
-        "Fetch previous secret to compare it with token",
-        enteredToken,
-        secret
-      );
       const verified = await speakeasy.totp.verify({
         secret: secret,
         encoding: "base32",
@@ -80,7 +74,6 @@ export class AuthService {
       if (verified) return { validated: true };
       return { validated: false };
     } else {
-      console.log("New secret hanshake:", enteredToken, base32secret);
       const verified = await speakeasy.totp.verify({
         secret: base32secret,
         encoding: "base32",

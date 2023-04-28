@@ -27,7 +27,7 @@ const logger = new Logger("AuthController");
 @ApiTags("auth")
 export class AuthController {
   // Here, private means that authService is a member attribute
-  constructor(private authService: AuthService) {}
+  constructor(private authService: AuthService) { }
 
   @Post("testing")
   @UseGuards(TokenIsVerified)
@@ -90,6 +90,7 @@ export class AuthController {
   }
 
   @Get("qrCode")
+  @UseGuards(TokenIsVerified)
   async generateQrCode() {
     logger.debug("Generating QrCode");
     return await this.authService.enableTwoFactorAuth();
