@@ -15,12 +15,12 @@ import {
   BlockUserRequest,
   ChatMemberPrismaType,
   ChatRoomEntity,
-  CreateChatRoomDto,
+  CreateChatRoomRequest,
   InviteUsersToRoomRequest,
-  JoinRoomDto,
+  JoinRoomRequest,
   LeaveRoomRequest,
   SendDirectMessageRequest,
-  SendMessageDto,
+  SendMessageRequest,
   UpdateChatRoomRequest
 } from "./chat.gateway";
 import { MessageEntity } from "./entities/message.entity";
@@ -70,7 +70,7 @@ export class ChatService {
    * @returns {Promise<ChatRoomEntity | Error>} - The room entity or an error
    */
   async createRoom(
-    createDto: CreateChatRoomDto
+    createDto: CreateChatRoomRequest
   ): Promise<ChatRoomEntity | Error> {
     try {
       // Check if the room already exists
@@ -133,7 +133,7 @@ export class ChatService {
     roomName: string,
     user: string
   ): Promise<ChatRoom> {
-    const createRoomReq: CreateChatRoomDto = {
+    const createRoomReq: CreateChatRoomRequest = {
       name: roomName,
       status: ChatRoomStatus.PUBLIC,
       password: null,
@@ -206,10 +206,10 @@ export class ChatService {
    *    If the password is incorrect, return an error
    * If the room exists and is public, join it
    *
-   * @param {JoinRoomDto} joinDto - The room name, password, and user
+   * @param {JoinRoomRequest} joinDto - The room name, password, and user
    * @returns {Promise<ChatRoomEntity | Error>} - The room entity or an error
    */
-  async joinRoom(joinDto: JoinRoomDto): Promise<ChatRoomEntity | Error> {
+  async joinRoom(joinDto: JoinRoomRequest): Promise<ChatRoomEntity | Error> {
     const { roomName, password, user } = joinDto;
     logger.debug(`User ${user} attempting to join room ${roomName}`);
 
@@ -370,10 +370,12 @@ export class ChatService {
    * If the room does not exist, return an error.
    * If the message is successfully added to the database, return the room name
    *
-   * @param {SendMessageDto} sendDto - The message to send
+   * @param {SendMessageRequest} sendDto - The message to send
    * @returns {Promise<Error | MessageEntity>} - The message or an error
    */
-  async sendMessage(sendDto: SendMessageDto): Promise<Error | MessageEntity> {
+  async sendMessage(
+    sendDto: SendMessageRequest
+  ): Promise<Error | MessageEntity> {
     if (!sendDto.content) return;
 
     // Try to get the user database ID

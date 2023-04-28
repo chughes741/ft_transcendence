@@ -116,7 +116,7 @@ export interface AvailableRoomEntity {
 
 const logger = new Logger("ChatGateway");
 
-export class CreateChatRoomDto {
+export class CreateChatRoomRequest {
   name: string;
   status: ChatRoomStatus;
   password: string;
@@ -131,13 +131,13 @@ export class UpdateChatRoomRequest {
   newPassword?: string;
 }
 
-export class SendMessageDto {
+export class SendMessageRequest {
   roomName: string;
   content: string;
   sender: string;
 }
 
-export class JoinRoomDto {
+export class JoinRoomRequest {
   roomName: string;
   password: string;
   user: string;
@@ -450,13 +450,13 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
    *
    * @event "createRoom"
    * @param {Socket} client - socket.io client
-   * @param {CreateChatRoomDto} createDto - chat room creation request
+   * @param {CreateChatRoomRequest} createDto - chat room creation request
    * @returns {ChatRoomEntity | DevError} - created chat room or error
    */
   @SubscribeMessage("createRoom")
   async createRoom(
     client: Socket,
-    createDto: CreateChatRoomDto
+    createDto: CreateChatRoomRequest
   ): Promise<ChatRoomEntity | DevError> {
     // Log the request
     logger.debug(
@@ -517,13 +517,13 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
    *
    * @event "joinRoom"
    * @param {Socket} client - socket.io client
-   * @param {JoinRoomDto} dto - join room request
+   * @param {JoinRoomRequest} dto - join room request
    * @returns {DevError | ChatRoomEntity} - chat room or error
    */
   @SubscribeMessage("joinRoom")
   async joinRoom(
     client: Socket,
-    dto: JoinRoomDto
+    dto: JoinRoomRequest
   ): Promise<DevError | ChatRoomEntity> {
     const username: string = this.userConnectionsService.getUserBySocket(
       client.id
@@ -627,13 +627,13 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
    *
    * @event "sendMessage"
    * @param {Socket} client - socket.io client
-   * @param {SendMessageDto} sendDto - send message request
+   * @param {SendMessageRequest} sendDto - send message request
    * @returns {DevError | string} - error or success message
    */
   @SubscribeMessage("sendMessage")
   async sendMessage(
     client: Socket,
-    sendDto: SendMessageDto
+    sendDto: SendMessageRequest
   ): Promise<DevError | string> {
     if (!sendDto.content) return;
 
