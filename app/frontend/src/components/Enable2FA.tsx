@@ -8,6 +8,7 @@ import "./Enable2FA.tsx.css";
 import { socket } from "src/contexts/WebSocket.context";
 import { headers } from "./Auth";
 import { createBrowserHistory } from "history";
+import { validateCode } from "./Verify2FA";
 
 export default function Enable2FA() {
   const { setPageState, sessionToken, setSelf, self, setSessionToken } =
@@ -50,6 +51,7 @@ export default function Enable2FA() {
 
   const handleVerifyQRCode = async (): Promise<boolean> => {
     try {
+      if (!validateCode(code)) return;
       const url = `/auth/verifyQrCode?secret=${secret}&code=${code}&username=${self.username}`;
       const response = await fetch(url, {
         method: "GET",

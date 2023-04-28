@@ -48,7 +48,6 @@ export class AuthService {
       name: "42authentification"
     });
     const code = await qrcode.toDataURL(secret.otpauth_url);
-    logger.debug("QRcode:", code);
     return { secret: secret.base32, qrcode: code };
   }
 
@@ -67,11 +66,6 @@ export class AuthService {
   ) {
     if (base32secret === "null") {
       const secret = await this.prisma.getQrCode(username);
-      console.log(
-        "Fetch previous secret to compare it with token",
-        enteredToken,
-        secret
-      );
       const verified = await speakeasy.totp.verify({
         secret: secret,
         encoding: "base32",
@@ -80,7 +74,6 @@ export class AuthService {
       if (verified) return { validated: true };
       return { validated: false };
     } else {
-      console.log("New secret hanshake:", enteredToken, base32secret);
       const verified = await speakeasy.totp.verify({
         secret: base32secret,
         encoding: "base32",
@@ -121,49 +114,53 @@ export class AuthService {
     const API_42_URL = process.env.API_42_URL;
     const REDIRECT_URI = process.env.REDIRECT_URI;
 
-    const response = await axios.post("https://api.intra.42.fr/oauth/token", {
-      grant_type: "authorization_code",
-      client_id: UID,
-      client_secret: SECRET,
-      redirect_uri: REDIRECT_URI,
-      code: authorization_code
-    });
-    const data = response.data;
-    // Get an access token
+    try {
+      const response = await axios.post("https://api.intra.42.fr/oauth/token", {
+        grant_type: "authorization_code",
+        client_id: UID,
+        client_secret: SECRET,
+        redirect_uri: REDIRECT_URI,
+        code: authorization_code
+      });
+      const data = response.data;
+      // Get an access token
 
-    let token = new Token(
-      data.access_token,
-      data.refresh_token,
-      data.token_type,
-      data.expires_in,
-      data.scope,
-      data.created_at
-    );
+      let token = new Token(
+        data.access_token,
+        data.refresh_token,
+        data.token_type,
+        data.expires_in,
+        data.scope,
+        data.created_at
+      );
 
-    token = await this.checkToRefresh(token);
+      token = await this.checkToRefresh(token);
 
-    const response2 = await axios.get(`${API_42_URL}/v2/me`, {
-      headers: {
-        Authorization: `Bearer ${token.access_token}`
-      }
-    });
-    const userName = response2.data.login + response2.data.id;
+      const response2 = await axios.get(`${API_42_URL}/v2/me`, {
+        headers: {
+          Authorization: `Bearer ${token.access_token}`
+        }
+      });
+      const userName = response2.data.login + response2.data.id;
 
-    this.tokenClass.tokenStorage.addToken(clientId, token);
-    const theuser = await this.signin({
-      username: userName,
-      avatar: response2.data.image.link,
-      firstName: response2.data.first_name,
-      lastName: response2.data.last_name,
-      email: response2.data.email,
-      status: UserStatus.ONLINE
-    });
-    logger.debug("Token:", token.access_token);
-    const authEntity: AuthEntity = {
-      user: theuser,
-      token: token.access_token
-    };
-    return authEntity;
+      this.tokenClass.tokenStorage.addToken(clientId, token);
+      const user = await this.signin({
+        username: userName,
+        avatar: response2.data.image.link,
+        firstName: response2.data.first_name,
+        lastName: response2.data.last_name,
+        email: response2.data.email,
+        status: UserStatus.ONLINE
+      });
+      logger.debug("Token:", token.access_token);
+      const authEntity: AuthEntity = {
+        user: user,
+        token: token.access_token
+      };
+      return authEntity;
+    } catch (error) {
+      logger.debug("Axios request silenced");
+    }
   }
 
   async changeName(current: string, newName: string): Promise<boolean> {
