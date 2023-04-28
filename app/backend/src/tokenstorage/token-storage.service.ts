@@ -53,7 +53,7 @@ export class TokenStorageService {
   addToken(socketId: string, token: Token): void {
     // Add the token to the map
     this.tokens.set(socketId, token);
-    if (token !== null && token.access_token && socketId)
+    if (token !== undefined && token.access_token && socketId)
       logger.debug(`Added [Token]${token.access_token} to [Socket] ${socketId}.`);
   }
 

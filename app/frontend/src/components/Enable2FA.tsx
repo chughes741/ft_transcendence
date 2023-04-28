@@ -16,6 +16,7 @@ export default function Enable2FA() {
     setSelf,
     self,
     setSessionToken,
+    setFullscreen
   } = useRootViewModelContext();
 
   const [qrCode, setQRCode] = useState<string | null>(null);

@@ -99,6 +99,7 @@ export class AuthController {
   }
 
   @Get("qrCode")
+  @UseGuards(TokenIsVerified)
   async generateQrCode() {
     logger.debug("Generating QrCode");
     return await this.authService.enableTwoFactorAuth();

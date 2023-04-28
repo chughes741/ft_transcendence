@@ -19,7 +19,8 @@ import {
   handleConnectCreator,
   handleNewChatRoomMemberCreator,
   handleNewMessageCreator,
-  handleAddedToNewChatRoomCreator
+  handleAddedToNewChatRoomCreator,
+  handleUnauthorizedCreator
 } from "./lib/socketHandler";
 import { useRoomManager } from "./lib/roomManager";
 import { handleSocketErrorResponse } from "./lib/helperFunctions";
@@ -249,6 +250,7 @@ export const ChatViewModelProvider = ({ children }) => {
       currentRoomName,
       convertMessagePayloadToMessageType
     );
+    const handleUnauthorized = handleUnauthorizedCreator()
     const handleNewChatRoomMember = handleNewChatRoomMemberCreator(updateRooms);
     const handleChatRoomMemberLeft =
       handleChatRoomMemberLeftCreator(updateRooms);
@@ -266,6 +268,7 @@ export const ChatViewModelProvider = ({ children }) => {
     addSocketListener("chatRoomMemberKicked", handleChatRoomMemberKicked);
     addSocketListener("addedToNewChatRoom", handleAddedToNewChatRoom);
     addSocketListener("chatMemberUpdated", handleNewChatRoomMember);
+    addSocketListener("unauthorized", handleUnauthorized);
   };
 
   // Use effect for setting up and cleaning up listeners
@@ -279,6 +282,7 @@ export const ChatViewModelProvider = ({ children }) => {
       removeSocketListener("chatRoomMemberKicked");
       removeSocketListener("addedToNewChatRoom");
       removeSocketListener("chatMemberUpdated");
+      removeSocketListener("unauthorized");
     };
   }, []);
 

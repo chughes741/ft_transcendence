@@ -1,13 +1,31 @@
+import { PageState } from "src/root.model";
 import {
   LeaveRoomRequest,
   MessagePayload,
   RoomMemberEntity
 } from "../chat.types";
+import { socket } from "src/contexts/WebSocket.context";
+import { useRootViewModelContext } from "src/root.context";
+import { createBrowserHistory } from "history";
 
 // Define handlers
 export const handleConnectCreator = () => () => {
   console.debug("Successfully connected to the server");
 };
+
+export const handleUnauthorizedCreator = () => () => {
+  console.log("UNAuthorized Socket connexion");
+  const history = createBrowserHistory();
+  const { setSessionToken, setPageState, setFullscreen, setSelf } = useRootViewModelContext();
+  fetch(`/auth/deleteToken?socketId=${socket.id}`, {
+    method: 'POST',
+  });
+  setSessionToken("");
+  setPageState(PageState.Auth);
+  history.push("/auth");
+  setFullscreen(true);
+  setSelf({ username: "", avatar: "", createdAt: "", status: 0 });
+}
 
 export const handleNewMessageCreator =
   (
@@ -15,12 +33,12 @@ export const handleNewMessageCreator =
     currentRoomName: string,
     convertMessagePayloadToMessageType
   ) =>
-  (newMessage: MessagePayload): boolean => {
-    console.debug("New Message:", newMessage);
-    const messageData = convertMessagePayloadToMessageType(newMessage);
-    addMessageToRoom(newMessage.roomName, messageData);
-    return newMessage.roomName === currentRoomName;
-  };
+    (newMessage: MessagePayload): boolean => {
+      console.debug("New Message:", newMessage);
+      const messageData = convertMessagePayloadToMessageType(newMessage);
+      addMessageToRoom(newMessage.roomName, messageData);
+      return newMessage.roomName === currentRoomName;
+    };
 
 export const handleNewChatRoomMemberCreator =
   (updateRooms) => (member: RoomMemberEntity) => {
@@ -33,12 +51,12 @@ export const handleNewChatRoomMemberCreator =
 
 export const handleChatRoomMemberLeftCreator =
   (updateRooms) =>
-  ({ roomName, username }: LeaveRoomRequest) => {
-    console.debug(`User ${username} left room ${roomName}`);
-    updateRooms((newRooms) => {
-      delete newRooms[roomName].users[username];
-    });
-  };
+    ({ roomName, username }: LeaveRoomRequest) => {
+      console.debug(`User ${username} left room ${roomName}`);
+      updateRooms((newRooms) => {
+        delete newRooms[roomName].users[username];
+      });
+    };
 
 export const handleChatRoomMemberKickedCreator =
   (updateRooms) => (member: RoomMemberEntity) => {

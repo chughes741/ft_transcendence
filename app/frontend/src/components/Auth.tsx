@@ -7,6 +7,8 @@ import "./Auth.tsx.css";
 import { createSocketWithHeaders, socket } from "../contexts/WebSocket.context";
 import { createBrowserHistory } from "history";
 
+
+
 const CLIENT_ID =
   "u-s4t2ud-51fb382cccb5740fc1b9129a3ddacef8324a59dc4c449e3e8ba5f62acb2079b6";
 const REDIRECT_URI = "http://localhost:3000/";
@@ -49,6 +51,7 @@ export const headers = {
 };
 
 export default function Auth() {
+
   const {
     setShowChooseUsernameModal,
     sessionToken,
@@ -95,6 +98,8 @@ export default function Auth() {
       headers["client-id"] = socket.id;
 
     });
+
+
     setSessionToken(data.token);
     setSelf(data.user);
     if (data.twoFAenable) setPageState(PageState.Verify2FA);

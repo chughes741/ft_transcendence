@@ -18,6 +18,7 @@ export default class TokenIsVerified implements CanActivate {
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
 
+    //throw new UnauthorizedException();
     //console.log("Tokens :", this.tokenStorage.tokens);
 
     const isWebSocket = context.getType() === 'ws';

@@ -459,7 +459,15 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   async createRoom(
     client: Socket,
     createDto: CreateChatRoomDto
-  ): Promise<ChatRoomEntity | DevError> {
+  ): Promise<ChatRoomEntity | DevError | null> {
+    //
+    /*Testing
+    const data = null;
+    client.emit('unauthorized');
+    return Promise.resolve(null);
+    */
+    //end testing
+
     try {
       // Log the request
       //console.log(client);
@@ -486,6 +494,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
       if (Error instanceof UnauthorizedException)
         client.emit('unauthorized');
     }
+
   }
 
   /**
