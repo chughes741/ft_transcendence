@@ -23,6 +23,7 @@ CREATE TABLE "users" (
     "lastName" TEXT,
     "status" "UserStatus" NOT NULL DEFAULT 'OFFLINE',
     "enable2fa" BOOLEAN NOT NULL DEFAULT false,
+    "qrcode" TEXT,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
 
