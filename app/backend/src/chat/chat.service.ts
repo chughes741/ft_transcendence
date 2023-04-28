@@ -416,58 +416,6 @@ export class ChatService {
   }
 
   /**
-   * Temporary function to create a user
-   *
-   * If the user already exists, return an error
-   * If the user does not exist, add it to the database and send a confirmation
-   * @todo Remove this function and replace it with a proper user creation
-   *
-   * @param {AuthRequest} req - The user's username, avatar, email, first name, and last name
-   * @returns {Promise<UserEntity | Error>} - The user or an error
-   */
-  async createTempUser(req: AuthRequest): Promise<UserEntity | Error> {
-    // Check if the user already exists
-    const { username, avatar, email, firstName, lastName } = req;
-    logger.debug(`User ${username} is trying to create a user`);
-
-    try {
-      await this.prismaService.getUserIdByNick(username);
-    } catch (e) {
-      logger.error(`UserCreation error: User ${username} already exists`);
-      return Error("User already exists");
-    }
-
-    // Create the temp user
-    try {
-      const userData: UserEntity = {
-        username,
-        avatar,
-        email,
-        firstName,
-        lastName,
-        status: UserStatus.ONLINE
-      };
-      const prismaReturn = await this.prismaService.addUser(userData);
-      logger.debug(`User ${username} added to the database: `, prismaReturn);
-    } catch (e) {
-      logger.error("User already exists", "User already exists", e);
-      return Error("User already exists");
-    }
-    // Add the user connection to the UserConnections map
-
-    // client.emit("userCreated", username);
-    const userEntity: UserEntity = {
-      username,
-      avatar: `https://i.pravatar.cc/150?u=${username}`, //FIXME: remove this when avatars are properly uploaded
-      email,
-      firstName,
-      lastName,
-      status: UserStatus.ONLINE
-    };
-    return userEntity;
-  }
-
-  /**
    * Temporary function to login a user
    *
    * If the user does not exist, return an error

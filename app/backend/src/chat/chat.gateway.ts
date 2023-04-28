@@ -239,36 +239,6 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   }
 
   /**
-   * Temporary function to create a user
-   *
-   * If there is an error in the service, return it
-   * @todo remove this function when authentication is enabled
-   *
-   * @event "userCreation"
-   * @param {Socket} client
-   * @param {AuthRequest} req
-   * @returns {DevError | UserEntity}
-   */
-  @SubscribeMessage("userCreation")
-  async createTempUser(
-    client: Socket,
-    req: AuthRequest
-  ): Promise<DevError | UserEntity> {
-    logger.debug(
-      `Received createUser request from ${client.id} for user ${req.username}`
-    );
-    const userWasCreated = await this.chatService.createTempUser(req);
-    if (userWasCreated instanceof Error) {
-      return { error: userWasCreated.message };
-    }
-    this.userConnectionsService.addUserConnection(
-      userWasCreated.username,
-      client.id
-    );
-    return userWasCreated;
-  }
-
-  /**
    * Temporary function to login a user
    *
    * If the user does not exist, return an error
