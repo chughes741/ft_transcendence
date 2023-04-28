@@ -27,7 +27,7 @@ const logger = new Logger("AuthController");
 @ApiTags("auth")
 export class AuthController {
   // Here, private means that authService is a member attribute
-  constructor(private authService: AuthService) {}
+  constructor(private authService: AuthService) { }
 
   @Post("testing")
   @UseGuards(TokenIsVerified)
@@ -90,9 +90,16 @@ export class AuthController {
   }
 
   @Get("qrCode")
+  @UseGuards(TokenIsVerified)
   async generateQrCode() {
     logger.debug("Generating QrCode");
     return await this.authService.enableTwoFactorAuth();
+  }
+
+  @Get("getCredentials")
+  async getCredentials() {
+    logger.debug("Get Credentials");
+    return await this.authService.getCredentials();
   }
 
   @Get("changeUsername")
@@ -129,7 +136,7 @@ export class AuthController {
   }
 
   @Get("getEnable2fa")
-  //@UseGuards(TokenIsVerified)
+  @UseGuards(TokenIsVerified)
   async getEnable2fa(@Query("username") username: string) {
     return await this.authService.getEnable2fa(username);
   }

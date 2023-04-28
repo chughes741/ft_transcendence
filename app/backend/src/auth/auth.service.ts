@@ -15,7 +15,7 @@ export class AuthService {
   constructor(
     private prisma: PrismaService, // create(), findUnique()
     private tokenClass: TokenIsVerified
-  ) {}
+  ) { }
 
   async signup(
     req: AuthRequest
@@ -179,4 +179,11 @@ export class AuthService {
       return JSON.stringify({ validated: true });
     return JSON.stringify({ validated: false });
   }
+
+  async getCredentials() {
+
+    console.log("My info needed : ", process.env.UID, process.env.REDIRECT_URI);
+    return JSON.stringify({ CLIENT_ID: process.env.UID, REDIRECT_URI: process.env.REDIRECT_URI });
+  }
+
 }
