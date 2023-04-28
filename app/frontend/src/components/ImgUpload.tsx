@@ -7,6 +7,7 @@ import { PageState } from "src/root.model";
 import { headers } from "./Auth";
 import { socket } from "src/contexts/WebSocket.context";
 import { createBrowserHistory } from "history";
+import "./ImgUpload.tsx.css";
 
 function ImgUpload() {
   const [file, setFile] = useState(null); //Contains the img file
@@ -35,10 +36,10 @@ function ImgUpload() {
           headers,
           body: formData
         });
-        //Create a form data for img transfer
-
         //IF UnAuthorized : MUST FLUSH THE session TOKEN and bring back to login page
+        // TODO reset the self on success, so the profile pics in the top bar updates
         if (response.ok) return;
+
         const data = await response.json();
         if (data.statusCode && data.statusCode === 401) {
           //Deletes token in backend
@@ -60,28 +61,33 @@ function ImgUpload() {
     }
   };
 
-  //<form onSubmit={handleUpload}> </form>
   return (
     <>
-      <Box className="ImgComponent">
-        <Input
+      <Box className="img-upload-container">
+        <input
           type="file"
-          inputProps={{
-            accept: "image/*",
-            "aria-label": "Choose image",
-            placeholder: "No image"
-          }}
+          accept="image/*"
+          className="custom-file-input"
           onChange={handleFileChange}
-          endAdornment={
-            <InputAdornment position="end">
-              <IconButton>
-                <PhotoCamera />
-              </IconButton>
-            </InputAdornment>
-          }
         />
         <Button
-          type="submit"
+          sx={{
+            border: "1px solid #9f9f9f",
+            width: "20vw",
+            height: "5vh",
+            fontSize: "1.7rem",
+            color: "#FA7F08",
+            margin: "1rem",
+            padding: "0.4rem",
+            alignSelf: "center",
+            cursor: "pointer",
+            textTransform: "none",
+            "&:hover": {
+              backgroundColor: "#FA7F08",
+              color: "#131313",
+              opacity: "0.75"
+            }
+          }}
           onClick={handleUpload}
         >
           Submit File

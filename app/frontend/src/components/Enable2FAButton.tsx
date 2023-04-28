@@ -80,7 +80,7 @@ interface Props {
   enabled: boolean;
 }
 
-export default function TwoFactorButton({ enabled }: Props) {
+export default function Enable2FAButton({ enabled }: Props) {
   const [isLoading, setIsLoading] = useState(false);
   const [qr, setQr] = useState<boolean>(false);
   const { setPageState, self, sessionToken } = useRootViewModelContext();
@@ -127,10 +127,19 @@ export default function TwoFactorButton({ enabled }: Props) {
   return (
     <>
       <Button
-        variant="contained"
+        variant="outlined"
         onClick={onToggle}
         startIcon={enable2fa ? <ArrowBack /> : <ArrowBackIosNew />}
         disabled={isLoading}
+        sx={{
+          border: "1px solid #9f9f9f",
+          width: "15vw",
+          fontSize: "1.2rem",
+          color: "#FA7F08",
+          padding: "0.4rem",
+          textTransform: "none",
+          "&:hover": {backgroundColor: "#FA7F08", color:"#131313", opacity:"0.75" }
+        }}
       >
         {enable2fa ? "Disable Two Factor" : "Enable Two Factor"}
       </Button>
