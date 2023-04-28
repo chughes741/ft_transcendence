@@ -61,12 +61,12 @@ export default function Auth() {
 
   const history = createBrowserHistory();
   //TODO check this so it redirects if youre already sign in
-  useEffect(() => {
-    if (sessionToken) {
-      setPageState(PageState.Home);
-      return;
-    }
-  }, []);
+  // useEffect(() => {
+  //   if (sessionToken) {
+  //     setPageState(PageState.Home);
+  //     return;
+  //   }
+  // }, []);
 
   const [isLoading, setIsLoading] = useState(false);
 
@@ -82,10 +82,12 @@ export default function Auth() {
 
   // on success, set the session token and the self, and redirects to /
   const onSuccess = (data: dataResponse) => {
+    setIsLoading(true);
     setSessionToken(data.token);
     setSelf(data.user);
     if (data.twoFAenable) setPageState(PageState.Verify2FA);
     else {
+      setIsLoading(true);
       setPageState(PageState.Home);
     }
   };
@@ -181,6 +183,10 @@ export default function Auth() {
               disabled={isLoading}
               disableRipple={true}
               disableFocusRipple={true}
+              sx={{
+                color: "#FA7F08",
+                "&:hover": {backgroundColor: "#FA7F08", color:"#131313", opacity:"0.75" }
+              }}
             >
               {isLoading ? "Logging in..." : "Login"}
             </Button>
