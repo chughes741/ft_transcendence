@@ -14,9 +14,7 @@ export const validateCode = (code: string): boolean => {
   const regex = /^[a-zA-Z0-9]+$/;
 
   if (code.length !== 6 || !regex.test(code)) {
-    alert(
-      "The code must have 6 numerical characters. Try again."
-    );
+    alert("The code must have 6 numerical characters. Try again.");
     return false;
   }
   return true;
@@ -85,8 +83,9 @@ export default function Verify2FA() {
   const handleVerifyQRCode = async (): Promise<boolean> => {
     try {
       if (!validateCode(code)) return;
-      const url = `/auth/verifyQrCode?secret=${null}&code=${code}&username=${self.username
-        }`;
+      const url = `/auth/verifyQrCode?secret=${null}&code=${code}&username=${
+        self.username
+      }`;
       const response = await fetch(url, {
         method: "GET",
         headers: {

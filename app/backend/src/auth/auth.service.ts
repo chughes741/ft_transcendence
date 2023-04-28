@@ -15,7 +15,7 @@ export class AuthService {
   constructor(
     private prisma: PrismaService, // create(), findUnique()
     private tokenClass: TokenIsVerified
-  ) { }
+  ) {}
 
   async signup(
     req: AuthRequest
@@ -115,7 +115,6 @@ export class AuthService {
     const REDIRECT_URI = process.env.REDIRECT_URI;
 
     try {
-
       const response = await axios.post("https://api.intra.42.fr/oauth/token", {
         grant_type: "authorization_code",
         client_id: UID,
@@ -159,9 +158,8 @@ export class AuthService {
         token: token.access_token
       };
       return authEntity;
-    }
-    catch (error) {
-      logger.log("Axios request silenced")
+    } catch (error) {
+      logger.log("Axios request silenced");
     }
   }
 
