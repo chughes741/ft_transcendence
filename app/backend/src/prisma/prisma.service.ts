@@ -12,11 +12,6 @@ import {
   User
 } from "@prisma/client";
 import { ChatRoomDto, MessageDto } from "../auth/dto/prisma.dto";
-import {
-  ChatMemberPrismaType,
-  MessagePrismaType,
-  UpdateChatRoomRequest
-} from "../chat/chat.gateway";
 import config from "../config";
 
 import {
@@ -29,6 +24,11 @@ import {
 import { UpdateChatMemberRequest } from "src/chat/dto/userlist.dto";
 import { UserEntity } from "../auth/dto";
 import { MatchType } from "../game/game.types";
+import {
+  ChatMemberPrismaType,
+  MessagePrismaType,
+  UpdateChatRoomRequest
+} from "../chat/chat.types";
 
 const logger = new Logger("PrismaService");
 

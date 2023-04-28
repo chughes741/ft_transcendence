@@ -11,22 +11,22 @@ import {
   BlockedUser
 } from "@prisma/client";
 import { PrismaService } from "../prisma/prisma.service";
-import {
-  BlockUserRequest,
-  ChatMemberPrismaType,
-  ChatRoomEntity,
-  CreateChatRoomRequest,
-  InviteUsersToRoomRequest,
-  JoinRoomRequest,
-  LeaveRoomRequest,
-  SendDirectMessageRequest,
-  SendMessageRequest,
-  UpdateChatRoomRequest
-} from "./chat.gateway";
 import { MessageEntity } from "./entities/message.entity";
 import { KickMemberRequest, UpdateChatMemberRequest } from "./dto/userlist.dto";
 import { ChatMemberEntity } from "./entities/message.entity";
 import { AuthRequest, UserEntity } from "../auth/dto";
+import {
+  ChatRoomEntity,
+  CreateChatRoomRequest,
+  JoinRoomRequest,
+  LeaveRoomRequest,
+  UpdateChatRoomRequest,
+  SendMessageRequest,
+  ChatMemberPrismaType,
+  InviteUsersToRoomRequest,
+  SendDirectMessageRequest,
+  BlockUserRequest
+} from "./chat.types";
 
 const logger = new Logger("ChatService");
 

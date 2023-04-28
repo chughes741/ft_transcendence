@@ -8,150 +8,33 @@ import {
 } from "@nestjs/websockets";
 import { Socket, Server } from "socket.io";
 import { PrismaService } from "../prisma/prisma.service";
-import { ChatMemberRank, ChatRoomStatus, User } from "@prisma/client";
+import { User } from "@prisma/client";
 import { UserConnectionsService } from "../user-connections.service";
 import { ChatService } from "./chat.service";
 
-import { Message } from "@prisma/client";
-import { ChatMember } from "@prisma/client";
 import { ChatMemberEntity, MessageEntity } from "./entities/message.entity";
-import { ChatMemberStatus, UserStatus } from "@prisma/client";
+import { UserStatus } from "@prisma/client";
 import { KickMemberRequest, UpdateChatMemberRequest } from "./dto/userlist.dto";
 
-import { AuthRequest } from "../auth/dto";
-
-/** @todo temporary error type until we can share btw back and frontend */
-export type DevError = {
-  error: string;
-};
-export type DevSuccess = {
-  success: string;
-};
-
-/******************/
-/*    Requests    */
-/******************/
-export interface ListUsersRequest {
-  chatRoomName: string;
-}
-
-export interface SendDirectMessageRequest {
-  recipient: string;
-  sender: string;
-  senderRank: ChatMemberRank;
-}
-
-export interface CreateUserRequest {
-  username: string;
-  avatar: string;
-  firstName?: string;
-  lastName?: string;
-  email?: string;
-}
-
-export interface MessagePrismaType extends Message {
-  sender: { username: string };
-  room: { name: string };
-}
-
-export interface InviteUsersToRoomRequest {
-  roomName: string;
-  usernames: string[];
-}
-
-export interface ChatMemberPrismaType extends ChatMember {
-  member: {
-    avatar: string;
-    username: string;
-    status: UserStatus;
-  };
-  room: { name: string };
-}
-
-export interface IChatMemberEntity {
-  username: string;
-  roomName: string;
-  avatar: string;
-  chatMemberStatus: ChatMemberStatus;
-  userStatus: UserStatus;
-  rank: ChatMemberRank;
-  endOfBan?: Date;
-  endOfMute?: Date;
-}
-
-export interface IMessageEntity {
-  username: string;
-  roomName: string;
-  content: string;
-  timestamp: Date;
-}
-
-export type RoomMemberEntity = {
-  roomName: string;
-  user: ChatMemberEntity;
-};
-
-export interface ChatRoomEntity {
-  name: string;
-  queryingUserRank: ChatMemberRank /** @todo This should be embedded in the ChatMember type */;
-  status: ChatRoomStatus;
-  members: ChatMemberEntity[];
-  latestMessage?: IMessageEntity;
-  lastActivity: Date;
-  avatars?: string[];
-}
-
-export interface UserEntity {
-  username: string;
-  avatar: string;
-  status: UserStatus;
-}
-
-export interface AvailableRoomEntity {
-  roomName: string;
-  nbMembers: number;
-  status: ChatRoomStatus;
-  owner: UserEntity;
-}
+import { AuthRequest, UserEntity } from "../auth/dto";
+import {
+  UpdateChatRoomRequest,
+  ChatRoomEntity,
+  DevError,
+  AvailableRoomEntity,
+  ListUsersRequest,
+  CreateChatRoomRequest,
+  JoinRoomRequest,
+  RoomMemberEntity,
+  LeaveRoomRequest,
+  SendMessageRequest,
+  InviteUsersToRoomRequest,
+  SendDirectMessageRequest,
+  BlockUserRequest,
+  DevSuccess
+} from "./chat.types";
 
 const logger = new Logger("ChatGateway");
-
-export class CreateChatRoomRequest {
-  name: string;
-  status: ChatRoomStatus;
-  password: string;
-  owner: string;
-}
-
-export class UpdateChatRoomRequest {
-  username: string;
-  roomName: string;
-  status: ChatRoomStatus;
-  oldPassword?: string;
-  newPassword?: string;
-}
-
-export class SendMessageRequest {
-  roomName: string;
-  content: string;
-  sender: string;
-}
-
-export class JoinRoomRequest {
-  roomName: string;
-  password: string;
-  user: string;
-}
-
-export class LeaveRoomRequest {
-  roomName: string;
-  username: string;
-}
-
-export class BlockUserRequest {
-  blocker: string;
-  blockee: string;
-}
 
 /**
  * Chat gateway
@@ -171,6 +54,8 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   server: Server;
 
   async handleConnection(client: Socket) {
+    logger.warn("Client connected: " + client.id);
+    console.log(client);
     logger.debug(`Client connected: ${client.id}`);
   }
 
