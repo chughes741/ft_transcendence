@@ -8,7 +8,7 @@ import {
   Post,
   UseFilters,
   Logger,
-  UseGuards
+  UseGuards,
 } from "@nestjs/common";
 import { ApiTags } from "@nestjs/swagger";
 import { SubscribeMessage } from "@nestjs/websockets";
@@ -27,7 +27,7 @@ const logger = new Logger("AuthController");
 @ApiTags("auth")
 export class AuthController {
   // Here, private means that authService is a member attribute
-  constructor(private authService: AuthService) { }
+  constructor(private authService: AuthService) {}
 
   @Post("testing")
   @UseGuards(TokenIsVerified)
@@ -69,7 +69,7 @@ export class AuthController {
       firstName: dto.firstName,
       lastName: dto.lastName,
       email: dto.email,
-      status: UserStatus.ONLINE
+      status: UserStatus.ONLINE,
     };
     return this.authService.signin(info);
   }
