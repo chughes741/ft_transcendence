@@ -7,6 +7,7 @@ import { PageState } from "src/root.model";
 import { headers } from "./Auth";
 import { socket } from "src/contexts/WebSocket.context";
 import { createBrowserHistory } from "history";
+import { useProfileModel } from "src/profile/profile.model";
 
 function ImgUpload() {
   const [file, setFile] = useState(null); //Contains the img file
@@ -16,6 +17,11 @@ function ImgUpload() {
     setFile(event.target.files[0]);
   };
   const history = createBrowserHistory();
+  const {
+    profile,
+    setProfile,
+  } = useProfileModel();
+
 
   //Upload image on submitgit
   const handleUpload = async () => {
@@ -35,9 +41,13 @@ function ImgUpload() {
 
         const data = await response.json();
         if (response.ok) {
+
           self.avatar = data.URL;
+          profile.avatar = data.URL;
+          alert("Image successfully uploaded!");
           return;
         }
+        alert("Image failed to upload!");
         //IF UnAuthorized : MUST FLUSH THE session TOKEN and bring back to login page
         if (data.statusCode && data.statusCode === 401) {
           //Deletes token in backend
