@@ -2,7 +2,6 @@ import { CanActivate, Injectable, Logger } from "@nestjs/common";
 import { Token, TokenStorageService } from "./token-storage.service";
 import { UnauthorizedException } from "@nestjs/common";
 import { ExecutionContext } from "@nestjs/common";
-import { WebSocketServer } from '@nestjs/websockets';
 
 const logger = new Logger("TokenVerification");
 
@@ -25,11 +24,8 @@ export default class TokenIsVerified implements CanActivate {
     let clientId: string;
     let clientToken: string;
     if (isWebSocket) {
-      //console.log("Websockets found")
       const client = await context.switchToWs().getClient();
       const newheaders = client.handshake.headers;
-      //console.log("CLIENT: ", client)
-      //console.log("QUERRY : ", client.handshake.QUERRY)
       clientId = await client.id as string;
       clientToken = await newheaders.clienttoken as string;
     }
@@ -38,8 +34,6 @@ export default class TokenIsVerified implements CanActivate {
       clientId = req.headers["client-id"] as string;
       clientToken = req.headers["client-token"] as string;
     }
-    //    logger.log("Client ID : ", clientId, "Client Token : ", clientToken);
-
     // Check if token is valid
     const token = await this.tokenStorage.getTokenbySocket(clientId);
     //console.log("Stored token", token);
@@ -57,7 +51,6 @@ export default class TokenIsVerified implements CanActivate {
       logger.warn("Token has expired");
       throw new UnauthorizedException();
     }
-    console.log("Token verification Success");
     logger.debug("Token verification Success");
     await this.refreshToken(clientId, token);
     return true;

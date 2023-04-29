@@ -6,8 +6,6 @@ import { UserConnectionsService } from "../user-connections.service";
 import { PrismaService } from "src/prisma/prisma.service";
 import { TokenModule } from "src/tokenstorage/token-verify.module";
 import { TokenStorageModule } from "src/tokenstorage/token-storage.module";
-import TokenIsVerified from "src/tokenstorage/token-verify.service";
-import { TokenStorageService } from "src/tokenstorage/token-storage.service";
 
 @Module({
   imports: [PrismaModule, TokenModule, TokenStorageModule],

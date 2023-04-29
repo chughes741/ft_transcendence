@@ -461,11 +461,12 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     createDto: CreateChatRoomDto
   ): Promise<ChatRoomEntity | DevError | null> {
     //
-    /*Testing
+    /*
+    //Testing
     const data = null;
     client.emit('unauthorized');
-    return Promise.resolve(null);
-    */
+    return;
+*/
     //end testing
 
     try {

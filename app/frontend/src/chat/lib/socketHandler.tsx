@@ -12,11 +12,12 @@ import { createBrowserHistory } from "history";
 export const handleConnectCreator = () => () => {
   console.debug("Successfully connected to the server");
 };
-
+/*
 export const handleUnauthorizedCreator = () => () => {
   console.log("UNAuthorized Socket connexion");
   const history = createBrowserHistory();
   const { setSessionToken, setPageState, setFullscreen, setSelf } = useRootViewModelContext();
+
   fetch(`/auth/deleteToken?socketId=${socket.id}`, {
     method: 'POST',
   });
@@ -25,7 +26,7 @@ export const handleUnauthorizedCreator = () => () => {
   history.push("/auth");
   setFullscreen(true);
   setSelf({ username: "", avatar: "", createdAt: "", status: 0 });
-}
+}*/
 
 export const handleNewMessageCreator =
   (

@@ -25,37 +25,7 @@ export interface RootViewModelType extends RootModelType {
 export const RootViewModelProvider = ({ children }) => {
   const rootModel = useRootModel();
   const { sessionToken } = useRootModel();
-  /*
-    const { addSocketListener, removeSocketListener } = useWebSocketContext();
-    const history = createBrowserHistory();
-  
-    //LOGIC after authorized message is received:
-    ///Flush token, flush Profile attributes,  and returns to login
-  
-    const handleSetSocketHandler = () => {
-      const handleUnauthorized = () => {
-        console.log("UNAuthorized Socket connexion");
-        const { setSessionToken, setPageState, setFullscreen, setSelf } = useRootViewModelContext();
-        fetch(`/auth/deleteToken?socketId=${socket.id}`, {
-          method: 'POST',
-        });
-        setSessionToken("");
-        setPageState(PageState.Auth);
-        history.push("/auth");
-        setFullscreen(true);
-        setSelf({ username: "", avatar: "", createdAt: "", status: 0 });
-      }
-      addSocketListener("unauthorized", handleUnauthorized);
-    }
-  
-    //Listens to unauthorized error message sent by the backend
-    useEffect(() => {
-      handleSetSocketHandler();
-      return () => {
-        removeSocketListener("unauthorized")
-      }
-    })
-  */
+
   /**
    * Redirect to 42Auth
    */
@@ -67,7 +37,7 @@ export const RootViewModelProvider = ({ children }) => {
     <RootViewModelContext.Provider
       value={{
         ...rootModel,
-        getSessionToken
+        getSessionToken,
       }}
     >
       {children}

@@ -20,7 +20,6 @@ import {
   handleNewChatRoomMemberCreator,
   handleNewMessageCreator,
   handleAddedToNewChatRoomCreator,
-  handleUnauthorizedCreator
 } from "./lib/socketHandler";
 import { useRoomManager } from "./lib/roomManager";
 import { handleSocketErrorResponse } from "./lib/helperFunctions";
@@ -185,6 +184,40 @@ export const ChatViewModelProvider = ({ children }) => {
     });
   };
 
+  /***********************/
+  /*   Socket Listener   */
+  /***********************/
+  const { addSocketListener, removeSocketListener } = useWebSocketContext();
+
+  const setupSocketListeners = () => {
+    // Create the actual handlers by invoking the higher-order functions
+    const handleConnect = handleConnectCreator();
+    const handleNewMessage = handleNewMessageCreator(
+      addMessageToRoom,
+      currentRoomName,
+      convertMessagePayloadToMessageType
+    );
+    // const handleUnauthorized = handleUnauthorizedCreator()
+    const handleNewChatRoomMember = handleNewChatRoomMemberCreator(updateRooms);
+    const handleChatRoomMemberLeft =
+      handleChatRoomMemberLeftCreator(updateRooms);
+    const handleChatRoomMemberKicked =
+      handleChatRoomMemberKickedCreator(updateRooms);
+    const handleAddedToNewChatRoom = handleAddedToNewChatRoomCreator(
+      addChatRoom,
+      setShowNewRoomSnackbar
+    );
+
+    addSocketListener("connect", handleConnect);
+    addSocketListener("newMessage", handleNewMessage);
+    addSocketListener("newChatRoomMember", handleNewChatRoomMember);
+    addSocketListener("chatRoomMemberLeft", handleChatRoomMemberLeft);
+    addSocketListener("chatRoomMemberKicked", handleChatRoomMemberKicked);
+    addSocketListener("addedToNewChatRoom", handleAddedToNewChatRoom);
+    addSocketListener("chatMemberUpdated", handleNewChatRoomMember);
+    //addSocketListener("unauthorized", handleUnauthorized);
+  };
+
   /**********************/
   /*   User Functions   */
   /**********************/
@@ -193,6 +226,7 @@ export const ChatViewModelProvider = ({ children }) => {
     if (!req || !req.username || req.username === "")
       return Promise.resolve(false);
 
+    setupSocketListeners();
     console.log("SOCKET ID", socket.id);
     return new Promise<boolean>((resolve) => {
       socket.emit("chatGatewayLogin", req, (response: DevError | string) => {
@@ -225,40 +259,6 @@ export const ChatViewModelProvider = ({ children }) => {
         }
       );
     });
-  };
-
-  /***********************/
-  /*   Socket Listener   */
-  /***********************/
-  const { addSocketListener, removeSocketListener } = useWebSocketContext();
-
-  const setupSocketListeners = () => {
-    // Create the actual handlers by invoking the higher-order functions
-    const handleConnect = handleConnectCreator();
-    const handleNewMessage = handleNewMessageCreator(
-      addMessageToRoom,
-      currentRoomName,
-      convertMessagePayloadToMessageType
-    );
-    const handleUnauthorized = handleUnauthorizedCreator()
-    const handleNewChatRoomMember = handleNewChatRoomMemberCreator(updateRooms);
-    const handleChatRoomMemberLeft =
-      handleChatRoomMemberLeftCreator(updateRooms);
-    const handleChatRoomMemberKicked =
-      handleChatRoomMemberKickedCreator(updateRooms);
-    const handleAddedToNewChatRoom = handleAddedToNewChatRoomCreator(
-      addChatRoom,
-      setShowNewRoomSnackbar
-    );
-
-    addSocketListener("connect", handleConnect);
-    addSocketListener("newMessage", handleNewMessage);
-    addSocketListener("newChatRoomMember", handleNewChatRoomMember);
-    addSocketListener("chatRoomMemberLeft", handleChatRoomMemberLeft);
-    addSocketListener("chatRoomMemberKicked", handleChatRoomMemberKicked);
-    addSocketListener("addedToNewChatRoom", handleAddedToNewChatRoom);
-    addSocketListener("chatMemberUpdated", handleNewChatRoomMember);
-    addSocketListener("unauthorized", handleUnauthorized);
   };
 
   // Use effect for setting up and cleaning up listeners

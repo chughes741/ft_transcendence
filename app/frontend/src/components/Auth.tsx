@@ -84,14 +84,12 @@ export default function Auth() {
 
     await createSocketWithHeaders({ clientId: headers["client-id"], clientToken: headers["client-token"] });
     socket.on("connect", async () => {
-      //console.log("SOCKET IDS", headers["client-id"], socket.id);
       const url = `http://localhost:3000/auth/confirmID?previousID=${headers["client-id"]}&newID=${socket.id}`;
       //Calls backend with our newly found 42 Authorization code
       const response = await fetch(url, {
         method: "POST",
       });
       headers["client-id"] = socket.id;
-      console.log("Username Sent to chatLogin", data.user.username);
       await chatGatewayLogin({
         username: data.user.username,
         avatar: data.user.avatar,
@@ -147,8 +145,6 @@ export default function Auth() {
         //Creates the headers that will enable token authentification
         headers["client-id"] = socket.id;
         headers["client-token"] = client.token;
-
-
         //PrepInfo
         const userProfile: dataResponse = {
           user: populateProfile(client),
