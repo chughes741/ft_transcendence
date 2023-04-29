@@ -12,6 +12,7 @@ import UploadFileIcon from "@mui/icons-material/UploadFile";
 
 function ImgUpload() {
   const [file, setFile] = useState(null); //Contains the img file
+  const [color, setColor] = useState<boolean>(false);
   const [disabled, setDisabled] = useState(true);
   const { self, setSelf, setSessionToken, setPageState, setFullscreen } =
     useRootViewModelContext(); //Use context
@@ -23,6 +24,7 @@ function ImgUpload() {
   //Upload image on submitgit
   const handleUpload = async () => {
     if (file) {
+      setColor(true);
       try {
         const formData = new FormData();
         formData.append("file", file); //Append the image
@@ -43,8 +45,7 @@ function ImgUpload() {
         if (response.ok) {
           setDisabled(false);
           return;
-          }
-
+        }
 
         const data = await response.json();
         if (data.statusCode && data.statusCode === 401) {
@@ -67,10 +68,13 @@ function ImgUpload() {
     }
   };
 
-  const colorUploadIcon = file ? "#f1f1f1" : "#333333";
+  const colorUploadIcon = color ? "#c1c1c1" : "#FFFFFF";
 
   return (
     <>
+      <Box sx={{ alignSelf: "center", margin: "1rem", color: "#c1c1c1" }}>
+        Change your profile picture
+      </Box>
       <Box className="img-upload-container">
         <Box className="input-icon-upload">
           <Box className="icon-plus-input">
@@ -85,7 +89,7 @@ function ImgUpload() {
                   width: "auto",
                   height: "auto",
                   cursor: "default",
-                  color:"#348888"
+                  color: "#348888"
                 }}
               >
                 <Icon>
@@ -108,7 +112,7 @@ function ImgUpload() {
               size={"large"}
               onClick={handleUpload}
               disableRipple={true}
-              sx={{ marginLeft: "0.3rem", color:{colorUploadIcon} }}
+              sx={{ marginLeft: "0.3rem", color: { colorUploadIcon } }}
             >
               <Icon>
                 <UploadFileIcon />

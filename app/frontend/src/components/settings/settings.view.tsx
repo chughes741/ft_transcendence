@@ -45,9 +45,6 @@ export default function SettingsView() {
           >
             Settings
           </Box>
-          <Box sx={{ alignSelf: "center", margin: "1rem", color: "#333333" }}>
-            Change your profile picture
-          </Box>
           <ImgUpload />
           <Enable2FAButton enabled={true} />
         </Box>

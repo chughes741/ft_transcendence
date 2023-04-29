@@ -9,29 +9,31 @@
   flex-direction: row;
   border: 1px solid #999;
   width: 75%;
-  margin-left: 2rem;
   align-self: center;
 }
 
 .input-icon-upload {
   display: flex;
   width: 100%;
+  justify-content: end;
 }
 
 .custom-file-input {
-  color: #F24404;
+  color: #c1c1c1;
   border-radius: 3px;
   padding: 5px 8px;
   white-space: nowrap;
   -webkit-user-select: none;
-  font-size: 0.9rem;
+  font-size: 1rem;
   width: 80%;
-
+  height: 5vh;
 }
 
 .custom-file-input::-webkit-file-upload-button {
-  color: #22babb;
+  color: #fa7f08;
   background-color: #333333;
+  height: 4vh;
+  font-size: 1rem;
 }
 
 .custom-file-input:hover::before {
