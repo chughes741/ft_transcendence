@@ -136,6 +136,8 @@ export default function Auth() {
         }
         //Data received from the backend fetch by 42 api
         const client = await data.json();
+        //const client = await data.json();
+
         if (client.user.firstConnection) await setShowChooseUsernameModal(true);
         //Choose username on first connection
         else {

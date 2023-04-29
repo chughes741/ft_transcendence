@@ -213,6 +213,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
    * @returns {User[]} - available users
    */
   @SubscribeMessage("listAvailableUsers")
+  //@UseGuards(TokenIsVerified)
   async listAvailableUsers(
     client: Socket,
     req: ListUsersRequest

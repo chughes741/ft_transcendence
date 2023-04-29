@@ -119,7 +119,7 @@ export class AuthService {
   async getAuht42(
     clientId: string,
     authorization_code: string
-  ): Promise<AuthEntity> {
+  ): Promise<AuthEntity | string> {
     const UID = process.env.UID;
     const SECRET = process.env.SECRET;
     const API_42_URL = process.env.API_42_URL;
@@ -171,6 +171,8 @@ export class AuthService {
       return authEntity;
     } catch (error) {
       logger.debug("Axios request silenced");
+      console.log(error);
+      return JSON.stringify({ error: error, ok: false });
     }
   }
 
