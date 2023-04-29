@@ -91,6 +91,7 @@ export default function Auth() {
         method: "POST",
       });
       headers["client-id"] = socket.id;
+      console.log("Username Sent to chatLogin", data.user.username);
       await chatGatewayLogin({
         username: data.user.username,
         avatar: data.user.avatar,

@@ -324,6 +324,9 @@ export const RoomManagerProvider = ({ children }) => {
     message: string
   ): Promise<boolean> => {
     return new Promise<boolean>((resolve) => {
+
+      console.log("Self sent", self, " And socket id : ", socket.id);
+
       socket.emit(
         "sendMessage",
         {

@@ -32,11 +32,13 @@ function ImgUpload() {
           headers,
           body: formData,
         });
-        //Create a form data for img transfer
 
-        //IF UnAuthorized : MUST FLUSH THE session TOKEN and bring back to login page
-        if (response.ok) return;
         const data = await response.json();
+        if (response.ok) {
+          self.avatar = data.URL;
+          return;
+        }
+        //IF UnAuthorized : MUST FLUSH THE session TOKEN and bring back to login page
         if (data.statusCode && data.statusCode === 401) {
           //Deletes token in backend
           await fetch(`/auth/deleteToken?socketId=${socket.id}`, {
