@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    
+    <meta charset="utf-8">
+    <title>backend/src/game/game.service.ts - Kingpong</title>
+    
+    <meta name="description" content="Documentation for the kingpong website" />
+    
+    
+    
+    <meta property="og:title" content="Kingpong Docs"/>
+    <meta property="og:type" content="website"/>
+    <meta property="og:image" content=""/>
+    
+    <meta property="og:url" content="https://chughes741.github.io/ft_transcendence"/>
+    
+    <script src="scripts/prettify/prettify.js"></script>
+    <script src="scripts/prettify/lang-css.js"></script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc.css">
+    <script src="scripts/nav.js" defer></script>
+    
+    <script src="scripts/commonNav.js" defer></script>
+    
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body>
+
+<input type="checkbox" id="nav-trigger" class="nav-trigger" />
+<label for="nav-trigger" class="navicon-button x">
+  <div class="navicon"></div>
+</label>
+
+<label for="nav-trigger" class="overlay"></label>
+
+<nav >
+    
+    <input type="text" id="nav-search" placeholder="Search" />
+    
+    
+</nav>
+
+<div id="main">
+    
+    <h1 class="page-title">backend/src/game/game.service.ts</h1>
+    
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>import { Logger, Injectable } from "@nestjs/common";
+import { WebSocketServer, WebSocketGateway } from "@nestjs/websockets";
+import { SchedulerRegistry } from "@nestjs/schedule";
+import { Server, Socket } from "socket.io";
+import { v4 as uuidv4 } from "uuid";
+
+import { GameLogic } from "./game.logic";
+import { GameModuleData } from "./game.data";
+import * as GameTypes from "./game.types";
+import {
+  JoinGameQueueRequest,
+  LeaveGameQueueRequest,
+  PlayerReadyRequest,
+  ClientGameStateUpdateRequest,
+  JoinGameInviteRequest,
+  LobbyCreatedEvent,
+  GameEvents
+} from "kingpong-lib";
+
+const logger = new Logger("gameService");
+
+/**
+ * GameService class
+ */
+@WebSocketGateway({
+  cors: {
+    origin: "*"
+  }
+})
+@Injectable()
+export class GameService {
+  constructor(
+    private schedulerRegistry: SchedulerRegistry,
+    private gameLogic: GameLogic,
+    private gameModuleData: GameModuleData
+  ) {}
+
+  //Get local instance of websocket server
+  @WebSocketServer()
+  public server: Server;
+  private gameState: GameTypes.GameData;
+
+  /****************************************************************************/
+  /**                                     Lobby                              **/
+  /****************************************************************************/
+
+  /**
+   * Emit event to tell client that lobby has been successfully created
+   *
+   * @param {GameTypes.PlayerQueue[]} playerPair
+   * @param {JoinGameQueueRequest} player
+   * @returns {}
+   */
+  async createLobby(
+    playerPair: GameTypes.PlayerQueue[],
+    player: JoinGameQueueRequest
+  ) {
+    logger.debug("createLobby() called");
+
+    //Create a new lobby
+    const newLobby = new GameTypes.gameLobby();
+    newLobby.players = [];
+    newLobby.players.push(playerPair[0].username);
+    newLobby.players.push(playerPair[1].username);
+    newLobby.created_at = Date.now();
+    newLobby.lobby_id = uuidv4();
+
+    //Create a new websocket room and subscribe players
+    this.server.in(playerPair[0].socket_id).socketsJoin(newLobby.lobby_id);
+    this.server.in(playerPair[1].socket_id).socketsJoin(newLobby.lobby_id);
+
+    //Init new game object
+    newLobby.gamestate = this.gameLogic.initNewGame(newLobby.players);
+    //Add lobby to map of lobbies
+    /** @todo Swap this to a setter function in the data module */
+    this.gameModuleData.addLobby(newLobby);
+    // GameModuleData.lobbies.push(newLobby);
+    logger.debug("Sizeof lobbies: ", GameModuleData.lobbies.length);
+
+    //Create payload
+    const payload: LobbyCreatedEvent = {
+      lobby_id: newLobby.lobby_id,
+      opponent_username:
+        newLobby.players[0] === player.username
+          ? newLobby.players[1]
+          : newLobby.players[0],
+      player_side: newLobby.players[0] === player.username ? "left" : "right"
+    };
+
+    //Emit lobbyCreated event to room members
+    this.server.to(newLobby.lobby_id).emit(GameEvents.LobbyCreated, payload);
+  }
+
+  /****************************************************************************/
+  /**                                Queue &amp; Invite                          **/
+  /****************************************************************************/
+
+  /**
+   * Adds player to the game queue and tries to find a match
+   *
+   * @param {Socket} client
+   * @param {JoinGameQueueRequest} player
+   * @returns {Promise&lt;boolean>}
+   */
+  async joinGameQueue(
+    client: Socket,
+    player: JoinGameQueueRequest
+  ): Promise&lt;boolean> {
+    logger.debug("joinGameQueue() called");
+
+    // Check if player is already in queue
+    if (!this.gameModuleData.checkQueue(player.username)) {
+      // Create new queue member &amp; add to queue array
+      const newPlayer: GameTypes.PlayerQueue = {
+        username: player.username,
+        join_time: 0 /** @todo should be player.join_time. type needs to be swapped to number in kingpong-lib */,
+        // client_mmr: getClientMMR;
+        socket_id: client.id
+      };
+      this.gameModuleData.addQueue(newPlayer);
+    }
+
+    // Attempt to retrieve a pair of players
+    const playerPair: GameTypes.PlayerQueue[] =
+      this.gameModuleData.getPairQueue();
+
+    // If successful call createLobby()
+    if (playerPair) {
+      this.createLobby(playerPair, player);
+    }
+
+    return true;
+  }
+
+  /**
+   * Removes player from the game queue
+   *
+   * @param {LeaveGameQueueRequest} player
+   * @returns {Promise&lt;void>}
+   */
+  async leaveGameQueue(player: LeaveGameQueueRequest): Promise&lt;void> {
+    logger.debug("leaveGameQueue() called");
+
+    //Check if player is already in the queue
+    if (!this.gameModuleData.checkQueue(player.username)) {
+      this.gameModuleData.removeQueueUsername(player.username);
+    }
+  }
+
+  /**
+   * Creates a new game lobby with sender and invitee as players
+   *
+   * @param {JoinGameInviteRequest} payload
+   * @returns {Promise&lt;LobbyCreatedEvent>}
+   */
+  async sendGameInvite(
+    payload: JoinGameInviteRequest
+  ): Promise&lt;LobbyCreatedEvent> {
+    logger.debug("joinGameInvite() called");
+
+    // If the invited client responds then create lobby
+    /** @todo something? */
+    return new LobbyCreatedEvent();
+  }
+
+  /****************************************************************************/
+  /**                                     Game                               **/
+  /****************************************************************************/
+
+  /**
+   * Handle player readiness
+   *
+   * @param {PlayerReadyRequest} payload
+   * @returns {Promise&lt;boolean>}
+   */
+  async playerReady(payload: PlayerReadyRequest): Promise&lt;boolean> {
+    logger.debug("playerReady() called");
+
+    logger.debug("lobby_id: " + this.gameModuleData.getLobby(payload.lobby_id));
+    if (this.gameModuleData.getLobby(payload.lobby_id)) {
+      this.gameModuleData.updatePlayerReady(payload);
+      this.gameStart(payload.lobby_id);
+    }
+    return true;
+  }
+
+  /**
+   * Start the game if both players are ready
+   *
+   * @param {string} lobby_id
+   * @returns {Promise&lt;void>}
+   */
+  async gameStart(lobby_id: string): Promise&lt;void> {
+    logger.debug("gameStart() called");
+
+    // Retrieve the correct lobby
+    const lobby: GameTypes.gameLobby = this.gameModuleData.getLobby(lobby_id);
+    if (!lobby) return;
+    // Check if both players are ready
+    if (lobby.gamestate.players_ready === 2) {
+      this.gameLogic.gameStart(lobby);
+    }
+  }
+
+  /**
+   * Handle game state updates from the client to update paddle positions
+   *
+   * @param {ClientGameStateUpdateRequest} payload
+   * @returns {Promise&lt;void>}
+   */
+  async clientUpdate(payload: ClientGameStateUpdateRequest): Promise&lt;void> {
+    //Find the correct match using match_id and update paddle pos
+    this.gameModuleData.setPaddlePosition(payload);
+  }
+}
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+    
+    
+</div>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 4.0.2</a> on Tue Apr 25 2023 20:32:20 GMT-0400 (Eastern Daylight Time) using the <a href="https://github.com/clenemt/docdash">docdash</a> theme.
+</footer>
+
+<script>prettyPrint();</script>
+<script src="scripts/polyfill.js"></script>
+<script src="scripts/linenumber.js"></script>
+
+<script src="scripts/search.js" defer></script>
+
+
+
+</body>
+</html>

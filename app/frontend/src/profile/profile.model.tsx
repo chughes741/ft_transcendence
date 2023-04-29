@@ -1,21 +1,19 @@
 import { useState } from "react";
 import { MatchHistoryItem, ProfileEntity } from "kingpong-lib";
 
+/** Profile model type */
 export interface ProfileModelType {
-  /** User ID of profile to load */
-  user: string;
+  user: string /** User ID of profile to load */;
   setUser: (user: string) => void;
-  /** Profile to display */
-  profile: ProfileEntity;
+  profile: ProfileEntity /** Profile to display */;
   setProfile: (profile: ProfileEntity) => void;
-  /** Match history to display */
-  matchHistory: MatchHistoryItem[];
+  matchHistory: MatchHistoryItem[] /** Match history to display */;
   setMatchHistory: (matchHistory: MatchHistoryItem[]) => void;
-  /** Friends list to display */
-  friends: ProfileEntity[];
+  friends: ProfileEntity[] /** Friends list to display */;
   setFriends: (friends: ProfileEntity[]) => void;
 }
 
+/** Profile model */
 export const useProfileModel = (): ProfileModelType => {
   const [user, setUser] = useState<string>(null);
   const [profile, setProfile] = useState<ProfileEntity>(null);

@@ -47,6 +47,9 @@ export type MessageType = {
 export type DevError = {
   error: string;
 };
+export type DevSuccess = {
+  success: string;
+};
 
 export interface ChatMemberEntity {
   username: string;
@@ -84,6 +87,7 @@ export interface ChatRoomPayload {
 
 export type RoomType = {
   name: string;
+  displayName: string; // For DIALOGUE rooms, this is the name of the other user
   status: ChatRoomStatus;
   rank: ChatMemberRank;
   messages: MessageType[];

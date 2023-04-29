@@ -5,7 +5,6 @@ import { PrismaModule } from "../prisma/prisma.module";
 import { JwtModule } from "@nestjs/jwt";
 import { JwtStrategy } from "./strategy";
 import { SessionSerializer } from "./session.serializer";
-import { FortyTwoStrategy } from "./strategy/ft.strategy";
 import { TokenModule } from "src/tokenstorage/token-verify.module";
 import TokenIsVerified from "src/tokenstorage/token-verify.service";
 
@@ -14,7 +13,6 @@ import TokenIsVerified from "src/tokenstorage/token-verify.service";
   controllers: [AuthController],
   providers: [
     AuthService,
-    FortyTwoStrategy,
     JwtStrategy,
     SessionSerializer,
     TokenIsVerified

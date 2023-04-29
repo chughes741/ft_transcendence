@@ -30,6 +30,9 @@ import { AuthRequest, UserEntity } from "../auth/dto";
 
 const logger = new Logger("ChatService");
 
+/**
+ * Chat service
+ */
 @Injectable()
 export class ChatService {
   constructor(private readonly prismaService: PrismaService) {}
@@ -43,12 +46,7 @@ export class ChatService {
       ? latestMessage.createdAt
       : room.createdAt;
     const roomMembers = await this.prismaService.getRoomMembers(room.name);
-    // FIXME: remove avatars?
-    const avatars = roomMembers.map((member) =>
-      member.member.avatar === "default_avatar.png"
-        ? `https://i.pravatar.cc/150?u=${member.member.username}`
-        : member.member.avatar
-    );
+    const avatars = roomMembers.map((member) => member.member.avatar);
 
     return {
       name: room.name,
@@ -66,9 +64,10 @@ export class ChatService {
    *
    * If the room already exists, return an error.
    * If the room does not exist, add it to the database and send a confirmation
-   * @param client socket client
-   * @param room CreateRoomDto
-   * @returns Error or room name
+   * message to the client.
+   *
+   * @param createDto - The room name, status, and password
+   * @returns {Promise<ChatRoomEntity | Error>} - The room entity or an error
    */
   async createRoom(
     createDto: CreateChatRoomDto
@@ -112,11 +111,24 @@ export class ChatService {
     }
   }
 
+  /**
+   * Checks if date is in the past
+   *
+   * @param {Date} date - The date to check
+   * @returns {boolean} - True if date is in the past, false otherwise
+   */
   private isPast(date: Date): boolean {
     const now = new Date();
     return date.getTime() < now.getTime();
   }
 
+  /**
+   * Handles the creation of a new chat room
+   *
+   * @param {string} roomName - The name of the room to create
+   * @param {string} user - The user creating the room
+   * @returns {Promise<ChatRoom>} - The created room
+   */
   private async handleRoomCreation(
     roomName: string,
     user: string
@@ -137,6 +149,13 @@ export class ChatService {
     }
   }
 
+  /**
+   * Handles password verification for a room
+   *
+   * @param {ChatRoom} room - The room to verify
+   * @param {string} password - The password to verify
+   * @returns {Promise<void>} - Resolves if password is correct, rejects otherwise
+   */
   private async handlePasswordVerification(
     room: ChatRoom,
     password: string
@@ -149,11 +168,21 @@ export class ChatService {
     }
   }
 
+  /**
+   * Handles chat member creation
+   *
+   * @param {string} user - The user to create
+   * @param {number} roomId - The room to add the user to
+   * @returns {Promise<ChatMember>} - The created chat member
+   */
   private async handleChatMember(
     user: string,
     roomId: number
   ): Promise<ChatMember> {
     const userId = await this.prismaService.getUserIdByNick(user);
+    if (!userId) {
+      throw Error(`User ${user} does not exist`);
+    }
     let chatMember = await this.prismaService.chatMember.findFirst({
       where: { memberId: userId, roomId: roomId }
     });
@@ -176,11 +205,14 @@ export class ChatService {
    * If the room exists and is password protected, check the password
    *    If the password is incorrect, return an error
    * If the room exists and is public, join it
-   * @param joinDto - The room name, password, and user
-   * @returns - The last 50 messages in the room, or an error
+   *
+   * @param {JoinRoomDto} joinDto - The room name, password, and user
+   * @returns {Promise<ChatRoomEntity | Error>} - The room entity or an error
    */
   async joinRoom(joinDto: JoinRoomDto): Promise<ChatRoomEntity | Error> {
     const { roomName, password, user } = joinDto;
+    logger.debug(`User ${user} attempting to join room ${roomName}`);
+
     let room: ChatRoom;
 
     try {
@@ -219,6 +251,12 @@ export class ChatService {
     return this.getChatRoomEntity(room, chatMember.rank);
   }
 
+  /**
+   * Leave a chat room
+   *
+   * @param {LeaveRoomRequest} req - The room name and username
+   * @returns {Promise<ChatMember | Error>} - The chat member or an error
+   */
   async leaveRoom(req: LeaveRoomRequest): Promise<ChatMember | Error> {
     try {
       const userId = await this.prismaService.getUserIdByNick(req.username);
@@ -244,8 +282,9 @@ export class ChatService {
 
   /**
    * Update a Chat Room
-   * @param updateDto - The room name, password, and user
-   * @returns - The updated room, or an error
+   *
+   * @param {UpdateChatRoomRequest} req - The room name, status, username, old password, and new password
+   * @returns {Promise<ChatRoomEntity | Error>} - The updated room or an error
    */
   async updateRoom(
     req: UpdateChatRoomRequest
@@ -304,10 +343,11 @@ export class ChatService {
 
   /**
    * get a page of messages from a room
-   * @param roomName - The name of the room
-   * @param date - The date to start from
-   * @param pageSize - The number of messages to return
-   * @returns - An array of messages from oldest to newest, or an error
+   *
+   * @param {string} roomName - The room name
+   * @param {Date} date - The date to start the page from
+   * @param {number} pageSize - The number of messages to return
+   * @returns {Promise<MessageEntity[]>} - The messages
    */
   async getRoomMessagesPage(
     roomName: string,
@@ -330,9 +370,8 @@ export class ChatService {
    * If the room does not exist, return an error.
    * If the message is successfully added to the database, return the room name
    *
-   * @param client
-   * @param sendDto
-   * @returns
+   * @param {SendMessageDto} sendDto - The message to send
+   * @returns {Promise<Error | MessageEntity>} - The message or an error
    */
   async sendMessage(sendDto: SendMessageDto): Promise<Error | MessageEntity> {
     if (!sendDto.content) return;
@@ -374,19 +413,15 @@ export class ChatService {
     }
   }
 
-  /*****************************************/
-  /* Dev Signin Functions - To Be Removed  */
-  /*****************************************/
-
   /**
    * Temporary function to create a user
    *
    * If the user already exists, return an error
    * If the user does not exist, add it to the database and send a confirmation
-   * TODO: Remove this function and replace it with a proper user creation
-   * @param client socket client
-   * @param username
-   * @returns Error or username
+   * @todo Remove this function and replace it with a proper user creation
+   *
+   * @param {AuthRequest} req - The user's username, avatar, email, first name, and last name
+   * @returns {Promise<UserEntity | Error>} - The user or an error
    */
   async createTempUser(req: AuthRequest): Promise<UserEntity | Error> {
     // Check if the user already exists
@@ -432,11 +467,12 @@ export class ChatService {
 
   /**
    * Temporary function to login a user
+   *
    * If the user does not exist, return an error
-   * TODO: remove this function when authentication is enabled
-   * @param client socket client
-   * @param username
-   * @returns DevError or username
+   * @todo remove this function when authentication is enabled
+   *
+   * @param {AuthRequest} req - The user's username
+   * @returns {Promise<string | Error>} - The username or an error
    */
   async devUserLogin(req: AuthRequest): Promise<Error | string> {
     // Check if the user already exists
@@ -447,7 +483,7 @@ export class ChatService {
       logger.error(`UserLogin error: User ${username} does not exist`);
       return Error("User login error: user does not exist");
     }
-    // FIXME: add password protection
+    /** @todo add password protection */
     logger.debug(`User ${username} logged in: `, userExists);
 
     return username;
@@ -455,9 +491,11 @@ export class ChatService {
 
   /**
    * Get the list of users in a chat room
+   *
    * If the room does not exist, return an error
-   * @param chatRoomName - The name of the chat room
-   * @returns ChatMemberEntity[] - An array of ChatMemberEntities
+   *
+   * @param {string} chatRoomName - The name of the chat room
+   * @returns {Promise<ChatMemberEntity[]>} - The list of users in the chat room
    */
   async getUserList(chatRoomName: string): Promise<ChatMemberEntity[]> {
     try {
@@ -471,6 +509,15 @@ export class ChatService {
     }
   }
 
+  /**
+   * Check and update the user's status
+   *
+   * If the user is muted and the mute has expired, update the user's status to OK
+   *
+   * @param {string} uuid - The user's UUID
+   * @param {string} roomName - The name of the chat room
+   * @returns {Promise<ChatMemberStatus>} - The user's status
+   */
   async checkAndUpdateUserStatus(
     uuid: string,
     roomName: string
@@ -512,10 +559,12 @@ export class ChatService {
 
   /**
    * Update the status of a chat member
+   *
    * If the member to update is the owner, return an error
    * If the member requesting the update is a user, return an error
-   * @param updateDto - The updateChatMemberStatusDto object
-   * @returns ChatMember - The updated ChatMember object
+   *
+   * @param {UpdateChatMemberRequest} updateDto - The member to update, the member requesting the update, and the new status
+   * @returns {Promise<ChatMemberPrismaType>} - The updated chat member
    */
   async updateMemberStatus(
     updateDto: UpdateChatMemberRequest
@@ -542,6 +591,15 @@ export class ChatService {
     }
   }
 
+  /**
+   * Kick a chat member
+   *
+   * If the member to kick is the owner, return an error
+   * If the member requesting the kick is a user, return an error
+   *
+   * @param {KickMemberRequest} kickDto - The member to kick, the member requesting the kick, and the new status
+   * @returns {Promise<ChatMemberEntity | Error>} - The updated chat member
+   */
   async kickMember(
     kickDto: KickMemberRequest
   ): Promise<ChatMemberEntity | Error> {
@@ -573,7 +631,14 @@ export class ChatService {
     }
   }
 
-  // inviteUsersToRoom takes in a InviteUsersToRoomRequest and returns a ChatMemberEntity[] if successful
+  /**
+   * Invite users to a chat room
+   *
+   * If the room does not exist, return an error
+   *
+   * @param {InviteUsersToRoomRequest} req - The room to invite users to and the list of users to invite
+   * @returns {Promise<ChatMemberEntity[] | Error>} - The list of users invited to the room
+   */
   async inviteUsersToRoom(
     req: InviteUsersToRoomRequest
   ): Promise<ChatMemberEntity[] | Error> {
@@ -610,9 +675,13 @@ export class ChatService {
 
   /**
    * Send a Direct Message to a user
-   * @param {SendDirectMessageRequest} req - The users in the Direct Message
-   * @returns {Promise<ChatRoomEntity | Error>} - The created ChatMessageEntity
-   * @memberof ChatService
+   *
+   * If the sender or recipient does not exist, return an error
+   * If the recipient has blocked the sender, return an error
+   * If a dialogue room between the sender and the recipient already exists, return the existing room
+   *
+   * @param {SendDirectMessageRequest} req - The sender and recipient of the message
+   * @returns {Promise<ChatRoomEntity | Error>} - The dialogue room between the sender and the recipient
    */
   async sendDirectMessage(
     req: SendDirectMessageRequest
@@ -652,16 +721,19 @@ export class ChatService {
     const newRoom = await this.prismaService.createDirectMessageRoom(
       senderId,
       recipientId,
-      `${sender}-${recipient}-${Date.now()}`
+      `${sender}$${recipient}$${Date.now()}`
     );
     return this.getChatRoomEntity(newRoom, ChatMemberRank.USER);
   }
 
   /**
    * Block a user. The user will not be able to send messages to the user who blocked them
-   * @param {BlockUserRequest} req - The users in the Direct Message
-   * @returns {Promise<BlockedUser | Error>} - The created ChatMessageEntity
-   * @memberof ChatService
+   *
+   * If the blocker or blockee does not exist, return an error
+   * If the blocker and blockee are already blocking each other, return the existing block
+   *
+   * @param {BlockUserRequest} req - The blocker and blockee
+   * @returns {Promise<BlockedUser | Error>} - The blocked user
    */
   async blockUser(req: BlockUserRequest): Promise<BlockedUser | Error> {
     try {
@@ -699,5 +771,52 @@ export class ChatService {
       logger.error("Error blocking user", error);
       return error;
     }
+  }
+
+  /**
+   * Get a list of chat rooms of which the user is a member.
+   *  - If the user is a member of no rooms, return an empty list
+   *  - If the user does not exist, return an error
+   *
+   * @param {BlockUserRequest} req - The blocker and blockee
+   * @returns {Promise<BlockedUser | Error>} - The blocked user
+   */
+  async getRoomsOf(username: string): Promise<ChatRoomEntity[] | Error> {
+    let rooms: ChatRoom[] = [];
+    try {
+      rooms = await this.prismaService.chatRoom.findMany({
+        where: {
+          members: {
+            some: {
+              member: {
+                username
+              },
+              status: {
+                not: ChatMemberStatus.BANNED
+              }
+            }
+          }
+        }
+      });
+    } catch (error) {
+      error.message = `Error retrieving rooms of ${username}`;
+      logger.error(error.message);
+      return error;
+    }
+
+    const roomsOfUser: ChatRoomEntity[] = (
+      await Promise.all(
+        rooms.map(async (room) => {
+          const roomEntity = await this.getChatRoomEntity(
+            room,
+            ChatMemberRank.USER
+          );
+          return roomEntity instanceof Error ? null : roomEntity;
+        })
+      )
+    ).filter((roomEntity): roomEntity is ChatRoomEntity => roomEntity !== null);
+    // omg what did JS make me do..? @oddtiming
+
+    return roomsOfUser;
   }
 }

@@ -1904,6 +1904,13 @@
     "@jridgewell/resolve-uri" "3.1.0"
     "@jridgewell/sourcemap-codec" "1.4.14"
 
+"@jsdoc/salty@^0.2.1":
+  version "0.2.5"
+  resolved "https://registry.yarnpkg.com/@jsdoc/salty/-/salty-0.2.5.tgz#1b2fa5bb8c66485b536d86eee877c263d322f692"
+  integrity sha512-TfRP53RqunNe2HBobVBJ0VLhK1HbfvBYeTC1ahnN64PWvyYyGebmMiPkuwvD9fpw2ZbkoPb8Q7mwy0aR8Z9rvw==
+  dependencies:
+    lodash "^4.17.21"
+
 "@leichtgewicht/ip-codec@^2.0.1":
   version "2.0.4"
   resolved "https://registry.yarnpkg.com/@leichtgewicht/ip-codec/-/ip-codec-2.0.4.tgz#b2ac626d6cb9c8718ab459166d4bb405b8ffa78b"
@@ -5206,6 +5213,13 @@ dns-packet@^5.2.2:
   integrity sha512-rza3UH1LwdHh9qyPXp8lkwpjSNk/AMD3dPytUoRoqnypDUhY0xvbdmVhWOfxO68frEfV9BU8V12Ez7ZsHGZpCQ==
   dependencies:
     "@leichtgewicht/ip-codec" "^2.0.1"
+
+docdash@^2.0.1:
+  version "2.0.1"
+  resolved "https://registry.yarnpkg.com/docdash/-/docdash-2.0.1.tgz#ac36dd1b64a2ae298e642c9a8d8d3c0f7f0a2c55"
+  integrity sha512-mkBhkeMyMwGV4YIdA7S4dIC25ENrfU/ZBfyTs/MXj/HUewW/dtx44xoho4PttCOMsqxlcghzfj8HRlam5QiSoQ==
+  dependencies:
+    "@jsdoc/salty" "^0.2.1"
 
 doctrine@^2.1.0:
   version "2.1.0"

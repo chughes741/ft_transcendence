@@ -8,7 +8,7 @@ import {
   Post,
   UseFilters,
   Logger,
-  UseGuards
+  UseGuards,
 } from "@nestjs/common";
 import { ApiTags } from "@nestjs/swagger";
 import { SubscribeMessage } from "@nestjs/websockets";
@@ -69,7 +69,7 @@ export class AuthController {
       firstName: dto.firstName,
       lastName: dto.lastName,
       email: dto.email,
-      status: UserStatus.ONLINE
+      status: UserStatus.ONLINE,
     };
     return this.authService.signin(info);
   }
@@ -105,6 +105,12 @@ export class AuthController {
     return await this.authService.enableTwoFactorAuth();
   }
 
+  @Get("getCredentials")
+  async getCredentials() {
+    logger.debug("Get Credentials");
+    return await this.authService.getCredentials();
+  }
+
   @Get("changeUsername")
   async changeUsername(
     @Query("current") currentName: string,
@@ -138,9 +144,8 @@ export class AuthController {
   }
 
   @Get("getEnable2fa")
-  //@UseGuards(TokenIsVerified)
+  @UseGuards(TokenIsVerified)
   async getEnable2fa(@Query("username") username: string) {
     return await this.authService.getEnable2fa(username);
   }
-
 }

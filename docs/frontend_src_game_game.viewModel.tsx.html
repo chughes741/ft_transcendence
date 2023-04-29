@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    
+    <meta charset="utf-8">
+    <title>frontend/src/game/game.viewModel.tsx - Kingpong</title>
+    
+    <meta name="description" content="Documentation for the kingpong website" />
+    
+    
+    
+    <meta property="og:title" content="Kingpong Docs"/>
+    <meta property="og:type" content="website"/>
+    <meta property="og:image" content=""/>
+    
+    <meta property="og:url" content="https://chughes741.github.io/ft_transcendence"/>
+    
+    <script src="scripts/prettify/prettify.js"></script>
+    <script src="scripts/prettify/lang-css.js"></script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc.css">
+    <script src="scripts/nav.js" defer></script>
+    
+    <script src="scripts/commonNav.js" defer></script>
+    
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body>
+
+<input type="checkbox" id="nav-trigger" class="nav-trigger" />
+<label for="nav-trigger" class="navicon-button x">
+  <div class="navicon"></div>
+</label>
+
+<label for="nav-trigger" class="overlay"></label>
+
+<nav >
+    
+    <input type="text" id="nav-search" placeholder="Search" />
+    
+    
+</nav>
+
+<div id="main">
+    
+    <h1 class="page-title">frontend/src/game/game.viewModel.tsx</h1>
+    
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>import React, { useEffect, createContext, useContext } from "react";
+import { GameModelType, useGameModel } from "./game.model";
+import * as GameTypes from "src/game/game.types";
+import { socket } from "src/contexts/WebSocket.context";
+import {
+  GameEndedEvent,
+  GameEvents,
+  GameStartedEvent,
+  LobbyCreatedEvent
+} from "kingpong-lib";
+import { useRootViewModelContext } from "src/root.context";
+
+export interface GameViewModelType extends GameModelType {
+  setPlayerReadyState: () => Promise&lt;void>;
+  joinGameQueue: () => Promise&lt;void>;
+}
+
+export const GameViewModelContext: React.Context&lt;GameViewModelType | null> =
+  createContext&lt;GameViewModelType | undefined>(null);
+
+export const GameViewModelProvider = ({ children }) => {
+  const gameModel = useGameModel();
+
+  const {
+    setLobby,
+    lobbyId,
+    matchId,
+    setLobbyId,
+    setPlayerSide,
+    playerReady,
+    setPlayerReady,
+    setOpponentUsername,
+    displayQueue,
+    setDisplayQueue,
+    setInQueue,
+    setDisplayLobby,
+    displayGame,
+    setDisplayGame
+  } = gameModel;
+
+  const { self } = useRootViewModelContext();
+
+  /*******************/
+  /*  Socket Calls   */
+  /*******************/
+
+  /**
+   * @event "lobbyCreated"
+   * @dependency displayQueue
+   */
+  useEffect(() => {
+    if (!displayQueue) return;
+
+    socket.on(GameEvents.LobbyCreated, (payload: LobbyCreatedEvent) => {
+      console.debug("lobbyCreated event received");
+
+      setLobby(new GameTypes.Lobby());
+      setLobbyId(payload.lobby_id);
+      setPlayerSide(payload.player_side);
+      setOpponentUsername(payload.opponent_username);
+
+      setInQueue(false);
+      setDisplayQueue(false);
+      setDisplayLobby(true);
+    });
+
+    return () => {
+      socket.off(GameEvents.LobbyCreated);
+    };
+  }, [displayQueue]);
+
+  /**
+   * @event "gameStarted"
+   * @dependency playerReady
+   */
+  useEffect(() => {
+    if (!playerReady) return;
+
+    socket.on(GameEvents.GameStarted, (payload: GameStartedEvent) => {
+      console.debug("gameStarted event received. Payload:", payload);
+
+      setPlayerSide(payload.player_side);
+      setDisplayGame(true);
+    });
+
+    return () => {
+      socket.off(GameEvents.LobbyCreated);
+    };
+  }, [playerReady]);
+
+  /**
+   * @event "gameEnded"
+   * @dependency displayGame
+   */
+  useEffect(() => {
+    if (!displayGame) return;
+
+    socket.on(GameEvents.GameEnded, (payload: GameEndedEvent) => {
+      console.debug("gameEnded event received. Payload:", payload);
+
+      setDisplayGame(false);
+      setDisplayLobby(true);
+    });
+
+    return () => {
+      socket.off(GameEvents.GameEnded);
+    };
+  }, [displayGame]);
+
+  /**
+   * Manage ready toggle
+   *
+   * @async
+   */
+  const setPlayerReadyState = async () => {
+    if (playerReady) return;
+    socket.emit(
+      GameEvents.PlayerReady,
+      {
+        match_id: matchId,
+        lobby_id: lobbyId,
+        username: self.username,
+        ready: true
+      },
+      (response: boolean) => {
+        setPlayerReady(response);
+      }
+    );
+  };
+
+  /**
+   * Manage joining the queue
+   *
+   * @async
+   */
+  const joinGameQueue = async () => {
+    console.debug("Joining queue");
+
+    socket.emit(
+      GameEvents.JoinGameQueue,
+      {
+        username: self.username,
+        join_time: Date.now()
+      },
+      () => {
+        setInQueue(true);
+      }
+    );
+  };
+
+  return (
+    &lt;GameViewModelContext.Provider
+      value={{
+        ...gameModel,
+        setPlayerReadyState,
+        joinGameQueue
+
+        //...
+      }}
+    >
+      {children}
+    &lt;/GameViewModelContext.Provider>
+  );
+};
+
+/**
+ *  Returns the GameViewModelContext
+ *
+ * @returns {GameViewModelType}
+ */
+export const useGameViewModelContext = (): GameViewModelType => {
+  const context = useContext(GameViewModelContext);
+  if (context === undefined) {
+    throw new Error(
+      "useProfileViewModelContext must be used within a ProfileViewModelProvider"
+    );
+  }
+  return context;
+};
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+    
+    
+</div>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 4.0.2</a> on Tue Apr 25 2023 20:32:20 GMT-0400 (Eastern Daylight Time) using the <a href="https://github.com/clenemt/docdash">docdash</a> theme.
+</footer>
+
+<script>prettyPrint();</script>
+<script src="scripts/polyfill.js"></script>
+<script src="scripts/linenumber.js"></script>
+
+<script src="scripts/search.js" defer></script>
+
+
+
+</body>
+</html>

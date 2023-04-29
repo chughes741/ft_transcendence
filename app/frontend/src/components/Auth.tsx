@@ -7,12 +7,6 @@ import "./Auth.tsx.css";
 import { createSocketWithHeaders, socket } from "../contexts/WebSocket.context";
 import { createBrowserHistory } from "history";
 
-
-
-const CLIENT_ID =
-  "u-s4t2ud-51fb382cccb5740fc1b9129a3ddacef8324a59dc4c449e3e8ba5f62acb2079b6";
-const REDIRECT_URI = "http://localhost:3000/";
-
 /*
  * We GOTTA add those to kingpong lib
  */
@@ -51,7 +45,6 @@ export const headers = {
 };
 
 export default function Auth() {
-
   const {
     setShowChooseUsernameModal,
     sessionToken,
@@ -65,7 +58,6 @@ export default function Auth() {
   const history = createBrowserHistory();
   //TODO check this so it redirects if youre already sign in
   useEffect(() => {
-    console.log("dasjdaskldjas");
     if (sessionToken) {
       setPageState(PageState.Home);
       return;
@@ -172,8 +164,21 @@ export default function Auth() {
     handleAuthorizationCode().then();
   }, [handleAuthorizationCode]);
 
-  const handleLoginClick = () => {
+  const handleLoginClick = async () => {
     setIsLoading(true);
+
+    const url = `http://localhost:3000/auth/getCredentials`;
+
+    //Calls backend for our server's credentials
+    const data = await fetch(url, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json"
+      }
+    });
+    const answer = await data.json();
+    const CLIENT_ID = await answer.CLIENT_ID;
+    const REDIRECT_URI = await answer.REDIRECT_URI;
     // Redirect the user to the 42 OAuth authorization endpoint
     history.push(
       `https://api.intra.42.fr/oauth/authorize?client_id=${CLIENT_ID}&redirect_uri=${REDIRECT_URI}&response_type=code`

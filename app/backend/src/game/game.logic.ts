@@ -122,7 +122,7 @@ export class GameLogic {
         player2Id,
         scorePlayer1: lobby.gamestate.score[0],
         scorePlayer2: lobby.gamestate.score[1],
-        timestamp: new Date(Date.now()),
+        timestamp: new Date(),
         gameType: GameType.UNRANKED
       };
       logger.debug("Match: " + JSON.stringify(match));

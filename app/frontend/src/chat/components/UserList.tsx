@@ -11,7 +11,8 @@ import {
   ChatMemberEntity,
   KickMemberRequest,
   RoomMemberEntity,
-  BlockUserRequest
+  BlockUserRequest,
+  DevSuccess
 } from "../chat.types";
 import { useChatContext } from "../chat.context";
 import { useProfileViewModelContext } from "../../profile/profile.viewModel";
@@ -206,7 +207,7 @@ export default function UserListView({ userList, handleClick }: UserListProps) {
       queryingMemberRank: ownRank
     };
 
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     socket.emit("kickUser", req, (res: DevError | any) => {
       if (handleSocketErrorResponse(res)) return console.warn(res);
       console.debug(`successfully kicked user ${res}`);
@@ -226,12 +227,14 @@ export default function UserListView({ userList, handleClick }: UserListProps) {
       blocker: self.username,
       blockee: contextMenuUsersData.username
     };
-    socket.emit("blockUser", req, (res: DevError | any) => {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    socket.emit("blockUser", req, (res: DevError | DevSuccess) => {
       if (handleSocketErrorResponse(res)) return console.warn(res);
       console.debug(`successfully blocked user ${res}`);
       updateRooms((newRooms) => {
-        if (!newRooms[currentRoomName].users[res]) return newRooms;
-        delete newRooms[currentRoomName].users[res];
+        if (!newRooms[currentRoomName].users[req.blockee]) return newRooms;
+        delete newRooms[currentRoomName].users[req.blockee];
         return newRooms;
       });
     });

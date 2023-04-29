@@ -12,14 +12,15 @@ export class GameModuleData {
   public static games: GameTypes.GameData[] = [];
   public static lobbies: GameTypes.gameLobby[] = [];
 
-  /*************************************************************************************/
-  /**                                   Queue                                         **/
-  /*************************************************************************************/
+  /****************************************************************************/
+  /**                                Queue                                   **/
+  /****************************************************************************/
 
   /**
    * Check if a given user is already in the queue
-   * @param username
-   * @returns
+   *
+   * @param {string} username
+   * @returns {GameTypes.PlayerQueue}
    */
   checkQueue(username: string): GameTypes.PlayerQueue {
     GameModuleData.queue.forEach((element) => {
@@ -32,7 +33,7 @@ export class GameModuleData {
 
   /**
    * Adds player to game queue
-   * @method addQueue
+   *
    * @param {GameTypes.PlayerQueue} player
    * @returns {}
    */
@@ -43,7 +44,7 @@ export class GameModuleData {
 
   /**
    * Removes player from queue given a player object
-   * @method removeQueue
+   *
    * @param {GameTypes.PlayerQueue} player
    * @returns {}
    */
@@ -55,7 +56,9 @@ export class GameModuleData {
 
   /**
    * Removes a player from queue given a username
-   * @param player
+   *
+   * @param {string} player
+   * @returns {}
    */
   removeQueueUsername(player: string) {
     logger.debug("size of queue before: " + GameModuleData.queue.length);
@@ -69,9 +72,8 @@ export class GameModuleData {
 
   /**
    * Attempts to return a pair of players from the queue
-   * @method  getPairQueue
-   * @returns {GameTypes.PlayerQueue[]}
    *
+   * @returns {GameTypes.PlayerQueue[]}
    */
   getPairQueue(): GameTypes.PlayerQueue[] {
     if (GameModuleData.queue.length >= 2) {
@@ -84,12 +86,15 @@ export class GameModuleData {
     }
   }
 
-  /*************************************************************************************/
-  /**                                   Gameplay                                      **/
-  /*************************************************************************************/
+  /*****************************************************************************/
+  /**                               Gameplay                                  **/
+  /*****************************************************************************/
 
   /**
+   * Sets the position of the paddle for a given player in a given lobby
    *
+   * @param {ClientGameStateUpdateRequest} payload
+   * @returns {}
    */
   setPaddlePosition(payload: ClientGameStateUpdateRequest) {
     //Find correct match
@@ -107,7 +112,9 @@ export class GameModuleData {
 
   /**
    * Update the player ready status for a player in specified lobby
-   * @param {GameTypes.PlayerReadyDto} payload
+   *
+   * @param {PlayerReadyRequest} payload
+   * @returns {}
    */
   updatePlayerReady(payload: PlayerReadyRequest) {
     GameModuleData.lobbies.forEach((element) => {
@@ -124,6 +131,9 @@ export class GameModuleData {
 
   /**
    * Retrieve the lobby object that corresponds to the given lobby id
+   *
+   * @param {string} lobby_id
+   * @returns {GameTypes.gameLobby | null}
    */
   getLobby(lobby_id: string): GameTypes.gameLobby | null {
     for (let i = 0; i < GameModuleData.lobbies.length; i++) {
@@ -133,13 +143,16 @@ export class GameModuleData {
         return element;
       }
     }
-    return null; // Return null if lobby_id is not found
+    return null;
   }
 
   /**
    * Adds a lobby to the list of lobbies
+   *
+   * @param {GameTypes.gameLobby} lobby
+   * @returns {boolean}
    */
-  addLobby(lobby: GameTypes.gameLobby) {
+  addLobby(lobby: GameTypes.gameLobby): boolean {
     if (GameModuleData.lobbies.push(lobby)) {
       return true;
     }

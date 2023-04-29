@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    
+    <meta charset="utf-8">
+    <title>frontend/src/root.view.tsx - Kingpong</title>
+    
+    <meta name="description" content="Documentation for the kingpong website" />
+    
+    
+    
+    <meta property="og:title" content="Kingpong Docs"/>
+    <meta property="og:type" content="website"/>
+    <meta property="og:image" content=""/>
+    
+    <meta property="og:url" content="https://chughes741.github.io/ft_transcendence"/>
+    
+    <script src="scripts/prettify/prettify.js"></script>
+    <script src="scripts/prettify/lang-css.js"></script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc.css">
+    <script src="scripts/nav.js" defer></script>
+    
+    <script src="scripts/commonNav.js" defer></script>
+    
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body>
+
+<input type="checkbox" id="nav-trigger" class="nav-trigger" />
+<label for="nav-trigger" class="navicon-button x">
+  <div class="navicon"></div>
+</label>
+
+<label for="nav-trigger" class="overlay"></label>
+
+<nav >
+    
+    <input type="text" id="nav-search" placeholder="Search" />
+    
+    
+</nav>
+
+<div id="main">
+    
+    <h1 class="page-title">frontend/src/root.view.tsx</h1>
+    
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/** Libraries */
+import { useEffect } from "react";
+import { Box, Container } from "@mui/material";
+
+/** Providers */
+import { useRootViewModelContext } from "./root.context";
+
+/** Components */
+import SideBar from "src/components/SideBar/SideBar";
+import TopBar from "src/components/TopBar/TopBar";
+import { PageState } from "./root.model";
+import { ChatView } from "./chat/chat.view";
+import ProfileView from "./profile/profile.view";
+import { HelmetView } from "./components/Helmet";
+import SettingsView from "./components/settings/settings.view";
+import LoginWith42Button from "./components/Login42";
+import { ChooseUsernameModal } from "./components/ChooseUsernameModal";
+import GameWindow from "./game/game.view";
+import VerifyQRCode from "./components/QrCodeElement";
+
+/**
+ * Root view content
+ *
+ * @returns {JSX.Element} - Root view content
+ */
+
+function RootViewContent(): JSX.Element {
+  const { pageState } = useRootViewModelContext();
+
+  switch (pageState) {
+    case PageState.Auth: {
+      return &lt;LoginWith42Button />;
+    }
+    case PageState.QRCode: {
+      return &lt;VerifyQRCode />;
+    }
+    case PageState.Home: {
+      return &lt;div>&lt;/div>;
+    }
+    case PageState.Game: {
+      return &lt;GameWindow />;
+    }
+    case PageState.Chat: {
+      return &lt;ChatView />;
+    }
+    case PageState.Profile: {
+      return &lt;ProfileView />;
+    }
+    default: {
+      return &lt;>&lt;/>;
+    }
+  }
+}
+
+/**
+ * Rendering entrypoint
+ *
+ * @returns {JSX.Element} - View model with dynamic content
+ */
+export function RootView(): JSX.Element {
+  const {
+    /* Fullscreen */
+    fullscreen,
+    setFullscreen,
+    /* Username */
+    showChooseUsernameModal
+  } = useRootViewModelContext();
+
+  const handleKeyDown = (event: KeyboardEvent) => {
+    if (event.key === "Escape" &amp;&amp; fullscreen) {
+      setFullscreen(false);
+    }
+  };
+
+  /** Add event listener for keydown event */
+  useEffect(() => {
+    window.addEventListener("keydown", handleKeyDown);
+
+    /** Cleanup event listener on unmount */
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [fullscreen]);
+
+  return (
+    &lt;>
+      &lt;HelmetView />
+      &lt;SettingsView />
+      &lt;Container
+        id="page-container"
+        style={{ margin: "0", padding: "0", maxWidth: "100vw" }}
+      >
+        &lt;Box
+          id="page-box"
+          sx={{ display: "flex", flexDirection: "column" }}
+        >
+          {(fullscreen &amp;&amp; &lt;RootViewContent />) || (
+            &lt;>
+              &lt;TopBar />
+              &lt;Box
+                id="sidebar-container"
+                sx={{ display: "flex" }}
+              >
+                &lt;SideBar />
+                &lt;Box
+                  component={"main"}
+                  sx={{
+                    width: "100%",
+                    display: "flex",
+                    justifyContent: "center",
+                    overflow: "hidden"
+                  }}
+                >
+                  &lt;RootViewContent />
+                &lt;/Box>
+              &lt;/Box>
+            &lt;/>
+          )}
+        &lt;/Box>
+      &lt;/Container>
+      &lt;ChooseUsernameModal showModal={showChooseUsernameModal} />
+    &lt;/>
+  );
+}
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+    
+    
+</div>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 4.0.2</a> on Tue Apr 25 2023 20:32:20 GMT-0400 (Eastern Daylight Time) using the <a href="https://github.com/clenemt/docdash">docdash</a> theme.
+</footer>
+
+<script>prettyPrint();</script>
+<script src="scripts/polyfill.js"></script>
+<script src="scripts/linenumber.js"></script>
+
+<script src="scripts/search.js" defer></script>
+
+
+
+</body>
+</html>

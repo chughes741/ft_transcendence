@@ -26,9 +26,6 @@ function ImgUpload() {
         //     REPLACE WITH CONTEXT USERNAME HERE
         const newdata = { username: self.username };
         formData.append("newData", JSON.stringify(newdata));
-        console.log(formData);
-
-        console.log("Headers", headers);
         //Post image in formData.
         const response = await fetch("/imgtransfer/upload", {
           method: "POST",
@@ -38,8 +35,7 @@ function ImgUpload() {
         //Create a form data for img transfer
 
         //IF UnAuthorized : MUST FLUSH THE session TOKEN and bring back to login page
-        if (response.ok)
-          return ;
+        if (response.ok) return;
         const data = await response.json();
         if (data.statusCode && data.statusCode === 401) {
           //Deletes token in backend
@@ -56,8 +52,7 @@ function ImgUpload() {
           return;
         }
       }
-      catch(error)
-      {
+      catch (error) {
         console.log("Maybe", error)
       }
     }
