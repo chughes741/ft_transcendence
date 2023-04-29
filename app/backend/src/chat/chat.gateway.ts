@@ -51,15 +51,15 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     private prismaService: PrismaService,
     private chatService: ChatService,
     private userConnectionsService: UserConnectionsService
-  ) {}
+  ) { }
 
   @WebSocketServer()
   server: Server;
 
   async handleConnection(client: Socket) {
     logger.warn("Client connected: " + client.id);
-    console.log(client);
-    logger.debug(`Client connected: ${client.id}`);
+    //console.log(client);
+    //logger.debug(`Client connected: ${client.id}`);
   }
 
   async handleDisconnect(client: Socket) {
@@ -326,10 +326,8 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   ): Promise<ChatRoomEntity | DevError> {
     // Log the request
     logger.debug(
-      `Received createRoom request from ${createDto.owner} for room ${
-        createDto.name
-      }: ${createDto.status} ${
-        createDto.password ? `, with password ${createDto.password}.` : "."
+      `Received createRoom request from ${createDto.owner} for room ${createDto.name
+      }: ${createDto.status} ${createDto.password ? `, with password ${createDto.password}.` : "."
       }`
     );
 
@@ -337,10 +335,8 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
       // Log the request
       //console.log(client);
       logger.debug(
-        `Received createRoom request from ${createDto.owner} for room ${
-          createDto.name
-        }: ${createDto.status} ${
-          createDto.password ? `, with password ${createDto.password}.` : "."
+        `Received createRoom request from ${createDto.owner} for room ${createDto.name
+        }: ${createDto.status} ${createDto.password ? `, with password ${createDto.password}.` : "."
         }`
       );
 
@@ -420,8 +416,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
         client.id
       );
       logger.debug(
-        `Received joinRoom request from ${username} for room ${dto.roomName} ${
-          dto.password ? `: with password ${dto.password}` : ""
+        `Received joinRoom request from ${username} for room ${dto.roomName} ${dto.password ? `: with password ${dto.password}` : ""
         }`
       );
 
