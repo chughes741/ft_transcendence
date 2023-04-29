@@ -9,6 +9,7 @@ RUN yarn install --non-interactive --production=false
 
 RUN yarn --cwd frontend build
 RUN yarn --cwd backend run build
+RUN yarn --cwd backend prisma generate
 
 WORKDIR /usr/app/backend
 
