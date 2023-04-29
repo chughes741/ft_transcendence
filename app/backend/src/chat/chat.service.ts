@@ -35,7 +35,7 @@ const logger = new Logger("ChatService");
  */
 @Injectable()
 export class ChatService {
-  constructor(private readonly prismaService: PrismaService) { }
+  constructor(private readonly prismaService: PrismaService) {}
 
   async getChatRoomEntity(
     room: ChatRoom,

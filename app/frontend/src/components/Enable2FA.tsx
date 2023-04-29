@@ -11,8 +11,14 @@ import { createBrowserHistory } from "history";
 import { validateCode } from "./Verify2FA";
 
 export default function Enable2FA() {
-  const { setPageState, sessionToken, setSelf, self, setSessionToken, setFullscreen } =
-    useRootViewModelContext();
+  const {
+    setPageState,
+    sessionToken,
+    setSelf,
+    self,
+    setSessionToken,
+    setFullscreen
+  } = useRootViewModelContext();
 
   const [qrCode, setQRCode] = useState<string | null>(null);
   const [code, setCode] = useState<string>("");
@@ -36,25 +42,25 @@ export default function Enable2FA() {
         headers: {
           "Content-Type": "application/json",
           "client-id": socket.id,
-          "client-token": sessionToken,
+          "client-token": sessionToken
         }
       });
       const data = await response.json();
-      if (data.statusCode && data.statusCode === 401) //UNAUTHORIZED EXCEPTION
-      {
+      if (data.statusCode && data.statusCode === 401) {
+        //UNAUTHORIZED EXCEPTION
         //MUST FLUSH THE session TOKEN and bring back to login page
         fetch(`/auth/deleteToken?socketId=${socket.id}`, {
-          method: 'POST',
+          method: "POST"
         });
-        setSessionToken("")
+        setSessionToken("");
         setPageState(PageState.Auth);
-        history.push('/auth');
+        history.push("/auth");
         setFullscreen(true);
         setSelf({ username: "", avatar: "", createdAt: "", status: 0 });
         return;
       }
-      setQRCode(data['qrcode']);
-      setSecret(data['secret']);
+      setQRCode(data["qrcode"]);
+      setSecret(data["secret"]);
 
       return true;
     } catch (error) {

@@ -1,8 +1,8 @@
-import React, {useEffect} from "react";
-import {Action, BrowserHistory, Location} from "history";
-import {Router} from "react-router-dom";
-import {PageState} from "./root.model";
-import {useRootViewModelContext} from "./root.context";
+import React, { useEffect } from "react";
+import { Action, BrowserHistory, Location } from "history";
+import { Router } from "react-router-dom";
+import { PageState } from "./root.model";
+import { useRootViewModelContext } from "./root.context";
 
 interface CustomRouterProps {
   basename?: string;

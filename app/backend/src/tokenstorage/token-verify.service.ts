@@ -7,7 +7,7 @@ const logger = new Logger("TokenVerification");
 
 @Injectable()
 export default class TokenIsVerified implements CanActivate {
-  constructor(public tokenStorage: TokenStorageService) { }
+  constructor(public tokenStorage: TokenStorageService) {}
 
   async refreshToken(clientID: string, refresh_token: Token) {
     //Refresh the Token
@@ -16,20 +16,18 @@ export default class TokenIsVerified implements CanActivate {
   }
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
-
     //throw new UnauthorizedException();
     //console.log("Tokens :", this.tokenStorage.tokens);
 
-    const isWebSocket = context.getType() === 'ws';
+    const isWebSocket = context.getType() === "ws";
     let clientId: string;
     let clientToken: string;
     if (isWebSocket) {
       const client = await context.switchToWs().getClient();
       const newheaders = client.handshake.headers;
-      clientId = await client.id as string;
-      clientToken = await newheaders.clienttoken as string;
-    }
-    else {
+      clientId = (await client.id) as string;
+      clientToken = (await newheaders.clienttoken) as string;
+    } else {
       const req = context.switchToHttp().getRequest();
       clientId = req.headers["client-id"] as string;
       clientToken = req.headers["client-token"] as string;

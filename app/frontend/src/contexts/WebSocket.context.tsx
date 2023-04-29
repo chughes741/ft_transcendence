@@ -24,7 +24,6 @@ interface WebSocketProviderProps {
   children: React.ReactNode;
 }
 
-
 //Function to recreate socket with propers headers
 export async function createSocketWithHeaders(headers: SocketHeaders) {
   await socket.disconnect();
@@ -39,7 +38,7 @@ export async function createSocketWithHeaders(headers: SocketHeaders) {
   socket = await io("http://localhost:3000", {
     extraHeaders: {
       clientToken: headers.clientToken
-    },
+    }
   });
 }
 
@@ -79,7 +78,6 @@ const WebSocketProvider: React.FC<WebSocketProviderProps> = ({ children }) => {
       });
     }
   }, [socket]);
-
 
   useEffect(() => {
     return () => {

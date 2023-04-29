@@ -34,12 +34,12 @@ export const handleNewMessageCreator =
     currentRoomName: string,
     convertMessagePayloadToMessageType
   ) =>
-    (newMessage: MessagePayload): boolean => {
-      console.debug("New Message:", newMessage);
-      const messageData = convertMessagePayloadToMessageType(newMessage);
-      addMessageToRoom(newMessage.roomName, messageData);
-      return newMessage.roomName === currentRoomName;
-    };
+  (newMessage: MessagePayload): boolean => {
+    console.debug("New Message:", newMessage);
+    const messageData = convertMessagePayloadToMessageType(newMessage);
+    addMessageToRoom(newMessage.roomName, messageData);
+    return newMessage.roomName === currentRoomName;
+  };
 
 export const handleNewChatRoomMemberCreator =
   (updateRooms) => (member: RoomMemberEntity) => {
@@ -52,12 +52,12 @@ export const handleNewChatRoomMemberCreator =
 
 export const handleChatRoomMemberLeftCreator =
   (updateRooms) =>
-    ({ roomName, username }: LeaveRoomRequest) => {
-      console.debug(`User ${username} left room ${roomName}`);
-      updateRooms((newRooms) => {
-        delete newRooms[roomName].users[username];
-      });
-    };
+  ({ roomName, username }: LeaveRoomRequest) => {
+    console.debug(`User ${username} left room ${roomName}`);
+    updateRooms((newRooms) => {
+      delete newRooms[roomName].users[username];
+    });
+  };
 
 export const handleChatRoomMemberKickedCreator =
   (updateRooms) => (member: RoomMemberEntity) => {

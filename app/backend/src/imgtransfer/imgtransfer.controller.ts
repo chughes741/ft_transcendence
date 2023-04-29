@@ -36,7 +36,7 @@ export class ImgTransferController {
   constructor(
     private imgtransferService: ImgTransferService,
     private tokenIsVerified: TokenIsVerified
-  ) { }
+  ) {}
 
   @Post("upload")
   @UseInterceptors(
@@ -65,7 +65,7 @@ export class ImgTransferController {
         URL: newImgUrl
       };
       this.imgtransferService.updateProfilePic(user, data);
-      return (JSON.stringify({ URL: newImgUrl }));
+      return JSON.stringify({ URL: newImgUrl });
     } catch (error) {
       logger.error("Error with uploadUserImage", error);
       if (error instanceof UnauthorizedException) return error;

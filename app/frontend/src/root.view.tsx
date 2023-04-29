@@ -88,24 +88,23 @@ export function RootView(): JSX.Element {
   const handleSetSocketHandler = () => {
     const handleUnauthorized = async () => {
       await fetch(`/auth/deleteToken?socketId=${socket.id}`, {
-        method: 'POST',
+        method: "POST"
       });
       setSessionToken("");
       setPageState(PageState.Auth);
       history.replace("/auth");
       setSelf({ username: "", avatar: "", createdAt: "", status: 0 });
-    }
+    };
     addSocketListener("unauthorized", handleUnauthorized);
-  }
-
+  };
 
   //Listens to unauthorized error message sent by the backend
   useEffect(() => {
     console.log("Set Listener on socket change");
     handleSetSocketHandler();
     return () => {
-      removeSocketListener("unauthorized")
-    }
+      removeSocketListener("unauthorized");
+    };
   }, [socket]);
 
   return (

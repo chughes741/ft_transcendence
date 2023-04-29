@@ -19,7 +19,7 @@ import {
   handleConnectCreator,
   handleNewChatRoomMemberCreator,
   handleNewMessageCreator,
-  handleAddedToNewChatRoomCreator,
+  handleAddedToNewChatRoomCreator
 } from "./lib/socketHandler";
 import { useRoomManager } from "./lib/roomManager";
 import { handleSocketErrorResponse } from "./lib/helperFunctions";

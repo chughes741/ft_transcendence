@@ -37,7 +37,7 @@ export const RootViewModelProvider = ({ children }) => {
     <RootViewModelContext.Provider
       value={{
         ...rootModel,
-        getSessionToken,
+        getSessionToken
       }}
     >
       {children}

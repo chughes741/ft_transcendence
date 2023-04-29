@@ -63,8 +63,8 @@ export const ChooseUsernameModal: React.FC<ChooseUsernameModalProps> = ({
 
       await chatGatewayLogin({
         username: username,
-        avatar: self.avatar,
-      })
+        avatar: self.avatar
+      });
       setShowChooseUsernameModal(false);
     }
     setFullscreen(false);

@@ -81,19 +81,21 @@ export default function Auth() {
 
   // on success, set the session token and the self, and redirects to /
   const onSuccess = async (data: dataResponse) => {
-
-    await createSocketWithHeaders({ clientId: headers["client-id"], clientToken: headers["client-token"] });
+    await createSocketWithHeaders({
+      clientId: headers["client-id"],
+      clientToken: headers["client-token"]
+    });
     socket.on("connect", async () => {
       const url = `http://localhost:3000/auth/confirmID?previousID=${headers["client-id"]}&newID=${socket.id}`;
       //Calls backend with our newly found 42 Authorization code
       const response = await fetch(url, {
-        method: "POST",
+        method: "POST"
       });
       headers["client-id"] = socket.id;
       await chatGatewayLogin({
         username: data.user.username,
-        avatar: data.user.avatar,
-      })
+        avatar: data.user.avatar
+      });
     });
     setSessionToken(data.token);
     setSelf(data.user);

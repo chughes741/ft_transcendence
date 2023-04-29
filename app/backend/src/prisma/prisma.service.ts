@@ -199,7 +199,8 @@ export class PrismaService extends PrismaClient {
     logger.debug(`addUser:`, req);
     if (!req.username || !req.avatar) {
       throw new Error(
-        `Missing required fields: ${!!req.avatar && "avatar, "} ${!!req.username && "username, "
+        `Missing required fields: ${!!req.avatar && "avatar, "} ${
+          !!req.username && "username, "
         }`
       );
     }
@@ -620,13 +621,13 @@ export class PrismaService extends PrismaClient {
     try {
       const member = updateDto.memberToUpdateUuid
         ? await this.chatMember.findUnique({
-          where: { id: updateDto.memberToUpdateUuid },
-          include: { room: true }
-        })
+            where: { id: updateDto.memberToUpdateUuid },
+            include: { room: true }
+          })
         : await this.getChatMemberByUsername(
-          updateDto.roomName,
-          updateDto.usernameToUpdate
-        );
+            updateDto.roomName,
+            updateDto.usernameToUpdate
+          );
       if (!member) {
         throw new Error("User is not a member of this chatroom");
       }
@@ -804,13 +805,13 @@ export class PrismaService extends PrismaClient {
     // Get a list of users who are not in the specified chat room
     const usersNotInRoom = roomId
       ? await this.chatMember.findMany({
-        where: {
-          roomId: roomId
-        },
-        select: {
-          memberId: true
-        }
-      })
+          where: {
+            roomId: roomId
+          },
+          select: {
+            memberId: true
+          }
+        })
       : [];
     const usersNotInRoomIds = usersNotInRoom
       ? usersNotInRoom.map((user) => user.memberId)

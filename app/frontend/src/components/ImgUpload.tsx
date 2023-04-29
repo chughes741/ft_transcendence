@@ -17,11 +17,7 @@ function ImgUpload() {
     setFile(event.target.files[0]);
   };
   const history = createBrowserHistory();
-  const {
-    profile,
-    setProfile,
-  } = useProfileModel();
-
+  const { profile, setProfile } = useProfileModel();
 
   //Upload image on submitgit
   const handleUpload = async () => {
@@ -36,12 +32,11 @@ function ImgUpload() {
         const response = await fetch("/imgtransfer/upload", {
           method: "POST",
           headers,
-          body: formData,
+          body: formData
         });
 
         const data = await response.json();
         if (response.ok) {
-
           self.avatar = data.URL;
           profile.avatar = data.URL;
           alert("Image successfully uploaded!");
@@ -63,9 +58,8 @@ function ImgUpload() {
           setSelf({ username: "", avatar: "", createdAt: "", status: 0 });
           return;
         }
-      }
-      catch (error) {
-        console.log("Maybe", error)
+      } catch (error) {
+        console.log("Maybe", error);
       }
     }
   };
