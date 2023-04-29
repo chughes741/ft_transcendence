@@ -14,13 +14,17 @@ import {
 } from "kingpong-lib";
 import { ProfileService } from "./profile.service";
 import { GetFriendsRequest } from "./profile.dto";
+import { UnauthorizedException, UseGuards } from "@nestjs/common";
+import TokenIsVerified from "src/tokenstorage/token-verify.service";
+import { Socket } from "dgram";
+import { Token } from "src/tokenstorage/token-storage.service";
 
 /**
  * Gateway for profile related requests
  */
 @WebSocketGateway()
 export class ProfileGateway {
-  constructor(private readonly profileService: ProfileService) {}
+  constructor(private readonly profileService: ProfileService) { }
 
   /**
    * Gateway for requesting a players match history
@@ -30,10 +34,17 @@ export class ProfileGateway {
    * @returns {Promise<MatchHistoryItem[]>} - Requested users match history
    */
   @SubscribeMessage(ProfileEvents.GetMatchHistory)
+  @UseGuards(TokenIsVerified)
   async getMatchHistory(
+    client: Socket,
     @MessageBody() getMatchHistoryRequest: GetMatchHistoryRequest
   ): Promise<MatchHistoryItem[]> {
-    return await this.profileService.getMatchHistory(getMatchHistoryRequest);
+    try {
+      return await this.profileService.getMatchHistory(getMatchHistoryRequest);
+    }
+    catch (error) {
+      if (Error instanceof UnauthorizedException) client.emit("unauthorized");
+    }
   }
 
   /**
@@ -44,10 +55,17 @@ export class ProfileGateway {
    * @return {Promise<ProfileEntity | null>} - Requested users profile
    */
   @SubscribeMessage(ProfileEvents.GetProfile)
+  @UseGuards(TokenIsVerified)
   async getProfile(
+    client: Socket,
     @MessageBody() getProfileRequest: GetProfileRequest
   ): Promise<ProfileEntity | null> {
-    return await this.profileService.getProfile(getProfileRequest);
+    try {
+      return await this.profileService.getProfile(getProfileRequest);
+    }
+    catch (error) {
+      if (Error instanceof UnauthorizedException) client.emit("unauthorized");
+    }
   }
 
   /**
@@ -73,10 +91,17 @@ export class ProfileGateway {
    * @returns {boolean} - Update successful
    */
   @SubscribeMessage(ProfileEvents.UpdateProfile)
+  @UseGuards(TokenIsVerified)
   updateProfile(
+    client: Socket,
     @MessageBody() updateProfileRequest: UpdateProfileRequest
   ): boolean {
-    return this.profileService.updateProfile(updateProfileRequest);
+    try {
+      return this.profileService.updateProfile(updateProfileRequest);
+    }
+    catch (error) {
+      if (Error instanceof UnauthorizedException) client.emit("unauthorized");
+    }
   }
 
   /**
@@ -87,9 +112,16 @@ export class ProfileGateway {
    * @returns {boolean} - Add friend successful
    */
   @SubscribeMessage(ProfileEvents.AddFriend)
+  @UseGuards(TokenIsVerified)
   addFriend(
+    client: Socket,
     @MessageBody() addFriendRequest: AddFriendRequest
   ): Promise<boolean> {
-    return this.profileService.addFriend(addFriendRequest);
+    try {
+      return this.profileService.addFriend(addFriendRequest);
+    }
+    catch (error) {
+      if (Error instanceof UnauthorizedException) client.emit("unauthorized");
+    }
   }
 }
