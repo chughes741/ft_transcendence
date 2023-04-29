@@ -70,7 +70,7 @@
 
 import React, { useEffect, useState } from "react";
 import { ArrowBack, ArrowBackIosNew } from "@mui/icons-material";
-import { Button } from "@mui/material";
+import { Box, Button } from "@mui/material";
 import { useRootViewModelContext } from "src/root.context";
 import { PageState } from "src/root.model";
 import { socket } from "src/contexts/WebSocket.context";
@@ -126,19 +126,29 @@ export default function Enable2FAButton({ enabled }: Props) {
 
   return (
     <>
+      <Box sx={{ alignSelf: "center", margin: "1rem", color: "#333333" }}>
+        {enable2fa
+          ? "Disable two factor authentication"
+          : "Enable two factor authentication"}
+      </Box>
       <Button
         variant="outlined"
         onClick={onToggle}
         startIcon={enable2fa ? <ArrowBack /> : <ArrowBackIosNew />}
         disabled={isLoading}
         sx={{
+          alignSelf: "center",
           border: "1px solid #9f9f9f",
           width: "15vw",
           fontSize: "1.2rem",
           color: "#FA7F08",
           padding: "0.4rem",
           textTransform: "none",
-          "&:hover": {backgroundColor: "#FA7F08", color:"#131313", opacity:"0.75" }
+          "&:hover": {
+            backgroundColor: "#FA7F08",
+            color: "#131313",
+            opacity: "0.75"
+          }
         }}
       >
         {enable2fa ? "Disable Two Factor" : "Enable Two Factor"}

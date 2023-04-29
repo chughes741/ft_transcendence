@@ -5,23 +5,33 @@
   flex-direction: column;
 }
 
-.custom-file-input::-webkit-file-upload-button {
-  display: none;
+.icon-plus-input {
+  flex-direction: row;
+  border: 1px solid #999;
+  width: 75%;
+  margin-left: 2rem;
+  align-self: center;
+}
+
+.input-icon-upload {
+  display: flex;
+  width: 100%;
 }
 
 .custom-file-input {
-  height: 3vh;
-  width: 15vw;
-  color: #fa7f08;
-  border: 1px solid #999;
+  color: #F24404;
   border-radius: 3px;
   padding: 5px 8px;
-  outline: none;
   white-space: nowrap;
   -webkit-user-select: none;
-  cursor: pointer;
-  font-weight: 500;
-  font-size: 1.3rem;
+  font-size: 0.9rem;
+  width: 80%;
+
+}
+
+.custom-file-input::-webkit-file-upload-button {
+  color: #22babb;
+  background-color: #333333;
 }
 
 .custom-file-input:hover::before {
