@@ -117,7 +117,7 @@ export default function Enable2FA() {
               alt="QR Code"
             />
           )}
-          <Box className="Input-container">
+          <Box className="input-container">
             <Input
               className="input-verify-qr"
               required={true}

@@ -1,4 +1,4 @@
-import { Input } from "@mui/material";
+import { Button, Input, Typography } from "@mui/material";
 import { Box } from "@mui/system";
 import React, { useEffect, useState } from "react";
 import { PageState } from "src/root.model";
@@ -66,8 +66,6 @@ export default function Verify2FA() {
         });
         setSessionToken("");
         setPageState(PageState.Auth);
-        history.push("/auth");
-        setFullscreen(true);
         setSelf({ username: "", avatar: "", createdAt: "", status: 0 });
         return;
       }
@@ -98,7 +96,6 @@ export default function Verify2FA() {
       if (data.validated) {
         setErrorMessage("");
         alert("Verification successful!");
-        setFullscreen(false);
         setPageState(PageState.Home);
         return true;
       }
@@ -111,7 +108,6 @@ export default function Verify2FA() {
         });
         setSessionToken("");
         setPageState(PageState.Auth);
-        setFullscreen(true);
         setSelf({ username: "", avatar: "", createdAt: "", status: 0 });
         return;
       } else {
@@ -132,21 +128,52 @@ export default function Verify2FA() {
     <>
       <Box className="body-page-auth qr-body-page">
         <Box className="lines">
-          <Input
-            className="input-verify-qr"
-            type="text"
-            inputProps={{ maxLength: 6 }}
-            id="code"
-            placeholder="Enter your verification code"
-            value={code}
-            onChange={(e) => setCode(e.target.value)}
-          />
-          {errorMessage && <p style={{ color: "red" }}>{errorMessage}</p>}
-          <Box
-            className="button-verify-qr"
-            onClick={handleVerifyQRCode}
-          >
-            Authenticate me
+          <Box className="line" />
+          <Box className="line" />
+          <Box className="line" />
+        </Box>
+        <Box className="login-details">
+          <Box className="input-container">
+            <Typography variant={"h4"}>
+              Check you authenticator app, and write down your validation code
+              below
+            </Typography>
+            <Input
+              className="input-verify-qr"
+              required={true}
+              autoFocus={true}
+              inputProps={{ maxLength: 6 }}
+              id="code"
+              placeholder="Validation code"
+              value={code}
+              onChange={(e) => setCode(e.target.value)}
+            />
+            {errorMessage && <p style={{ color: "red" }}>{errorMessage}</p>}
+          </Box>
+          <Box className="buttons-container">
+            <Button
+              variant={"outlined"}
+              sx={{
+                border: "1px solid #9f9f9f",
+                width: "20vw",
+                height: "5vh",
+                fontSize: "1.7rem",
+                color: "#FA7F08",
+                margin: "1rem",
+                padding: "0.4rem",
+                alignSelf: "center",
+                cursor: "pointer",
+                textTransform: "none",
+                "&:hover": {
+                  backgroundColor: "#FA7F08",
+                  color: "#131313",
+                  opacity: "0.75"
+                }
+              }}
+              onClick={handleVerifyQRCode}
+            >
+              Verify my code
+            </Button>
           </Box>
         </Box>
       </Box>
