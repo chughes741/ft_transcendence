@@ -390,12 +390,12 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
    * If the user does not exist, return an error
    * @todo remove this function when authentication is enabled
    *
-   * @event "userLogin"
+   * @event "chatGatewayLogin"
    * @param {Socket} client
    * @param {AuthRequest} req
    * @returns {DevError | string}
    */
-  @SubscribeMessage("userLogin")
+  @SubscribeMessage("chatGatewayLogin")
   async chatGatewayLogin(
     client: Socket,
     req: AuthRequest
@@ -512,7 +512,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     client: Socket,
     username: string
   ): Promise<ChatRoomEntity[] | DevError> {
-    logger.debug(`Received getRoomsMemberOf request from ${username}`);
+    logger.debug(`Received getRoomsMemberOf request from ${username} with socket Id ${client.id}`);
     const rooms = await this.chatService.getRoomsOf(username);
     if (rooms instanceof Error) {
       return { error: rooms.message };

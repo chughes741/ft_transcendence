@@ -6,6 +6,7 @@ import { useRootViewModelContext } from "src/root.context";
 import "./Auth.tsx.css";
 import { createSocketWithHeaders, socket } from "../contexts/WebSocket.context";
 import { createBrowserHistory } from "history";
+import { useChatContext } from "src/chat/chat.context";
 
 /*
  * We GOTTA add those to kingpong lib
@@ -55,6 +56,8 @@ export default function Auth() {
     setPageState
   } = useRootViewModelContext();
 
+  const { chatGatewayLogin } = useChatContext();
+
   const history = createBrowserHistory();
   //TODO check this so it redirects if youre already sign in
   useEffect(() => {
@@ -88,10 +91,11 @@ export default function Auth() {
         method: "POST",
       });
       headers["client-id"] = socket.id;
-
+      await chatGatewayLogin({
+        username: data.user.username,
+        avatar: data.user.avatar,
+      })
     });
-
-
     setSessionToken(data.token);
     setSelf(data.user);
     if (data.twoFAenable) setPageState(PageState.Verify2FA);
@@ -133,13 +137,15 @@ export default function Auth() {
         }
         //Data received from the backend fetch by 42 api
         const client = await data.json();
-        if (client.user.firstConnection) setShowChooseUsernameModal(true);
+        if (client.user.firstConnection) await setShowChooseUsernameModal(true);
         //Choose username on first connection
-        else setFullscreen(false); // TODO is this necessary??
+        else {
+          setFullscreen(false);
+        }
+        // TODO is this necessary??
         //Creates the headers that will enable token authentification
         headers["client-id"] = socket.id;
         headers["client-token"] = client.token;
-
 
 
         //PrepInfo
