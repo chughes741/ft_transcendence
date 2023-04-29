@@ -1,62 +1,53 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    
-    <meta charset="utf-8">
+  <head>
+    <meta charset="utf-8" />
     <title>backend/src/chat/chat.service.ts - Kingpong</title>
-    
+
     <meta name="description" content="Documentation for the kingpong website" />
-    
-    
-    
-    <meta property="og:title" content="Kingpong Docs"/>
-    <meta property="og:type" content="website"/>
-    <meta property="og:image" content=""/>
-    
-    <meta property="og:url" content="https://chughes741.github.io/ft_transcendence"/>
-    
+
+    <meta property="og:title" content="Kingpong Docs" />
+    <meta property="og:type" content="website" />
+    <meta property="og:image" content="" />
+
+    <meta
+      property="og:url"
+      content="https://chughes741.github.io/ft_transcendence"
+    />
+
     <script src="scripts/prettify/prettify.js"></script>
     <script src="scripts/prettify/lang-css.js"></script>
     <!--[if lt IE 9]>
       <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
     <![endif]-->
-    <link type="text/css" rel="stylesheet" href="styles/prettify.css">
-    <link type="text/css" rel="stylesheet" href="styles/jsdoc.css">
+    <link type="text/css" rel="stylesheet" href="styles/prettify.css" />
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc.css" />
     <script src="scripts/nav.js" defer></script>
-    
+
     <script src="scripts/commonNav.js" defer></script>
-    
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-</head>
-<body>
 
-<input type="checkbox" id="nav-trigger" class="nav-trigger" />
-<label for="nav-trigger" class="navicon-button x">
-  <div class="navicon"></div>
-</label>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  </head>
+  <body>
+    <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+    <label for="nav-trigger" class="navicon-button x">
+      <div class="navicon"></div>
+    </label>
 
-<label for="nav-trigger" class="overlay"></label>
+    <label for="nav-trigger" class="overlay"></label>
 
-<nav >
-    
-    <input type="text" id="nav-search" placeholder="Search" />
-    
-    
-</nav>
+    <nav>
+      <input type="text" id="nav-search" placeholder="Search" />
+    </nav>
 
-<div id="main">
-    
-    <h1 class="page-title">backend/src/chat/chat.service.ts</h1>
-    
+    <div id="main">
+      <h1 class="page-title">backend/src/chat/chat.service.ts</h1>
 
-    
-
-
-
-    
-    <section>
+      <section>
         <article>
-            <pre class="prettyprint source linenums"><code>import * as argon2 from "argon2";
+          <pre
+            class="prettyprint source linenums"
+          ><code>import * as argon2 from "argon2";
 import { Injectable, Logger } from "@nestjs/common";
 import {
   User,
@@ -73,12 +64,12 @@ import {
   BlockUserRequest,
   ChatMemberPrismaType,
   ChatRoomEntity,
-  CreateChatRoomDto,
+  CreateChatRoomRequest,
   InviteUsersToRoomRequest,
-  JoinRoomDto,
+  JoinRoomRequest,
   LeaveRoomRequest,
   SendDirectMessageRequest,
-  SendMessageDto,
+  SendMessageRequest,
   UpdateChatRoomRequest
 } from "./chat.gateway";
 import { MessageEntity } from "./entities/message.entity";
@@ -133,7 +124,7 @@ export class ChatService {
    * @returns {Promise&lt;ChatRoomEntity | Error>} - The room entity or an error
    */
   async createRoom(
-    createDto: CreateChatRoomDto
+    createDto: CreateChatRoomRequest
   ): Promise&lt;ChatRoomEntity | Error> {
     try {
       // Check if the room already exists
@@ -196,7 +187,7 @@ export class ChatService {
     roomName: string,
     user: string
   ): Promise&lt;ChatRoom> {
-    const createRoomReq: CreateChatRoomDto = {
+    const createRoomReq: CreateChatRoomRequest = {
       name: roomName,
       status: ChatRoomStatus.PUBLIC,
       password: null,
@@ -266,10 +257,10 @@ export class ChatService {
    *    If the password is incorrect, return an error
    * If the room exists and is public, join it
    * 
-   * @param {JoinRoomDto} joinDto - The room name, password, and user
+   * @param {JoinRoomRequest} joinDto - The room name, password, and user
    * @returns {Promise&lt;ChatRoomEntity | Error>} - The room entity or an error
    */
-  async joinRoom(joinDto: JoinRoomDto): Promise&lt;ChatRoomEntity | Error> {
+  async joinRoom(joinDto: JoinRoomRequest): Promise&lt;ChatRoomEntity | Error> {
     const { roomName, password, user } = joinDto;
     let room: ChatRoom;
 
@@ -428,10 +419,10 @@ export class ChatService {
    * If the room does not exist, return an error.
    * If the message is successfully added to the database, return the room name
    *
-   * @param {SendMessageDto} sendDto - The message to send
+   * @param {SendMessageRequest} sendDto - The message to send
    * @returns {Promise&lt;Error | MessageEntity>} - The message or an error
    */
-  async sendMessage(sendDto: SendMessageDto): Promise&lt;Error | MessageEntity> {
+  async sendMessage(sendDto: SendMessageRequest): Promise&lt;Error | MessageEntity> {
     if (!sendDto.content) return;
 
     // Try to get the user database ID
@@ -833,28 +824,24 @@ export class ChatService {
 }
 </code></pre>
         </article>
-    </section>
+      </section>
+    </div>
 
+    <br class="clear" />
 
+    <footer>
+      Documentation generated by
+      <a href="https://github.com/jsdoc3/jsdoc">JSDoc 4.0.2</a> on Tue Apr 25
+      2023 20:32:20 GMT-0400 (Eastern Daylight Time) using the
+      <a href="https://github.com/clenemt/docdash">docdash</a> theme.
+    </footer>
 
+    <script>
+      prettyPrint();
+    </script>
+    <script src="scripts/polyfill.js"></script>
+    <script src="scripts/linenumber.js"></script>
 
-    
-    
-</div>
-
-<br class="clear">
-
-<footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 4.0.2</a> on Tue Apr 25 2023 20:32:20 GMT-0400 (Eastern Daylight Time) using the <a href="https://github.com/clenemt/docdash">docdash</a> theme.
-</footer>
-
-<script>prettyPrint();</script>
-<script src="scripts/polyfill.js"></script>
-<script src="scripts/linenumber.js"></script>
-
-<script src="scripts/search.js" defer></script>
-
-
-
-</body>
+    <script src="scripts/search.js" defer></script>
+  </body>
 </html>

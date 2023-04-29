@@ -8,151 +8,34 @@ import {
 } from "@nestjs/websockets";
 import { Socket, Server } from "socket.io";
 import { PrismaService } from "../prisma/prisma.service";
-import { ChatMemberRank, ChatRoomStatus, User } from "@prisma/client";
+import { User } from "@prisma/client";
 import { UserConnectionsService } from "../user-connections.service";
 import { ChatService } from "./chat.service";
 
-import { Message } from "@prisma/client";
-import { ChatMember } from "@prisma/client";
 import { ChatMemberEntity, MessageEntity } from "./entities/message.entity";
-import { ChatMemberStatus, UserStatus } from "@prisma/client";
+import { UserStatus } from "@prisma/client";
 import { KickMemberRequest, UpdateChatMemberRequest } from "./dto/userlist.dto";
 
-import { AuthRequest } from "../auth/dto";
+import { AuthRequest, UserEntity } from "../auth/dto";
+import {
+  UpdateChatRoomRequest,
+  ChatRoomEntity,
+  DevError,
+  AvailableRoomEntity,
+  ListUsersRequest,
+  CreateChatRoomRequest,
+  JoinRoomRequest,
+  RoomMemberEntity,
+  LeaveRoomRequest,
+  SendMessageRequest,
+  InviteUsersToRoomRequest,
+  SendDirectMessageRequest,
+  BlockUserRequest,
+  DevSuccess
+} from "./chat.types";
 import TokenIsVerified from "src/tokenstorage/token-verify.service";
 
-/** @todo temporary error type until we can share btw back and frontend */
-export type DevError = {
-  error: string;
-};
-export type DevSuccess = {
-  success: string;
-};
-
-/******************/
-/*    Requests    */
-/******************/
-export interface ListUsersRequest {
-  chatRoomName: string;
-}
-
-export interface SendDirectMessageRequest {
-  recipient: string;
-  sender: string;
-  senderRank: ChatMemberRank;
-}
-
-export interface CreateUserRequest {
-  username: string;
-  avatar: string;
-  firstName?: string;
-  lastName?: string;
-  email?: string;
-}
-
-export interface MessagePrismaType extends Message {
-  sender: { username: string };
-  room: { name: string };
-}
-
-export interface InviteUsersToRoomRequest {
-  roomName: string;
-  usernames: string[];
-}
-
-export interface ChatMemberPrismaType extends ChatMember {
-  member: {
-    avatar: string;
-    username: string;
-    status: UserStatus;
-  };
-  room: { name: string };
-}
-
-export interface IChatMemberEntity {
-  username: string;
-  roomName: string;
-  avatar: string;
-  chatMemberStatus: ChatMemberStatus;
-  userStatus: UserStatus;
-  rank: ChatMemberRank;
-  endOfBan?: Date;
-  endOfMute?: Date;
-}
-
-export interface IMessageEntity {
-  username: string;
-  roomName: string;
-  content: string;
-  timestamp: Date;
-}
-
-export type RoomMemberEntity = {
-  roomName: string;
-  user: ChatMemberEntity;
-};
-
-export interface ChatRoomEntity {
-  name: string;
-  queryingUserRank: ChatMemberRank /** @todo This should be embedded in the ChatMember type */;
-  status: ChatRoomStatus;
-  members: ChatMemberEntity[];
-  latestMessage?: IMessageEntity;
-  lastActivity: Date;
-  avatars?: string[];
-}
-
-export interface UserEntity {
-  username: string;
-  avatar: string;
-  status: UserStatus;
-}
-
-export interface AvailableRoomEntity {
-  roomName: string;
-  nbMembers: number;
-  status: ChatRoomStatus;
-  owner: UserEntity;
-}
-
 const logger = new Logger("ChatGateway");
-
-export class CreateChatRoomDto {
-  name: string;
-  status: ChatRoomStatus;
-  password: string;
-  owner: string;
-}
-
-export class UpdateChatRoomRequest {
-  username: string;
-  roomName: string;
-  status: ChatRoomStatus;
-  oldPassword?: string;
-  newPassword?: string;
-}
-
-export class SendMessageDto {
-  roomName: string;
-  content: string;
-  sender: string;
-}
-
-export class JoinRoomDto {
-  roomName: string;
-  password: string;
-  user: string;
-}
-
-export class LeaveRoomRequest {
-  roomName: string;
-  username: string;
-}
-
-export class BlockUserRequest {
-  blocker: string;
-  blockee: string;
-}
 
 /**
  * Chat gateway
@@ -172,6 +55,8 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   server: Server;
 
   async handleConnection(client: Socket) {
+    logger.warn("Client connected: " + client.id);
+    console.log(client);
     logger.debug(`Client connected: ${client.id}`);
   }
 
@@ -355,36 +240,6 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   }
 
   /**
-   * Temporary function to create a user
-   *
-   * If there is an error in the service, return it
-   * @todo remove this function when authentication is enabled
-   *
-   * @event "userCreation"
-   * @param {Socket} client
-   * @param {AuthRequest} req
-   * @returns {DevError | UserEntity}
-   */
-  @SubscribeMessage("userCreation")
-  async createTempUser(
-    client: Socket,
-    req: AuthRequest
-  ): Promise<DevError | UserEntity> {
-    logger.debug(
-      `Received createUser request from ${client.id} for user ${req.username}`
-    );
-    const userWasCreated = await this.chatService.createTempUser(req);
-    if (userWasCreated instanceof Error) {
-      return { error: userWasCreated.message };
-    }
-    this.userConnectionsService.addUserConnection(
-      userWasCreated.username,
-      client.id
-    );
-    return userWasCreated;
-  }
-
-  /**
    * Temporary function to login a user
    *
    * If the user does not exist, return an error
@@ -451,23 +306,21 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
    *
    * @event "createRoom"
    * @param {Socket} client - socket.io client
-   * @param {CreateChatRoomDto} createDto - chat room creation request
+   * @param {CreateChatRoomRequest} createDto - chat room creation request
    * @returns {ChatRoomEntity | DevError} - created chat room or error
    */
   @SubscribeMessage("createRoom")
   @UseGuards(TokenIsVerified)
   async createRoom(
     client: Socket,
-    createDto: CreateChatRoomDto
-  ): Promise<ChatRoomEntity | DevError | null> {
-    //
-    /*
-    //Testing
-    const data = null;
-    client.emit('unauthorized');
-    return;
-*/
-    //end testing
+    createDto: CreateChatRoomRequest
+  ): Promise<ChatRoomEntity | DevError> {
+    // Log the request
+    logger.debug(
+      `Received createRoom request from ${createDto.owner} for room ${createDto.name
+      }: ${createDto.status} ${createDto.password ? `, with password ${createDto.password}.` : "."
+      }`
+    );
 
     try {
       // Log the request
@@ -532,13 +385,13 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
    *
    * @event "joinRoom"
    * @param {Socket} client - socket.io client
-   * @param {JoinRoomDto} dto - join room request
+   * @param {JoinRoomRequest} dto - join room request
    * @returns {DevError | ChatRoomEntity} - chat room or error
    */
   @SubscribeMessage("joinRoom")
   async joinRoom(
     client: Socket,
-    dto: JoinRoomDto
+    dto: JoinRoomRequest
   ): Promise<DevError | ChatRoomEntity> {
     const username: string = this.userConnectionsService.getUserBySocket(
       client.id
@@ -641,13 +494,13 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
    *
    * @event "sendMessage"
    * @param {Socket} client - socket.io client
-   * @param {SendMessageDto} sendDto - send message request
+   * @param {SendMessageRequest} sendDto - send message request
    * @returns {DevError | string} - error or success message
    */
   @SubscribeMessage("sendMessage")
   async sendMessage(
     client: Socket,
-    sendDto: SendMessageDto
+    sendDto: SendMessageRequest
   ): Promise<DevError | string> {
     if (!sendDto.content) return;
 
