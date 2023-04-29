@@ -11,22 +11,22 @@ import {
   BlockedUser
 } from "@prisma/client";
 import { PrismaService } from "../prisma/prisma.service";
-import {
-  BlockUserRequest,
-  ChatMemberPrismaType,
-  ChatRoomEntity,
-  CreateChatRoomDto,
-  InviteUsersToRoomRequest,
-  JoinRoomDto,
-  LeaveRoomRequest,
-  SendDirectMessageRequest,
-  SendMessageDto,
-  UpdateChatRoomRequest
-} from "./chat.gateway";
 import { MessageEntity } from "./entities/message.entity";
 import { KickMemberRequest, UpdateChatMemberRequest } from "./dto/userlist.dto";
 import { ChatMemberEntity } from "./entities/message.entity";
 import { AuthRequest, UserEntity } from "../auth/dto";
+import {
+  ChatRoomEntity,
+  CreateChatRoomRequest,
+  JoinRoomRequest,
+  LeaveRoomRequest,
+  UpdateChatRoomRequest,
+  SendMessageRequest,
+  ChatMemberPrismaType,
+  InviteUsersToRoomRequest,
+  SendDirectMessageRequest,
+  BlockUserRequest
+} from "./chat.types";
 
 const logger = new Logger("ChatService");
 
@@ -70,7 +70,7 @@ export class ChatService {
    * @returns {Promise<ChatRoomEntity | Error>} - The room entity or an error
    */
   async createRoom(
-    createDto: CreateChatRoomDto
+    createDto: CreateChatRoomRequest
   ): Promise<ChatRoomEntity | Error> {
     try {
       // Check if the room already exists
@@ -133,7 +133,7 @@ export class ChatService {
     roomName: string,
     user: string
   ): Promise<ChatRoom> {
-    const createRoomReq: CreateChatRoomDto = {
+    const createRoomReq: CreateChatRoomRequest = {
       name: roomName,
       status: ChatRoomStatus.PUBLIC,
       password: null,
@@ -206,10 +206,10 @@ export class ChatService {
    *    If the password is incorrect, return an error
    * If the room exists and is public, join it
    *
-   * @param {JoinRoomDto} joinDto - The room name, password, and user
+   * @param {JoinRoomRequest} joinDto - The room name, password, and user
    * @returns {Promise<ChatRoomEntity | Error>} - The room entity or an error
    */
-  async joinRoom(joinDto: JoinRoomDto): Promise<ChatRoomEntity | Error> {
+  async joinRoom(joinDto: JoinRoomRequest): Promise<ChatRoomEntity | Error> {
     const { roomName, password, user } = joinDto;
     logger.debug(`User ${user} attempting to join room ${roomName}`);
 
@@ -370,10 +370,12 @@ export class ChatService {
    * If the room does not exist, return an error.
    * If the message is successfully added to the database, return the room name
    *
-   * @param {SendMessageDto} sendDto - The message to send
+   * @param {SendMessageRequest} sendDto - The message to send
    * @returns {Promise<Error | MessageEntity>} - The message or an error
    */
-  async sendMessage(sendDto: SendMessageDto): Promise<Error | MessageEntity> {
+  async sendMessage(
+    sendDto: SendMessageRequest
+  ): Promise<Error | MessageEntity> {
     if (!sendDto.content) return;
 
     // Try to get the user database ID
@@ -411,58 +413,6 @@ export class ChatService {
       logger.error("Error adding message to database", e);
       return Error("Error adding message to database");
     }
-  }
-
-  /**
-   * Temporary function to create a user
-   *
-   * If the user already exists, return an error
-   * If the user does not exist, add it to the database and send a confirmation
-   * @todo Remove this function and replace it with a proper user creation
-   *
-   * @param {AuthRequest} req - The user's username, avatar, email, first name, and last name
-   * @returns {Promise<UserEntity | Error>} - The user or an error
-   */
-  async createTempUser(req: AuthRequest): Promise<UserEntity | Error> {
-    // Check if the user already exists
-    const { username, avatar, email, firstName, lastName } = req;
-    logger.debug(`User ${username} is trying to create a user`);
-
-    try {
-      await this.prismaService.getUserIdByNick(username);
-    } catch (e) {
-      logger.error(`UserCreation error: User ${username} already exists`);
-      return Error("User already exists");
-    }
-
-    // Create the temp user
-    try {
-      const userData: UserEntity = {
-        username,
-        avatar,
-        email,
-        firstName,
-        lastName,
-        status: UserStatus.ONLINE
-      };
-      const prismaReturn = await this.prismaService.addUser(userData);
-      logger.debug(`User ${username} added to the database: `, prismaReturn);
-    } catch (e) {
-      logger.error("User already exists", "User already exists", e);
-      return Error("User already exists");
-    }
-    // Add the user connection to the UserConnections map
-
-    // client.emit("userCreated", username);
-    const userEntity: UserEntity = {
-      username,
-      avatar: `https://i.pravatar.cc/150?u=${username}`, //FIXME: remove this when avatars are properly uploaded
-      email,
-      firstName,
-      lastName,
-      status: UserStatus.ONLINE
-    };
-    return userEntity;
   }
 
   /**
