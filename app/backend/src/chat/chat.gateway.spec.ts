@@ -17,7 +17,7 @@ describe("ChatGateway", () => {
         ChatService,
         UserConnectionsService,
         TokenStorageService,
-        TokenIsVerified,
+        TokenIsVerified
       ]
     }).compile();
 
