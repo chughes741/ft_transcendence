@@ -9,6 +9,7 @@ import {
   TextField
 } from "@mui/material";
 import { useRootViewModelContext } from "../root.context";
+import { useChatContext } from "src/chat/chat.context";
 
 interface ChooseUsernameModalProps {
   showModal: boolean;
@@ -33,6 +34,7 @@ export const ChooseUsernameModal: React.FC<ChooseUsernameModalProps> = ({
   if (!showModal) return null;
   const { self, setSelf, setShowChooseUsernameModal, setFullscreen } =
     useRootViewModelContext();
+  const { chatGatewayLogin } = useChatContext();
   const [username, setUsername] = useState<string>("");
 
   setFullscreen(true);
@@ -57,6 +59,11 @@ export const ChooseUsernameModal: React.FC<ChooseUsernameModalProps> = ({
         avatar: self.avatar,
         status: self.status,
         createdAt: self.createdAt
+      });
+
+      await chatGatewayLogin({
+        username: username,
+        avatar: self.avatar
       });
       setShowChooseUsernameModal(false);
     }

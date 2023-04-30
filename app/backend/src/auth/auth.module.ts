@@ -11,11 +11,6 @@ import TokenIsVerified from "src/tokenstorage/token-verify.service";
 @Module({
   imports: [JwtModule.register({}), PrismaModule, TokenModule],
   controllers: [AuthController],
-  providers: [
-    AuthService,
-    JwtStrategy,
-    SessionSerializer,
-    TokenIsVerified
-  ]
+  providers: [AuthService, JwtStrategy, SessionSerializer, TokenIsVerified]
 })
-export class AuthModule { }
+export class AuthModule {}

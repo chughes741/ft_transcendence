@@ -34,6 +34,7 @@ export interface ChatViewModelType extends ChatModelType {
     password: string
   ) => Promise<boolean>;
   leaveRoom: () => void;
+  chatGatewayLogin: (req: AuthRequest) => Promise<boolean>;
   changeRoomStatus: (newStatus: ChatRoomStatus) => Promise<boolean>;
   selectRoom: (roomName: string) => void;
 }
@@ -183,47 +184,6 @@ export const ChatViewModelProvider = ({ children }) => {
     });
   };
 
-  /**********************/
-  /*   User Functions   */
-  /**********************/
-
-  const userLogin = async (req: AuthRequest): Promise<boolean> => {
-    if (!req || !req.username || req.username === "")
-      return Promise.resolve(false);
-
-    return new Promise<boolean>((resolve) => {
-      socket.emit("userLogin", req, (response: DevError | string) => {
-        if (typeof response === "object") {
-          console.warn(
-            "Error response from chat gateway login: ",
-            response.error
-          );
-          resolve(false);
-        } else {
-          self.username = req.username;
-          resolve(true);
-        }
-      });
-      socket.emit(
-        "getRoomsOf",
-        self.username,
-        async (response: ChatRoomPayload[] | DevError) => {
-          if (handleSocketErrorResponse(response)) {
-            console.warn("Error response from get rooms: ", response.error);
-            resolve(false);
-          } else {
-            console.debug("Success response from get rooms: ", response);
-            for (const room of response) {
-              await addChatRoom(room);
-              handleFetchRoomMessagesPage(room.name, new Date(), 50);
-            }
-            resolve(true);
-          }
-        }
-      );
-    });
-  };
-
   /***********************/
   /*   Socket Listener   */
   /***********************/
@@ -256,6 +216,48 @@ export const ChatViewModelProvider = ({ children }) => {
     addSocketListener("chatMemberUpdated", handleNewChatRoomMember);
   };
 
+  /**********************/
+  /*   User Functions   */
+  /**********************/
+
+  const chatGatewayLogin = async (req: AuthRequest): Promise<boolean> => {
+    if (!req || !req.username || req.username === "")
+      return Promise.resolve(false);
+
+    setupSocketListeners();
+    return new Promise<boolean>((resolve) => {
+      socket.emit("chatGatewayLogin", req, (response: DevError | string) => {
+        if (typeof response === "object") {
+          console.warn(
+            "Error response from chat gateway login: ",
+            response.error
+          );
+          resolve(false);
+        } else {
+          self.username = req.username;
+          resolve(true);
+        }
+      });
+      socket.emit(
+        "getRoomsOf",
+        req.username,
+        async (response: ChatRoomPayload[] | DevError) => {
+          if (handleSocketErrorResponse(response)) {
+            console.warn("Error response from get rooms: ", response.error);
+            resolve(false);
+          } else {
+            //console.debug("Success response from get rooms: ", response);
+            for (const room of response) {
+              await addChatRoom(room);
+              handleFetchRoomMessagesPage(room.name, new Date(), 50);
+            }
+            resolve(true);
+          }
+        }
+      );
+    });
+  };
+
   // Use effect for setting up and cleaning up listeners
   useEffect(() => {
     setupSocketListeners();
@@ -267,6 +269,7 @@ export const ChatViewModelProvider = ({ children }) => {
       removeSocketListener("chatRoomMemberKicked");
       removeSocketListener("addedToNewChatRoom");
       removeSocketListener("chatMemberUpdated");
+      removeSocketListener("unauthorized");
     };
   }, []);
 
@@ -275,19 +278,19 @@ export const ChatViewModelProvider = ({ children }) => {
   /******************/
 
   // Login to the Chat Gateway
-  useEffect(() => {
-    if (self.username) {
-      setRooms(() => {
-        return {};
-      });
+  // useEffect(() => {
+  //   if (self.username) {
+  //     setRooms(() => {
+  //       return {};
+  //     });
 
-      const req: AuthRequest = {
-        username: self.username,
-        avatar: self.avatar
-      };
-      userLogin(req);
-    }
-  }, [self.username, ""]);
+  //     const req: AuthRequest = {
+  //       username: self.username,
+  //       avatar: self.avatar
+  //     };
+  //     chatGatewayLogin(req);
+  //   }
+  // }, [self.username, ""]);
 
   return (
     <ChatContext.Provider
@@ -296,6 +299,7 @@ export const ChatViewModelProvider = ({ children }) => {
         joinRoom,
         sendRoomMessage,
         sendDirectMessage,
+        chatGatewayLogin,
         createNewRoom,
         leaveRoom,
         changeRoomStatus,
