@@ -17,7 +17,7 @@ function ImgUpload() {
     setFile(event.target.files[0]);
   };
   const history = createBrowserHistory();
-  const { profile, setProfile } = useProfileModel();
+  const { profile } = useProfileModel();
 
   //Upload image on submitgit
   const handleUpload = async () => {
@@ -38,7 +38,7 @@ function ImgUpload() {
         const data = await response.json();
         if (response.ok) {
           self.avatar = data.URL;
-          profile.avatar = data.URL;
+          //profile.avatar = new data.URL;
           alert("Image successfully uploaded!");
           return;
         }

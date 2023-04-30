@@ -97,7 +97,7 @@ export default function Auth() {
         username: data.user.username,
         avatar: data.user.avatar
       });
-      setEventListeners();
+      await setEventListeners();
     });
     setSessionToken(data.token);
     setSelf(data.user);
