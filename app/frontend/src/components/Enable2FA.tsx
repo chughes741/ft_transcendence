@@ -1,4 +1,4 @@
-import { Input } from "@mui/material";
+import { Input, TextField } from "@mui/material";
 import { Box } from "@mui/system";
 import React, { useEffect, useState } from "react";
 import { PageState } from "src/root.model";
@@ -8,6 +8,7 @@ import "./Enable2FA.tsx.css";
 import { socket } from "src/contexts/WebSocket.context";
 import { headers } from "./Auth";
 import { createBrowserHistory } from "history";
+import Button from "@mui/material/Button";
 import { validateCode } from "./Verify2FA";
 
 export default function Enable2FA() {
@@ -100,8 +101,9 @@ export default function Enable2FA() {
         history.back();
         return true;
       } else {
-        alert("There was an error with the code you provided");
+        // alert("There was an error with the code you provided");
         setErrorMessage(data.message);
+        alert("There was a problem with the code you provided.");
         return false;
       }
     } catch (error) {
@@ -115,14 +117,18 @@ export default function Enable2FA() {
 
   return (
     <>
-      <Box className="body-page-auth qr-body-page">
+      <Box className="body-page-auth two-fa-body-page">
         <Box className="lines">
           <Box className="line" />
           <Box className="line" />
           <Box className="line" />
         </Box>
         <Box className="login-details">
-          <Box className="title-qr">Verify QR Code</Box>
+          <Box className="title-two-fa">Enable 2 factor authentication</Box>
+          <Box className="text-two-fa">
+            Scan the QR code with your authenticator app and enter the
+            validation code below
+          </Box>
           {qrCode && (
             <img
               className="image-qr"
@@ -130,28 +136,60 @@ export default function Enable2FA() {
               alt="QR Code"
             />
           )}
-          <Input
-            className="input-verify-qr"
-            type="text"
-            inputProps={{ maxLength: 6 }}
-            id="code"
-            placeholder="Enter your verification code"
-            value={code}
-            onChange={(e) => setCode(e.target.value)}
-          />
-          {errorMessage && <p style={{ color: "red" }}>{errorMessage}</p>}
-          <Box
-            className="button-verify-qr"
-            onClick={handleVerifyQRCode}
-          >
-            Authenticate me
+          <Box className="input-container">
+            <Input
+              className="input-verify-qr"
+              required={true}
+              autoFocus={true}
+              inputProps={{ maxLength: 6 }}
+              id="code"
+              placeholder="Validation code"
+              value={code}
+              onChange={(e) => setCode(e.target.value)}
+            />
+            {errorMessage && <p style={{ color: "red" }}>{errorMessage}</p>}
           </Box>
-        </Box>
-        <Box
-          sx={{ alignSelf: "flex-start" }}
-          onClick={cancel}
-        >
-          CANCELLLLL
+          <Box className="buttons-container">
+            <Button
+              variant={"outlined"}
+              sx={{
+                border: "1px solid #9f9f9f",
+                width: "20vw",
+                height: "5vh",
+                fontSize: "1.7rem",
+                color: "#FA7F08",
+                margin: "1rem",
+                padding: "0.4rem",
+                alignSelf: "center",
+                cursor: "pointer",
+                textTransform: "none",
+                "&:hover": {backgroundColor: "#FA7F08", color:"#131313", opacity:"0.75" }
+              }}
+              onClick={handleVerifyQRCode}
+            >
+              Verify my code
+            </Button>
+            <Button
+              variant={"outlined"}
+              sx={{
+                border: "1px solid #9f9f9f",
+                width: "10vw",
+                height: "5vh",
+                fontSize: "1.7rem",
+                color: "#F24404",
+                margin: "1rem 2rem",
+                padding: "0.4rem",
+                alignSelf: "center",
+                cursor: "pointer",
+                textTransform: "none",
+                "&:hover": {backgroundColor: "#F24404", color:"#131313", opacity:"0.75" }
+
+              }}
+              onClick={cancel}
+            >
+              Cancel
+            </Button>
+          </Box>
         </Box>
       </Box>
     </>

@@ -9,12 +9,7 @@ import { createBrowserHistory } from "history";
 import { useChatContext } from "src/chat/chat.context";
 import {
   GameViewModelContext,
-  GameViewModelProvider
 } from "src/game/game.viewModel";
-
-/*
- * We GOTTA add those to kingpong lib
- */
 
 enum UserStatus {
   ONLINE,
@@ -52,7 +47,6 @@ export const headers = {
 export default function Auth() {
   const {
     setShowChooseUsernameModal,
-    sessionToken,
     setSessionToken,
     setSelf,
     self,
@@ -63,13 +57,6 @@ export default function Auth() {
   const { chatGatewayLogin } = useChatContext();
   const { setEventListeners } = useContext(GameViewModelContext);
   const history = createBrowserHistory();
-  //TODO check this so it redirects if youre already sign in
-  useEffect(() => {
-    if (sessionToken) {
-      setPageState(PageState.Home);
-      return;
-    }
-  }, []);
 
   const [isLoading, setIsLoading] = useState(false);
 
@@ -84,6 +71,7 @@ export default function Auth() {
   };
 
   // on success, set the session token and the self, and redirects to /
+
   const onSuccess = async (data: dataResponse) => {
     await createSocketWithHeaders({
       clientId: headers["client-id"],
@@ -106,6 +94,7 @@ export default function Auth() {
     setSelf(data.user);
     if (data.twoFAenable) setPageState(PageState.Verify2FA);
     else {
+      setIsLoading(true);
       setPageState(PageState.Home);
     }
   };
@@ -220,6 +209,10 @@ export default function Auth() {
               disabled={isLoading}
               disableRipple={true}
               disableFocusRipple={true}
+              sx={{
+                color: "#FA7F08",
+                "&:hover": {backgroundColor: "#FA7F08", color:"#131313", opacity:"0.75" }
+              }}
             >
               {isLoading ? "Logging in..." : "Login"}
             </Button>
