@@ -17,6 +17,7 @@ import { useRootViewModelContext } from "src/root.context";
 import { useSettingsViewModelContext } from "../settings/settings.viewModel";
 import { socket } from "src/contexts/WebSocket.context";
 import { createBrowserHistory } from "history";
+import { createSocketWithHeaders } from "src/contexts/WebSocket.context";
 
 //Set css flexbox options for the toolbar component to create proper object positioning for child elements
 const toolbarStyle = {
@@ -63,6 +64,13 @@ export default function TopBar() {
     history.replace("/auth");
     setSelf({ username: "", avatar: "", createdAt: "", status: 0 });
     handleCloseUserMenu();
+    socket.disconnect();
+    socket.close();
+    const headers = {
+      clientId: null,
+      clientToken: null
+    };
+    createSocketWithHeaders(headers);
   };
 
   return (
