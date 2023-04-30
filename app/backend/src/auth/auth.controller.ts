@@ -8,7 +8,7 @@ import {
   Post,
   UseFilters,
   Logger,
-  UseGuards,
+  UseGuards
 } from "@nestjs/common";
 import { ApiTags } from "@nestjs/swagger";
 import { SubscribeMessage } from "@nestjs/websockets";
@@ -56,7 +56,6 @@ export class AuthController {
   signin_ft(@GetUser() user) {
     // The barren export pattern in ./dto/index.ts allows automatic exposition
     logger.debug("Succesfully signed in!", { user });
-
     return user;
   }
 
@@ -69,7 +68,7 @@ export class AuthController {
       firstName: dto.firstName,
       lastName: dto.lastName,
       email: dto.email,
-      status: UserStatus.ONLINE,
+      status: UserStatus.ONLINE
     };
     return this.authService.signin(info);
   }
@@ -77,6 +76,16 @@ export class AuthController {
   @Post("refreshToken")
   @SubscribeMessage("refresh")
   async refreshToken(@Body("refresh_token") refresh_token: Token) {
+    return;
+  }
+
+  @Post("confirmID")
+  async confirmID(
+    @Query("previousID") previousID: string,
+    @Query("newID") newID: string
+  ) {
+    logger.log(`Confirming new Socket ID : [${newID}]`);
+    this.authService.confirmID(previousID, newID);
     return;
   }
 
@@ -90,7 +99,6 @@ export class AuthController {
   }
 
   @Get("qrCode")
-  @UseGuards(TokenIsVerified)
   async generateQrCode() {
     logger.debug("Generating QrCode");
     return await this.authService.enableTwoFactorAuth();
@@ -127,7 +135,6 @@ export class AuthController {
   }
 
   @Post("deleteToken")
-  @UseGuards(TokenIsVerified)
   async deleteToken(@Query("socketId") socketId: string) {
     logger.debug("Token deletion engage");
 

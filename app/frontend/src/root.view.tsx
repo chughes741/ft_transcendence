@@ -18,6 +18,8 @@ import { ChooseUsernameModal } from "./components/ChooseUsernameModal";
 import GameWindow from "./game/game.view";
 import Enable2FA from "./components/Enable2FA";
 import Verify2FA from "./components/Verify2FA";
+import { socket, useWebSocketContext } from "./contexts/WebSocket.context";
+import { createBrowserHistory } from "history";
 
 /**
  * Root view content
@@ -72,26 +74,38 @@ export function RootView(): JSX.Element {
   const {
     /* Fullscreen */
     fullscreen,
+    setSessionToken,
+    setPageState,
+    pageState,
+    setSelf,
     // setFullscreen,
     /* Username */
     showChooseUsernameModal
   } = useRootViewModelContext();
 
-  // const handleKeyDown = (event: KeyboardEvent) => {
-  //   if (event.key === "Escape" && fullscreen) {
-  //     setFullscreen(false);
-  //   }
-  // };
+  const { addSocketListener, removeSocketListener } = useWebSocketContext();
+  const history = createBrowserHistory();
+  const handleSetSocketHandler = () => {
+    const handleUnauthorized = async () => {
+      console.log("Redirects to login page");
+      await fetch(`/auth/deleteToken?socketId=${socket.id}`, {
+        method: "POST"
+      });
+      setSessionToken("");
+      setPageState(PageState.Auth);
+      history.replace("/auth");
+      setSelf({ username: "", avatar: "", createdAt: "", status: 0 });
+    };
+    addSocketListener("unauthorized", handleUnauthorized);
+  };
 
-  /** Add event listener for keydown event */
-  // useEffect(() => {
-  //   window.addEventListener("keydown", handleKeyDown);
-  //
-  //   /** Cleanup event listener on unmount */
-  //   return () => {
-  //     window.removeEventListener("keydown", handleKeyDown);
-  //   };
-  // }, [fullscreen]);
+  //Listens to unauthorized error message sent by the backend
+  useEffect(() => {
+    handleSetSocketHandler();
+    return () => {
+      removeSocketListener("unauthorized");
+    };
+  }, [socket]);
 
   return (
     <>

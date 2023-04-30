@@ -15,7 +15,7 @@ export class AuthService {
   constructor(
     private prisma: PrismaService, // create(), findUnique()
     private tokenClass: TokenIsVerified
-  ) { }
+  ) {}
 
   async signup(
     req: AuthRequest
@@ -59,6 +59,16 @@ export class AuthService {
     return token;
   }
 
+  async confirmID(previousID: string, newID: string) {
+    const token: Token = await this.tokenClass.tokenStorage.getTokenbySocket(
+      previousID
+    );
+    await this.tokenClass.tokenStorage.removeToken(previousID);
+    if (token !== undefined) token.token_type = "bearer";
+    await this.tokenClass.tokenStorage.addToken(newID, token);
+    return;
+  }
+
   async verifyQrCode(
     base32secret: string,
     enteredToken: string,
@@ -85,18 +95,20 @@ export class AuthService {
           await this.prisma.update2FA(username);
           return { validated: true };
         } catch (error) {
-          console.log(error);
+          logger.error(error);
         }
       }
       return { validated: false };
     }
   }
 
+  //Swithc on/off enable 2fa
   async update2FA(username: string) {
     const enable: boolean = await this.prisma.update2FA(username);
     return { enable2fa: enable };
   }
 
+  //Will refresh token
   async checkToRefresh(token: Token): Promise<Token> {
     if (token.expires_in < 7000)
       return await this.tokenClass.tokenStorage.refresh42Token(token);
@@ -108,7 +120,7 @@ export class AuthService {
   async getAuht42(
     clientId: string,
     authorization_code: string
-  ): Promise<AuthEntity> {
+  ): Promise<AuthEntity | string> {
     const UID = process.env.UID;
     const SECRET = process.env.SECRET;
     const API_42_URL = process.env.API_42_URL;
@@ -142,7 +154,7 @@ export class AuthService {
         }
       });
       const userName = response2.data.login + response2.data.id;
-
+      token.token_type = "transiting";
       this.tokenClass.tokenStorage.addToken(clientId, token);
       const user = await this.signin({
         username: userName,
@@ -160,6 +172,8 @@ export class AuthService {
       return authEntity;
     } catch (error) {
       logger.debug("Axios request silenced");
+      console.log(error);
+      return JSON.stringify({ error: error, ok: false });
     }
   }
 
@@ -178,9 +192,9 @@ export class AuthService {
   }
 
   async getCredentials() {
-
-    console.log("My info needed : ", process.env.UID, process.env.REDIRECT_URI);
-    return JSON.stringify({ CLIENT_ID: process.env.UID, REDIRECT_URI: process.env.REDIRECT_URI });
+    return JSON.stringify({
+      CLIENT_ID: process.env.UID,
+      REDIRECT_URI: process.env.REDIRECT_URI
+    });
   }
-
 }

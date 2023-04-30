@@ -53,7 +53,10 @@ export class TokenStorageService {
   addToken(socketId: string, token: Token): void {
     // Add the token to the map
     this.tokens.set(socketId, token);
-    logger.debug(`Added [Token]${token.access_token} to [Socket] ${socketId}.`);
+    if (token !== undefined && token.access_token && socketId)
+      logger.debug(
+        `Added [Token]${token.access_token} to [Socket] ${socketId}.`
+      );
   }
 
   removeToken(socketId: string): void {
@@ -80,7 +83,6 @@ export class TokenStorageService {
       data.scope,
       data.created_at
     );
-    console.debug("New 42 Token: ", token);
     return token;
   }
 }

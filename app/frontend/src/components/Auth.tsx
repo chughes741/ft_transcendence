@@ -1,11 +1,16 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useContext, useEffect, useState } from "react";
 import { Box, Button } from "@mui/material";
 import { ProfileEntity } from "kingpong-lib";
 import { PageState } from "src/root.model";
 import { useRootViewModelContext } from "src/root.context";
 import "./Auth.tsx.css";
-import { socket } from "../contexts/WebSocket.context";
+import { createSocketWithHeaders, socket } from "../contexts/WebSocket.context";
 import { createBrowserHistory } from "history";
+import { useChatContext } from "src/chat/chat.context";
+import {
+  GameViewModelContext,
+  GameViewModelProvider
+} from "src/game/game.viewModel";
 
 /*
  * We GOTTA add those to kingpong lib
@@ -55,6 +60,8 @@ export default function Auth() {
     setPageState
   } = useRootViewModelContext();
 
+  const { chatGatewayLogin } = useChatContext();
+  const { setEventListeners } = useContext(GameViewModelContext);
   const history = createBrowserHistory();
   //TODO check this so it redirects if youre already sign in
   useEffect(() => {
@@ -77,7 +84,24 @@ export default function Auth() {
   };
 
   // on success, set the session token and the self, and redirects to /
-  const onSuccess = (data: dataResponse) => {
+  const onSuccess = async (data: dataResponse) => {
+    await createSocketWithHeaders({
+      clientId: headers["client-id"],
+      clientToken: headers["client-token"]
+    });
+    socket.on("connect", async () => {
+      const url = `http://localhost:3000/auth/confirmID?previousID=${headers["client-id"]}&newID=${socket.id}`;
+      //Calls backend with our newly found 42 Authorization code
+      const response = await fetch(url, {
+        method: "POST"
+      });
+      headers["client-id"] = socket.id;
+      await chatGatewayLogin({
+        username: data.user.username,
+        avatar: data.user.avatar
+      });
+      await setEventListeners();
+    });
     setSessionToken(data.token);
     setSelf(data.user);
     if (data.twoFAenable) setPageState(PageState.Verify2FA);
@@ -119,12 +143,18 @@ export default function Auth() {
         }
         //Data received from the backend fetch by 42 api
         const client = await data.json();
-        if (client.user.firstConnection) setShowChooseUsernameModal(true);
+        //const client = await data.json();
+
+        if (client.user.firstConnection) await setShowChooseUsernameModal(true);
         //Choose username on first connection
-        else setFullscreen(false); // TODO is this necessary??
+        else {
+          setFullscreen(false);
+        }
+        // TODO is this necessary??
         //Creates the headers that will enable token authentification
         headers["client-id"] = socket.id;
-        headers["client-token"] = client.token; //42 Token
+        headers["client-token"] = client.token;
+        //PrepInfo
         const userProfile: dataResponse = {
           user: populateProfile(client),
           token: client.token,
