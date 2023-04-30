@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useContext, useEffect, useState } from "react";
 import { Box, Button } from "@mui/material";
 import { ProfileEntity } from "kingpong-lib";
 import { PageState } from "src/root.model";
@@ -7,6 +7,7 @@ import "./Auth.tsx.css";
 import { createSocketWithHeaders, socket } from "../contexts/WebSocket.context";
 import { createBrowserHistory } from "history";
 import { useChatContext } from "src/chat/chat.context";
+import { GameViewModelContext, GameViewModelProvider } from "src/game/game.viewModel";
 
 /*
  * We GOTTA add those to kingpong lib
@@ -57,7 +58,7 @@ export default function Auth() {
   } = useRootViewModelContext();
 
   const { chatGatewayLogin } = useChatContext();
-
+  const { setEventListeners } = useContext(GameViewModelContext);
   const history = createBrowserHistory();
   //TODO check this so it redirects if youre already sign in
   useEffect(() => {
@@ -96,6 +97,7 @@ export default function Auth() {
         username: data.user.username,
         avatar: data.user.avatar
       });
+      setEventListeners();
     });
     setSessionToken(data.token);
     setSelf(data.user);
