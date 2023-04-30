@@ -24,7 +24,7 @@ import { Token } from "src/tokenstorage/token-storage.service";
  */
 @WebSocketGateway()
 export class ProfileGateway {
-  constructor(private readonly profileService: ProfileService) { }
+  constructor(private readonly profileService: ProfileService) {}
 
   /**
    * Gateway for requesting a players match history
@@ -41,8 +41,7 @@ export class ProfileGateway {
   ): Promise<MatchHistoryItem[]> {
     try {
       return await this.profileService.getMatchHistory(getMatchHistoryRequest);
-    }
-    catch (error) {
+    } catch (error) {
       if (Error instanceof UnauthorizedException) client.emit("unauthorized");
     }
   }
@@ -62,8 +61,7 @@ export class ProfileGateway {
   ): Promise<ProfileEntity | null> {
     try {
       return await this.profileService.getProfile(getProfileRequest);
-    }
-    catch (error) {
+    } catch (error) {
       if (Error instanceof UnauthorizedException) client.emit("unauthorized");
     }
   }
@@ -98,8 +96,7 @@ export class ProfileGateway {
   ): boolean {
     try {
       return this.profileService.updateProfile(updateProfileRequest);
-    }
-    catch (error) {
+    } catch (error) {
       if (Error instanceof UnauthorizedException) client.emit("unauthorized");
     }
   }
@@ -119,8 +116,7 @@ export class ProfileGateway {
   ): Promise<boolean> {
     try {
       return this.profileService.addFriend(addFriendRequest);
-    }
-    catch (error) {
+    } catch (error) {
       if (Error instanceof UnauthorizedException) client.emit("unauthorized");
     }
   }

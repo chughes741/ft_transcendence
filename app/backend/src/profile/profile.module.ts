@@ -9,4 +9,4 @@ import { TokenStorageModule } from "src/tokenstorage/token-storage.module";
   imports: [TokenModule, TokenStorageModule],
   providers: [ProfileGateway, ProfileService, PrismaService]
 })
-export class ProfileModule { }
+export class ProfileModule {}

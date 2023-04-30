@@ -39,7 +39,7 @@ export const GameViewModelProvider = ({ children }) => {
     setDisplayGame,
     setGameState,
     setScoreLeft,
-    setScoreRight,
+    setScoreRight
   } = gameModel;
 
   const { self } = useRootViewModelContext();
@@ -84,8 +84,8 @@ export const GameViewModelProvider = ({ children }) => {
       socket.off(GameEvents.LobbyCreated);
       socket.off(GameEvents.GameStarted);
       socket.off(GameEvents.GameEnded);
-    }
-  }
+    };
+  };
 
   /*******************/
   /*  Socket Calls   */
@@ -201,7 +201,7 @@ export const GameViewModelProvider = ({ children }) => {
         ...gameModel,
         setPlayerReadyState,
         joinGameQueue,
-        setEventListeners,
+        setEventListeners
 
         //...
       }}

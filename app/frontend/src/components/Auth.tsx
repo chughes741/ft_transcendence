@@ -7,7 +7,10 @@ import "./Auth.tsx.css";
 import { createSocketWithHeaders, socket } from "../contexts/WebSocket.context";
 import { createBrowserHistory } from "history";
 import { useChatContext } from "src/chat/chat.context";
-import { GameViewModelContext, GameViewModelProvider } from "src/game/game.viewModel";
+import {
+  GameViewModelContext,
+  GameViewModelProvider
+} from "src/game/game.viewModel";
 
 /*
  * We GOTTA add those to kingpong lib
