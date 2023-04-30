@@ -197,7 +197,6 @@ export const ChatViewModelProvider = ({ children }) => {
       currentRoomName,
       convertMessagePayloadToMessageType
     );
-    // const handleUnauthorized = handleUnauthorizedCreator()
     const handleNewChatRoomMember = handleNewChatRoomMemberCreator(updateRooms);
     const handleChatRoomMemberLeft =
       handleChatRoomMemberLeftCreator(updateRooms);
@@ -215,7 +214,6 @@ export const ChatViewModelProvider = ({ children }) => {
     addSocketListener("chatRoomMemberKicked", handleChatRoomMemberKicked);
     addSocketListener("addedToNewChatRoom", handleAddedToNewChatRoom);
     addSocketListener("chatMemberUpdated", handleNewChatRoomMember);
-    //addSocketListener("unauthorized", handleUnauthorized);
   };
 
   /**********************/

@@ -1,10 +1,5 @@
 import { RootModelType, useRootModel } from "./root.model";
-import { RootViewModelContext, useRootViewModelContext } from "./root.context";
-import { useWebSocketContext } from "./contexts/WebSocket.context";
-import { useEffect } from "react";
-import { createBrowserHistory } from "history";
-import { socket } from "./contexts/WebSocket.context";
-import { PageState } from "./root.model";
+import { RootViewModelContext } from "./root.context";
 
 /**
  * Root view model type

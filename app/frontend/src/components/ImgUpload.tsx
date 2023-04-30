@@ -7,7 +7,6 @@ import { PageState } from "src/root.model";
 import { headers } from "./Auth";
 import { socket } from "src/contexts/WebSocket.context";
 import { createBrowserHistory } from "history";
-import { useProfileModel } from "src/profile/profile.model";
 
 function ImgUpload() {
   const [file, setFile] = useState(null); //Contains the img file
@@ -17,7 +16,6 @@ function ImgUpload() {
     setFile(event.target.files[0]);
   };
   const history = createBrowserHistory();
-  const { profile } = useProfileModel();
 
   //Upload image on submitgit
   const handleUpload = async () => {
@@ -38,7 +36,6 @@ function ImgUpload() {
         const data = await response.json();
         if (response.ok) {
           self.avatar = data.URL;
-          //profile.avatar = new data.URL;
           alert("Image successfully uploaded!");
           return;
         }
