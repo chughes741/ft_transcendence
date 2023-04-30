@@ -83,7 +83,6 @@ export class TokenStorageService {
       data.scope,
       data.created_at
     );
-    //console.debug("New 42 Token: ", token);
     return token;
   }
 }

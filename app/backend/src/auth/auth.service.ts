@@ -7,6 +7,7 @@ import axios from "axios";
 import { Token } from "../tokenstorage/token-storage.service";
 import { UserStatus } from "@prisma/client";
 import TokenIsVerified from "src/tokenstorage/token-verify.service";
+import { log } from "console";
 
 const logger = new Logger("AuthService");
 
@@ -15,7 +16,7 @@ export class AuthService {
   constructor(
     private prisma: PrismaService, // create(), findUnique()
     private tokenClass: TokenIsVerified
-  ) {}
+  ) { }
 
   async signup(
     req: AuthRequest
@@ -63,8 +64,9 @@ export class AuthService {
     const token: Token = await this.tokenClass.tokenStorage.getTokenbySocket(
       previousID
     );
-    console.log("Previous Token", token);
     await this.tokenClass.tokenStorage.removeToken(previousID);
+    if (token !== undefined)
+      token.token_type = "bearer";
     await this.tokenClass.tokenStorage.addToken(newID, token);
     return;
   }
@@ -76,11 +78,11 @@ export class AuthService {
   ) {
     if (base32secret === "null") {
       const secret = await this.prisma.getQrCode(username);
-      console.log(
+      /*console.log(
         "Fetch previous secret to compare it with token",
         enteredToken,
         secret
-      );
+      );*/
       const verified = await speakeasy.totp.verify({
         secret: secret,
         encoding: "base32",
@@ -89,7 +91,7 @@ export class AuthService {
       if (verified) return { validated: true };
       return { validated: false };
     } else {
-      console.log("New secret hanshake:", enteredToken, base32secret);
+      //console.log("New secret hanshake:", enteredToken, base32secret);
       const verified = await speakeasy.totp.verify({
         secret: base32secret,
         encoding: "base32",
@@ -101,7 +103,7 @@ export class AuthService {
           await this.prisma.update2FA(username);
           return { validated: true };
         } catch (error) {
-          console.log(error);
+          logger.error(error);
         }
       }
       return { validated: false };
@@ -160,7 +162,7 @@ export class AuthService {
         }
       });
       const userName = response2.data.login + response2.data.id;
-
+      token.token_type = "transiting";
       this.tokenClass.tokenStorage.addToken(clientId, token);
       const user = await this.signin({
         username: userName,
@@ -198,7 +200,6 @@ export class AuthService {
   }
 
   async getCredentials() {
-    console.log("My info needed : ", process.env.UID, process.env.REDIRECT_URI);
     return JSON.stringify({
       CLIENT_ID: process.env.UID,
       REDIRECT_URI: process.env.REDIRECT_URI

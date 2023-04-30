@@ -59,7 +59,7 @@ function ImgUpload() {
           return;
         }
       } catch (error) {
-        console.log("Maybe", error);
+        console.log(error);
       }
     }
   };
