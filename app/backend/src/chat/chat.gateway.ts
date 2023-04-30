@@ -51,8 +51,8 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     private prismaService: PrismaService,
     private chatService: ChatService,
     private userConnectionsService: UserConnectionsService,
-    private tokenVerify: TokenIsVerified,
-  ) { }
+    private tokenVerify: TokenIsVerified
+  ) {}
 
   @WebSocketServer()
   server: Server;
@@ -80,10 +80,12 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
       });
       this.userConnectionsService.removeUserEntries(connections);
     }
-    const token = await this.tokenVerify.tokenStorage.getTokenbySocket(client.id);
+    const token = await this.tokenVerify.tokenStorage.getTokenbySocket(
+      client.id
+    );
     if (token && token.token_type !== "transiting") {
       this.tokenVerify.tokenStorage.removeToken(client.id);
-      logger.log(`Client [${client.id}]'s Token Destroyed`)
+      logger.log(`Client [${client.id}]'s Token Destroyed`);
     }
     logger.debug(`Client disconnected: ${client.id}`);
   }
@@ -331,8 +333,10 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   ): Promise<ChatRoomEntity | DevError> {
     // Log the request
     logger.debug(
-      `Received createRoom request from ${createDto.owner} for room ${createDto.name
-      }: ${createDto.status} ${createDto.password ? `, with password ${createDto.password}.` : "."
+      `Received createRoom request from ${createDto.owner} for room ${
+        createDto.name
+      }: ${createDto.status} ${
+        createDto.password ? `, with password ${createDto.password}.` : "."
       }`
     );
 
@@ -340,8 +344,10 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
       // Log the request
       //console.log(client);
       logger.debug(
-        `Received createRoom request from ${createDto.owner} for room ${createDto.name
-        }: ${createDto.status} ${createDto.password ? `, with password ${createDto.password}.` : "."
+        `Received createRoom request from ${createDto.owner} for room ${
+          createDto.name
+        }: ${createDto.status} ${
+          createDto.password ? `, with password ${createDto.password}.` : "."
         }`
       );
 
@@ -421,7 +427,8 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
         client.id
       );
       logger.debug(
-        `Received joinRoom request from ${username} for room ${dto.roomName} ${dto.password ? `: with password ${dto.password}` : ""
+        `Received joinRoom request from ${username} for room ${dto.roomName} ${
+          dto.password ? `: with password ${dto.password}` : ""
         }`
       );
 

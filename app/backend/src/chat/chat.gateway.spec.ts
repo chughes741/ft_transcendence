@@ -11,7 +11,12 @@ describe("ChatGateway", () => {
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       imports: [PrismaModule],
-      providers: [ChatGateway, ChatService, UserConnectionsService, TokenStorageService]
+      providers: [
+        ChatGateway,
+        ChatService,
+        UserConnectionsService,
+        TokenStorageService
+      ]
     }).compile();
 
     gateway = module.get<ChatGateway>(ChatGateway);

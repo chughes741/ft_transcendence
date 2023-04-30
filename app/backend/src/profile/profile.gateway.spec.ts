@@ -10,7 +10,13 @@ describe("ProfileGateway", () => {
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      providers: [ProfileGateway, ProfileService, PrismaService, ConfigService, TokenStorageService]
+      providers: [
+        ProfileGateway,
+        ProfileService,
+        PrismaService,
+        ConfigService,
+        TokenStorageService
+      ]
     }).compile();
 
     gateway = module.get<ProfileGateway>(ProfileGateway);

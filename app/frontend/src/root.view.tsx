@@ -87,7 +87,7 @@ export function RootView(): JSX.Element {
   const history = createBrowserHistory();
   const handleSetSocketHandler = () => {
     const handleUnauthorized = async () => {
-      console.log("Redirects to login page")
+      console.log("Redirects to login page");
       await fetch(`/auth/deleteToken?socketId=${socket.id}`, {
         method: "POST"
       });

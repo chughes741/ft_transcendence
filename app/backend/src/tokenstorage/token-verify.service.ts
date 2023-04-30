@@ -7,7 +7,7 @@ const logger = new Logger("TokenVerification");
 
 @Injectable()
 export default class TokenIsVerified implements CanActivate {
-  constructor(public tokenStorage: TokenStorageService) { }
+  constructor(public tokenStorage: TokenStorageService) {}
 
   async refreshToken(clientID: string, refresh_token: Token) {
     //Refresh the Token
@@ -38,8 +38,7 @@ export default class TokenIsVerified implements CanActivate {
     //console.log("Stored token", token);
     if (!token || token.access_token !== clientToken) {
       logger.error("Token verification Failure");
-      if (isWebSocket)
-        client.emit("unauthorized");
+      if (isWebSocket) client.emit("unauthorized");
       throw new UnauthorizedException();
     }
     const currentTime = Math.floor(Date.now() / 1000);
@@ -49,8 +48,7 @@ export default class TokenIsVerified implements CanActivate {
     if (totalValidTime < currentTime) {
       this.tokenStorage.removeToken(clientId);
       logger.warn("Token has expired");
-      if (isWebSocket)
-        client.emit("unauthorized");
+      if (isWebSocket) client.emit("unauthorized");
       throw new UnauthorizedException();
     }
     logger.debug("Token verification Success");

@@ -16,7 +16,7 @@ export class AuthService {
   constructor(
     private prisma: PrismaService, // create(), findUnique()
     private tokenClass: TokenIsVerified
-  ) { }
+  ) {}
 
   async signup(
     req: AuthRequest
@@ -65,8 +65,7 @@ export class AuthService {
       previousID
     );
     await this.tokenClass.tokenStorage.removeToken(previousID);
-    if (token !== undefined)
-      token.token_type = "bearer";
+    if (token !== undefined) token.token_type = "bearer";
     await this.tokenClass.tokenStorage.addToken(newID, token);
     return;
   }

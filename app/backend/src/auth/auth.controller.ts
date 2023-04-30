@@ -27,7 +27,7 @@ const logger = new Logger("AuthController");
 @ApiTags("auth")
 export class AuthController {
   // Here, private means that authService is a member attribute
-  constructor(private authService: AuthService) { }
+  constructor(private authService: AuthService) {}
 
   @Post("testing")
   @UseGuards(TokenIsVerified)
