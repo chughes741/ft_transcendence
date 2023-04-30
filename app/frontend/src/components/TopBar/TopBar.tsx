@@ -15,6 +15,8 @@ import { SportsEsports } from "@mui/icons-material";
 import DynamicIconButton from "../DynamicIconButton";
 import { useRootViewModelContext } from "src/root.context";
 import { useSettingsViewModelContext } from "../settings/settings.viewModel";
+import { socket } from "src/contexts/WebSocket.context";
+import { createBrowserHistory } from "history";
 
 //Set css flexbox options for the toolbar component to create proper object positioning for child elements
 const toolbarStyle = {
@@ -25,11 +27,12 @@ const toolbarStyle = {
 export default function TopBar() {
   const { setPageState } = useRootViewModelContext();
   const { setUser } = useProfileViewModelContext();
-  const { self } = useRootViewModelContext();
+  const { self, setSessionToken, setSelf } = useRootViewModelContext();
   const { handleOpenSettings } = useSettingsViewModelContext();
   const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(
     null
   );
+  const history = createBrowserHistory();
 
   const handleOpenUserMenu = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorElUser(event.currentTarget);
@@ -50,8 +53,15 @@ export default function TopBar() {
     handleCloseUserMenu();
   };
 
-  const onClickLogout = () => {
+  const onClickLogout = async () => {
     /** @todo add logout function */
+    await fetch(`/auth/deleteToken?socketId=${socket.id}`, {
+      method: "POST"
+    });
+    setSessionToken("");
+    setPageState(PageState.Auth);
+    history.replace("/auth");
+    setSelf({ username: "", avatar: "", createdAt: "", status: 0 });
     handleCloseUserMenu();
   };
 
