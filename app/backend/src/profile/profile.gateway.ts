@@ -14,10 +14,9 @@ import {
 } from "kingpong-lib";
 import { ProfileService } from "./profile.service";
 import { GetFriendsRequest } from "./profile.dto";
-import { UnauthorizedException, UseGuards } from "@nestjs/common";
+import { UseGuards } from "@nestjs/common";
 import TokenIsVerified from "src/tokenstorage/token-verify.service";
 import { Socket } from "dgram";
-import { Token } from "src/tokenstorage/token-storage.service";
 
 /**
  * Gateway for profile related requests
@@ -39,11 +38,7 @@ export class ProfileGateway {
     client: Socket,
     @MessageBody() getMatchHistoryRequest: GetMatchHistoryRequest
   ): Promise<MatchHistoryItem[]> {
-    try {
-      return await this.profileService.getMatchHistory(getMatchHistoryRequest);
-    } catch (error) {
-      if (Error instanceof UnauthorizedException) client.emit("unauthorized");
-    }
+    return await this.profileService.getMatchHistory(getMatchHistoryRequest);
   }
 
   /**
@@ -59,11 +54,7 @@ export class ProfileGateway {
     client: Socket,
     @MessageBody() getProfileRequest: GetProfileRequest
   ): Promise<ProfileEntity | null> {
-    try {
-      return await this.profileService.getProfile(getProfileRequest);
-    } catch (error) {
-      if (Error instanceof UnauthorizedException) client.emit("unauthorized");
-    }
+    return await this.profileService.getProfile(getProfileRequest);
   }
 
   /**
@@ -94,11 +85,7 @@ export class ProfileGateway {
     client: Socket,
     @MessageBody() updateProfileRequest: UpdateProfileRequest
   ): boolean {
-    try {
-      return this.profileService.updateProfile(updateProfileRequest);
-    } catch (error) {
-      if (Error instanceof UnauthorizedException) client.emit("unauthorized");
-    }
+    return this.profileService.updateProfile(updateProfileRequest);
   }
 
   /**
@@ -114,10 +101,6 @@ export class ProfileGateway {
     client: Socket,
     @MessageBody() addFriendRequest: AddFriendRequest
   ): Promise<boolean> {
-    try {
-      return this.profileService.addFriend(addFriendRequest);
-    } catch (error) {
-      if (Error instanceof UnauthorizedException) client.emit("unauthorized");
-    }
+    return this.profileService.addFriend(addFriendRequest);
   }
 }
