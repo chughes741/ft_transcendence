@@ -7,7 +7,6 @@ import axios from "axios";
 import { Token } from "../tokenstorage/token-storage.service";
 import { UserStatus } from "@prisma/client";
 import TokenIsVerified from "src/tokenstorage/token-verify.service";
-import { log } from "console";
 
 const logger = new Logger("AuthService");
 
@@ -77,11 +76,6 @@ export class AuthService {
   ) {
     if (base32secret === "null") {
       const secret = await this.prisma.getQrCode(username);
-      /*console.log(
-        "Fetch previous secret to compare it with token",
-        enteredToken,
-        secret
-      );*/
       const verified = await speakeasy.totp.verify({
         secret: secret,
         encoding: "base32",
@@ -90,7 +84,6 @@ export class AuthService {
       if (verified) return { validated: true };
       return { validated: false };
     } else {
-      //console.log("New secret hanshake:", enteredToken, base32secret);
       const verified = await speakeasy.totp.verify({
         secret: base32secret,
         encoding: "base32",

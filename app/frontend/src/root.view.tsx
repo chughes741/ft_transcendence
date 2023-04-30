@@ -101,7 +101,6 @@ export function RootView(): JSX.Element {
 
   //Listens to unauthorized error message sent by the backend
   useEffect(() => {
-    //console.log("Set Listener on socket change");
     handleSetSocketHandler();
     return () => {
       removeSocketListener("unauthorized");

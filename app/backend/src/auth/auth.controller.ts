@@ -56,7 +56,6 @@ export class AuthController {
   signin_ft(@GetUser() user) {
     // The barren export pattern in ./dto/index.ts allows automatic exposition
     logger.debug("Succesfully signed in!", { user });
-
     return user;
   }
 
@@ -100,7 +99,6 @@ export class AuthController {
   }
 
   @Get("qrCode")
-  //@UseGuards(TokenIsVerified)
   async generateQrCode() {
     logger.debug("Generating QrCode");
     return await this.authService.enableTwoFactorAuth();

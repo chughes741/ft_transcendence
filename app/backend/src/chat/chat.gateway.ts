@@ -59,8 +59,6 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
   async handleConnection(client: Socket) {
     logger.warn(`Client connected: ${client.id}`);
-    //console.log(client);
-    //logger.debug(`Client connected: ${client.id}`);
   }
 
   async handleDisconnect(client: Socket) {
