@@ -4,6 +4,7 @@ import { UserConnectionsService } from "../user-connections.service";
 import { ChatGateway } from "./chat.gateway";
 import { ChatService } from "./chat.service";
 import { TokenStorageService } from "src/tokenstorage/token-storage.service";
+import TokenIsVerified from "src/tokenstorage/token-verify.service";
 
 describe("ChatGateway", () => {
   let gateway: ChatGateway;
@@ -15,7 +16,8 @@ describe("ChatGateway", () => {
         ChatGateway,
         ChatService,
         UserConnectionsService,
-        TokenStorageService
+        TokenStorageService,
+        TokenIsVerified,
       ]
     }).compile();
 
