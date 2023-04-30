@@ -57,7 +57,9 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   @WebSocketServer()
   server: Server;
 
-  async handleConnection(client: Socket) {}
+  async handleConnection(client: Socket) {
+    logger.warn(`Client connected: ${client.id}`);
+  }
 
   async handleDisconnect(client: Socket) {
     // Remove the user connection
