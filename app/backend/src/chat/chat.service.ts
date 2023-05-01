@@ -7,7 +7,6 @@ import {
   ChatMemberStatus,
   ChatRoom,
   ChatRoomStatus,
-  UserStatus,
   BlockedUser
 } from "@prisma/client";
 import { PrismaService } from "../prisma/prisma.service";

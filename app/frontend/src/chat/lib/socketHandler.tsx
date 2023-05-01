@@ -1,12 +1,8 @@
-import { PageState } from "src/root.model";
 import {
   LeaveRoomRequest,
   MessagePayload,
   RoomMemberEntity
 } from "../chat.types";
-import { socket } from "src/contexts/WebSocket.context";
-import { useRootViewModelContext } from "src/root.context";
-import { createBrowserHistory } from "history";
 
 // Define handlers
 export const handleConnectCreator = () => () => {

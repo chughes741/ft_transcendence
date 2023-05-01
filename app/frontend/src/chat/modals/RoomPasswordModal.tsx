@@ -32,11 +32,8 @@ export const RoomPasswordModal: React.FC<RoomPasswordModalProps> = ({
     useRoomModal(showModal);
 
   const { handleChangeRoomStatus } = useRoomManager();
-  const {
-    contextMenuData: room,
-    contextMenuRoomsNewStatus: newStatus,
-    setContextMenuRoomsNewStatus: setNewStatus
-  } = useChatContext();
+  const { contextMenuData: room, contextMenuRoomsNewStatus: newStatus } =
+    useChatContext();
   const roomName = room.name;
 
   const [newPassword, setNewPassword] = useState("");
