@@ -1,6 +1,11 @@
 // ChatModel.tsx
 import { useState, MouseEvent } from "react";
-import { RoomType, MessageType, ChatMemberEntity } from "./chat.types";
+import {
+  RoomType,
+  MessageType,
+  ChatMemberEntity,
+  ChatRoomStatus
+} from "./chat.types";
 
 export interface ChatModelType {
   /* Room List Information */
@@ -14,6 +19,8 @@ export interface ChatModelType {
   contextMenuPosition: { x: number; y: number };
   contextMenuRoomsVisible: boolean;
   setContextMenuRoomsVisible: (arg: boolean) => void;
+  contextMenuRoomsNewStatus: ChatRoomStatus;
+  setContextMenuRoomsNewStatus: (arg: ChatRoomStatus) => void;
   handleContextMenu: (e: MouseEvent, roomData: { name: string }) => void;
 
   /* UserList Context Menu */
@@ -60,6 +67,9 @@ export const useChatModel = (): ChatModelType => {
   /* Room Context Menu */
   const [contextMenuData, setContextMenuData] = useState(null);
   const [contextMenuRoomsVisible, setContextMenuRoomsVisible] = useState(false);
+  const [contextMenuRoomsNewStatus, setContextMenuRoomsNewStatus] = useState(
+    ChatRoomStatus.PUBLIC
+  );
   const [contextMenuPosition, setContextMenuPosition] = useState({
     x: 0,
     y: 0
@@ -102,6 +112,8 @@ export const useChatModel = (): ChatModelType => {
     contextMenuPosition,
     contextMenuUsersData,
     setContextMenuUsersData,
+    contextMenuRoomsNewStatus,
+    setContextMenuRoomsNewStatus,
     contextMenuUsersPosition,
     setContextMenuUsersPosition,
     contextMenuUsersVisible,

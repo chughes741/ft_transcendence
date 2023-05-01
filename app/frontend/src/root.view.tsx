@@ -76,9 +76,7 @@ export function RootView(): JSX.Element {
     fullscreen,
     setSessionToken,
     setPageState,
-    pageState,
     setSelf,
-    // setFullscreen,
     /* Username */
     showChooseUsernameModal
   } = useRootViewModelContext();

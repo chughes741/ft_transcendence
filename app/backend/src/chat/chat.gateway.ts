@@ -1,4 +1,4 @@
-import { Logger, UnauthorizedException, UseGuards } from "@nestjs/common";
+import { Logger, UseGuards } from "@nestjs/common";
 import {
   OnGatewayConnection,
   OnGatewayDisconnect,
@@ -16,7 +16,7 @@ import { ChatMemberEntity, MessageEntity } from "./entities/message.entity";
 import { UserStatus } from "@prisma/client";
 import { KickMemberRequest, UpdateChatMemberRequest } from "./dto/userlist.dto";
 
-import { AuthRequest, UserEntity } from "../auth/dto";
+import { AuthRequest } from "../auth/dto";
 import {
   UpdateChatRoomRequest,
   ChatRoomEntity,
@@ -34,8 +34,6 @@ import {
   DevSuccess
 } from "./chat.types";
 import TokenIsVerified from "src/tokenstorage/token-verify.service";
-import { errorMonitor } from "events";
-import { Token } from "src/tokenstorage/token-storage.service";
 
 const logger = new Logger("ChatGateway");
 

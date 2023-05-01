@@ -27,7 +27,6 @@ import "src/styles/chat/ChatPage.css";
 import { useRoomModal } from "./useRoomModal";
 import { ChatRoomStatus } from "../chat.types";
 import { AddCircleOutline } from "@mui/icons-material";
-import { useRootViewModelContext } from "src/root.context";
 
 interface CreateRoomModalProps {
   showModal: boolean;

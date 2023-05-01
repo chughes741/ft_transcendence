@@ -1,6 +1,6 @@
 import React from "react";
 import ContextMenu from "../../components/ContextMenu";
-import { RoomType, ChatRoomStatus } from "../chat.types";
+import { RoomType, ChatRoomStatus, ChatMemberRank } from "../chat.types";
 
 interface RoomContextMenuProps {
   contextMenuVisible: boolean;
@@ -25,7 +25,7 @@ const RoomContextMenu: React.FC<RoomContextMenuProps> = ({
 }) => {
   if (!contextMenuData) return null;
 
-  const humanFriendlyStatus = (status: ChatRoomStatus) => {
+  const convertStatusToReadableFormat = (status: ChatRoomStatus) => {
     switch (status) {
       case ChatRoomStatus.PASSWORD:
         return "Password";
@@ -46,7 +46,7 @@ const RoomContextMenu: React.FC<RoomContextMenuProps> = ({
         ChatRoomStatus[status] !== ChatRoomStatus.DIALOGUE
       ) {
         options.push({
-          label: humanFriendlyStatus(ChatRoomStatus[status]),
+          label: convertStatusToReadableFormat(ChatRoomStatus[status]),
           onClick: () => onChangeRoomStatus(ChatRoomStatus[status]).then()
         });
       }
@@ -68,20 +68,20 @@ const RoomContextMenu: React.FC<RoomContextMenuProps> = ({
             label: "Invite Users to Room",
             onClick: onInvitePeopleToRoom
           },
-          ...(contextMenuData.rank === "OWNER"
+          ...(contextMenuData.rank === ChatMemberRank.OWNER
             ? [
                 {
                   label: "Change Room Status",
                   submenu: generateSubmenuOptions()
-                }
-              ]
-            : []),
-          ...(contextMenuData.status === ChatRoomStatus.PASSWORD
-            ? [
-                {
-                  label: "Change Room Password",
-                  onClick: onChangeRoomPassword
-                }
+                },
+                ...(contextMenuData.status === ChatRoomStatus.PASSWORD
+                  ? [
+                      {
+                        label: "Change Room Password",
+                        onClick: onChangeRoomPassword
+                      }
+                    ]
+                  : [])
               ]
             : [])
         ]
