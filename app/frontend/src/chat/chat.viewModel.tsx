@@ -246,7 +246,7 @@ export const ChatViewModelProvider = ({ children }) => {
             console.warn("Error response from get rooms: ", response.error);
             resolve(false);
           } else {
-            //console.debug("Success response from get rooms: ", response);
+            console.debug("Success response from get rooms: ", response);
             for (const room of response) {
               await addChatRoom(room);
               handleFetchRoomMessagesPage(room.name, new Date(), 50);

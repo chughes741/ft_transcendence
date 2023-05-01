@@ -761,12 +761,20 @@ export class ChatService {
             room,
             ChatMemberRank.USER
           );
-          return roomEntity instanceof Error ? null : roomEntity;
+          if (roomEntity instanceof Error) {
+            return null;
+          }
+          roomEntity?.members?.find((member) => {
+            if (member.username === username) {
+              roomEntity.queryingUserRank = member.rank;
+              return true;
+            }
+            return false;
+          });
+          return roomEntity;
         })
       )
     ).filter((roomEntity): roomEntity is ChatRoomEntity => roomEntity !== null);
-    // omg what did JS make me do..? @oddtiming
-
     return roomsOfUser;
   }
 }
