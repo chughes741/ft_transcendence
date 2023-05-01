@@ -113,6 +113,7 @@ export const ChatViewModelProvider = ({ children }) => {
       newStatus === ChatRoomStatus.PASSWORD ||
       contextMenuData.status === ChatRoomStatus.PASSWORD
     ) {
+      chatModel.setContextMenuRoomsNewStatus(newStatus);
       setShowPasswordModal(true);
     } else {
       if ((await handleChangeRoomStatus(roomName, newStatus)) === false)

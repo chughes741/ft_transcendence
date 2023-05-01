@@ -158,6 +158,11 @@ const RoomList: React.FC = () => {
     setShowInviteUsersModal(true);
   };
 
+  const handleChangeRoomPassword = () => {
+    setContextMenuRoomsVisible(false);
+    setShowPasswordModal(true);
+  };
+
   /****************/
   /*   Snackbar   */
   /****************/
@@ -210,7 +215,7 @@ const RoomList: React.FC = () => {
         onLeaveRoom={leaveRoom}
         onInvitePeopleToRoom={handleInvitePeopleToRoom}
         onChangeRoomStatus={changeRoomStatus}
-        onChangeRoomPassword={() => setShowPasswordModal(true)}
+        onChangeRoomPassword={handleChangeRoomPassword}
       />
       <RoomPasswordModal
         showModal={showPasswordModal}

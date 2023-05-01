@@ -32,7 +32,11 @@ export const RoomPasswordModal: React.FC<RoomPasswordModalProps> = ({
     useRoomModal(showModal);
 
   const { handleChangeRoomStatus } = useRoomManager();
-  const { contextMenuData: room } = useChatContext();
+  const {
+    contextMenuData: room,
+    contextMenuRoomsNewStatus: newStatus,
+    setContextMenuRoomsNewStatus: setNewStatus
+  } = useChatContext();
   const roomName = room.name;
 
   const [newPassword, setNewPassword] = useState("");
@@ -49,7 +53,7 @@ export const RoomPasswordModal: React.FC<RoomPasswordModalProps> = ({
 
     const success = await handleChangeRoomStatus(
       roomName,
-      ChatRoomStatus.PASSWORD,
+      newStatus,
       password,
       newPassword
     );
@@ -117,47 +121,51 @@ export const RoomPasswordModal: React.FC<RoomPasswordModalProps> = ({
             }}
           />
         )}
-        <DialogContentText>Enter new password:</DialogContentText>
-        <TextField
-          margin="dense"
-          label="New Password"
-          type={showNewPassword ? "text" : "password"}
-          fullWidth
-          value={newPassword}
-          onChange={(e) => setNewPassword(e.target.value)}
-          onKeyDown={handleKeyPress}
-          InputProps={{
-            endAdornment: (
-              <IconButton
-                edge="end"
-                onClick={() => setShowNewPassword(!showNewPassword)}
-              >
-                {showNewPassword ? <FiEye /> : <FiEyeOff />}
-              </IconButton>
-            )
-          }}
-        />
-        <TextField
-          margin="dense"
-          label="Confirm New Password"
-          type={showNewPasswordConfirm ? "text" : "password"}
-          fullWidth
-          value={newPasswordConfirm}
-          onChange={(e) => setNewPasswordConfirm(e.target.value)}
-          onKeyDown={handleKeyPress}
-          InputProps={{
-            endAdornment: (
-              <IconButton
-                edge="end"
-                onClick={() =>
-                  setShowNewPasswordConfirm(!showNewPasswordConfirm)
-                }
-              >
-                {showNewPasswordConfirm ? <FiEye /> : <FiEyeOff />}
-              </IconButton>
-            )
-          }}
-        />
+        {newStatus === ChatRoomStatus.PASSWORD && (
+          <>
+            <DialogContentText>Enter new password:</DialogContentText>
+            <TextField
+              margin="dense"
+              label="New Password"
+              type={showNewPassword ? "text" : "password"}
+              fullWidth
+              value={newPassword}
+              onChange={(e) => setNewPassword(e.target.value)}
+              onKeyDown={handleKeyPress}
+              InputProps={{
+                endAdornment: (
+                  <IconButton
+                    edge="end"
+                    onClick={() => setShowNewPassword(!showNewPassword)}
+                  >
+                    {showNewPassword ? <FiEye /> : <FiEyeOff />}
+                  </IconButton>
+                )
+              }}
+            />
+            <TextField
+              margin="dense"
+              label="Confirm New Password"
+              type={showNewPasswordConfirm ? "text" : "password"}
+              fullWidth
+              value={newPasswordConfirm}
+              onChange={(e) => setNewPasswordConfirm(e.target.value)}
+              onKeyDown={handleKeyPress}
+              InputProps={{
+                endAdornment: (
+                  <IconButton
+                    edge="end"
+                    onClick={() =>
+                      setShowNewPasswordConfirm(!showNewPasswordConfirm)
+                    }
+                  >
+                    {showNewPasswordConfirm ? <FiEye /> : <FiEyeOff />}
+                  </IconButton>
+                )
+              }}
+            />
+          </>
+        )}
       </DialogContent>
       <DialogActions>
         <Button
@@ -170,7 +178,7 @@ export const RoomPasswordModal: React.FC<RoomPasswordModalProps> = ({
           onClick={handleSubmit}
           color="secondary"
         >
-          Change Password
+          Submit
         </Button>
       </DialogActions>
     </Dialog>
