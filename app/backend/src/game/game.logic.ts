@@ -106,10 +106,10 @@ export class GameLogic {
         return;
       }
 
-      const player1Id = await this.prismaService.getUserIdByNick(
+      const player1Id = await this.prismaService.getUserIdByUsername(
         lobby.gamestate.players[0]
       );
-      const player2Id = await this.prismaService.getUserIdByNick(
+      const player2Id = await this.prismaService.getUserIdByUsername(
         lobby.gamestate.players[1]
       );
       this.server.to(lobby.lobby_id).emit(GameEvents.GameEnded, {
