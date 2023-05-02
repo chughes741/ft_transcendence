@@ -19,6 +19,7 @@ export const ChatView: React.FC = () => {
       username: newUsername,
       avatar: self.avatar
     };
+    // Maybe needs to update the self.username upon connection for testing?
     chatGatewayLogin(req);
   };
 

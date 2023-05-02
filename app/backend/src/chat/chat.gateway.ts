@@ -285,15 +285,16 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
       username,
       client.id
     );
-    if (nbConnections === 1) {
+    // FIXME: turn this back on for optimization
+    // if (nbConnections === 1) {
       // Load the list of blocked users and users blocking the logged-in user
       const [blockedUsers, blockingUsers] = await Promise.all([
         this.prismaService.getUsersBlockedBy(userId),
         this.prismaService.getUsersBlocking(userId)
       ]);
       // FIXME: remove before submit
-      // logger.debug(`Blocked users:`, { blockedUsers });
-      // logger.debug(`Blocking users:`, { blockingUsers });
+      logger.debug(`Blocked users:`, { blockedUsers });
+      logger.debug(`Blocking users:`, { blockingUsers });
 
       blockedUsers.forEach((blockedUser) => {
         logger.debug(
@@ -303,17 +304,19 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
           username,
           blockedUser.username
         );
+        this.userConnectionsService.loadBlockedSocketIds(client.id, req.username);
       });
       blockingUsers.forEach((blockingUser) => {
         logger.debug(
           `Adding ${blockingUser.username} as a blocking user of ${username}`
         );
         this.userConnectionsService.addUserToBlocked(
-          blockingUser.username,
-          username
+          username,
+          blockingUser.username
         );
+        this.userConnectionsService.loadBlockedSocketIds(client.id, req.username);
       });
-    }
+    // }
 
     // load the current list of blocked socket ids
     this.userConnectionsService.loadBlockedSocketIds(client.id, username);
