@@ -27,6 +27,7 @@ type StyledBadgeProps = {
   status: UserStatus;
 };
 
+/** Styled Badge */
 const StyledBadge = styled(Badge)<StyledBadgeProps>(({ theme, status }) => ({
   "& .MuiBadge-badge": {
     backgroundColor:
@@ -104,7 +105,12 @@ function ProfileHeader(): JSX.Element | null {
                 item
                 xs={12}
               >
-                <Typography>Matches played: {matchHistory && matchHistory.length ? matchHistory.length : "0"}</Typography>
+                <Typography>
+                  Matches played:{" "}
+                  {matchHistory && matchHistory.length
+                    ? matchHistory.length
+                    : "0"}
+                </Typography>
               </Grid>
               <Grid
                 item
@@ -174,7 +180,7 @@ function MatchHistoryRow(row: MatchHistoryItem): JSX.Element | null {
 function MatchHistory(): JSX.Element | null {
   const { matchHistory } = useProfileViewModelContext();
 
-  /** Data column names */
+  // Data column names
   const cell_names = ["Match type", "Players", "Results", "Date"];
 
   return (
@@ -210,8 +216,9 @@ function MatchHistory(): JSX.Element | null {
  */
 function FriendsListRow(friend: ProfileEntity): JSX.Element | null {
   const { setUser } = useProfileViewModelContext();
+
   const handleClick = () => {
-    console.log("Clicked on friend: " + friend.username);
+    console.debug("Clicked on friend: " + friend.username);
     setUser(friend.username);
   };
 

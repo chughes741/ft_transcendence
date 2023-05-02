@@ -15,7 +15,7 @@ import { UserStatus } from "kingpong-lib";
 import ButtonFunky from "../../components/ButtonFunky";
 import { socket } from "../../contexts/WebSocket.context";
 import UserStatusBadge from "../../components/UserStatusBadge";
-import { AddCircleOutline, PersonAdd } from "@mui/icons-material";
+import { PersonAdd } from "@mui/icons-material";
 
 export interface UserEntity {
   username: string;
@@ -62,7 +62,7 @@ export const InviteUsersModal: React.FC<InviteUsersToRoomProps> = ({
     };
     socket.emit("inviteUsersToRoom", req, (res: boolean | null) => {
       // TODO: implement user notification behavior based on the response
-      console.log("Invite users response: ", res);
+      console.debug("Invite users response: ", res);
     });
 
     closeModal();

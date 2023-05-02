@@ -15,6 +15,9 @@ import { SportsEsports } from "@mui/icons-material";
 import DynamicIconButton from "../DynamicIconButton";
 import { useRootViewModelContext } from "src/root.context";
 import { useSettingsViewModelContext } from "../settings/settings.viewModel";
+import { socket } from "src/contexts/WebSocket.context";
+import { createBrowserHistory } from "history";
+import { createSocketWithHeaders } from "src/contexts/WebSocket.context";
 
 //Set css flexbox options for the toolbar component to create proper object positioning for child elements
 const toolbarStyle = {
@@ -25,11 +28,12 @@ const toolbarStyle = {
 export default function TopBar() {
   const { setPageState } = useRootViewModelContext();
   const { setUser } = useProfileViewModelContext();
-  const { self } = useRootViewModelContext();
+  const { self, setSessionToken, setSelf } = useRootViewModelContext();
   const { handleOpenSettings } = useSettingsViewModelContext();
   const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(
     null
   );
+  const history = createBrowserHistory();
 
   const handleOpenUserMenu = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorElUser(event.currentTarget);
@@ -50,9 +54,23 @@ export default function TopBar() {
     handleCloseUserMenu();
   };
 
-  const onClickLogout = () => {
+  const onClickLogout = async () => {
     /** @todo add logout function */
+    await fetch(`/auth/deleteToken?socketId=${socket.id}`, {
+      method: "POST"
+    });
+    setSessionToken("");
+    setPageState(PageState.Auth);
+    history.replace("/auth");
+    setSelf({ username: "", avatar: "", createdAt: "", status: 0 });
     handleCloseUserMenu();
+    socket.disconnect();
+    socket.close();
+    const headers = {
+      clientId: null,
+      clientToken: null
+    };
+    createSocketWithHeaders(headers);
   };
 
   return (
@@ -98,13 +116,17 @@ export default function TopBar() {
             disableRipple={true}
             disableFocusRipple={true}
           >
-            <Box sx={{ marginRight:"0.5vw", fontWeight:"600"}}>
-              {self.username}
-            </Box>
-            <Avatar
-              src={self.avatar}
-              sx={{ width: "4rem", height: "4rem"  }}
-            />
+            {self && (
+              <>
+                <Box sx={{ marginRight: "0.5vw", fontWeight: "600" }}>
+                  {self.username}
+                </Box>
+                <Avatar
+                  src={self.avatar}
+                  sx={{ width: "4rem", height: "4rem" }}
+                />
+              </>
+            )}
           </IconButton>
           <Menu
             sx={{ mt: "45px" }}

@@ -1,5 +1,5 @@
 /** Libraries */
-import { useCallback, useEffect } from "react";
+import { useEffect } from "react";
 import { Box, Container } from "@mui/material";
 
 /** Providers */
@@ -13,10 +13,13 @@ import { ChatView } from "./chat/chat.view";
 import ProfileView from "./profile/profile.view";
 import { HelmetView } from "./components/Helmet";
 import SettingsView from "./components/settings/settings.view";
-import LoginWith42Button from "./components/Login42";
-import { ConfirmationModal } from "./components/ConfirmationModal";
+import Auth from "./components/Auth";
 import { ChooseUsernameModal } from "./components/ChooseUsernameModal";
 import GameWindow from "./game/game.view";
+import Enable2FA from "./components/Enable2FA";
+import Verify2FA from "./components/Verify2FA";
+import { socket, useWebSocketContext } from "./contexts/WebSocket.context";
+import { createBrowserHistory } from "history";
 
 /**
  * Root view content
@@ -25,38 +28,39 @@ import GameWindow from "./game/game.view";
  */
 
 function RootViewContent(): JSX.Element {
-  const { pageState } = useRootViewModelContext();
-
-  const handleLoginSuccess = (accessToken: string) => {
-    //setAccessToken(accessToken);
-    // setError(null);
-  };
-
-  const handleLoginFailure = (error: Error) => {
-    //setAccessToken(null);
-    // setError(error);
-  };
+  const { pageState, setFullscreen } = useRootViewModelContext();
 
   switch (pageState) {
+    case PageState.Auth: {
+      setFullscreen(true);
+      return <Auth />;
+    }
+    case PageState.Verify2FA: {
+      setFullscreen(true);
+      return <Verify2FA />;
+    }
+    case PageState.Enable2FA: {
+      setFullscreen(true);
+      return <Enable2FA />;
+    }
     case PageState.Home: {
-      return (
-        <LoginWith42Button
-          onSuccess={handleLoginSuccess}
-          onFailure={handleLoginFailure}
-        />
-      );
+      setFullscreen(false);
+      return <div></div>;
     }
     case PageState.Game: {
+      setFullscreen(false);
       return <GameWindow />;
     }
     case PageState.Chat: {
+      setFullscreen(false);
       return <ChatView />;
     }
     case PageState.Profile: {
+      setFullscreen(false);
       return <ProfileView />;
     }
     default: {
-      return <div></div>;
+      return <></>;
     }
   }
 }
@@ -70,46 +74,36 @@ export function RootView(): JSX.Element {
   const {
     /* Fullscreen */
     fullscreen,
-    setFullscreen,
+    setSessionToken,
+    setPageState,
+    setSelf,
     /* Username */
-    showChooseUsernameModal,
-    setShowChooseUsernameModal,
-    handlePickUsername,
-    /* Confirmation modal */
-    showConfirmationModal,
-    setShowConfirmationModal,
-    /* Confirmation modal data */
-    confirmationMessage,
-    setConfirmationMessage
+    showChooseUsernameModal
   } = useRootViewModelContext();
 
-  const handleKeyDown = (event: KeyboardEvent) => {
-    if (event.key === "Escape" && fullscreen) {
-      console.log(`it worked! esc was pressed and fullscreen is ${fullscreen}`);
-      setFullscreen(false);
-    }
+  const { addSocketListener, removeSocketListener } = useWebSocketContext();
+  const history = createBrowserHistory();
+  const handleSetSocketHandler = () => {
+    const handleUnauthorized = async () => {
+      console.log("Redirects to login page");
+      await fetch(`/auth/deleteToken?socketId=${socket.id}`, {
+        method: "POST"
+      });
+      setSessionToken("");
+      setPageState(PageState.Auth);
+      history.replace("/auth");
+      setSelf({ username: "", avatar: "", createdAt: "", status: 0 });
+    };
+    addSocketListener("unauthorized", handleUnauthorized);
   };
 
-  /** Add event listener for keydown event */
+  //Listens to unauthorized error message sent by the backend
   useEffect(() => {
-    window.addEventListener("keydown", handleKeyDown);
-
-    /** Cleanup event listener on unmount */
+    handleSetSocketHandler();
     return () => {
-      window.removeEventListener("keydown", handleKeyDown);
+      removeSocketListener("unauthorized");
     };
-  }, [fullscreen]);
-
-  const onConfirmation = useCallback(
-    (confirmed: boolean) => {
-      console.log(`Username confirmed?: ${confirmed ? "Yes" : "No"}`);
-      setShowConfirmationModal(false);
-      if (!confirmed) return;
-      setConfirmationMessage("");
-      setShowChooseUsernameModal(confirmed ? false : true);
-    },
-    [showConfirmationModal]
-  );
+  }, [socket]);
 
   return (
     <>
@@ -147,17 +141,7 @@ export function RootView(): JSX.Element {
           )}
         </Box>
       </Container>
-      <ConfirmationModal
-        showModal={showConfirmationModal}
-        message={confirmationMessage}
-        closeModal={() => setShowConfirmationModal(false)}
-        onConfirmation={onConfirmation}
-      />
-      <ChooseUsernameModal
-        showModal={showChooseUsernameModal}
-        defaultUsername="schlurp" // FIXME: switch to actual username from 42
-        pickUsername={handlePickUsername}
-      />
+      <ChooseUsernameModal showModal={showChooseUsernameModal} />
     </>
   );
 }

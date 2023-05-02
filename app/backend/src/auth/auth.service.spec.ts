@@ -3,15 +3,16 @@ import { JwtModule } from "@nestjs/jwt";
 import { Test, TestingModule } from "@nestjs/testing";
 import { PrismaModule } from "../prisma/prisma.module";
 import { AuthService } from "./auth.service";
-import { TokenStorageService } from "../token-storage.service";
+import TokenIsVerified from "src/tokenstorage/token-verify.service";
+import { TokenModule } from "src/tokenstorage/token-verify.module";
 
 describe("AuthService", () => {
   let service: AuthService;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      imports: [PrismaModule, ConfigModule.forRoot(), JwtModule],
-      providers: [AuthService, TokenStorageService]
+      imports: [PrismaModule, ConfigModule.forRoot(), JwtModule, TokenModule],
+      providers: [AuthService, TokenIsVerified]
     }).compile();
 
     service = module.get<AuthService>(AuthService);

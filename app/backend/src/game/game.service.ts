@@ -17,8 +17,8 @@ import {
   GameEvents
 } from "kingpong-lib";
 import { ChatService } from "../chat/chat.service";
-import { SendDirectMessageRequest } from "../chat/chat.gateway";
 import { ChatMemberRank } from "@prisma/client";
+import { SendDirectMessageRequest } from "../chat/chat.types";
 
 const logger = new Logger("gameService");
 
@@ -53,14 +53,14 @@ export class GameService {
    *
    * @method createLobby
    * @param {GameTypes.PlayerQueue[]} playerPair
+   * @param {JoinGameQueueRequest} player
    * @returns {}
-   * @async
    */
   async createLobby(
     playerPair: GameTypes.PlayerQueue[],
     player: JoinGameQueueRequest
   ) {
-    logger.log("createLobby() called");
+    logger.debug("createLobby() called");
 
     // Create a chat room for the lobby
     const roomReq: SendDirectMessageRequest = {
@@ -91,11 +91,10 @@ export class GameService {
     //Init new game object
     newLobby.gamestate = this.gameLogic.initNewGame(newLobby.players);
     //Add lobby to map of lobbies
-    //TODO: Swap this to a setter function in the data module
+    /** @todo Swap this to a setter function in the data module */
     this.gameModuleData.addLobby(newLobby);
     // GameModuleData.lobbies.push(newLobby);
-    console.log("Sizeof lobbies: ", GameModuleData.lobbies.length);
-    console.log(GameModuleData.lobbies[0]);
+    logger.debug("Sizeof lobbies: ", GameModuleData.lobbies.length);
 
     //Create payload
     const payload: LobbyCreatedEvent = {
@@ -119,33 +118,33 @@ export class GameService {
    * Adds player to the game queue and tries to find a match
    *
    * @method joinGameQueue
+   * @param {Socket} client
    * @param {JoinGameQueueRequest} player
    * @returns {Promise<boolean>}
-   * @async
    */
   async joinGameQueue(
     client: Socket,
     player: JoinGameQueueRequest
   ): Promise<boolean> {
-    logger.log("joinGameQueue() called");
+    logger.debug("joinGameQueue() called");
 
-    //Check if player is already in queue
+    // Check if player is already in queue
     if (!this.gameModuleData.checkQueue(player.username)) {
-      //Create new queue member & add to queue array
+      // Create new queue member & add to queue array
       const newPlayer: GameTypes.PlayerQueue = {
         username: player.username,
-        join_time: 0, //should be player.join_time. type needs to be swapped to number in kingpong-lib
+        join_time: 0 /** @todo should be player.join_time. type needs to be swapped to number in kingpong-lib */,
         // client_mmr: getClientMMR;
         socket_id: client.id
       };
       this.gameModuleData.addQueue(newPlayer);
     }
 
-    //Attempt to retrieve a pair of players
+    // Attempt to retrieve a pair of players
     const playerPair: GameTypes.PlayerQueue[] =
       this.gameModuleData.getPairQueue();
 
-    //If successful call createLobby()
+    // If successful call createLobby()
     if (playerPair) {
       this.createLobby(playerPair, player);
     }
@@ -157,10 +156,11 @@ export class GameService {
    * Removes player from the game queue
    *
    * @param player
-   * @returns Return bool on success?
+   * @param {LeaveGameQueueRequest} player
+   * @returns {Promise<void>}
    */
-  async leaveGameQueue(player: LeaveGameQueueRequest) {
-    logger.log("leaveGameQueue() called");
+  async leaveGameQueue(player: LeaveGameQueueRequest): Promise<void> {
+    logger.debug("leaveGameQueue() called");
 
     //Check if player is already in the queue
     if (!this.gameModuleData.checkQueue(player.username)) {
@@ -171,17 +171,16 @@ export class GameService {
   /**
    * Creates a new game lobby with sender and invitee as players
    *
-   * @method sendGameInvite
+   * @param {JoinGameInviteRequest} payload
    * @returns {Promise<LobbyCreatedEvent>}
-   * @async
    */
   async sendGameInvite(
     payload: JoinGameInviteRequest
   ): Promise<LobbyCreatedEvent> {
-    logger.log("joinGameInvite() called");
+    logger.debug("joinGameInvite() called");
 
-    //If the invited client responds then create lobby
-    /** @todo  */
+    // If the invited client responds then create lobby
+    /** @todo something? */
     return new LobbyCreatedEvent();
   }
 
@@ -191,13 +190,14 @@ export class GameService {
 
   /**
    * Handle player readiness
+   *
    * @param {PlayerReadyRequest} payload
    * @returns {Promise<boolean>}
    */
   async playerReady(payload: PlayerReadyRequest): Promise<boolean> {
-    logger.log("playerReady() called");
+    logger.debug("playerReady() called");
 
-    logger.log("lobby_id: " + this.gameModuleData.getLobby(payload.lobby_id));
+    logger.debug("lobby_id: " + this.gameModuleData.getLobby(payload.lobby_id));
     if (this.gameModuleData.getLobby(payload.lobby_id)) {
       this.gameModuleData.updatePlayerReady(payload);
       this.gameStart(payload.lobby_id);
@@ -208,12 +208,11 @@ export class GameService {
   /**
    * Start the game if both players are ready
    *
-   * @method gameStart
-   * @returns {}
-   * @async
+   * @param {string} lobby_id
+   * @returns {Promise<void>}
    */
-  async gameStart(lobby_id: string) {
-    logger.log("gameStart() called");
+  async gameStart(lobby_id: string): Promise<void> {
+    logger.debug("gameStart() called");
 
     // Retrieve the correct lobby
     const lobby: GameTypes.gameLobby = this.gameModuleData.getLobby(lobby_id);
@@ -229,10 +228,9 @@ export class GameService {
    *
    * @method clientUpdate
    * @param {ClientGameStateUpdateRequest} payload
-   * @returns {}
-   * @async
+   * @returns {Promise<void>}
    */
-  async clientUpdate(payload: ClientGameStateUpdateRequest) {
+  async clientUpdate(payload: ClientGameStateUpdateRequest): Promise<void> {
     //Find the correct match using match_id and update paddle pos
     this.gameModuleData.setPaddlePosition(payload);
   }

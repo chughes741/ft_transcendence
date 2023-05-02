@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { ProfileEntity, UserStatus } from "kingpong-lib";
+import { ProfileEntity } from "kingpong-lib";
 
 /**
  * Each page view is a value
@@ -7,11 +7,13 @@ import { ProfileEntity, UserStatus } from "kingpong-lib";
  * @enum {string}
  */
 export enum PageState {
+  Auth = "Auth",
   Home = "Home",
   Game = "Game",
   Chat = "Chat",
   Profile = "Profile",
-  Loader = "Loader"
+  Verify2FA = "Verify2FA",
+  Enable2FA = "Enable2FA"
 }
 
 /**
@@ -32,10 +34,6 @@ export interface RootModelType {
   showChooseUsernameModal: boolean;
   setShowChooseUsernameModal: (fullscreen: boolean) => void;
 
-  showConfirmationModal: boolean;
-  setShowConfirmationModal: (show: boolean) => void;
-  confirmationMessage: string;
-  setConfirmationMessage: (message: string) => void;
   sessionToken?: string;
   setSessionToken?: (sessionToken: string) => void;
 }
@@ -47,19 +45,11 @@ export interface RootModelType {
  */
 export const useRootModel = (): RootModelType => {
   /** @todo null until logged in */
-  const [self, setSelf] = useState<ProfileEntity>({
-    username: "schlurp",
-    avatar: "https://i.pravatar.cc/150",
-    status: UserStatus.ONLINE,
-    createdAt: new Date().toDateString()
-  });
-  const [pageState, setPageState] = useState<PageState>(PageState.Home);
-  const [fullscreen, setFullscreen] = useState<boolean>(false);
+  const [self, setSelf] = useState<ProfileEntity>(new ProfileEntity());
+  const [pageState, setPageState] = useState<PageState>(PageState.Auth);
+  const [fullscreen, setFullscreen] = useState<boolean>(true);
   const [showChooseUsernameModal, setShowChooseUsernameModal] =
     useState<boolean>(false);
-  const [showConfirmationModal, setShowConfirmationModal] =
-    useState<boolean>(false);
-  const [confirmationMessage, setConfirmationMessage] = useState<string>("");
   const [sessionToken, setSessionToken] = useState<string>("");
 
   return {
@@ -71,10 +61,6 @@ export const useRootModel = (): RootModelType => {
     setFullscreen,
     showChooseUsernameModal,
     setShowChooseUsernameModal,
-    showConfirmationModal,
-    setShowConfirmationModal,
-    confirmationMessage,
-    setConfirmationMessage,
     sessionToken,
     setSessionToken
   };

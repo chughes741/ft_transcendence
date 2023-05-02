@@ -13,9 +13,14 @@ import {
   PrismaClientExceptionFilterWs
 } from "./prisma-client-exception.filter";
 import { NestExpressApplication } from "@nestjs/platform-express";
+import * as bodyParser from "body-parser";
+
+const logger = new Logger("main");
 
 async function bootstrap() {
-  const app = await NestFactory.create<NestExpressApplication>(AppModule);
+  const app = await NestFactory.create<NestExpressApplication>(AppModule, {
+    logger: ["error", "warn", "log", "debug"]
+  });
 
   app.useGlobalPipes(
     new ValidationPipe({
@@ -63,8 +68,8 @@ async function bootstrap() {
   app.useStaticAssets(join(__dirname, "..", "img"), {
     prefix: "/img"
   });
-
+  app.use(bodyParser.json({ limit: "50mb" }));
   await app.listen(config.port);
-  Logger.log("Application listening on port " + config.port);
+  logger.debug("Application listening on port " + config.port);
 }
 bootstrap();

@@ -1,19 +1,15 @@
-import { Logger } from "@nestjs/common";
-import { Injectable } from "@nestjs/common";
+import { Logger, Injectable } from "@nestjs/common";
 import { SchedulerRegistry } from "@nestjs/schedule";
 import { GameConfig, PaddleConfig, BallConfig } from "./config/game.config";
 import { WebSocketServer, WebSocketGateway } from "@nestjs/websockets";
 import { Server } from "socket.io";
 import { Vec2 } from "./vector";
-import { GameData, BallData, gameLobby, PaddleData } from "./game.types";
+import { GameData, BallData, gameLobby, MatchType } from "./game.types";
 import { degToRad, checkIntersect } from "./game.utils";
-import {
-  ServerGameStateUpdateEvent,
-  GameEvents,
-  GameState,
-  GameEndedEvent,
-  Ball
-} from "kingpong-lib";
+import { GameEvents, GameState } from "kingpong-lib";
+import { GameType } from "@prisma/client";
+import { PrismaService } from "../prisma/prisma.service";
+
 const logger = new Logger("gameLogic");
 
 @WebSocketGateway({
@@ -23,7 +19,10 @@ const logger = new Logger("gameLogic");
 })
 @Injectable()
 export class GameLogic {
-  constructor(private schedulerRegistry: SchedulerRegistry) {}
+  constructor(
+    private schedulerRegistry: SchedulerRegistry,
+    private prismaService: PrismaService
+  ) {}
 
   @WebSocketServer()
   public server: Server;
@@ -68,7 +67,7 @@ export class GameLogic {
     //Add new interval to scheduler
     try {
       this.schedulerRegistry.getInterval("gameUpdateInterval" + lobby.lobby_id);
-      logger.log("Error creating gameUpdateInterval");
+      logger.error("Error creating gameUpdateInterval");
     } catch {
       this.addGameUpdateInterval(
         lobby,
@@ -83,7 +82,7 @@ export class GameLogic {
   /*************************************************************************************/
 
   //Calculate game state and send server update
-  async sendServerUpdate(lobby: gameLobby) {
+  async sendServerUpdate(lobby: gameLobby): Promise<void> {
     lobby.gamestate = this.calculateGameState(lobby.gamestate);
 
     //Build payload
@@ -100,12 +99,40 @@ export class GameLogic {
       lobby.gamestate.score[0] >= GameConfig.maxScore ||
       lobby.gamestate.score[1] >= GameConfig.maxScore
     ) {
+      // Check if interval still exists
+      try {
+        this.deleteInterval("gameUpdateInterval" + lobby.lobby_id);
+      } catch (error) {
+        return;
+      }
+
+      const player1Id = await this.prismaService.getUserIdByNick(
+        lobby.gamestate.players[0]
+      );
+      const player2Id = await this.prismaService.getUserIdByNick(
+        lobby.gamestate.players[1]
+      );
       this.server.to(lobby.lobby_id).emit(GameEvents.GameEnded, {
         match_id: lobby.lobby_id,
         lobby_id: lobby.lobby_id,
         game_state: gamestate
       });
-      this.deleteInterval("gameUpdateInterval" + lobby.lobby_id);
+      const match: MatchType = {
+        player1Id,
+        player2Id,
+        scorePlayer1: lobby.gamestate.score[0],
+        scorePlayer2: lobby.gamestate.score[1],
+        timestamp: new Date(),
+        gameType: GameType.UNRANKED
+      };
+      logger.debug("Match: " + JSON.stringify(match));
+      try {
+        const ret = await this.prismaService.addMatch(match);
+        logger.debug("Successfully added match to database");
+      } catch (error) {
+        logger.error("Problem with sendServerUpdate", error);
+      }
+
       return;
     }
 
@@ -142,10 +169,6 @@ export class GameLogic {
     //Get a time difference between last update and this update
     const time_diff: number = (Date.now() - gamestate.last_update_time) / 1000;
 
-    // console.log("padleft: " + gamestate.paddle_left.pos.y);
-    // console.log("padright: " + gamestate.paddle_right.pos.y);
-    /** This floods the terminal */
-    // console.log("score: " + gamestate.score[0] + " | " + gamestate.score[1]);
     //Find new ball position
     curBall.pos = Vec2.scaleAndAdd(
       prevBall.pos,
@@ -227,7 +250,7 @@ export class GameLogic {
         gamestate.score[1]++;
         return curBall;
       }
-    } else if (curBall.pos.y >= (GameConfig.playAreaHeight / 2))  {
+    } else if (curBall.pos.y >= GameConfig.playAreaHeight / 2) {
       const intersect: Vec2 = checkIntersect(
         prevBall.pos,
         curBall.pos,
@@ -316,18 +339,17 @@ export class GameLogic {
     name: string,
     milliseconds: number
   ) {
-    const lobby_id: string = lobby.lobby_id;
     //Set callback function to gamestate
     const interval = setInterval(() => {
       this.sendServerUpdate(lobby);
     }, milliseconds);
     this.schedulerRegistry.addInterval(name, interval);
-    logger.log(`Interval ${name} created`);
+    logger.debug(`Interval ${name} created`);
   }
 
   //Delete an interval
   deleteInterval(name: string) {
     this.schedulerRegistry.deleteInterval(name);
-    logger.log(`Interval ${name} deleted!`);
+    logger.debug(`Interval ${name} deleted!`);
   }
 }

@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    
+    <meta charset="utf-8">
+    <title>backend/src/game/game.gateway.ts - Kingpong</title>
+    
+    <meta name="description" content="Documentation for the kingpong website" />
+    
+    
+    
+    <meta property="og:title" content="Kingpong Docs"/>
+    <meta property="og:type" content="website"/>
+    <meta property="og:image" content=""/>
+    
+    <meta property="og:url" content="https://chughes741.github.io/ft_transcendence"/>
+    
+    <script src="scripts/prettify/prettify.js"></script>
+    <script src="scripts/prettify/lang-css.js"></script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc.css">
+    <script src="scripts/nav.js" defer></script>
+    
+    <script src="scripts/commonNav.js" defer></script>
+    
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body>
+
+<input type="checkbox" id="nav-trigger" class="nav-trigger" />
+<label for="nav-trigger" class="navicon-button x">
+  <div class="navicon"></div>
+</label>
+
+<label for="nav-trigger" class="overlay"></label>
+
+<nav >
+    
+    <input type="text" id="nav-search" placeholder="Search" />
+    
+    
+</nav>
+
+<div id="main">
+    
+    <h1 class="page-title">backend/src/game/game.gateway.ts</h1>
+    
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>import {
+  WebSocketServer,
+  WebSocketGateway,
+  SubscribeMessage,
+  MessageBody,
+  ConnectedSocket
+} from "@nestjs/websockets";
+import { Server, Socket } from "socket.io";
+import { GameService } from "./game.service";
+import {
+  ClientGameStateUpdateRequest,
+  JoinGameInviteRequest,
+  LeaveGameQueueRequest,
+  LobbyCreatedEvent,
+  PlayerReadyRequest,
+  JoinGameQueueRequest,
+  GameEvents
+} from "kingpong-lib";
+import { GameModuleData } from "./game.data";
+
+/**
+ * Websocket gateway for game module
+ */
+@WebSocketGateway({
+  cors: {
+    origin: "*"
+  }
+})
+export class GameGateway {
+  constructor(
+    private readonly gameService: GameService,
+    private gameModuleData: GameModuleData
+  ) {}
+
+  // Load the server socket locally
+  @WebSocketServer()
+  server: Server;
+
+  /****************************************************************************/
+  /**                              Queue &amp; Invite                            **/
+  /****************************************************************************/
+
+  /**
+   * Handle direct game invite event
+   * @param {JoinGameInviteDto} joinGameInviteDto
+   * @returns {Promise&lt;LobbyCreatedEvent>}
+   * @listens sendGameInvite
+   */
+  @SubscribeMessage(GameEvents.SendGameInvite)
+  async sendGameInvite(
+    @MessageBody() payload: JoinGameInviteRequest
+  ): Promise&lt;LobbyCreatedEvent> {
+    return this.gameService.sendGameInvite(payload);
+  }
+
+  /**
+   * Handle the join queue event
+   * @param {JoinGameQueueRequest} payload
+   * @param {Socket} client
+   * @returns {Promise&lt;boolean>}
+   * @listens GameEvents.JoinGameQueue
+   */
+  @SubscribeMessage(GameEvents.JoinGameQueue)
+  async joinGameQueue(
+    @ConnectedSocket() client: Socket,
+    @MessageBody() payload: JoinGameQueueRequest
+  ): Promise&lt;boolean> {
+    return this.gameService.joinGameQueue(client, payload);
+  }
+
+  /**
+   * Handle the leave queue event
+   * @param {Socket} client
+   * @param {LeaveGameQueueRequest} payload
+   * @listens GameEvents.LeaveGameQueue
+   */
+  @SubscribeMessage(GameEvents.LeaveGameQueue)
+  async leaveGameQueue(
+    @ConnectedSocket() client: Socket,
+    @MessageBody() payload: LeaveGameQueueRequest
+  ) {
+    this.gameService.leaveGameQueue(payload);
+  }
+
+  /****************************************************************************/
+  /**                                    Game                                **/
+  /****************************************************************************/
+
+  /**
+   * Handle playerReady event and start game when both players ready
+   * @param {PlayerReadyRequest} payload
+   * @returns {Promise&lt;boolean>}
+   * @listens GameEvents.PlayerReady
+   */
+  @SubscribeMessage(GameEvents.PlayerReady)
+  async playerReady(
+    @MessageBody() payload: PlayerReadyRequest
+  ): Promise&lt;boolean> {
+    return this.gameService.playerReady(payload);
+  }
+
+  /**
+   * Handle game state updates from clients
+   * @param {ClientGameStateUpdateRequest} payload
+   * @listens GameEvents.ClientGameStateUpdate
+   */
+  @SubscribeMessage(GameEvents.ClientGameStateUpdate)
+  async clientUpdate(@MessageBody() payload: ClientGameStateUpdateRequest) {
+    this.gameService.clientUpdate(payload);
+    return true;
+  }
+}
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+    
+    
+</div>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 4.0.2</a> on Tue Apr 25 2023 20:32:20 GMT-0400 (Eastern Daylight Time) using the <a href="https://github.com/clenemt/docdash">docdash</a> theme.
+</footer>
+
+<script>prettyPrint();</script>
+<script src="scripts/polyfill.js"></script>
+<script src="scripts/linenumber.js"></script>
+
+<script src="scripts/search.js" defer></script>
+
+
+
+</body>
+</html>

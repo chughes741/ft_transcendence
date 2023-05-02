@@ -7,11 +7,7 @@ import { socket } from "src/contexts/WebSocket.context";
 import { MatchHistoryItem, ProfileEntity, ProfileEvents } from "kingpong-lib";
 import { ProfileModelType, useProfileModel } from "./profile.model";
 
-/**
- * ProfileViewModelType
- *
- * @interface ProfileViewModelType
- */
+/** ProfileViewModelType */
 export interface ProfileViewModelType extends ProfileModelType {
   getMatchHistory: () => Promise<void>;
   getProfile: () => Promise<void>;
@@ -21,16 +17,12 @@ export interface ProfileViewModelType extends ProfileModelType {
   getLossPercentage: () => number;
 }
 
-/**
- * ProfileViewModelContext
- *
- * @type {React.Context<ProfileViewModelType | null>}
- */
+/** ProfileViewModelContext */
 export const ProfileViewModelContext: React.Context<ProfileViewModelType | null> =
   createContext<ProfileViewModelType | null>(null);
 
 /**
- *  Provides the ProfileViewModelContext to the ProfileView
+ * Provides the ProfileViewModelContext to the ProfileView
  *
  * @returns {JSX.Element}
  */
@@ -50,13 +42,16 @@ export const ProfileViewModelProvider = ({ children }) => {
    * Sends a getMatchHistory request to the server
    *
    * @todo Change MatchHistoryItem to MatchHistoryEntity once kingpong-lib is updated
+   *
+   * @returns {Promise<void>}
    */
   const getMatchHistory = async (): Promise<void> => {
-    console.log("getMatchHistory", user);
+    console.debug("getMatchHistory", user);
     if (!user || user === "") {
-      console.log("No user found");
+      console.warn("No user found");
       return;
     }
+
     socket.emit(
       ProfileEvents.GetMatchHistory,
       { username: user, number_of_items: 50 },
@@ -65,36 +60,56 @@ export const ProfileViewModelProvider = ({ children }) => {
       }
     );
   };
+
+  /**
+   * Generates a win percentage based on the match history
+   *
+   * @returns {number} - Win percentage
+   */
   const getWinPercentage = () => {
+    if (!matchHistory) return;
+
     let numWins = 0;
     for (let i = 0; i < matchHistory.length; i++) {
       if (matchHistory[i].score_player1 > matchHistory[i].score_player2)
         numWins++;
     }
+
     let percent: number = (numWins / matchHistory.length) * 100;
     if (isNaN(percent)) percent = 0;
+
     return percent;
   };
 
+  /**
+   * Generates a loss percentage based on the match history
+   *
+   * @returns {number} - Loss percentage
+   */
   const getLossPercentage = () => {
+    if (!matchHistory) return;
+
     let numLosses = 0;
     for (let i = 0; i < matchHistory.length; i++) {
       if (matchHistory[i].score_player1 < matchHistory[i].score_player2)
         numLosses++;
     }
+
     let percent: number = (numLosses / matchHistory.length) * 100;
     if (isNaN(percent)) percent = 0;
 
     return percent;
   };
+
   /**
    * Sends a getProfile request to the server
+   *
+   * @returns {Promise<void>}
    */
   const getProfile = async (): Promise<void> => {
-    if (user === null) {
-      return;
-    }
-    console.log("getProfile", user);
+    if (user === null) return;
+
+    console.debug("getProfile", user);
     socket.emit(
       ProfileEvents.GetProfile,
       { username: user },
@@ -108,12 +123,13 @@ export const ProfileViewModelProvider = ({ children }) => {
    * Sends a getFriends request to the server
    *
    * @todo Change message name to enum once kingpong-lib is updated
+   *
+   * @returns {Promise<void>}
    */
   const getFriends = async (): Promise<void> => {
-    if (user === null) {
-      return;
-    }
-    console.log("getFriendsRequest", user);
+    if (user === null) return;
+
+    console.debug("getFriendsRequest", user);
     socket.emit(
       ProfileEvents.GetFriends,
       { username: user },
@@ -131,10 +147,9 @@ export const ProfileViewModelProvider = ({ children }) => {
    * @returns {Promise<void>}
    */
   const addFriend = async (username: string, friend: string): Promise<void> => {
-    if (username === null || friend === null) {
-      return;
-    }
-    console.log("addFriend", username, friend);
+    if (username === null || friend === null) return;
+
+    console.debug("addFriend", username, friend);
     socket.emit(ProfileEvents.AddFriend, {
       username: username,
       friend: friend
@@ -173,16 +188,18 @@ export const ProfileViewModelProvider = ({ children }) => {
 };
 
 /**
- *  Returns the ProfileViewModelContext
+ * Returns the ProfileViewModelContext
  *
  * @returns {ProfileViewModelType}
  */
 export const useProfileViewModelContext = (): ProfileViewModelType => {
   const context = useContext(ProfileViewModelContext);
+
   if (context === undefined) {
     throw new Error(
       "useProfileViewModelContext must be used within a ProfileViewModelProvider"
     );
   }
+
   return context;
 };

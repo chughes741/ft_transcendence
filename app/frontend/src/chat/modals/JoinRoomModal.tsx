@@ -68,7 +68,7 @@ export const JoinRoomModal: React.FC<JoinRoomModalProps> = ({
       alert("Please select a room.");
       return;
     }
-    console.log("Joining room modal: ", selectedRoom.roomName, password);
+    console.debug("Joining room modal: ", selectedRoom.roomName, password);
     onJoinRoom(selectedRoom.roomName, password);
     setSelectedRoom(null);
     setPassword("");
@@ -85,12 +85,13 @@ export const JoinRoomModal: React.FC<JoinRoomModalProps> = ({
   };
 
   useEffect(() => {
+    console.debug("JoinRoomModal: ", self.username);
     // Send a socket event to get the list of available rooms
     socket.emit(
       "listAvailableChatRooms",
       self.username,
       (rooms: AvailableRoomEntity[]) => {
-        console.log("Received available rooms: ", rooms);
+        console.debug("Received available rooms: ", rooms);
         setAvailableRooms(rooms);
       }
     );
@@ -130,15 +131,15 @@ export const JoinRoomModal: React.FC<JoinRoomModalProps> = ({
             >
               <AvatarGroup total={option.nbMembers + 1}>
                 <UserStatusBadge
-                  status={option.owner.status}
+                  status={option.owner?.status}
                   anchorOrigin={{
                     vertical: "top",
                     horizontal: "left"
                   }}
                 >
                   <Avatar
-                    src={option.owner.avatar}
-                    alt={option.owner.username}
+                    src={option.owner?.avatar}
+                    alt={option.owner?.username}
                   />
                 </UserStatusBadge>
               </AvatarGroup>

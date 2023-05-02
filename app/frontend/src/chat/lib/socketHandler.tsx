@@ -6,7 +6,7 @@ import {
 
 // Define handlers
 export const handleConnectCreator = () => () => {
-  console.log("Successfully connected to the server");
+  console.debug("Successfully connected to the server");
 };
 
 export const handleNewMessageCreator =
@@ -16,7 +16,7 @@ export const handleNewMessageCreator =
     convertMessagePayloadToMessageType
   ) =>
   (newMessage: MessagePayload): boolean => {
-    console.log("Ding ding, you've got mail:", newMessage);
+    console.debug("New Message:", newMessage);
     const messageData = convertMessagePayloadToMessageType(newMessage);
     addMessageToRoom(newMessage.roomName, messageData);
     return newMessage.roomName === currentRoomName;
@@ -24,8 +24,7 @@ export const handleNewMessageCreator =
 
 export const handleNewChatRoomMemberCreator =
   (updateRooms) => (member: RoomMemberEntity) => {
-    console.log("New room member: ", member);
-    console.log(member.user);
+    console.debug("New room member: ", member);
     updateRooms((newRooms) => {
       if (!newRooms || !newRooms[member.roomName]) return;
       newRooms[member.roomName].users[member.user.username] = member.user;
@@ -35,7 +34,7 @@ export const handleNewChatRoomMemberCreator =
 export const handleChatRoomMemberLeftCreator =
   (updateRooms) =>
   ({ roomName, username }: LeaveRoomRequest) => {
-    console.log(`User ${username} left room ${roomName}`);
+    console.debug(`User ${username} left room ${roomName}`);
     updateRooms((newRooms) => {
       delete newRooms[roomName].users[username];
     });
@@ -43,7 +42,7 @@ export const handleChatRoomMemberLeftCreator =
 
 export const handleChatRoomMemberKickedCreator =
   (updateRooms) => (member: RoomMemberEntity) => {
-    console.log("Room member kicked: ", member.user);
+    console.debug("Room member kicked: ", member.user);
     updateRooms((newRooms) => {
       delete newRooms[member.roomName].users[member.user.username];
     });
@@ -51,10 +50,7 @@ export const handleChatRoomMemberKickedCreator =
 
 export const handleAddedToNewChatRoomCreator =
   (addChatRoom, setShowNewRoomSnackbar) => (room) => {
-    console.log(
-      "You have been added to a new chat room, adding it to the list"
-    );
-    console.log(room);
+    console.debug("You have been added to a new chat room", room);
     addChatRoom(room);
     setShowNewRoomSnackbar(true);
   };

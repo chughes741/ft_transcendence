@@ -1,0 +1,65 @@
+.two-fa-body-page {
+  flex-direction: column;
+}
+
+.title-two-fa {
+  font-size: 2rem;
+  margin: 1rem;
+  color: #f1f1f1;
+}
+
+.text-two-fa {
+  font-size: 1.5rem;
+  margin-bottom: 1rem;
+}
+
+.image-qr {
+  width: 25vh;
+  height: 25vh;
+  align-self: center;
+  margin-bottom: 1rem;
+}
+
+.label {
+  font-size: 2rem;
+  margin: 1rem;
+  color: #f1f1f1;
+}
+
+.input-container {
+}
+
+.input-verify-qr {
+  width: 20vw;
+  height: 5vh;
+  font-size: 1.5rem !important;
+  margin: 1rem !important;
+  align-self: center;
+  padding-left: 0.6rem;
+  background-color: #4d4e53;
+  border: 1px solid #9f9f9f;
+}
+
+.buttons-container {
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+  height: auto;
+  justify-content: center;
+}
+
+.my-ripple {
+  opacity: 0.5;
+  animation: enter 550ms ease-in-out;
+}
+
+@keyframes enter {
+  0% {
+    transform: scale(0);
+    opacity: 0.1;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 0.5;
+  }
+}

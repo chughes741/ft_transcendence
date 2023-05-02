@@ -55,7 +55,7 @@ const RoomListItem: React.FC<RoomListItemProps> = ({
           primary={
             <>
               {getRankIcon(room.rank, {})}
-              {room.name}
+              {room.displayName}
             </>
           }
           secondary={

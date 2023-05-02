@@ -7,14 +7,18 @@ import {
   HttpStatus,
   Post,
   UseFilters,
-  Logger
+  Logger,
+  UseGuards
 } from "@nestjs/common";
 import { ApiTags } from "@nestjs/swagger";
 import { SubscribeMessage } from "@nestjs/websockets";
 import { PrismaClientExceptionFilterHttp } from "../prisma-client-exception.filter";
 import { AuthService } from "./auth.service";
 import { GetUser } from "./decorators";
-import { AuthRequest } from "./dto";
+import { AuthRequest, UserEntity } from "./dto";
+import { Token } from "src/tokenstorage/token-storage.service";
+import { UserStatus } from "@prisma/client";
+import TokenIsVerified from "src/tokenstorage/token-verify.service";
 
 const logger = new Logger("AuthController");
 
@@ -25,52 +29,64 @@ export class AuthController {
   // Here, private means that authService is a member attribute
   constructor(private authService: AuthService) {}
 
+  @Post("testing")
+  @UseGuards(TokenIsVerified)
+  public async functionTesttoCall() {
+    try {
+      return true;
+    } catch (error) {
+      return false;
+    }
+  }
+
   @HttpCode(HttpStatus.CREATED)
   @Post("signup")
   signup(@Body() dto: AuthRequest) {
     // The barren export pattern in ./dto/index.ts allows automatic exposition
-
-    logger.log({
-      dto
-    }); // Creates an object and assigns it
-
     return this.authService.signup(dto);
   }
 
   @Get("signup")
   signup_ft(@Body() dto: AuthRequest) {
-    logger.log("Succesfully redirected!");
-
-    logger.log({
-      dto
-    }); // Creates an object and assigns it
-
+    logger.debug("Succesfully redirected!");
     return dto;
   }
 
   @Get("signin")
   signin_ft(@GetUser() user) {
     // The barren export pattern in ./dto/index.ts allows automatic exposition
-
-    logger.log("Succesfully signed in!");
-
-    logger.log({
-      user
-    }); // Creates an object and assigns it
-
+    logger.debug("Succesfully signed in!", { user });
     return user;
   }
 
   @HttpCode(HttpStatus.OK)
   @Post("signin")
   signin(@Body() dto: AuthRequest) {
-    return this.authService.signin(dto);
+    const info: UserEntity = {
+      username: dto.username,
+      avatar: "",
+      firstName: dto.firstName,
+      lastName: dto.lastName,
+      email: dto.email,
+      status: UserStatus.ONLINE
+    };
+    return this.authService.signin(info);
   }
 
-  @Post("refresh")
+  @Post("refreshToken")
   @SubscribeMessage("refresh")
-  async refreshToken(@Body("refresh_token") refresh_token: string) {
-    return this.authService.refreshToken(refresh_token);
+  async refreshToken(@Body("refresh_token") refresh_token: Token) {
+    return;
+  }
+
+  @Post("confirmID")
+  async confirmID(
+    @Query("previousID") previousID: string,
+    @Query("newID") newID: string
+  ) {
+    logger.log(`Confirming new Socket ID : [${newID}]`);
+    this.authService.confirmID(previousID, newID);
+    return;
   }
 
   @Get("token")
@@ -78,18 +94,57 @@ export class AuthController {
     @Query("code") authorizationCode: string,
     @Query("socketId") socketId: string
   ) {
-    logger.log("Inside Generate42Token");
-    logger.log("Authorisation code : ", authorizationCode);
-    logger.log("Socket ID: ", authorizationCode);
-    const token = await this.authService.getAuht42(socketId, authorizationCode);
-    return { token };
+    logger.debug("Inside Generate42Token");
+    return await this.authService.getAuht42(socketId, authorizationCode);
   }
 
-  @Get("authorisationURL")
-  async generateAuth42Url() {
-    const REDIRECT_URI = "http://localhost:3000/";
-    const CLIENT_ID =
-      "u-s4t2ud-51fb382cccb5740fc1b9129a3ddacef8324a59dc4c449e3e8ba5f62acb2079b6";
-    return `https://api.intra.42.fr/oauth/authorize?client_id=${CLIENT_ID}&redirect_uri=${REDIRECT_URI}&response_type=code`;
+  @Get("qrCode")
+  async generateQrCode() {
+    logger.debug("Generating QrCode");
+    return await this.authService.enableTwoFactorAuth();
+  }
+
+  @Get("getCredentials")
+  async getCredentials() {
+    logger.debug("Get Credentials");
+    return await this.authService.getCredentials();
+  }
+
+  @Get("changeUsername")
+  async changeUsername(
+    @Query("current") currentName: string,
+    @Query("newname") newName: string
+  ) {
+    return await this.authService.changeName(currentName, newName);
+  }
+
+  @Get("verifyQrCode")
+  @UseGuards(TokenIsVerified)
+  async verifyQrCode(
+    @Query("secret") secret: string,
+    @Query("code") code: string,
+    @Query("username") username
+  ) {
+    return await this.authService.verifyQrCode(secret, code, username);
+  }
+
+  @Get("update2FA")
+  @UseGuards(TokenIsVerified)
+  async update2FA(@Query("username") userName: string) {
+    return await this.authService.update2FA(userName);
+  }
+
+  @Post("deleteToken")
+  async deleteToken(@Query("socketId") socketId: string) {
+    logger.debug("Token deletion engage");
+
+    this.authService.deleteToken(socketId);
+    return;
+  }
+
+  @Get("getEnable2fa")
+  @UseGuards(TokenIsVerified)
+  async getEnable2fa(@Query("username") username: string) {
+    return await this.authService.getEnable2fa(username);
   }
 }

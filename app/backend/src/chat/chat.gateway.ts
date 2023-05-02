@@ -1,189 +1,72 @@
-import { Logger } from "@nestjs/common";
+import { Logger, UseGuards } from "@nestjs/common";
 import {
   OnGatewayConnection,
   OnGatewayDisconnect,
-  OnGatewayInit,
   SubscribeMessage,
   WebSocketGateway,
   WebSocketServer
 } from "@nestjs/websockets";
 import { Socket, Server } from "socket.io";
 import { PrismaService } from "../prisma/prisma.service";
-import { ChatMemberRank, ChatRoomStatus, User } from "@prisma/client";
+import { User } from "@prisma/client";
 import { UserConnectionsService } from "../user-connections.service";
 import { ChatService } from "./chat.service";
 
-import { Message } from "@prisma/client";
-import { ChatMember } from "@prisma/client";
 import { ChatMemberEntity, MessageEntity } from "./entities/message.entity";
-import { ChatMemberStatus, UserStatus } from "@prisma/client";
+import { UserStatus } from "@prisma/client";
 import { KickMemberRequest, UpdateChatMemberRequest } from "./dto/userlist.dto";
+
 import { AuthRequest } from "../auth/dto";
-
-// FIXME: temporary error type until we can share btw back and frontend
-export type DevError = {
-  error: string;
-};
-export type DevSuccess = {
-  success: string;
-};
-
-/******************/
-/*    Requests    */
-/******************/
-export interface ListUsersRequest {
-  chatRoomName: string;
-}
-
-export interface SendDirectMessageRequest {
-  recipient: string;
-  sender: string;
-  senderRank: ChatMemberRank;
-}
-
-export interface CreateUserRequest {
-  username: string;
-  avatar: string;
-  firstName?: string;
-  lastName?: string;
-  email?: string;
-}
-
-export interface MessagePrismaType extends Message {
-  sender: { username: string };
-  room: { name: string };
-}
-
-export interface InviteUsersToRoomRequest {
-  roomName: string;
-  usernames: string[];
-}
-
-export interface ChatMemberPrismaType extends ChatMember {
-  member: {
-    avatar: string;
-    username: string;
-    status: UserStatus;
-  };
-  room: { name: string };
-}
-
-export interface IChatMemberEntity {
-  username: string;
-  roomName: string;
-  avatar: string;
-  chatMemberStatus: ChatMemberStatus;
-  userStatus: UserStatus;
-  rank: ChatMemberRank;
-  endOfBan?: Date;
-  endOfMute?: Date;
-}
-
-export interface IMessageEntity {
-  username: string;
-  roomName: string;
-  content: string;
-  timestamp: Date;
-}
-
-export type RoomMemberEntity = {
-  roomName: string;
-  user: ChatMemberEntity;
-};
-
-export interface ChatRoomEntity {
-  name: string;
-  queryingUserRank: ChatMemberRank; // FIXME: This should be embedded in the ChatMember type
-  status: ChatRoomStatus;
-  members: ChatMemberEntity[];
-  latestMessage?: IMessageEntity;
-  lastActivity: Date;
-  avatars?: string[];
-}
-
-export interface UserEntity {
-  username: string;
-  avatar: string;
-  status: UserStatus;
-}
-
-export interface AvailableRoomEntity {
-  roomName: string;
-  nbMembers: number;
-  status: ChatRoomStatus;
-  owner: UserEntity;
-}
+import {
+  UpdateChatRoomRequest,
+  ChatRoomEntity,
+  DevError,
+  AvailableRoomEntity,
+  ListUsersRequest,
+  CreateChatRoomRequest,
+  JoinRoomRequest,
+  RoomMemberEntity,
+  LeaveRoomRequest,
+  SendMessageRequest,
+  InviteUsersToRoomRequest,
+  SendDirectMessageRequest,
+  BlockUserRequest,
+  DevSuccess
+} from "./chat.types";
+import TokenIsVerified from "src/tokenstorage/token-verify.service";
 
 const logger = new Logger("ChatGateway");
 
-export class CreateChatRoomDto {
-  name: string;
-  status: ChatRoomStatus;
-  password: string;
-  owner: string;
-}
-
-export class UpdateChatRoomRequest {
-  username: string;
-  roomName: string;
-  status: ChatRoomStatus;
-  oldPassword?: string;
-  newPassword?: string;
-}
-
-export class SendMessageDto {
-  roomName: string;
-  content: string;
-  sender: string;
-}
-
-export class JoinRoomDto {
-  roomName: string;
-  password: string;
-  user: string;
-}
-
-export class LeaveRoomRequest {
-  roomName: string;
-  username: string;
-}
-
-export class BlockUserRequest {
-  blocker: string;
-  blockee: string;
-}
-
-// FIXME: uncomment the following line to enable authentication
+/**
+ * Chat gateway
+ *
+ * @todo Enable JWT authguard
+ */
 // @UseGuards(JwtWsAuthGuard)
 @WebSocketGateway()
-export class ChatGateway
-  implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect
-{
+export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   constructor(
     private prismaService: PrismaService,
     private chatService: ChatService,
-    private userConnectionsService: UserConnectionsService
+    private userConnectionsService: UserConnectionsService,
+    private tokenVerify: TokenIsVerified
   ) {}
 
   @WebSocketServer()
   server: Server;
 
-  afterInit() {
-    logger.log("ChatGateway initialized");
-  }
-
   async handleConnection(client: Socket) {
-    logger.log(`Client connected: ${client.id}`);
+    logger.warn(`Client connected: ${client.id}`);
   }
 
-  handleDisconnect(client: Socket) {
+  async handleDisconnect(client: Socket) {
     // Remove the user connection
     const connections = this.userConnectionsService.removeUserConnection(
       client.id,
       client.id
     );
     if (typeof connections === "string") {
-      logger.log(
+      logger.debug(
         `Client ${client.id} has no more active connections, updating user status to OFFLINE`
       );
 
@@ -193,20 +76,25 @@ export class ChatGateway
       });
       this.userConnectionsService.removeUserEntries(connections);
     }
-
-    logger.log(`Client disconnected: ${client.id}`);
+    const token = await this.tokenVerify.tokenStorage.getTokenbySocket(
+      client.id
+    );
+    if (token && token.token_type !== "transiting") {
+      this.tokenVerify.tokenStorage.removeToken(client.id);
+      logger.log(`Client [${client.id}]'s Token Destroyed`);
+    }
+    logger.debug(`Client disconnected: ${client.id}`);
   }
 
   // Create a sendEventToAllUserSockets(member.username, "newChatRoomMember", newMember) function
-  /* eslint-disable-next-line -- This function is not responsible for payload validation*/
+  /* eslint-disable-next-line -- This function is not responsible for payload validation */
   async sendEventToAllUserSockets(username: string, event: string, data: any) {
-    logger.log(`Sending event ${event} to user ${username}`);
+    logger.debug(`Sending event ${event} to user ${username}`);
     const userSockets = this.userConnectionsService.getUserSockets(username);
     if (!userSockets) {
       logger.warn(`User ${username} has no sockets`);
       return;
     }
-    console.log(data);
     userSockets.forEach((socketId) => {
       this.server.to(socketId).emit(event, data);
     });
@@ -237,13 +125,15 @@ export class ChatGateway
   }
 
   /**
-   * @event "updateChatRoom"
    * Update the status of a chat room member.
-   * @param client - socket client
-   * @param updateChatRoomRequest - updated room info
-   * @returns updated room info if successful, error otherwise
+   *
+   * @event "updateChatRoom"
+   * @param {Socket} client - socket.io client
+   * @param {UpdateChatRoomRequest} updateChatRoomRequest - request to update the chat room
+   * @returns {ChatRoomEntity | DevError} - the updated chat room or an error
    */
   @SubscribeMessage("updateChatRoom")
+  @UseGuards(TokenIsVerified)
   async updateChatRoom(
     client: Socket,
     updateChatRoomRequest: UpdateChatRoomRequest
@@ -252,11 +142,10 @@ export class ChatGateway
     if (!username) {
       return { error: "User not found" };
     }
-    logger.log(
+    logger.debug(
       `Received updateChatRoom request from ${username}, for room ${updateChatRoomRequest.roomName}`
     );
-    console.log(updateChatRoomRequest);
-    // FIXME: Should not have to be here
+    /** @todo fix this weird try/catch/if */
     try {
       const updatedRoom = await this.chatService.updateRoom(
         updateChatRoomRequest
@@ -265,56 +154,44 @@ export class ChatGateway
         logger.error("Error updating room", updatedRoom);
         return { error: updatedRoom.message };
       }
-      logger.warn("It worked?", updatedRoom);
       return updatedRoom;
     } catch (error) {
-      logger.error(error);
+      logger.error("Error with updateChatRoom", error);
       return { error: "Internal server error" };
     }
   }
 
   /**
-   * @event "listAvailableChatRooms"
    * Get all available chat rooms from the server, and send them to the client,
    * excluding the ones the user is already in.
+   *
    * Info sent back to the client:
    *  - room name
    *  - room status
    *  - room owner
    *  - amount of room members
-   * @param client socket client
-   * @param username username of the user requesting the list
-   * @returns list of chat rooms
+   *
+   * @event "listAvailableChatRooms"
+   * @param {Socket} client - socket.io client
+   * @param {string} username - username of the user
+   * @param {string} roomName - name of the room
+   * @returns {AvailableRoomEntity[]} - available rooms
    */
   @SubscribeMessage("listAvailableChatRooms")
+  @UseGuards(TokenIsVerified)
   async listAvailableChatRooms(
     client: Socket,
-    username: string,
-    roomName: string // Add roomName parameter
-  ): Promise<AvailableRoomEntity[] | UserEntity[]> {
+    username: string
+  ): Promise<AvailableRoomEntity[]> {
     // Update the return type
     const userId = await this.prismaService.getUserIdByUsername(username);
-    logger.log(
+    logger.debug(
       `Received listAvailableChatRooms request from ${userId}, name ${username}`
     );
     if (!userId) {
       return [];
     }
 
-    // If roomName is empty, return available users
-    if (!roomName) {
-      const availableUsers = await this.prismaService.getAvailableUsers(
-        userId,
-        null
-      );
-      return availableUsers.map((user) => ({
-        username: user.username,
-        avatar: user.avatar,
-        status: user.status
-      }));
-    }
-
-    // Otherwise, return available rooms
     const availableRooms = await this.prismaService.getAvailableChatRooms(
       userId
     );
@@ -336,13 +213,18 @@ export class ChatGateway
 
   /**
    * Get all available users
+   *
+   * @event "listAvailableUsers"
+   * @param {Socket} client - socket.io client
+   * @param {ListUsersRequest} req - request to list users
+   * @returns {User[]} - available users
    */
   @SubscribeMessage("listAvailableUsers")
   async listAvailableUsers(
     client: Socket,
     req: ListUsersRequest
   ): Promise<User[]> {
-    logger.log(`Received listAvailableUsers request from ${client.id}`);
+    logger.debug(`Received listAvailableUsers request from ${client.id}`);
     const username = this.userConnectionsService.getUserBySocket(client.id);
     const userId = await this.prismaService.getUserIdByUsername(username);
     const roomId = await this.prismaService.getChatRoomId(req.chatRoomName);
@@ -356,8 +238,7 @@ export class ChatGateway
         userId,
         roomId
       );
-      logger.warn(`List of users: `);
-      console.log(availableUsers);
+      logger.debug(`List of users:`, availableUsers);
       return availableUsers;
     } catch (e) {
       logger.error(`Error while getting available users: ${e}`);
@@ -366,44 +247,18 @@ export class ChatGateway
   }
 
   /**
-   * Temporary function to create a user
-   *
-   * If there is an error in the service, return it
-   *
-   * TODO: remove this function when authentication is enabled
-   * @param client socket client
-   * @param username
-   * @returns DevError or username
-   */
-  @SubscribeMessage("userCreation")
-  async createTempUser(
-    client: Socket,
-    req: AuthRequest
-  ): Promise<DevError | UserEntity> {
-    logger.log(
-      `Received createUser request from ${client.id} for user ${req.username}`
-    );
-    const userWasCreated = await this.chatService.createTempUser(req);
-    if (userWasCreated instanceof Error) {
-      return { error: userWasCreated.message };
-    }
-    this.userConnectionsService.addUserConnection(
-      userWasCreated.username,
-      client.id
-    );
-    return userWasCreated;
-  }
-
-  /**
    * Temporary function to login a user
+   *
    * If the user does not exist, return an error
-   * TODO: remove this function when authentication is enabled
-   * @param client socket client
-   * @param username
-   * @returns DevError or username
+   * @todo remove this function when authentication is enabled
+   *
+   * @event "chatGatewayLogin"
+   * @param {Socket} client
+   * @param {AuthRequest} req
+   * @returns {DevError | string}
    */
-  @SubscribeMessage("userLogin")
-  async devUserLogin(
+  @SubscribeMessage("chatGatewayLogin")
+  async chatGatewayLogin(
     client: Socket,
     req: AuthRequest
   ): Promise<{ error: string } | string> {
@@ -411,13 +266,12 @@ export class ChatGateway
       return { error: "Invalid request: username must be provided" };
     }
     const username = req.username;
-    logger.log(
+    logger.debug(
       `Received devUserLogin request from ${client.id} for user ${username}`
     );
 
     const userWasLoggedIn = await this.chatService.devUserLogin(req);
     if (userWasLoggedIn instanceof Error) {
-      console.log(userWasLoggedIn);
       return { error: userWasLoggedIn.message };
     }
 
@@ -448,7 +302,6 @@ export class ChatGateway
         username
       )
     );
-
     return username;
   }
 
@@ -457,17 +310,28 @@ export class ChatGateway
    *
    * If the chat room is successfully created, add the user to the socket room.
    * If the chat service returns an error, return it
-   * @param client socket client
-   * @param room CreateRoomDto
-   * @returns DevError or room name
+   *
+   * @event "createRoom"
+   * @param {Socket} client - socket.io client
+   * @param {CreateChatRoomRequest} createDto - chat room creation request
+   * @returns {ChatRoomEntity | DevError} - created chat room or error
    */
   @SubscribeMessage("createRoom")
+  @UseGuards(TokenIsVerified)
   async createRoom(
     client: Socket,
-    createDto: CreateChatRoomDto
+    createDto: CreateChatRoomRequest
   ): Promise<ChatRoomEntity | DevError> {
     // Log the request
-    logger.log(
+    logger.debug(
+      `Received createRoom request from ${createDto.owner} for room ${
+        createDto.name
+      }: ${createDto.status} ${
+        createDto.password ? `, with password ${createDto.password}.` : "."
+      }`
+    );
+
+    logger.debug(
       `Received createRoom request from ${createDto.owner} for room ${
         createDto.name
       }: ${createDto.status} ${
@@ -485,46 +349,74 @@ export class ChatGateway
 
     // Add the user to the socket room
     client.join(createDto.name);
-    logger.log(`User ${createDto.owner} joined socket room ${createDto.name}`);
-    console.log(createDto);
+    logger.debug(
+      `User ${createDto.owner} joined socket room ${createDto.name}`
+    );
     return ret;
   }
 
   /**
+   * Get a list of chat rooms of which the user is a member.
+   * If the user is not a member of any rooms, return an empty array.
+   * If there is an error, return it.
+   *
+   * @event "getRoomsOf"
+   * @param {Socket} client - socket.io client
+   * @param {string} username
+   * @returns {ChatRoomEntity[] | DevError} - list of chat rooms or error
+   */
+  @SubscribeMessage("getRoomsOf")
+  async getRoomsMemberOf(
+    client: Socket,
+    username: string
+  ): Promise<ChatRoomEntity[] | DevError> {
+    try {
+      logger.debug(
+        `Received getRoomsMemberOf request from ${username} with socket Id ${client.id}`
+      );
+      const rooms = await this.chatService.getRoomsOf(username);
+      if (rooms instanceof Error) {
+        return { error: rooms.message };
+      }
+      rooms.forEach((room) => client.join(room.name));
+      return rooms;
+    } catch (error) {
+      return { error: error.message };
+    }
+  }
+
+  /**
    * Join a chat room.
+   *
    * If the room does not exist, create it.
    * Fetch a list of messages from the database and send them to the client.
    * If there is a password, check if it matches the one in the database.
    * If the user is not a member of the room, add them to the database.
    *
-   * @param client client socket
-   * @param dto JoinRoomDto, containing the room name and password
-   * @returns DevError or room name
+   * @event "joinRoom"
+   * @param {Socket} client - socket.io client
+   * @param {JoinRoomRequest} dto - join room request
+   * @returns {DevError | ChatRoomEntity} - chat room or error
    */
   @SubscribeMessage("joinRoom")
+  @UseGuards(TokenIsVerified)
   async joinRoom(
     client: Socket,
-    dto: JoinRoomDto
+    dto: JoinRoomRequest
   ): Promise<DevError | ChatRoomEntity> {
     const username: string = this.userConnectionsService.getUserBySocket(
       client.id
     );
-    logger.log(
+    logger.debug(
       `Received joinRoom request from ${username} for room ${dto.roomName} ${
         dto.password ? `: with password ${dto.password}` : ""
       }`
     );
 
-    // TODO: move this to a "getChatRoomMessages" handler
-    // Assign the user id to the dto instead of the socket id
-    dto.user = username;
     const ret = await this.chatService.joinRoom(dto);
-    // Find the user's ChatMember entity by finding the room name and the user id in the database
-
-    // Find the chatMember in the returned ChatRoomEntity's ChatMemberEntity array
 
     if (ret instanceof Error) {
-      logger.error(ret);
+      logger.error("Error in joinRoom", ret);
       return { error: ret.message };
     } else if (ret) {
       const chatMember = ret.members?.find(
@@ -537,37 +429,48 @@ export class ChatGateway
         user: chatMember
       };
       this.server.to(dto.roomName).emit("newChatRoomMember", newMember);
-      logger.log(`User ${dto.user} joined room ${dto.roomName}`);
+      logger.debug(`User ${dto.user} joined room ${dto.roomName}`);
       return roomInfo;
     }
   }
 
-  // Add a new event to get a page of messages
+  /**
+   * Get a page of messages from a chat room.
+   *
+   * @event "getRoomMessagesPage"
+   * @param {Socket} client - socket.io client
+   * @param {GetRoomMessagesPageRequest} req - get room messages page request
+   * @returns {MessageEntity[]} - array of messages
+   */
   @SubscribeMessage("getRoomMessagesPage")
+  @UseGuards(TokenIsVerified)
   async getRoomMessagesPage(
     client: Socket,
-    dto: { roomName: string; date: Date; pageSize: number }
+    req: { roomName: string; date: Date; pageSize: number }
   ): Promise<MessageEntity[]> {
     const messages = await this.chatService.getRoomMessagesPage(
-      dto.roomName,
-      dto.date,
-      dto.pageSize
+      req.roomName,
+      req.date,
+      req.pageSize
     );
     return messages;
   }
 
   /**
    * Leave a chat room
-   * @param client client socket
-   * @param room name of the room to leave
+   *
+   * @event "leaveRoom"
+   * @param {Socket} client - socket.io client
+   * @param {LeaveRoomRequest} req - leave room request
+   * @returns {DevError | string} - error or success message
    */
   @SubscribeMessage("leaveRoom")
+  @UseGuards(TokenIsVerified)
   async leaveRoom(
     client: Socket,
     req: LeaveRoomRequest
   ): Promise<DevError | string> {
-    logger.warn(`Received leaveRoom request from ${client.id}`);
-    console.log(req);
+    logger.debug(`Received leaveRoom request from ${client.id}`);
     const clientId = this.userConnectionsService.getUserBySocket(client.id);
     if (!clientId) {
       logger.error(`User ${client.id} not found`);
@@ -582,7 +485,7 @@ export class ChatGateway
       if (ret instanceof Error) return { error: ret.message };
       client.leave(req.roomName);
       this.server.to(req.roomName).emit("chatRoomMemberLeft", req);
-      logger.log(`User ${client.id} left room ${req.roomName}`);
+      logger.debug(`User ${client.id} left room ${req.roomName}`);
       return req.roomName;
     } catch (e) {
       logger.error(`User ${clientId} not found`);
@@ -597,19 +500,21 @@ export class ChatGateway
    * If the room exists, send the message to the room and broadcast it to
    * all clients in the room
    *
-   * @param client
-   * @param sendDto
-   * @returns
+   * @event "sendMessage"
+   * @param {Socket} client - socket.io client
+   * @param {SendMessageRequest} sendDto - send message request
+   * @returns {DevError | string} - error or success message
    */
   @SubscribeMessage("sendMessage")
+  @UseGuards(TokenIsVerified)
   async sendMessage(
     client: Socket,
-    sendDto: SendMessageDto
+    sendDto: SendMessageRequest
   ): Promise<DevError | string> {
     if (!sendDto.content) return;
 
     // Log the request
-    logger.log(
+    logger.debug(
       `Received sendMessage request from ${sendDto.sender} to room ${sendDto.roomName}.`
     );
 
@@ -621,27 +526,32 @@ export class ChatGateway
     const ret = await this.chatService.sendMessage(sendDto);
     if (ret instanceof Error) return { error: ret.message };
 
-    logger.log(`Message sent successfully: `);
-    console.log(ret);
+    logger.debug("Message sent successfully:", ret);
     // If nothing went wrong, send the message to the room
     this.server.to(sendDto.roomName).emit("newMessage", ret);
-    logger.log(
+    logger.debug(
       `User ${sendDto.sender} sent message in room ${sendDto.roomName}: ${sendDto.content}`
     );
     return sendDto.roomName;
   }
 
-  /*
-    GET USER LIST : Get all user information relevant for the chat user tab Component
-    Takes a ChatmemberPrismaType array and transforms it into a ChatMemberEntity[], expected by the client
-  */
-
+  /**
+   * Get a list of users in a chat room.
+   *
+   * @event "listUsers"
+   * @param {Socket} client - socket.io client
+   * @param {ListUsersRequest} payload - list users request
+   * @returns {ChatMemberEntity[]} - array of chat members
+   */
   @SubscribeMessage("listUsers")
+  @UseGuards(TokenIsVerified)
   async listUsers(
     client: Socket,
     payload: ListUsersRequest
   ): Promise<ChatMemberEntity[]> {
-    logger.log(`Received listUsers request from ${client.id}, sending list`);
+    logger.debug(
+      `Received listUsers request from ${client.id} for ${payload.chatRoomName}`
+    );
     const list: ChatMemberEntity[] = await this.chatService.getUserList(
       payload.chatRoomName
     );
@@ -650,12 +560,12 @@ export class ChatGateway
 
   // Listener to hangle "inviteUsersToRoom" event, taking in a roomName and a list of usernames
   @SubscribeMessage("inviteUsersToRoom")
+  @UseGuards(TokenIsVerified)
   async inviteUsersToRoom(
     client: Socket,
     req: InviteUsersToRoomRequest
   ): Promise<string[] | false> {
-    logger.log(`Received inviteUsersToRoom request from ${client.id}: `);
-    console.log(req);
+    logger.debug(`Received inviteUsersToRoom request from ${client.id}: `, req);
     // Get the list of Database users to invite from the req's usernames array
 
     const chatMembers = await this.chatService.inviteUsersToRoom(req);
@@ -676,8 +586,7 @@ export class ChatGateway
         member.rank
       );
 
-      logger.log(`roomInfo: `);
-      console.log(roomInfo);
+      logger.debug(`roomInfo: `, roomInfo);
 
       this.sendEventToAllUserSockets(
         member.username,
@@ -690,27 +599,34 @@ export class ChatGateway
     return chatMembers.map((member) => member.username);
   }
 
+  /**
+   * Update a chat member's status
+   *
+   * @event "updateChatMemberStatus"
+   * @param {Socket} client - socket.io client
+   * @param {UpdateChatMemberRequest} req - update chat member request
+   * @returns {RoomMemberEntity | DevError} - updated chat member or error
+   */
   @SubscribeMessage("updateChatMemberStatus")
+  @UseGuards(TokenIsVerified)
   async updateChatMemberStatus(
     client: Socket,
     req: UpdateChatMemberRequest
   ): Promise<RoomMemberEntity | DevError> {
-    logger.log(
+    logger.debug(
       `Received updateChatMemberStatus request from ${req.queryingUser} for ${req.usernameToUpdate}  in room ${req.roomName}`
     );
-    console.log(req);
 
     try {
       const chatMember = await this.chatService.updateMemberStatus(req);
       if (chatMember.status === "BANNED") {
-        // TODO: implement this
+        /** @todo implement this */
         // Return this.kickChatMember, but with a different DTO
       }
       this.listUsers(client, { chatRoomName: req.roomName });
-      // TODO: implement a listener on the client side to handle this event
+      /** @todo implement a listener on the client side to handle this event */
       //this.server.to(data.roomName).emit('chatMemberUpdated', chatMember);
-      logger.log("Chat Member's Status succesfully updated !");
-      console.log(chatMember);
+      logger.debug("Chat Member's Status succesfully updated");
       const user: ChatMemberEntity = {
         username: chatMember.member.username,
         roomName: req.roomName,
@@ -735,7 +651,16 @@ export class ChatGateway
     }
   }
 
+  /**
+   * Kick a chat member from a room
+   *
+   * @event "kickChatMember"
+   * @param {Socket} client - socket.io client
+   * @param {KickMemberRequest} req - kick member request
+   * @returns {RoomMemberEntity | DevError} - updated chat member or error
+   */
   @SubscribeMessage("kickChatMember")
+  @UseGuards(TokenIsVerified)
   async kickChatMember(
     client: Socket,
     req: KickMemberRequest
@@ -745,7 +670,7 @@ export class ChatGateway
       return { error: response.message };
     } else {
       const user = response as ChatMemberEntity;
-      // TODO: implement a listener on the client side to handle this event
+      /** @todo implement a listener on the client side to handle this event */
       this.server.to(req.roomName).emit("chatMemberKicked", user);
       return { roomName: req.roomName, user };
     }
@@ -753,19 +678,21 @@ export class ChatGateway
 
   /**
    * Send a Direct Message to a user, if the user is not blocked
-   * @param {Socket} client
-   * @param {SendDirectMessageRequest} req
-   * @returns {Promise<DevError | ChatRoomEntity>}
+   *
+   * @event "sendDirectMessage"
+   * @param {Socket} client - socket.io client
+   * @param {SendDirectMessageRequest} req - send direct message request
+   * @returns {ChatRoomEntity | DevError} - chat room entity or error
    */
   @SubscribeMessage("sendDirectMessage")
+  @UseGuards(TokenIsVerified)
   async sendDirectMessage(
     client: Socket,
     req: SendDirectMessageRequest
   ): Promise<DevError | ChatRoomEntity> {
-    logger.log(
+    logger.debug(
       `Received sendDirectMessage request from ${req.sender} to ${req.recipient}`
     );
-    console.log(req);
     const ret = await this.chatService.sendDirectMessage(req);
     if (ret instanceof Error) return { error: ret.message };
     const room = ret as ChatRoomEntity;
@@ -779,20 +706,21 @@ export class ChatGateway
 
   /**
    * Block a user from sending you direct messages
-   * @param {Socket} client
-   * @param {BlockUserRequest} req
-   * @returns {Promise<DevError | BlockedUserEntity>}
-   * @memberof ChatGateway
+   *
+   * @event "blockUser"
+   * @param {Socket} client - socket.io client
+   * @param {BlockUserRequest} req - block user request
+   * @returns {DevError | DevSuccess} - success message or error
    */
   @SubscribeMessage("blockUser")
+  @UseGuards(TokenIsVerified)
   async blockUser(
     client: Socket,
     req: BlockUserRequest
-  ): Promise<DevError | { success: string }> {
-    logger.log(
+  ): Promise<DevError | DevSuccess> {
+    logger.debug(
       `Received blockUser request from ${req.blocker} to block ${req.blockee}`
     );
-    console.log(req);
     const ret = await this.chatService.blockUser(req);
     if (ret instanceof Error) return { error: ret.message };
     return { success: "User blocked successfully" };

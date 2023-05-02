@@ -5,13 +5,14 @@ import { GameGateway } from "./game.gateway";
 import { GameLogic } from "./game.logic";
 import { GameService } from "./game.service";
 import { ChatModule } from "../chat/chat.module";
+import { PrismaModule } from "../prisma/prisma.module";
 
 describe("GameGateway", () => {
   let gateway: GameGateway;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      imports: [ChatModule],
+      imports: [ChatModule, PrismaModule],
       providers: [
         GameGateway,
         GameService,

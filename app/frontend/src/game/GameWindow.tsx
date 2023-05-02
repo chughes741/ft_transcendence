@@ -1,5 +1,5 @@
-import React, { useRef, useContext, useEffect } from "react";
-import { Canvas, useFrame, ThreeElements, useThree } from "@react-three/fiber";
+import { useRef, useEffect } from "react";
+import { Canvas, useFrame } from "@react-three/fiber";
 import { Mesh } from "three";
 
 import { socket } from "src/contexts/WebSocket.context";
@@ -18,7 +18,6 @@ function Ball() {
   const { gameState } = useGameViewModelContext();
 
   useFrame(() => {
-    console.log(gameState);
     mesh.current.position.x = gameState.ball_x;
     mesh.current.position.y = gameState.ball_y;
     mesh.current.position.z = 0;
@@ -84,7 +83,7 @@ function PaddleLeft() {
 function PaddleRight() {
   const { self } = useRootViewModelContext();
   const { playerSide, lobbyId, gameState } = useGameViewModelContext();
-  
+
   const ref = useRef<Mesh>(null!);
 
   useFrame((state) => {
@@ -140,7 +139,7 @@ function Floor() {
  */
 function OuterFrameTop() {
   const mesh = useRef<Mesh>(null!);
-  
+
   return (
     <mesh
       ref={mesh}
@@ -159,7 +158,7 @@ function OuterFrameTop() {
  */
 function OuterFrameBottom() {
   const mesh = useRef<Mesh>(null!);
-  
+
   return (
     <mesh
       ref={mesh}
@@ -178,7 +177,7 @@ function OuterFrameBottom() {
  */
 function OuterFrameLeft() {
   const mesh = useRef<Mesh>(null!);
-  
+
   return (
     <mesh
       ref={mesh}
@@ -197,7 +196,7 @@ function OuterFrameLeft() {
  */
 function OuterFrameRight() {
   const mesh = useRef<Mesh>(null!);
-  
+
   return (
     <mesh
       ref={mesh}
@@ -234,7 +233,7 @@ export default function Game() {
     return () => {
       socket.off(GameEvents.ServerGameStateUpdate);
       socket.off(GameEvents.GameEnded);
-    }
+    };
   }, [displayLobby]);
 
   if (!gameState) return <div>Loading...</div>;

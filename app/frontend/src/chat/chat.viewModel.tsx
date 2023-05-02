@@ -34,6 +34,7 @@ export interface ChatViewModelType extends ChatModelType {
     password: string
   ) => Promise<boolean>;
   leaveRoom: () => void;
+  chatGatewayLogin: (req: AuthRequest) => Promise<boolean>;
   changeRoomStatus: (newStatus: ChatRoomStatus) => Promise<boolean>;
   selectRoom: (roomName: string) => void;
 }
@@ -69,7 +70,8 @@ export const ChatViewModelProvider = ({ children }) => {
     handleJoinRoom: joinRoom,
     handleSendRoomMessage: sendRoomMessage,
     handleCreateNewRoom: createNewRoom,
-    handleChangeRoomStatus
+    handleChangeRoomStatus,
+    handleFetchRoomMessagesPage
   } = useRoomManager();
 
   /**********************/
@@ -78,7 +80,7 @@ export const ChatViewModelProvider = ({ children }) => {
 
   const selectRoom = (roomName: string) => {
     if (currentRoomName === roomName && pageState === PageState.Chat) {
-      console.log("selectRoom: Room is already selected. Toggling to Home.");
+      console.debug("selectRoom: Room is already selected. Toggling to Home.");
       setCurrentRoomName("");
       setPageState(PageState.Home);
       return;
@@ -86,7 +88,7 @@ export const ChatViewModelProvider = ({ children }) => {
     if (!rooms[roomName]) {
       return;
     }
-    console.log(`selectRoom: Room ${roomName} selected! `, rooms[roomName]);
+    console.debug(`selectRoom: Room ${roomName} selected! `, rooms[roomName]);
     setCurrentRoomName(roomName);
     setCurrentRoomMessages(rooms[roomName].messages);
     updateRooms((newRooms) => {
@@ -111,6 +113,7 @@ export const ChatViewModelProvider = ({ children }) => {
       newStatus === ChatRoomStatus.PASSWORD ||
       contextMenuData.status === ChatRoomStatus.PASSWORD
     ) {
+      chatModel.setContextMenuRoomsNewStatus(newStatus);
       setShowPasswordModal(true);
     } else {
       if ((await handleChangeRoomStatus(roomName, newStatus)) === false)
@@ -122,7 +125,7 @@ export const ChatViewModelProvider = ({ children }) => {
   const leaveRoom = async (): Promise<boolean> => {
     const roomName = contextMenuData.name;
 
-    console.log("Leaving room: ", roomName);
+    console.debug("Leaving room: ", roomName);
 
     return new Promise<boolean>((resolve) => {
       setContextMenuRoomsVisible(false);
@@ -130,10 +133,10 @@ export const ChatViewModelProvider = ({ children }) => {
         roomName: roomName,
         username: self.username
       };
-      console.log("Leaving room: ", req);
+      console.debug("Leaving room: ", req);
       socket.emit("leaveRoom", req, (response: DevError | string) => {
         if (handleSocketErrorResponse(response)) {
-          console.log("Error response from leave room: ", response.error);
+          console.warn("Error response from leave room: ", response.error);
           resolve(false);
         }
       });
@@ -155,20 +158,20 @@ export const ChatViewModelProvider = ({ children }) => {
         recipient: username,
         senderRank: ChatMemberRank.USER
       };
-      console.log("Sending direct message: ", req);
+      console.debug("Sending direct message: ", req);
 
       socket.emit(
         "sendDirectMessage",
         req,
         (response: ChatRoomPayload | DevError) => {
           if (handleSocketErrorResponse(response)) {
-            console.log(
+            console.warn(
               "Error response from send direct message: ",
               response.error
             );
             resolve(false);
           } else {
-            console.log(
+            console.debug(
               "Success response from send direct message: ",
               response
             );
@@ -177,61 +180,6 @@ export const ChatViewModelProvider = ({ children }) => {
           }
         }
       );
-    });
-  };
-
-  /**********************/
-  /*   User Functions   */
-  /**********************/
-
-  const userLogin = async (req: AuthRequest): Promise<boolean> => {
-    if (!req || !req.username || req.username === "")
-      return Promise.resolve(false);
-
-    return new Promise<boolean>((resolve) => {
-      socket.emit("userLogin", req, (response: DevError | string) => {
-        if (typeof response === "object") {
-          console.log("Error response from user login: ", response.error);
-          resolve(false);
-        } else {
-          console.log(`Logged in user ${req.username} successfully!`);
-          console.log("Success response from user login: ");
-          console.log(response);
-          self.username = req.username;
-          joinRoom("PublicRoom", "secret");
-          joinRoom("PrivateRoom", "secret");
-          joinRoom("PasswordProtectedRoom", "secret");
-          joinRoom("test", "secret");
-          joinRoom("asdf", "secret");
-          resolve(true);
-        }
-      });
-    });
-  };
-
-  const createUser = async (req: AuthRequest): Promise<boolean> => {
-    if (!req || !req.username || req.username === "")
-      return Promise.resolve(false);
-    return new Promise<boolean>((resolve) => {
-      socket.emit("userCreation", req, (response: DevError | string) => {
-        if (typeof response === "object") {
-          console.log("Error response from user creation: ", response.error);
-          resolve(false);
-          // Try to log in instead
-        } else {
-          self.username = req.username;
-          setRooms(null);
-          console.log(`Created user ${req.username} successfully!`);
-
-          // FIXME: For testing purposes only
-          // Join three separate rooms on connection
-          joinRoom("PublicRoom", "secret");
-          joinRoom("PrivateRoom", "secret");
-          joinRoom("PasswordProtectedRoom", "secret");
-          joinRoom("PasswordProtectedRoomFromCreateUser", "secret");
-          resolve(true);
-        }
-      });
     });
   };
 
@@ -267,6 +215,48 @@ export const ChatViewModelProvider = ({ children }) => {
     addSocketListener("chatMemberUpdated", handleNewChatRoomMember);
   };
 
+  /**********************/
+  /*   User Functions   */
+  /**********************/
+
+  const chatGatewayLogin = async (req: AuthRequest): Promise<boolean> => {
+    if (!req || !req.username || req.username === "")
+      return Promise.resolve(false);
+
+    setupSocketListeners();
+    return new Promise<boolean>((resolve) => {
+      socket.emit("chatGatewayLogin", req, (response: DevError | string) => {
+        if (typeof response === "object") {
+          console.warn(
+            "Error response from chat gateway login: ",
+            response.error
+          );
+          resolve(false);
+        } else {
+          self.username = req.username;
+          resolve(true);
+        }
+      });
+      socket.emit(
+        "getRoomsOf",
+        req.username,
+        async (response: ChatRoomPayload[] | DevError) => {
+          if (handleSocketErrorResponse(response)) {
+            console.warn("Error response from get rooms: ", response.error);
+            resolve(false);
+          } else {
+            console.debug("Success response from get rooms: ", response);
+            for (const room of response) {
+              await addChatRoom(room);
+              handleFetchRoomMessagesPage(room.name, new Date(), 50);
+            }
+            resolve(true);
+          }
+        }
+      );
+    });
+  };
+
   // Use effect for setting up and cleaning up listeners
   useEffect(() => {
     setupSocketListeners();
@@ -278,6 +268,7 @@ export const ChatViewModelProvider = ({ children }) => {
       removeSocketListener("chatRoomMemberKicked");
       removeSocketListener("addedToNewChatRoom");
       removeSocketListener("chatMemberUpdated");
+      removeSocketListener("unauthorized");
     };
   }, []);
 
@@ -285,44 +276,20 @@ export const ChatViewModelProvider = ({ children }) => {
   /*   useEffects   */
   /******************/
 
-  // FIXME: temporary addition for dev build to test user creation
-  // TODO: remove this when user creation is implemented
-  useEffect(() => {
-    if (socket && !self.username) {
-      self.username = "schlurp";
-    }
-  }, [socket, ""]);
+  // Login to the Chat Gateway
+  // useEffect(() => {
+  //   if (self.username) {
+  //     setRooms(() => {
+  //       return {};
+  //     });
 
-  // FIXME: temporary addition for dev build to test user creation
-  // If no user is logged in, try to create a temporary user
-  useEffect(() => {
-    // Try to create a temporary user
-    if (self.username) {
-      setRooms(() => {
-        return {};
-      });
-
-      const createTempUser = async (username: string): Promise<void> => {
-        const req: AuthRequest = {
-          username,
-          firstName: "Schl",
-          lastName: "urp",
-          email: `${username}@schluuuuu.uuuuurp`,
-          avatar: `https://i.pravatar.cc/150?img=${username}`
-        };
-        const userCreated = await createUser(req);
-        if (!userCreated) {
-          // Try to login instead
-          const userLogged = await userLogin(req);
-          if (!userLogged) {
-            console.log("Failed to create or login to user", username);
-          }
-        }
-      };
-
-      createTempUser(self.username);
-    }
-  }, [self.username, ""]);
+  //     const req: AuthRequest = {
+  //       username: self.username,
+  //       avatar: self.avatar
+  //     };
+  //     chatGatewayLogin(req);
+  //   }
+  // }, [self.username, ""]);
 
   return (
     <ChatContext.Provider
@@ -331,6 +298,7 @@ export const ChatViewModelProvider = ({ children }) => {
         joinRoom,
         sendRoomMessage,
         sendDirectMessage,
+        chatGatewayLogin,
         createNewRoom,
         leaveRoom,
         changeRoomStatus,

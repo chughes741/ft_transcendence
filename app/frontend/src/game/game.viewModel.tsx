@@ -6,15 +6,15 @@ import {
   GameEndedEvent,
   GameEvents,
   GameStartedEvent,
-  LobbyCreatedEvent,
-  ServerGameStateUpdateEvent,
-  GameState
+  GameState,
+  LobbyCreatedEvent
 } from "kingpong-lib";
 import { useRootViewModelContext } from "src/root.context";
 
 export interface GameViewModelType extends GameModelType {
   setPlayerReadyState: () => Promise<void>;
   joinGameQueue: () => Promise<void>;
+  setEventListeners: () => void;
 }
 
 export const GameViewModelContext: React.Context<GameViewModelType | null> =
@@ -22,41 +22,70 @@ export const GameViewModelContext: React.Context<GameViewModelType | null> =
 
 export const GameViewModelProvider = ({ children }) => {
   const gameModel = useGameModel();
-
   const {
-    lobby,
     setLobby,
     lobbyId,
     matchId,
-    setMatchId,
     setLobbyId,
-    playerSide,
     setPlayerSide,
     playerReady,
     setPlayerReady,
-    opponentUsername,
     setOpponentUsername,
     displayQueue,
     setDisplayQueue,
-    inQueue,
     setInQueue,
-    displayLobby,
     setDisplayLobby,
-    displayReady,
-    setDisplayReady,
     displayGame,
     setDisplayGame,
-    displayScore,
-    setDisplayScore,
-    scoreLeft,
+    setGameState,
     setScoreLeft,
-    scoreRight,
-    setScoreRight, 
-    gameState,
-    setGameState
+    setScoreRight
   } = gameModel;
 
   const { self } = useRootViewModelContext();
+
+  //Functionnalities that can set event listeners to another socket.
+  const setEventListeners = () => {
+    socket.on(GameEvents.LobbyCreated, (payload: LobbyCreatedEvent) => {
+      console.debug("lobbyCreated event received");
+
+      setLobby(new GameTypes.Lobby());
+      setLobbyId(payload.lobby_id);
+      setPlayerSide(payload.player_side);
+      setOpponentUsername(payload.opponent_username);
+      setInQueue(false);
+      setDisplayQueue(false);
+      setDisplayLobby(true);
+    });
+
+    socket.on(GameEvents.GameStarted, (payload: GameStartedEvent) => {
+      console.debug("gameStarted event received. Payload:", payload);
+      setPlayerSide(payload.player_side);
+      setDisplayGame(true);
+    });
+
+    socket.on(GameEvents.GameEnded, (payload: GameEndedEvent) => {
+      console.debug("gameEnded event received. Payload:", payload);
+      setGameState(payload.game_state);
+      setScoreLeft(payload.game_state.score_left);
+      setScoreRight(payload.game_state.score_right);
+      setDisplayGame(false);
+      setDisplayLobby(true);
+    });
+
+    socket.on(GameEvents.ServerGameStateUpdate, (payload: GameState) => {
+      setGameState(payload);
+      setScoreLeft(payload.score_left);
+      setScoreRight(payload.score_right);
+    });
+
+    return () => {
+      socket.off(GameEvents.ServerGameStateUpdate);
+      socket.off(GameEvents.LobbyCreated);
+      socket.off(GameEvents.GameStarted);
+      socket.off(GameEvents.GameEnded);
+    };
+  };
 
   /*******************/
   /*  Socket Calls   */
@@ -70,7 +99,7 @@ export const GameViewModelProvider = ({ children }) => {
     if (!displayQueue) return;
 
     socket.on(GameEvents.LobbyCreated, (payload: LobbyCreatedEvent) => {
-      console.log("lobbyCreated event received");
+      console.debug("lobbyCreated event received");
 
       setLobby(new GameTypes.Lobby());
       setLobbyId(payload.lobby_id);
@@ -95,15 +124,14 @@ export const GameViewModelProvider = ({ children }) => {
     if (!playerReady) return;
 
     socket.on(GameEvents.GameStarted, (payload: GameStartedEvent) => {
-      console.log("gameStarted event received. Payload:");
-      console.log(payload);
+      console.debug("gameStarted event received. Payload:", payload);
 
       setPlayerSide(payload.player_side);
       setDisplayGame(true);
     });
 
     return () => {
-      socket.off(GameEvents.LobbyCreated);
+      socket.off(GameEvents.GameStarted);
     };
   }, [playerReady]);
 
@@ -115,8 +143,7 @@ export const GameViewModelProvider = ({ children }) => {
     if (!displayGame) return;
 
     socket.on(GameEvents.GameEnded, (payload: GameEndedEvent) => {
-      console.log("gameEnded event received. Payload:");
-      console.log(payload);
+      console.debug("gameEnded event received. Payload:", payload);
 
       setDisplayGame(false);
       setDisplayLobby(true);
@@ -150,11 +177,11 @@ export const GameViewModelProvider = ({ children }) => {
 
   /**
    * Manage joining the queue
-   * 
+   *
    * @async
    */
   const joinGameQueue = async () => {
-    console.log("Joining queue");
+    console.debug("Joining queue");
 
     socket.emit(
       GameEvents.JoinGameQueue,
@@ -168,13 +195,13 @@ export const GameViewModelProvider = ({ children }) => {
     );
   };
 
-
   return (
     <GameViewModelContext.Provider
       value={{
         ...gameModel,
         setPlayerReadyState,
-        joinGameQueue
+        joinGameQueue,
+        setEventListeners
 
         //...
       }}

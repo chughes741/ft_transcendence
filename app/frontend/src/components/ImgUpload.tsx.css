@@ -1,19 +1,44 @@
-.ImgComponent{
-    display: flex;
-    align-items: center;
-    justify-items: center;
-    justify-content: center;
+.img-upload-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
 }
 
-.profileImage {
-    width: 200px;
-    height: 200px;
-    border-radius: 50%;
-    overflow: hidden;
-  }
+.icon-plus-input {
+  flex-direction: row;
+  border: 1px solid #999;
+  width: 75%;
+  align-self: center;
+}
 
-  .image img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-  }
+.input-icon-upload {
+  display: flex;
+  width: 100%;
+  justify-content: end;
+}
+
+.custom-file-input {
+  color: #c1c1c1;
+  border-radius: 3px;
+  padding: 5px 8px;
+  white-space: nowrap;
+  -webkit-user-select: none;
+  font-size: 1rem;
+  width: 80%;
+  height: 5vh;
+}
+
+.custom-file-input::-webkit-file-upload-button {
+  color: #fa7f08;
+  background-color: #333333;
+  height: 4vh;
+  font-size: 1rem;
+}
+
+.custom-file-input:hover::before {
+  border-color: black;
+}
+.custom-file-input:active::before {
+  background: -webkit-linear-gradient(top, #e3e3e3, #f9f9f9);
+}

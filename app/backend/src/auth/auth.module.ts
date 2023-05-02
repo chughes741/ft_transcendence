@@ -5,18 +5,12 @@ import { PrismaModule } from "../prisma/prisma.module";
 import { JwtModule } from "@nestjs/jwt";
 import { JwtStrategy } from "./strategy";
 import { SessionSerializer } from "./session.serializer";
-import { FortyTwoStrategy } from "./strategy/ft.strategy";
-import { TokenStorageService } from "../token-storage.service";
+import { TokenModule } from "src/tokenstorage/token-verify.module";
+import TokenIsVerified from "src/tokenstorage/token-verify.service";
 
 @Module({
-  imports: [JwtModule.register({}), PrismaModule],
+  imports: [JwtModule.register({}), PrismaModule, TokenModule],
   controllers: [AuthController],
-  providers: [
-    AuthService,
-    FortyTwoStrategy,
-    JwtStrategy,
-    SessionSerializer,
-    TokenStorageService
-  ]
+  providers: [AuthService, JwtStrategy, SessionSerializer, TokenIsVerified]
 })
 export class AuthModule {}

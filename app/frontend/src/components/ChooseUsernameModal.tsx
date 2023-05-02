@@ -1,42 +1,79 @@
-import React, { useState, useCallback, useEffect } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import {
+  Button,
   Dialog,
-  DialogTitle,
+  DialogActions,
   DialogContent,
   DialogContentText,
-  TextField,
-  Button,
-  DialogActions
+  DialogTitle,
+  TextField
 } from "@mui/material";
+import { useRootViewModelContext } from "../root.context";
+import { useChatContext } from "src/chat/chat.context";
 
 interface ChooseUsernameModalProps {
   showModal: boolean;
-  defaultUsername: string;
-  pickUsername: (username: string) => void;
 }
 
+const validateUsername = (username: string): boolean => {
+  const minLength = 3;
+  const regex = /^[a-zA-Z0-9]+$/;
+
+  if (username.length < minLength || !regex.test(username)) {
+    alert(
+      "The username must be between 3 and 20 characters, and can only contain letters and numbers. Please choose another one."
+    );
+    return false;
+  }
+  return true;
+};
+
 export const ChooseUsernameModal: React.FC<ChooseUsernameModalProps> = ({
-  showModal,
-  pickUsername,
-  defaultUsername = "schlurp"
+  showModal
 }) => {
   if (!showModal) return null;
-
+  const { self, setSelf, setShowChooseUsernameModal, setFullscreen } =
+    useRootViewModelContext();
+  const { chatGatewayLogin } = useChatContext();
   const [username, setUsername] = useState<string>("");
 
-  const handleSubmit = useCallback(async () => {
-    const trimmedUsername = username.trim();
+  setFullscreen(true);
 
-    pickUsername(
-      trimmedUsername.length > 0 ? trimmedUsername : defaultUsername
-    );
-    setUsername("");
-  }, [username, setUsername]);
+  const handleSubmit = useCallback(async () => {
+    if (!validateUsername(username)) return;
+
+    const url = `http://localhost:3000/auth/changeUsername?current=${self.username}&newname=${username}`;
+    const data = await fetch(url, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json"
+      }
+    });
+
+    const changeIsSuccess = await data.json();
+    if (!changeIsSuccess) {
+      alert("This username is already taken, please choose another one.");
+    } else {
+      setSelf({
+        username: username,
+        avatar: self.avatar,
+        status: self.status,
+        createdAt: self.createdAt
+      });
+
+      await chatGatewayLogin({
+        username: username,
+        avatar: self.avatar
+      });
+      setShowChooseUsernameModal(false);
+    }
+    setFullscreen(false);
+  }, [username, setUsername, self, setSelf]);
 
   const handleKeyPress = useCallback(
     (e: KeyboardEvent) => {
       if (e.key === "Enter") {
-        handleSubmit();
+        handleSubmit().then();
       }
     },
     [handleSubmit]
@@ -46,7 +83,6 @@ export const ChooseUsernameModal: React.FC<ChooseUsernameModalProps> = ({
     if (showModal) {
       window.addEventListener("keydown", handleKeyPress);
     }
-
     return () => {
       window.removeEventListener("keydown", handleKeyPress);
     };
@@ -67,17 +103,15 @@ export const ChooseUsernameModal: React.FC<ChooseUsernameModalProps> = ({
     >
       <DialogTitle alignContent={"center"}>Choose a username</DialogTitle>
       <DialogContent>
-        <DialogContentText>
-          Enter a different username or use the default one:
-        </DialogContentText>
+        <DialogContentText>Please choose a username :</DialogContentText>
         <TextField
           autoFocus
           margin="dense"
-          label={username.length > 0 ? "Username" : defaultUsername}
+          label="Username"
           type="text"
           fullWidth
           onChange={(e) => setUsername(e.target.value)}
-          inputProps={{ maxLength: 25 }}
+          inputProps={{ maxLength: 20 }}
         />
       </DialogContent>
       <DialogActions>

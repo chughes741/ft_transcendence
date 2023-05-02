@@ -4,7 +4,7 @@ import {
   MessagePrismaType,
   IChatMemberEntity,
   ChatMemberPrismaType
-} from "../chat.gateway";
+} from "../chat.types";
 
 export class MessageEntity implements IMessageEntity {
   username: string;
