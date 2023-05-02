@@ -7,9 +7,7 @@ import "./Auth.tsx.css";
 import { createSocketWithHeaders, socket } from "../contexts/WebSocket.context";
 import { createBrowserHistory } from "history";
 import { useChatContext } from "src/chat/chat.context";
-import {
-  GameViewModelContext,
-} from "src/game/game.viewModel";
+import { GameViewModelContext } from "src/game/game.viewModel";
 
 enum UserStatus {
   ONLINE,
@@ -37,6 +35,7 @@ export interface dataResponse {
   user: ProfileEntity;
   token: string;
   twoFAenable: boolean;
+  firstConnexion: boolean;
 }
 
 export const headers = {
@@ -80,14 +79,16 @@ export default function Auth() {
     socket.on("connect", async () => {
       const url = `http://localhost:3000/auth/confirmID?previousID=${headers["client-id"]}&newID=${socket.id}`;
       //Calls backend with our newly found 42 Authorization code
-      const response = await fetch(url, {
+      await fetch(url, {
         method: "POST"
       });
       headers["client-id"] = socket.id;
-      await chatGatewayLogin({
-        username: data.user.username,
-        avatar: data.user.avatar
-      });
+      if (data.firstConnexion === false) {
+        await chatGatewayLogin({
+          username: data.user.username,
+          avatar: data.user.avatar
+        });
+      }
       await setEventListeners();
     });
     setSessionToken(data.token);
@@ -147,7 +148,8 @@ export default function Auth() {
         const userProfile: dataResponse = {
           user: populateProfile(client),
           token: client.token,
-          twoFAenable: client.user.enable2fa
+          twoFAenable: client.user.enable2fa,
+          firstConnexion: client.user.firstConnection
         };
         //Set self for frontend usage
         self.username = userProfile.user.username;
@@ -211,7 +213,11 @@ export default function Auth() {
               disableFocusRipple={true}
               sx={{
                 color: "#FA7F08",
-                "&:hover": {backgroundColor: "#FA7F08", color:"#131313", opacity:"0.75" }
+                "&:hover": {
+                  backgroundColor: "#FA7F08",
+                  color: "#131313",
+                  opacity: "0.75"
+                }
               }}
             >
               {isLoading ? "Logging in..." : "Login"}

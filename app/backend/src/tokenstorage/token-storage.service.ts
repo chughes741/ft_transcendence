@@ -1,7 +1,7 @@
 import { Injectable, Logger } from "@nestjs/common";
 import axios from "axios";
 
-const logger = new Logger("UserConnectionsService");
+const logger = new Logger("Token Storage");
 
 export class Token {
   access_token: string;
@@ -54,9 +54,7 @@ export class TokenStorageService {
     // Add the token to the map
     this.tokens.set(socketId, token);
     if (token !== undefined && token.access_token && socketId)
-      logger.debug(
-        `Added [Token]${token.access_token} to [Socket] ${socketId}.`
-      );
+      logger.debug(`Added [Token] to [Socket] connexion: ${socketId}.`);
   }
 
   removeToken(socketId: string): void {

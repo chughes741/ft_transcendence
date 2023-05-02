@@ -4,6 +4,7 @@ import { GameModuleData } from "./game.data";
 import { GameGateway } from "./game.gateway";
 import { GameLogic } from "./game.logic";
 import { GameService } from "./game.service";
+import { ChatModule } from "../chat/chat.module";
 import { PrismaModule } from "../prisma/prisma.module";
 
 describe("GameGateway", () => {
@@ -11,7 +12,7 @@ describe("GameGateway", () => {
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      imports: [PrismaModule],
+      imports: [ChatModule, PrismaModule],
       providers: [
         GameGateway,
         GameService,

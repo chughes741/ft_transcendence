@@ -26,7 +26,7 @@ import { handleSocketErrorResponse } from "./lib/helperFunctions";
 
 export interface ChatViewModelType extends ChatModelType {
   joinRoom: (roomName: string, password: string) => Promise<boolean>;
-  sendDirectMessage: (username: string) => Promise<boolean>;
+  sendDirectMessage: (username: string) => Promise<boolean | string>;
   sendRoomMessage: (roomName: string, message: string) => Promise<boolean>;
   createNewRoom: (
     roomName: string,
@@ -174,7 +174,7 @@ export const ChatViewModelProvider = ({ children }) => {
               response
             );
             addChatRoom(response);
-            resolve(true);
+            resolve(response.name);
           }
         }
       );

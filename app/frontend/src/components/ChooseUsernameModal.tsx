@@ -60,7 +60,6 @@ export const ChooseUsernameModal: React.FC<ChooseUsernameModalProps> = ({
         status: self.status,
         createdAt: self.createdAt
       });
-
       await chatGatewayLogin({
         username: username,
         avatar: self.avatar

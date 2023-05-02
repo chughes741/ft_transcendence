@@ -3,6 +3,7 @@ import { Test, TestingModule } from "@nestjs/testing";
 import { GameModuleData } from "./game.data";
 import { GameLogic } from "./game.logic";
 import { GameService } from "./game.service";
+import { ChatModule } from "../chat/chat.module";
 import { PrismaModule } from "../prisma/prisma.module";
 
 describe("GameService", () => {
@@ -10,7 +11,7 @@ describe("GameService", () => {
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      imports: [PrismaModule],
+      imports: [ChatModule, PrismaModule],
       providers: [GameService, GameLogic, SchedulerRegistry, GameModuleData]
     }).compile();
 
