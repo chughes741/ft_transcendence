@@ -81,7 +81,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     );
     if (token && token.token_type !== "transiting") {
       this.tokenVerify.tokenStorage.removeToken(client.id);
-      logger.log(`Client [${client.id}]'s Token Destroyed`);
+      logger.debug(`Client [${client.id}]'s Token Destroyed`);
     }
   }
 
@@ -292,9 +292,6 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
         this.prismaService.getUsersBlockedBy(userId),
         this.prismaService.getUsersBlocking(userId)
       ]);
-      // FIXME: remove before submit
-      logger.debug(`Blocked users:`, { blockedUsers });
-      logger.debug(`Blocking users:`, { blockingUsers });
 
       blockedUsers.forEach((blockedUser) => {
         logger.debug(
@@ -615,7 +612,6 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
         "addedToNewChatRoom",
         roomInfo
       );
-      // FIXME: Find a way to get the invited client's socket from the socket ID...
       this.bindAllUserSocketsToRoom(member.username, req.roomName);
     });
     return chatMembers.map((member) => member.username);

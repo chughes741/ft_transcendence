@@ -22,7 +22,7 @@ export default function GamePage() {
     }
     const ret = await sendDirectMessage(gameData.opponentUsername);
     if (typeof ret === "boolean") {
-      console.log("Error creating chat room");
+      console.debug("Error creating chat room");
       return;
     } else {
       setRoomName(ret);

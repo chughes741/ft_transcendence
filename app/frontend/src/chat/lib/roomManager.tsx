@@ -195,7 +195,6 @@ export const RoomManagerProvider = ({ children }) => {
     });
   };
 
-  // FIXME: move to model?
   const addMessageToRoom = (roomName: string, message: MessageType) => {
     updateRooms((newRooms) => {
       if (!newRooms[roomName]) {
