@@ -149,7 +149,7 @@ export default function Auth() {
           user: populateProfile(client),
           token: client.token,
           twoFAenable: client.user.enable2fa,
-          firstConnexion: client.user.firstConnection,
+          firstConnexion: client.user.firstConnection
         };
         //Set self for frontend usage
         self.username = userProfile.user.username;
