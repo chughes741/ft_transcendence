@@ -149,10 +149,6 @@ export const ChatViewModelProvider = ({ children }) => {
     });
   };
 
-  // Create a function sendDirectMessage that will take in a username, and check
-  // if a direct message room exists with that user. If it does, it will select
-  // that room. If it doesn't, it will create a new room with that user by sending
-  // a request to the server. The server will send back a response with the room name
   const sendDirectMessage = async (username: string): Promise<boolean> => {
     return new Promise<boolean>((resolve) => {
       const req: SendDirectMessageRequest = {

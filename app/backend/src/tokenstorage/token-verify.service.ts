@@ -51,7 +51,7 @@ export default class TokenIsVerified implements CanActivate {
       if (isWebSocket) client.emit("unauthorized");
       throw new UnauthorizedException();
     }
-    logger.debug("Token verification Success");
+    // logger.debug("Token verification Success");
     await this.refreshToken(clientId, token);
     return true;
   }

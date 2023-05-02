@@ -180,6 +180,7 @@ export default function UserListView({ userList, handleClick }: UserListProps) {
   };
 
   const onInviteToGame = () => {
+    // FIXME: Logic for inviting users needs to be implemented
     console.debug("Invite to game");
     setPageState(PageState.Game);
     setCurrentRoomName("");
