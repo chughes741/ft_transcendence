@@ -149,8 +149,10 @@ export const ChatViewModelProvider = ({ children }) => {
     });
   };
 
-  const sendDirectMessage = async (username: string): Promise<boolean> => {
-    return new Promise<boolean>((resolve) => {
+  const sendDirectMessage = async (
+    username: string
+  ): Promise<boolean | string> => {
+    return new Promise<boolean | string>((resolve) => {
       const req: SendDirectMessageRequest = {
         sender: self.username,
         recipient: username,
