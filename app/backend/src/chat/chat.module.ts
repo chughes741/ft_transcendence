@@ -8,6 +8,7 @@ import { TokenModule } from "src/tokenstorage/token-verify.module";
 import { TokenStorageModule } from "src/tokenstorage/token-storage.module";
 
 @Module({
+  exports: [ChatService],
   imports: [PrismaModule, TokenModule, TokenStorageModule],
   providers: [ChatGateway, ChatService, UserConnectionsService, PrismaService]
 })

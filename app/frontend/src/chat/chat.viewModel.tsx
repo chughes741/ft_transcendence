@@ -26,7 +26,7 @@ import { handleSocketErrorResponse } from "./lib/helperFunctions";
 
 export interface ChatViewModelType extends ChatModelType {
   joinRoom: (roomName: string, password: string) => Promise<boolean>;
-  sendDirectMessage: (username: string) => Promise<boolean>;
+  sendDirectMessage: (username: string) => Promise<boolean | string>;
   sendRoomMessage: (roomName: string, message: string) => Promise<boolean>;
   createNewRoom: (
     roomName: string,
@@ -149,12 +149,10 @@ export const ChatViewModelProvider = ({ children }) => {
     });
   };
 
-  // Create a function sendDirectMessage that will take in a username, and check
-  // if a direct message room exists with that user. If it does, it will select
-  // that room. If it doesn't, it will create a new room with that user by sending
-  // a request to the server. The server will send back a response with the room name
-  const sendDirectMessage = async (username: string): Promise<boolean> => {
-    return new Promise<boolean>((resolve) => {
+  const sendDirectMessage = async (
+    username: string
+  ): Promise<boolean | string> => {
+    return new Promise<boolean | string>((resolve) => {
       const req: SendDirectMessageRequest = {
         sender: self.username,
         recipient: username,
@@ -178,7 +176,7 @@ export const ChatViewModelProvider = ({ children }) => {
               response
             );
             addChatRoom(response);
-            resolve(true);
+            resolve(response.name);
           }
         }
       );
