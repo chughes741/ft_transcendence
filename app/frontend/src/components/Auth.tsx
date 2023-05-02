@@ -35,6 +35,7 @@ export interface dataResponse {
   user: ProfileEntity;
   token: string;
   twoFAenable: boolean;
+  firstConnexion: boolean;
 }
 
 export const headers = {
@@ -82,10 +83,12 @@ export default function Auth() {
         method: "POST"
       });
       headers["client-id"] = socket.id;
-      await chatGatewayLogin({
-        username: data.user.username,
-        avatar: data.user.avatar
-      });
+      if (data.firstConnexion === false) {
+        await chatGatewayLogin({
+          username: data.user.username,
+          avatar: data.user.avatar
+        });
+      }
       await setEventListeners();
     });
     setSessionToken(data.token);
@@ -145,7 +148,8 @@ export default function Auth() {
         const userProfile: dataResponse = {
           user: populateProfile(client),
           token: client.token,
-          twoFAenable: client.user.enable2fa
+          twoFAenable: client.user.enable2fa,
+          firstConnexion: client.user.firstConnection
         };
         //Set self for frontend usage
         self.username = userProfile.user.username;
