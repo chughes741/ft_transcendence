@@ -276,20 +276,16 @@ export const ChatViewModelProvider = ({ children }) => {
   /*   useEffects   */
   /******************/
 
-  // Login to the Chat Gateway
-  // useEffect(() => {
-  //   if (self.username) {
-  //     setRooms(() => {
-  //       return {};
-  //     });
-
-  //     const req: AuthRequest = {
-  //       username: self.username,
-  //       avatar: self.avatar
-  //     };
-  //     chatGatewayLogin(req);
-  //   }
-  // }, [self.username, ""]);
+  // Update own avatar of all rooms when avatar changes
+  useEffect(() => {
+    if (self?.avatar && self?.username) {
+      for (const roomName in rooms) {
+        if (rooms[roomName].users[self.username]) {
+          rooms[roomName].users[self.username].avatar = self.avatar;
+        }
+      }
+    }
+  }, [self.avatar, ""]);
 
   return (
     <ChatContext.Provider

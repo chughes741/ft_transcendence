@@ -37,10 +37,11 @@ export const ChatView: React.FC = () => {
           id="login-banner"
           style={{ width: "100%" }}
         >
-          <DevLoginBanner
+          {/* FIXME: Disabled for submission */}
+          {/* <DevLoginBanner
             username={self.username}
             onLoginAsSomeoneElse={loginAsSomeoneElse}
-          />
+          /> */}
         </Box>
         <Box
           id="chat-reste"

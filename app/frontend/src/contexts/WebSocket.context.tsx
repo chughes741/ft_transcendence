@@ -70,7 +70,6 @@ const WebSocketProvider: React.FC<WebSocketProviderProps> = ({ children }) => {
   };
 
   useEffect(() => {
-    //console.log("Inside WebsocketProvider UserEffect")
     if (socket) {
       value.socket = socket;
       value.socket.on("FirstConnect", () => {

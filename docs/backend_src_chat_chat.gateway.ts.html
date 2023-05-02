@@ -752,7 +752,6 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
         "addedToNewChatRoom",
         roomInfo
       );
-      // FIXME: Find a way to get the invited client's socket from the socket ID...
       this.bindAllUserSocketsToRoom(member.username, req.roomName);
     });
     return chatMembers.map((member) => member.username);
