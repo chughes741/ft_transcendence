@@ -127,7 +127,7 @@ export class GameLogic {
       };
       logger.debug("Match: " + JSON.stringify(match));
       try {
-        const ret = await this.prismaService.addMatch(match);
+        await this.prismaService.addMatch(match);
         logger.debug("Successfully added match to database");
       } catch (error) {
         logger.error("Problem with sendServerUpdate", error);

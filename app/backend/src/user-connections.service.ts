@@ -1,11 +1,13 @@
-import { Injectable, Logger } from "@nestjs/common";
+import { Injectable, Logger, UnauthorizedException } from "@nestjs/common";
 
 const logger = new Logger("UserConnectionsService");
 
 @Injectable()
 export class UserConnectionsService {
   private blockedUsers: Map<string, Set<string>> = new Map(); // Using a set to avoid duplicates, bruuuuhh
+  private blockedSocketIds: Map<string, Set<string>> = new Map();
   private userConnections: Map<string, string[]> = new Map(); // Not here doe, UUIDs take care of it!
+
   getUserSockets(username: string): string[] {
     return this.userConnections.get(username) || [];
   }
@@ -56,6 +58,9 @@ export class UserConnectionsService {
         `Removed ${socketId} from ${username}. Now has ${connections.length} connections`
       );
     }
+    this.blockedSocketIds.delete(socketId);
+    // For performance reasons (and b/c I'm lazy), we don't delete the socketId
+    // from the blockedSocketIds of the blocked users. We could. But we don't.
     return connections && connections.length ? connections.length : username;
   }
 
@@ -73,6 +78,37 @@ export class UserConnectionsService {
       this.blockedUsers.set(blockingUsername, new Set());
     }
     this.blockedUsers.get(blockingUsername).add(blockedUsername);
+  }
+
+  loadBlockedSocketIds(socketId: string, username: string): void {
+    if (!this.blockedUsers.has(username)) {
+      logger.debug(`No blocked users for ${username}`);
+      return;
+    }
+    if (!this.blockedSocketIds.has(socketId)) {
+      this.blockedSocketIds.set(socketId, new Set());
+    }
+    const blockedUsers = this.blockedUsers.get(username);
+    // For each blocked user, if the user has a socket, add it to the
+    // blockedSocketIds of the current socket, and vice versa
+    blockedUsers.forEach((blockedUser) => {
+      const blockedUserSockets = this.userConnections.get(blockedUser);
+      if (blockedUserSockets) {
+        logger.debug(`Loading blocked user ${blockedUser} for ${username}`);
+        blockedUserSockets.forEach((blockedUserSocket) => {
+          this.blockedSocketIds.get(socketId).add(blockedUserSocket);
+          if (!this.blockedSocketIds.has(blockedUserSocket)) {
+            this.blockedSocketIds.set(blockedUserSocket, new Set());
+          }
+          this.blockedSocketIds.get(blockedUserSocket).add(socketId);
+        });
+      }
+    });
+  }
+
+  getBlockedSocketIds(socketId: string): string[] {
+    const blockedSocketIds = this.blockedSocketIds.get(socketId);
+    return blockedSocketIds ? Array.from(blockedSocketIds) : [];
   }
 
   removeUserFromBlocked(

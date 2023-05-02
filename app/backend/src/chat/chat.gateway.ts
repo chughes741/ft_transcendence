@@ -60,7 +60,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   }
 
   async handleDisconnect(client: Socket) {
-    // Remove the user connection
+    logger.debug(`Client disconnected: ${client.id}`);
     const connections = this.userConnectionsService.removeUserConnection(
       client.id,
       client.id
@@ -83,10 +83,8 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
       this.tokenVerify.tokenStorage.removeToken(client.id);
       logger.log(`Client [${client.id}]'s Token Destroyed`);
     }
-    logger.debug(`Client disconnected: ${client.id}`);
   }
 
-  // Create a sendEventToAllUserSockets(member.username, "newChatRoomMember", newMember) function
   /* eslint-disable-next-line -- This function is not responsible for payload validation */
   async sendEventToAllUserSockets(username: string, event: string, data: any) {
     logger.debug(`Sending event ${event} to user ${username}`);
@@ -247,7 +245,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   }
 
   /**
-   * Temporary function to login a user
+   * Login a user to the chat gateway
    *
    * If the user does not exist, return an error
    * @todo remove this function when authentication is enabled
@@ -266,6 +264,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
       return { error: "Invalid request: username must be provided" };
     }
     const username = req.username;
+    const userId = await this.prismaService.getUserIdByUsername(username);
     logger.debug(
       `Received devUserLogin request from ${client.id} for user ${username}`
     );
@@ -282,26 +281,45 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     });
 
     // Add the user connection to the UserConnections map
-    this.userConnectionsService.addUserConnection(username, client.id);
-
-    // Load the list of blocked users and users blocking the logged-in user
-    const [blockedUsers, blockingUsers] = await Promise.all([
-      this.prismaService.getUsersBlockedBy(username),
-      this.prismaService.getUsersBlocking(username)
-    ]);
-
-    blockedUsers.forEach((blockedUser) =>
-      this.userConnectionsService.addUserToBlocked(
-        username,
-        blockedUser.username
-      )
+    const nbConnections = this.userConnectionsService.addUserConnection(
+      username,
+      client.id
     );
-    blockingUsers.forEach((blockingUser) =>
-      this.userConnectionsService.addUserToBlocked(
-        blockingUser.username,
-        username
-      )
-    );
+    // FIXME: turn this back on for optimization
+    // if (nbConnections === 1) {
+      // Load the list of blocked users and users blocking the logged-in user
+      const [blockedUsers, blockingUsers] = await Promise.all([
+        this.prismaService.getUsersBlockedBy(userId),
+        this.prismaService.getUsersBlocking(userId)
+      ]);
+      // FIXME: remove before submit
+      logger.debug(`Blocked users:`, { blockedUsers });
+      logger.debug(`Blocking users:`, { blockingUsers });
+
+      blockedUsers.forEach((blockedUser) => {
+        logger.debug(
+          `Adding ${blockedUser.username} to blocked users of ${username}`
+        );
+        this.userConnectionsService.addUserToBlocked(
+          username,
+          blockedUser.username
+        );
+        this.userConnectionsService.loadBlockedSocketIds(client.id, req.username);
+      });
+      blockingUsers.forEach((blockingUser) => {
+        logger.debug(
+          `Adding ${blockingUser.username} as a blocking user of ${username}`
+        );
+        this.userConnectionsService.addUserToBlocked(
+          username,
+          blockingUser.username
+        );
+        this.userConnectionsService.loadBlockedSocketIds(client.id, req.username);
+      });
+    // }
+
+    // load the current list of blocked socket ids
+    this.userConnectionsService.loadBlockedSocketIds(client.id, username);
     return username;
   }
 
@@ -525,10 +543,14 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     // Delegate business logic to the chat service
     const ret = await this.chatService.sendMessage(sendDto);
     if (ret instanceof Error) return { error: ret.message };
+    logger.debug("Message successfully added to the DB:", ret);
 
-    logger.debug("Message sent successfully:", ret);
-    // If nothing went wrong, send the message to the room
-    this.server.to(sendDto.roomName).emit("newMessage", ret);
+    // If nothing went wrong, send the message to the room, except the blocked users
+    const blockedIds = this.userConnectionsService.getBlockedSocketIds(
+      client.id
+    );
+    this.server.to(sendDto.roomName).except(blockedIds).emit("newMessage", ret);
+
     logger.debug(
       `User ${sendDto.sender} sent message in room ${sendDto.roomName}: ${sendDto.content}`
     );

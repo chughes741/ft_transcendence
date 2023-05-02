@@ -6,11 +6,22 @@ import { useChatContext } from "./chat.context";
 import UserListView from "./components/UserList";
 import { useRoomManager } from "./lib/roomManager";
 import { useRootViewModelContext } from "../root.context";
+import { AuthRequest } from "./chat.types";
 
 export const ChatView: React.FC = () => {
-  const { currentRoomName, handleContextMenuUsers } = useChatContext();
+  const { currentRoomName, handleContextMenuUsers, chatGatewayLogin } =
+    useChatContext();
   const { self } = useRootViewModelContext();
   const { rooms } = useRoomManager();
+
+  const loginAsSomeoneElse = (newUsername: string) => {
+    const req: AuthRequest = {
+      username: newUsername,
+      avatar: self.avatar
+    };
+    // Maybe needs to update the self.username upon connection for testing?
+    chatGatewayLogin(req);
+  };
 
   return (
     <Box
@@ -28,9 +39,7 @@ export const ChatView: React.FC = () => {
         >
           <DevLoginBanner
             username={self.username}
-            onLoginAsSomeoneElse={(username) => {
-              self.username = username;
-            }}
+            onLoginAsSomeoneElse={loginAsSomeoneElse}
           />
         </Box>
         <Box

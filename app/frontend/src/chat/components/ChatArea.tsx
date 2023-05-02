@@ -8,9 +8,11 @@ import "src/styles/chat/ChatArea.css";
 import ChatInputContainerView from "./ChatInputContainer";
 import { Grid } from "@mui/material";
 import { useChatContext } from "src/chat/chat.context";
+import { useRoomManager } from "../lib/roomManager";
 
 const ChatAreaView = () => {
   const { currentRoomName } = useChatContext();
+  const { rooms } = useRoomManager();
 
   const GridStyle = {
     height: "100%",
@@ -38,7 +40,7 @@ const ChatAreaView = () => {
             fontSize: "1.3rem"
           }}
         >
-          {currentRoomName}
+          {rooms[currentRoomName]?.displayName || currentRoomName}
         </Grid>
         <Grid
           item
