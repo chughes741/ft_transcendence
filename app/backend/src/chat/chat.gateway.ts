@@ -264,7 +264,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
       return { error: "Invalid request: username must be provided" };
     }
     const username = req.username;
-    const userId = await this.prismaService.getUserIdByNick(username);
+    const userId = await this.prismaService.getUserIdByUsername(username);
     logger.debug(
       `Received devUserLogin request from ${client.id} for user ${username}`
     );

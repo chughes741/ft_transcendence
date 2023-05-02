@@ -206,7 +206,7 @@ export class PrismaService extends PrismaClient {
    * @param {string} nick - The user's nick.
    * @returns {Promise&lt;string>} - A Promise that resolves to the user id if the user is found, or an error if not found.
    */
-  async getUserIdByNick(nick: string): Promise&lt;string | null> {
+  async getUserIdByUsername(nick: string): Promise&lt;string | null> {
     if (!nick) {
       return null;
     }
@@ -287,7 +287,7 @@ export class PrismaService extends PrismaClient {
     /** @todo this should use the userExists() method */
     /** @todo remove this code when authentication is enabled */
     logger.debug(`dto.owner: ${dto.owner}`);
-    const userID = await this.getUserIdByNick(dto.owner);
+    const userID = await this.getUserIdByUsername(dto.owner);
     logger.debug(`userID: ${userID}`);
     if (dto.owner &amp;&amp; !userID) {
       throw new Error("Invalid owner UUID");
