@@ -275,26 +275,6 @@ export class GameLogic {
         curBall.direction.y = -curBall.direction.y;
       }
     }
-
-    //Janky simple collision
-    // if (curBall.pos.x >= GameConfig.playAreaWidth / 2 - BallConfig.radius) {
-    //   curBall.direction.x = -curBall.direction.x;
-    // } else if (
-    //   curBall.pos.x <= -(GameConfig.playAreaWidth / 2 + BallConfig.radius)
-    // ) {
-    //   curBall.direction.x = -curBall.direction.x;
-    // } else if (
-    //   curBall.pos.y >=
-    //   GameConfig.playAreaHeight / 2 - BallConfig.radius
-    // ) {
-    //   curBall.direction.y = -curBall.direction.y;
-    // } else if (
-    //   curBall.pos.y <= -(GameConfig.playAreaHeight / 2 + BallConfig.radius)
-    // ) {
-    //   curBall.direction.y = -curBall.direction.y;
-    // }
-    //TODO: If collision was with a paddle, increase ball speed!!!
-
     return curBall;
   }
 

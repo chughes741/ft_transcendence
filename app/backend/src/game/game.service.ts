@@ -42,6 +42,7 @@ export class GameService {
   //Get local instance of websocket server
   @WebSocketServer()
   public server: Server;
+  public socket: Socket;
   private gameState: GameTypes.GameData;
 
   /****************************************************************************/
@@ -90,24 +91,25 @@ export class GameService {
 
     //Init new game object
     newLobby.gamestate = this.gameLogic.initNewGame(newLobby.players);
+
     //Add lobby to map of lobbies
-    /** @todo Swap this to a setter function in the data module */
     this.gameModuleData.addLobby(newLobby);
-    // GameModuleData.lobbies.push(newLobby);
-    logger.debug("Sizeof lobbies: ", GameModuleData.lobbies.length);
 
-    //Create payload
-    const payload: LobbyCreatedEvent = {
+    //Send lobby data to clients
+    this.server.to(playerPair[0].socket_id).emit(GameEvents.LobbyCreated, {
       lobby_id: newLobby.lobby_id,
-      opponent_username:
-        newLobby.players[0] === player.username
-          ? newLobby.players[1]
-          : newLobby.players[0],
-      player_side: newLobby.players[0] === player.username ? "left" : "right"
-    };
+      opponent_username: newLobby.players[1],
+      player_side: "left",
+    });
 
-    //Emit lobbyCreated event to room members
-    this.server.to(newLobby.lobby_id).emit(GameEvents.LobbyCreated, payload);
+    this.server.to(playerPair[1].socket_id).emit(GameEvents.LobbyCreated, {
+      lobby_id: newLobby.lobby_id,
+      opponent_username: newLobby.players[0],
+      player_side: "right",
+    });
+
+    
+    // this.server.to(newLobby.lobby_id).emit(GameEvents.LobbyCreated, payload);
   }
 
   /****************************************************************************/
