@@ -27,22 +27,11 @@ export default function Verify2FA() {
     sessionToken,
     setSelf,
     self,
-    setSessionToken,
-    fullscreen
+    setSessionToken
   } = useRootViewModelContext();
 
-  const [qrCode, setQRCode] = useState<string | null>(null);
   const [code, setCode] = useState<string>("");
   const [errorMessage, setErrorMessage] = useState<string>("");
-  const [secret, setSecret] = useState<string | null>(null);
-  const history = createBrowserHistory();
-  const [isCancelled, setCancelled] = useState<boolean>(false);
-
-  const cancel = () => {
-    history.replace("/auth");
-    setCancelled(true);
-    return;
-  };
 
   setFullscreen(true);
 
@@ -59,8 +48,7 @@ export default function Verify2FA() {
       });
       const data = await response.json();
       if (data.statusCode && data.statusCode === 401) {
-        //UNAUTHORIZED EXCEPTION
-        //MUST FLUSH THE session TOKEN and bring back to login page
+        //UNAUTHORIZED
         fetch(`/auth/deleteToken?socketId=${socket.id}`, {
           method: "POST"
         });
@@ -69,9 +57,6 @@ export default function Verify2FA() {
         setSelf({ username: "", avatar: "", createdAt: "", status: 0 });
         return;
       }
-      setQRCode(data["qrcode"]);
-      setSecret(data["secret"]);
-
       return true;
     } catch (error) {
       return false;
@@ -100,8 +85,7 @@ export default function Verify2FA() {
         return true;
       }
       if (data.statusCode && data.statusCode === 401) {
-        //UNAUTHORIZED EXCEPTION
-        //MUST FLUSH THE session TOKEN and bring back to login page
+        //Unautorized token
         await fetch(`/auth/deleteToken?socketId=${socket.id}`, {
           method: "POST",
           headers

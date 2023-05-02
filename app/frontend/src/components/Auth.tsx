@@ -7,9 +7,7 @@ import "./Auth.tsx.css";
 import { createSocketWithHeaders, socket } from "../contexts/WebSocket.context";
 import { createBrowserHistory } from "history";
 import { useChatContext } from "src/chat/chat.context";
-import {
-  GameViewModelContext,
-} from "src/game/game.viewModel";
+import { GameViewModelContext } from "src/game/game.viewModel";
 
 enum UserStatus {
   ONLINE,
@@ -80,7 +78,7 @@ export default function Auth() {
     socket.on("connect", async () => {
       const url = `http://localhost:3000/auth/confirmID?previousID=${headers["client-id"]}&newID=${socket.id}`;
       //Calls backend with our newly found 42 Authorization code
-      const response = await fetch(url, {
+      await fetch(url, {
         method: "POST"
       });
       headers["client-id"] = socket.id;
@@ -211,7 +209,11 @@ export default function Auth() {
               disableFocusRipple={true}
               sx={{
                 color: "#FA7F08",
-                "&:hover": {backgroundColor: "#FA7F08", color:"#131313", opacity:"0.75" }
+                "&:hover": {
+                  backgroundColor: "#FA7F08",
+                  color: "#131313",
+                  opacity: "0.75"
+                }
               }}
             >
               {isLoading ? "Logging in..." : "Login"}

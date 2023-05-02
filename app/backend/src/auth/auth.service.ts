@@ -164,7 +164,6 @@ export class AuthService {
         email: response2.data.email,
         status: UserStatus.ONLINE
       });
-      logger.debug("Token:", token.access_token);
       const authEntity: AuthEntity = {
         user: user,
         token: token.access_token
@@ -172,7 +171,6 @@ export class AuthService {
       return authEntity;
     } catch (error) {
       logger.debug("Axios request silenced");
-      console.log(error);
       return JSON.stringify({ error: error, ok: false });
     }
   }

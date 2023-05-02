@@ -1,4 +1,4 @@
-import { Box, Modal, Typography } from "@mui/material";
+import { Box, Modal } from "@mui/material";
 import ImgUpload from "src/components/ImgUpload";
 import Enable2FAButton from "../Enable2FAButton";
 import { useSettingsViewModelContext } from "./settings.viewModel";
@@ -46,7 +46,7 @@ export default function SettingsView() {
             Settings
           </Box>
           <ImgUpload />
-          <Enable2FAButton enabled={true} />
+          <Enable2FAButton />
         </Box>
       </Modal>
     </>

@@ -1,4 +1,4 @@
-import { Input, TextField } from "@mui/material";
+import { Input } from "@mui/material";
 import { Box } from "@mui/system";
 import React, { useEffect, useState } from "react";
 import { PageState } from "src/root.model";
@@ -163,7 +163,11 @@ export default function Enable2FA() {
                 alignSelf: "center",
                 cursor: "pointer",
                 textTransform: "none",
-                "&:hover": {backgroundColor: "#FA7F08", color:"#131313", opacity:"0.75" }
+                "&:hover": {
+                  backgroundColor: "#FA7F08",
+                  color: "#131313",
+                  opacity: "0.75"
+                }
               }}
               onClick={handleVerifyQRCode}
             >
@@ -182,8 +186,11 @@ export default function Enable2FA() {
                 alignSelf: "center",
                 cursor: "pointer",
                 textTransform: "none",
-                "&:hover": {backgroundColor: "#F24404", color:"#131313", opacity:"0.75" }
-
+                "&:hover": {
+                  backgroundColor: "#F24404",
+                  color: "#131313",
+                  opacity: "0.75"
+                }
               }}
               onClick={cancel}
             >
