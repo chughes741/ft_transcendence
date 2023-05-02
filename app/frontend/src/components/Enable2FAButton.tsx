@@ -6,12 +6,7 @@ import { PageState } from "src/root.model";
 import { socket } from "src/contexts/WebSocket.context";
 import { useSettingsViewModelContext } from "./settings/settings.viewModel";
 
-interface Props {
-  enabled: boolean;
-}
-
-export default function Enable2FAButton({ enabled }: Props) {
-  const [isLoading, setIsLoading] = useState(false);
+export default function Enable2FAButton() {
   const [qr, setQr] = useState<boolean>(false);
   const { setPageState, self, sessionToken } = useRootViewModelContext();
   const { handleCloseSettings } = useSettingsViewModelContext();
@@ -71,7 +66,6 @@ export default function Enable2FAButton({ enabled }: Props) {
         variant="outlined"
         onClick={onToggle}
         startIcon={enable2fa ? <ArrowBack /> : <ArrowBackIosNew />}
-        disabled={isLoading}
         sx={{
           alignSelf: "center",
           border: "1px solid #9f9f9f",
