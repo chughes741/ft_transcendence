@@ -70,7 +70,8 @@ export const GameViewModelProvider = ({ children }) => {
       setScoreLeft(payload.game_state.score_left);
       setScoreRight(payload.game_state.score_right);
       setDisplayGame(false);
-      setDisplayLobby(true);
+      setDisplayLobby(false);
+      setDisplayQueue(true);
     });
 
     socket.on(GameEvents.ServerGameStateUpdate, (payload: GameState) => {
@@ -146,7 +147,8 @@ export const GameViewModelProvider = ({ children }) => {
       console.debug("gameEnded event received. Payload:", payload);
 
       setDisplayGame(false);
-      setDisplayLobby(true);
+      setDisplayLobby(false);
+      setDisplayQueue(true);
     });
 
     return () => {
