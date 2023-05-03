@@ -7,7 +7,7 @@ const logger = new Logger("TokenVerification");
 
 @Injectable()
 export default class TokenIsVerified implements CanActivate {
-  constructor(public tokenStorage: TokenStorageService) { }
+  constructor(public tokenStorage: TokenStorageService) {}
 
   async refreshToken(clientID: string, refresh_token: Token) {
     //Refresh the Token
