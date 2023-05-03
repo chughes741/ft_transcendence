@@ -7,7 +7,7 @@ const logger = new Logger("TokenVerification");
 
 @Injectable()
 export default class TokenIsVerified implements CanActivate {
-  constructor(public tokenStorage: TokenStorageService) {}
+  constructor(public tokenStorage: TokenStorageService) { }
 
   async refreshToken(clientID: string, refresh_token: Token) {
     //Refresh the Token
@@ -47,7 +47,7 @@ export default class TokenIsVerified implements CanActivate {
       if (isWebSocket) client.emit("unauthorized");
       return false;
     }
-    // logger.debug("Token verification Success");
+    logger.debug("Token verification Success");
     await this.refreshToken(clientId, token);
     return true;
   }

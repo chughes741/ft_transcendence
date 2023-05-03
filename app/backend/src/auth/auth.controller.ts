@@ -27,7 +27,7 @@ const logger = new Logger("AuthController");
 @ApiTags("auth")
 export class AuthController {
   // Here, private means that authService is a member attribute
-  constructor(private authService: AuthService) {}
+  constructor(private authService: AuthService) { }
 
   @Post("testing")
   @UseGuards(TokenIsVerified)
@@ -84,7 +84,7 @@ export class AuthController {
     @Query("previousID") previousID: string,
     @Query("newID") newID: string
   ) {
-    logger.degub(`Confirming new Socket ID : [${newID}]`);
+    logger.debug(`Confirming new Socket ID : [${newID}]`);
     this.authService.confirmID(previousID, newID);
     return;
   }
