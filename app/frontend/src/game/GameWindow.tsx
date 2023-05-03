@@ -214,8 +214,16 @@ function OuterFrameRight() {
  * @returns {JSX.Element}
  */
 export default function Game() {
-  const { gameState, setGameState, setScoreLeft, setScoreRight, displayLobby } =
-    useGameViewModelContext();
+  const {
+    gameState,
+    setGameState,
+    setScoreLeft,
+    setScoreRight,
+    displayLobby,
+    displayQueue,
+    setDisplayQueue,
+    setDisplayLobby
+  } = useGameViewModelContext();
 
   useEffect(() => {
     socket.on(GameEvents.ServerGameStateUpdate, (payload: GameState) => {
@@ -228,6 +236,8 @@ export default function Game() {
       setGameState(payload.game_state);
       setScoreLeft(payload.game_state.score_left);
       setScoreRight(payload.game_state.score_right);
+      setDisplayQueue(true);
+      setDisplayLobby(false);
     });
 
     return () => {

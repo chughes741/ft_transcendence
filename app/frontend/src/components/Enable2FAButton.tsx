@@ -1,87 +1,12 @@
-// import React, { useEffect, useState } from "react";
-// import { ArrowBack, ArrowBackIosNew } from "@mui/icons-material";
-// import { Button } from "@mui/material";
-// import { useRootViewModelContext } from "src/root.context";
-// import { PageState } from "src/root.model";
-// import { headers } from "./Login42";
-// import { socket } from "src/contexts/WebSocket.context";
-// import VerifyQRCode from "src/components/QrCodeElement";
-//
-// interface Props {
-//   enabled: boolean;
-// }
-//
-// export default function TwoFactorButton({ enabled }: Props) {
-//   const [isLoading, setIsLoading] = useState(false);
-//   const { self, setSelf, setSessionToken, setPageState, setFullscreen } =
-//     useRootViewModelContext();
-//   let qr = false;
-//
-//   const onToggle =()=> {
-//     setIsLoading(true);
-//     qr = true;
-//     // const url = `/auth/update2FA?username=${self.username}`;
-//     // console.debug("With headers", headers);
-//     // const response = await fetch(url, {
-//     //   method: "GET",
-//     //   headers
-//     // });
-//     // const data = await response.json();
-//     // if (data.statusCode && data.statusCode === 401) {
-//     //   //UNAUTHORIZED EXCEPTION
-//     //   //MUST FLUSH THE session TOKEN and bring back to login page
-//     //   await fetch(`/auth/deleteToken?socketId=${socket.id}`, {
-//     //     method: "POST",
-//     //     headers
-//     //   });
-//     //   setSessionToken("");
-//     //   setPageState(PageState.Auth);
-//     //   setFullscreen(true);
-//     //   setSelf({ username: "", avatar: "", createdAt: "", status: 0 });
-//     //   return;
-//     // }
-//     setIsLoading(false);
-//   };
-//
-//   /*
-//     const handleClick = async () => {
-//         setIsLoading(true);
-//         await onToggle();
-//         setIsLoading(false);
-//     };*/
-//
-//   useEffect(() => {
-//     onToggle();
-//   }, []);
-//   return (
-//     <>
-//       <Button
-//         variant="contained"
-//         onClick={onToggle}
-//         startIcon={enabled ? <ArrowBack /> : <ArrowBackIosNew />}
-//         disabled={isLoading}
-//       >
-//         {enabled ? "Disable Two Factor" : "Enable Two Factor"}
-//       </Button>
-//       {qr && <VerifyQRCode />}
-//     </>
-//   );
-// }
-
 import React, { useEffect, useState } from "react";
 import { ArrowBack, ArrowBackIosNew } from "@mui/icons-material";
-import { Button } from "@mui/material";
+import { Box, Button } from "@mui/material";
 import { useRootViewModelContext } from "src/root.context";
 import { PageState } from "src/root.model";
 import { socket } from "src/contexts/WebSocket.context";
 import { useSettingsViewModelContext } from "./settings/settings.viewModel";
 
-interface Props {
-  enabled: boolean;
-}
-
-export default function TwoFactorButton({ enabled }: Props) {
-  const [isLoading, setIsLoading] = useState(false);
+export default function Enable2FAButton() {
   const [qr, setQr] = useState<boolean>(false);
   const { setPageState, self, sessionToken } = useRootViewModelContext();
   const { handleCloseSettings } = useSettingsViewModelContext();
@@ -126,11 +51,35 @@ export default function TwoFactorButton({ enabled }: Props) {
 
   return (
     <>
+      <Box
+        sx={{
+          alignSelf: "center",
+          margin: "2rem 0 1.5rem 0",
+          color: "#c1c1c1"
+        }}
+      >
+        {enable2fa
+          ? "Disable two factor authentication"
+          : "Enable two factor authentication"}
+      </Box>
       <Button
-        variant="contained"
+        variant="outlined"
         onClick={onToggle}
         startIcon={enable2fa ? <ArrowBack /> : <ArrowBackIosNew />}
-        disabled={isLoading}
+        sx={{
+          alignSelf: "center",
+          border: "1px solid #9f9f9f",
+          width: "15vw",
+          fontSize: "1rem",
+          color: "#FA7F08",
+          padding: "0.4rem",
+          textTransform: "none",
+          "&:hover": {
+            backgroundColor: "#FA7F08",
+            color: "#131313",
+            opacity: "0.75"
+          }
+        }}
       >
         {enable2fa ? "Disable Two Factor" : "Enable Two Factor"}
       </Button>

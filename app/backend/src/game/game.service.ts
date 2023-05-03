@@ -16,6 +16,9 @@ import {
   LobbyCreatedEvent,
   GameEvents
 } from "kingpong-lib";
+import { ChatService } from "../chat/chat.service";
+import { ChatMemberRank } from "@prisma/client";
+import { SendDirectMessageRequest } from "../chat/chat.types";
 
 const logger = new Logger("gameService");
 
@@ -32,12 +35,14 @@ export class GameService {
   constructor(
     private schedulerRegistry: SchedulerRegistry,
     private gameLogic: GameLogic,
-    private gameModuleData: GameModuleData
+    private gameModuleData: GameModuleData,
+    private chatService: ChatService
   ) {}
 
   //Get local instance of websocket server
   @WebSocketServer()
   public server: Server;
+  public socket: Socket;
   private gameState: GameTypes.GameData;
 
   /****************************************************************************/
@@ -47,6 +52,7 @@ export class GameService {
   /**
    * Emit event to tell client that lobby has been successfully created
    *
+   * @method createLobby
    * @param {GameTypes.PlayerQueue[]} playerPair
    * @param {JoinGameQueueRequest} player
    * @returns {}
@@ -56,6 +62,20 @@ export class GameService {
     player: JoinGameQueueRequest
   ) {
     logger.debug("createLobby() called");
+
+    // Create a chat room for the lobby
+    const roomReq: SendDirectMessageRequest = {
+      sender: playerPair[0].username,
+      recipient: playerPair[1].username,
+      senderRank: ChatMemberRank.USER
+    };
+    const chatRoom = await this.chatService.sendDirectMessage(roomReq);
+
+    if (chatRoom instanceof Error) {
+      logger.error("Error creating chat room: ", chatRoom);
+      // TODO: put both players back in the queue?
+      return;
+    }
 
     //Create a new lobby
     const newLobby = new GameTypes.gameLobby();
@@ -71,24 +91,25 @@ export class GameService {
 
     //Init new game object
     newLobby.gamestate = this.gameLogic.initNewGame(newLobby.players);
+
     //Add lobby to map of lobbies
-    /** @todo Swap this to a setter function in the data module */
     this.gameModuleData.addLobby(newLobby);
-    // GameModuleData.lobbies.push(newLobby);
-    logger.debug("Sizeof lobbies: ", GameModuleData.lobbies.length);
 
-    //Create payload
-    const payload: LobbyCreatedEvent = {
+    //Send lobby data to clients
+    this.server.to(playerPair[0].socket_id).emit(GameEvents.LobbyCreated, {
       lobby_id: newLobby.lobby_id,
-      opponent_username:
-        newLobby.players[0] === player.username
-          ? newLobby.players[1]
-          : newLobby.players[0],
-      player_side: newLobby.players[0] === player.username ? "left" : "right"
-    };
+      opponent_username: newLobby.players[1],
+      player_side: "left",
+    });
 
-    //Emit lobbyCreated event to room members
-    this.server.to(newLobby.lobby_id).emit(GameEvents.LobbyCreated, payload);
+    this.server.to(playerPair[1].socket_id).emit(GameEvents.LobbyCreated, {
+      lobby_id: newLobby.lobby_id,
+      opponent_username: newLobby.players[0],
+      player_side: "right",
+    });
+
+    
+    // this.server.to(newLobby.lobby_id).emit(GameEvents.LobbyCreated, payload);
   }
 
   /****************************************************************************/
@@ -98,6 +119,7 @@ export class GameService {
   /**
    * Adds player to the game queue and tries to find a match
    *
+   * @method joinGameQueue
    * @param {Socket} client
    * @param {JoinGameQueueRequest} player
    * @returns {Promise<boolean>}
@@ -135,6 +157,7 @@ export class GameService {
   /**
    * Removes player from the game queue
    *
+   * @param player
    * @param {LeaveGameQueueRequest} player
    * @returns {Promise<void>}
    */
@@ -205,6 +228,7 @@ export class GameService {
   /**
    * Handle game state updates from the client to update paddle positions
    *
+   * @method clientUpdate
    * @param {ClientGameStateUpdateRequest} payload
    * @returns {Promise<void>}
    */

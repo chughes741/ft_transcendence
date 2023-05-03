@@ -106,10 +106,10 @@ export class GameLogic {
         return;
       }
 
-      const player1Id = await this.prismaService.getUserIdByNick(
+      const player1Id = await this.prismaService.getUserIdByUsername(
         lobby.gamestate.players[0]
       );
-      const player2Id = await this.prismaService.getUserIdByNick(
+      const player2Id = await this.prismaService.getUserIdByUsername(
         lobby.gamestate.players[1]
       );
       this.server.to(lobby.lobby_id).emit(GameEvents.GameEnded, {
@@ -127,7 +127,7 @@ export class GameLogic {
       };
       logger.debug("Match: " + JSON.stringify(match));
       try {
-        const ret = await this.prismaService.addMatch(match);
+        await this.prismaService.addMatch(match);
         logger.debug("Successfully added match to database");
       } catch (error) {
         logger.error("Problem with sendServerUpdate", error);
@@ -275,26 +275,6 @@ export class GameLogic {
         curBall.direction.y = -curBall.direction.y;
       }
     }
-
-    //Janky simple collision
-    // if (curBall.pos.x >= GameConfig.playAreaWidth / 2 - BallConfig.radius) {
-    //   curBall.direction.x = -curBall.direction.x;
-    // } else if (
-    //   curBall.pos.x <= -(GameConfig.playAreaWidth / 2 + BallConfig.radius)
-    // ) {
-    //   curBall.direction.x = -curBall.direction.x;
-    // } else if (
-    //   curBall.pos.y >=
-    //   GameConfig.playAreaHeight / 2 - BallConfig.radius
-    // ) {
-    //   curBall.direction.y = -curBall.direction.y;
-    // } else if (
-    //   curBall.pos.y <= -(GameConfig.playAreaHeight / 2 + BallConfig.radius)
-    // ) {
-    //   curBall.direction.y = -curBall.direction.y;
-    // }
-    //TODO: If collision was with a paddle, increase ball speed!!!
-
     return curBall;
   }
 

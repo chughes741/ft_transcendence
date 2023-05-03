@@ -1,53 +1,50 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <title>backend/src/chat/chat.gateway.ts - Kingpong</title>
 
-    <meta name="description" content="Documentation for the kingpong website" />
+<head>
+  <meta charset="utf-8" />
+  <title>backend/src/chat/chat.gateway.ts - Kingpong</title>
 
-    <meta property="og:title" content="Kingpong Docs" />
-    <meta property="og:type" content="website" />
-    <meta property="og:image" content="" />
+  <meta name="description" content="Documentation for the kingpong website" />
 
-    <meta
-      property="og:url"
-      content="https://chughes741.github.io/ft_transcendence"
-    />
+  <meta property="og:title" content="Kingpong Docs" />
+  <meta property="og:type" content="website" />
+  <meta property="og:image" content="" />
 
-    <script src="scripts/prettify/prettify.js"></script>
-    <script src="scripts/prettify/lang-css.js"></script>
-    <!--[if lt IE 9]>
+  <meta property="og:url" content="https://chughes741.github.io/ft_transcendence" />
+
+  <script src="scripts/prettify/prettify.js"></script>
+  <script src="scripts/prettify/lang-css.js"></script>
+  <!--[if lt IE 9]>
       <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
     <![endif]-->
-    <link type="text/css" rel="stylesheet" href="styles/prettify.css" />
-    <link type="text/css" rel="stylesheet" href="styles/jsdoc.css" />
-    <script src="scripts/nav.js" defer></script>
+  <link type="text/css" rel="stylesheet" href="styles/prettify.css" />
+  <link type="text/css" rel="stylesheet" href="styles/jsdoc.css" />
+  <script src="scripts/nav.js" defer></script>
 
-    <script src="scripts/commonNav.js" defer></script>
+  <script src="scripts/commonNav.js" defer></script>
 
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  </head>
-  <body>
-    <input type="checkbox" id="nav-trigger" class="nav-trigger" />
-    <label for="nav-trigger" class="navicon-button x">
-      <div class="navicon"></div>
-    </label>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+</head>
 
-    <label for="nav-trigger" class="overlay"></label>
+<body>
+  <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+  <label for="nav-trigger" class="navicon-button x">
+    <div class="navicon"></div>
+  </label>
 
-    <nav>
-      <input type="text" id="nav-search" placeholder="Search" />
-    </nav>
+  <label for="nav-trigger" class="overlay"></label>
 
-    <div id="main">
-      <h1 class="page-title">backend/src/chat/chat.gateway.ts</h1>
+  <nav>
+    <input type="text" id="nav-search" placeholder="Search" />
+  </nav>
 
-      <section>
-        <article>
-          <pre
-            class="prettyprint source linenums"
-          ><code>import { Logger } from "@nestjs/common";
+  <div id="main">
+    <h1 class="page-title">backend/src/chat/chat.gateway.ts</h1>
+
+    <section>
+      <article>
+        <pre class="prettyprint source linenums"><code>import { Logger } from "@nestjs/common";
 import {
   OnGatewayConnection,
   OnGatewayDisconnect,
@@ -342,7 +339,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     roomName: string // Add roomName parameter
   ): Promise&lt;AvailableRoomEntity[] | UserEntity[]> {
     // Update the return type
-    const userId = await this.prismaService.getUserIdByNick(username);
+    const userId = await this.prismaService.getUserIdByUsername(username);
     logger.debug(
       `Received listAvailableChatRooms request from ${userId}, name ${username}`
     );
@@ -398,7 +395,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   ): Promise&lt;User[]> {
     logger.debug(`Received listAvailableUsers request from ${client.id}`);
     const username = this.userConnectionsService.getUserBySocket(client.id);
-    const userId = await this.prismaService.getUserIdByNick(username);
+    const userId = await this.prismaService.getUserIdByUsername(username);
     const roomId = await this.prismaService.getChatRoomId(req.chatRoomName);
     if (!userId || (!roomId &amp;&amp; req.chatRoomName !== "")) {
       logger.error(`User id: ${userId} or room id: ${roomId} not found`);
@@ -454,12 +451,12 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
    * If the user does not exist, return an error
    * @todo remove this function when authentication is enabled
    *
-   * @event "userLogin"
+   * @event "chatGatewayLogin"
    * @param {Socket} client
    * @param {AuthRequest} req
    * @returns {DevError | string}
    */
-  @SubscribeMessage("userLogin")
+  @SubscribeMessage("chatGatewayLogin")
   async devUserLogin(
     client: Socket,
     req: AuthRequest
@@ -685,7 +682,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     );
 
     // Try to get the user database ID
-    const userId = await this.prismaService.getUserIdByNick(sendDto.sender);
+    const userId = await this.prismaService.getUserIdByUsername(sendDto.sender);
     if (!userId) return { error: "User not found" };
 
     // Delegate business logic to the chat service
@@ -755,7 +752,6 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
         "addedToNewChatRoom",
         roomInfo
       );
-      // FIXME: Find a way to get the invited client's socket from the socket ID...
       this.bindAllUserSocketsToRoom(member.username, req.roomName);
     });
     return chatMembers.map((member) => member.username);
@@ -885,25 +881,56 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   }
 }
 </code></pre>
-        </article>
-      </section>
-    </div>
+        <<<<<<< HEAD </article>
+    </section>
 
-    <br class="clear" />
 
-    <footer>
-      Documentation generated by
-      <a href="https://github.com/jsdoc3/jsdoc">JSDoc 4.0.2</a> on Tue Apr 25
-      2023 20:32:20 GMT-0400 (Eastern Daylight Time) using the
-      <a href="https://github.com/clenemt/docdash">docdash</a> theme.
-    </footer>
 
-    <script>
-      prettyPrint();
-    </script>
-    <script src="scripts/polyfill.js"></script>
-    <script src="scripts/linenumber.js"></script>
 
-    <script src="scripts/search.js" defer></script>
-  </body>
+
+
+  </div>
+
+  <br class="clear">
+
+  <footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 4.0.2</a> on Tue Apr 25 2023 20:32:20
+    GMT-0400 (Eastern Daylight Time) using the <a href="https://github.com/clenemt/docdash">docdash</a> theme.
+  </footer>
+
+  <script>prettyPrint();</script>
+  <script src="scripts/polyfill.js"></script>
+  <script src="scripts/linenumber.js"></script>
+
+  <script src="scripts/search.js" defer></script>
+
+
+
+</body>
+
 </html>
+=======
+</article>
+</section>
+</div>
+
+<br class="clear" />
+
+<footer>
+  Documentation generated by
+  <a href="https://github.com/jsdoc3/jsdoc">JSDoc 4.0.2</a> on Tue Apr 25
+  2023 20:32:20 GMT-0400 (Eastern Daylight Time) using the
+  <a href="https://github.com/clenemt/docdash">docdash</a> theme.
+</footer>
+
+<script>
+  prettyPrint();
+</script>
+<script src="scripts/polyfill.js"></script>
+<script src="scripts/linenumber.js"></script>
+
+<script src="scripts/search.js" defer></script>
+</body>
+
+</html>
+>>>>>>> main

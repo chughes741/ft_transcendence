@@ -1,4 +1,4 @@
-import { Logger } from "@nestjs/common";
+import { Logger, UseGuards } from "@nestjs/common";
 import {
   OnGatewayConnection,
   OnGatewayDisconnect,
@@ -16,7 +16,7 @@ import { ChatMemberEntity, MessageEntity } from "./entities/message.entity";
 import { UserStatus } from "@prisma/client";
 import { KickMemberRequest, UpdateChatMemberRequest } from "./dto/userlist.dto";
 
-import { AuthRequest, UserEntity } from "../auth/dto";
+import { AuthRequest } from "../auth/dto";
 import {
   UpdateChatRoomRequest,
   ChatRoomEntity,
@@ -33,6 +33,7 @@ import {
   BlockUserRequest,
   DevSuccess
 } from "./chat.types";
+import TokenIsVerified from "src/tokenstorage/token-verify.service";
 
 const logger = new Logger("ChatGateway");
 
@@ -47,20 +48,19 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   constructor(
     private prismaService: PrismaService,
     private chatService: ChatService,
-    private userConnectionsService: UserConnectionsService
+    private userConnectionsService: UserConnectionsService,
+    private tokenVerify: TokenIsVerified
   ) {}
 
   @WebSocketServer()
   server: Server;
 
   async handleConnection(client: Socket) {
-    logger.warn("Client connected: " + client.id);
-    console.log(client);
-    logger.debug(`Client connected: ${client.id}`);
+    logger.warn(`Client connected: ${client.id}`);
   }
 
   async handleDisconnect(client: Socket) {
-    // Remove the user connection
+    logger.debug(`Client disconnected: ${client.id}`);
     const connections = this.userConnectionsService.removeUserConnection(
       client.id,
       client.id
@@ -76,11 +76,15 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
       });
       this.userConnectionsService.removeUserEntries(connections);
     }
-
-    logger.debug(`Client disconnected: ${client.id}`);
+    const token = await this.tokenVerify.tokenStorage.getTokenbySocket(
+      client.id
+    );
+    if (token && token.token_type !== "transiting") {
+      this.tokenVerify.tokenStorage.removeToken(client.id);
+      logger.debug(`Client [${client.id}]'s Token Destroyed`);
+    }
   }
 
-  // Create a sendEventToAllUserSockets(member.username, "newChatRoomMember", newMember) function
   /* eslint-disable-next-line -- This function is not responsible for payload validation */
   async sendEventToAllUserSockets(username: string, event: string, data: any) {
     logger.debug(`Sending event ${event} to user ${username}`);
@@ -127,6 +131,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
    * @returns {ChatRoomEntity | DevError} - the updated chat room or an error
    */
   @SubscribeMessage("updateChatRoom")
+  @UseGuards(TokenIsVerified)
   async updateChatRoom(
     client: Socket,
     updateChatRoomRequest: UpdateChatRoomRequest
@@ -171,12 +176,13 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
    * @returns {AvailableRoomEntity[]} - available rooms
    */
   @SubscribeMessage("listAvailableChatRooms")
+  @UseGuards(TokenIsVerified)
   async listAvailableChatRooms(
     client: Socket,
     username: string
   ): Promise<AvailableRoomEntity[]> {
     // Update the return type
-    const userId = await this.prismaService.getUserIdByNick(username);
+    const userId = await this.prismaService.getUserIdByUsername(username);
     logger.debug(
       `Received listAvailableChatRooms request from ${userId}, name ${username}`
     );
@@ -218,7 +224,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   ): Promise<User[]> {
     logger.debug(`Received listAvailableUsers request from ${client.id}`);
     const username = this.userConnectionsService.getUserBySocket(client.id);
-    const userId = await this.prismaService.getUserIdByNick(username);
+    const userId = await this.prismaService.getUserIdByUsername(username);
     const roomId = await this.prismaService.getChatRoomId(req.chatRoomName);
     if (!userId || (!roomId && req.chatRoomName !== "")) {
       logger.error(`User id: ${userId} or room id: ${roomId} not found`);
@@ -239,17 +245,17 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   }
 
   /**
-   * Temporary function to login a user
+   * Login a user to the chat gateway
    *
    * If the user does not exist, return an error
    * @todo remove this function when authentication is enabled
    *
-   * @event "userLogin"
+   * @event "chatGatewayLogin"
    * @param {Socket} client
    * @param {AuthRequest} req
    * @returns {DevError | string}
    */
-  @SubscribeMessage("userLogin")
+  @SubscribeMessage("chatGatewayLogin")
   async chatGatewayLogin(
     client: Socket,
     req: AuthRequest
@@ -258,6 +264,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
       return { error: "Invalid request: username must be provided" };
     }
     const username = req.username;
+    const userId = await this.prismaService.getUserIdByUsername(username);
     logger.debug(
       `Received devUserLogin request from ${client.id} for user ${username}`
     );
@@ -274,26 +281,42 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     });
 
     // Add the user connection to the UserConnections map
-    this.userConnectionsService.addUserConnection(username, client.id);
-
-    // Load the list of blocked users and users blocking the logged-in user
-    const [blockedUsers, blockingUsers] = await Promise.all([
-      this.prismaService.getUsersBlockedBy(username),
-      this.prismaService.getUsersBlocking(username)
-    ]);
-
-    blockedUsers.forEach((blockedUser) =>
-      this.userConnectionsService.addUserToBlocked(
-        username,
-        blockedUser.username
-      )
+    const nbConnections = this.userConnectionsService.addUserConnection(
+      username,
+      client.id
     );
-    blockingUsers.forEach((blockingUser) =>
-      this.userConnectionsService.addUserToBlocked(
-        blockingUser.username,
-        username
-      )
-    );
+    // FIXME: turn this back on for optimization
+    // if (nbConnections === 1) {
+      // Load the list of blocked users and users blocking the logged-in user
+      const [blockedUsers, blockingUsers] = await Promise.all([
+        this.prismaService.getUsersBlockedBy(userId),
+        this.prismaService.getUsersBlocking(userId)
+      ]);
+
+      blockedUsers.forEach((blockedUser) => {
+        logger.debug(
+          `Adding ${blockedUser.username} to blocked users of ${username}`
+        );
+        this.userConnectionsService.addUserToBlocked(
+          username,
+          blockedUser.username
+        );
+        this.userConnectionsService.loadBlockedSocketIds(client.id, req.username);
+      });
+      blockingUsers.forEach((blockingUser) => {
+        logger.debug(
+          `Adding ${blockingUser.username} as a blocking user of ${username}`
+        );
+        this.userConnectionsService.addUserToBlocked(
+          username,
+          blockingUser.username
+        );
+        this.userConnectionsService.loadBlockedSocketIds(client.id, req.username);
+      });
+    // }
+
+    // load the current list of blocked socket ids
+    this.userConnectionsService.loadBlockedSocketIds(client.id, username);
     return username;
   }
 
@@ -309,11 +332,20 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
    * @returns {ChatRoomEntity | DevError} - created chat room or error
    */
   @SubscribeMessage("createRoom")
+  @UseGuards(TokenIsVerified)
   async createRoom(
     client: Socket,
     createDto: CreateChatRoomRequest
   ): Promise<ChatRoomEntity | DevError> {
     // Log the request
+    logger.debug(
+      `Received createRoom request from ${createDto.owner} for room ${
+        createDto.name
+      }: ${createDto.status} ${
+        createDto.password ? `, with password ${createDto.password}.` : "."
+      }`
+    );
+
     logger.debug(
       `Received createRoom request from ${createDto.owner} for room ${
         createDto.name
@@ -353,13 +385,19 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     client: Socket,
     username: string
   ): Promise<ChatRoomEntity[] | DevError> {
-    logger.debug(`Received getRoomsMemberOf request from ${username}`);
-    const rooms = await this.chatService.getRoomsOf(username);
-    if (rooms instanceof Error) {
-      return { error: rooms.message };
+    try {
+      logger.debug(
+        `Received getRoomsMemberOf request from ${username} with socket Id ${client.id}`
+      );
+      const rooms = await this.chatService.getRoomsOf(username);
+      if (rooms instanceof Error) {
+        return { error: rooms.message };
+      }
+      rooms.forEach((room) => client.join(room.name));
+      return rooms;
+    } catch (error) {
+      return { error: error.message };
     }
-    rooms.forEach((room) => client.join(room.name));
-    return rooms;
   }
 
   /**
@@ -376,6 +414,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
    * @returns {DevError | ChatRoomEntity} - chat room or error
    */
   @SubscribeMessage("joinRoom")
+  @UseGuards(TokenIsVerified)
   async joinRoom(
     client: Socket,
     dto: JoinRoomRequest
@@ -389,13 +428,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
       }`
     );
 
-    /** @todo move this to a "getChatRoomMessages" handler */
-    // Assign the user id to the dto instead of the socket id
-    // dto.user = username;
     const ret = await this.chatService.joinRoom(dto);
-    // Find the user's ChatMember entity by finding the room name and the user id in the database
-
-    // Find the chatMember in the returned ChatRoomEntity's ChatMemberEntity array
 
     if (ret instanceof Error) {
       logger.error("Error in joinRoom", ret);
@@ -421,18 +454,19 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
    *
    * @event "getRoomMessagesPage"
    * @param {Socket} client - socket.io client
-   * @param {GetRoomMessagesPageDto} dto - get room messages page request
+   * @param {GetRoomMessagesPageRequest} req - get room messages page request
    * @returns {MessageEntity[]} - array of messages
    */
   @SubscribeMessage("getRoomMessagesPage")
+  @UseGuards(TokenIsVerified)
   async getRoomMessagesPage(
     client: Socket,
-    dto: { roomName: string; date: Date; pageSize: number }
+    req: { roomName: string; date: Date; pageSize: number }
   ): Promise<MessageEntity[]> {
     const messages = await this.chatService.getRoomMessagesPage(
-      dto.roomName,
-      dto.date,
-      dto.pageSize
+      req.roomName,
+      req.date,
+      req.pageSize
     );
     return messages;
   }
@@ -446,6 +480,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
    * @returns {DevError | string} - error or success message
    */
   @SubscribeMessage("leaveRoom")
+  @UseGuards(TokenIsVerified)
   async leaveRoom(
     client: Socket,
     req: LeaveRoomRequest
@@ -486,6 +521,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
    * @returns {DevError | string} - error or success message
    */
   @SubscribeMessage("sendMessage")
+  @UseGuards(TokenIsVerified)
   async sendMessage(
     client: Socket,
     sendDto: SendMessageRequest
@@ -498,16 +534,20 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     );
 
     // Try to get the user database ID
-    const userId = await this.prismaService.getUserIdByNick(sendDto.sender);
+    const userId = await this.prismaService.getUserIdByUsername(sendDto.sender);
     if (!userId) return { error: "User not found" };
 
     // Delegate business logic to the chat service
     const ret = await this.chatService.sendMessage(sendDto);
     if (ret instanceof Error) return { error: ret.message };
+    logger.debug("Message successfully added to the DB:", ret);
 
-    logger.debug("Message sent successfully:", ret);
-    // If nothing went wrong, send the message to the room
-    this.server.to(sendDto.roomName).emit("newMessage", ret);
+    // If nothing went wrong, send the message to the room, except the blocked users
+    const blockedIds = this.userConnectionsService.getBlockedSocketIds(
+      client.id
+    );
+    this.server.to(sendDto.roomName).except(blockedIds).emit("newMessage", ret);
+
     logger.debug(
       `User ${sendDto.sender} sent message in room ${sendDto.roomName}: ${sendDto.content}`
     );
@@ -523,6 +563,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
    * @returns {ChatMemberEntity[]} - array of chat members
    */
   @SubscribeMessage("listUsers")
+  @UseGuards(TokenIsVerified)
   async listUsers(
     client: Socket,
     payload: ListUsersRequest
@@ -538,6 +579,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
   // Listener to hangle "inviteUsersToRoom" event, taking in a roomName and a list of usernames
   @SubscribeMessage("inviteUsersToRoom")
+  @UseGuards(TokenIsVerified)
   async inviteUsersToRoom(
     client: Socket,
     req: InviteUsersToRoomRequest
@@ -570,7 +612,6 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
         "addedToNewChatRoom",
         roomInfo
       );
-      // FIXME: Find a way to get the invited client's socket from the socket ID...
       this.bindAllUserSocketsToRoom(member.username, req.roomName);
     });
     return chatMembers.map((member) => member.username);
@@ -585,6 +626,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
    * @returns {RoomMemberEntity | DevError} - updated chat member or error
    */
   @SubscribeMessage("updateChatMemberStatus")
+  @UseGuards(TokenIsVerified)
   async updateChatMemberStatus(
     client: Socket,
     req: UpdateChatMemberRequest
@@ -636,6 +678,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
    * @returns {RoomMemberEntity | DevError} - updated chat member or error
    */
   @SubscribeMessage("kickChatMember")
+  @UseGuards(TokenIsVerified)
   async kickChatMember(
     client: Socket,
     req: KickMemberRequest
@@ -660,6 +703,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
    * @returns {ChatRoomEntity | DevError} - chat room entity or error
    */
   @SubscribeMessage("sendDirectMessage")
+  @UseGuards(TokenIsVerified)
   async sendDirectMessage(
     client: Socket,
     req: SendDirectMessageRequest
@@ -687,6 +731,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
    * @returns {DevError | DevSuccess} - success message or error
    */
   @SubscribeMessage("blockUser")
+  @UseGuards(TokenIsVerified)
   async blockUser(
     client: Socket,
     req: BlockUserRequest

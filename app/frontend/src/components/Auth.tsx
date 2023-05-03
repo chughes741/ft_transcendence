@@ -1,15 +1,13 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useContext, useEffect, useState } from "react";
 import { Box, Button } from "@mui/material";
 import { ProfileEntity } from "kingpong-lib";
 import { PageState } from "src/root.model";
 import { useRootViewModelContext } from "src/root.context";
 import "./Auth.tsx.css";
-import { socket } from "../contexts/WebSocket.context";
+import { createSocketWithHeaders, socket } from "../contexts/WebSocket.context";
 import { createBrowserHistory } from "history";
-
-/*
- * We GOTTA add those to kingpong lib
- */
+import { useChatContext } from "src/chat/chat.context";
+import { GameViewModelContext } from "src/game/game.viewModel";
 
 enum UserStatus {
   ONLINE,
@@ -37,6 +35,7 @@ export interface dataResponse {
   user: ProfileEntity;
   token: string;
   twoFAenable: boolean;
+  firstConnexion: boolean;
 }
 
 export const headers = {
@@ -47,7 +46,6 @@ export const headers = {
 export default function Auth() {
   const {
     setShowChooseUsernameModal,
-    sessionToken,
     setSessionToken,
     setSelf,
     self,
@@ -55,14 +53,9 @@ export default function Auth() {
     setPageState
   } = useRootViewModelContext();
 
+  const { chatGatewayLogin } = useChatContext();
+  const { setEventListeners } = useContext(GameViewModelContext);
   const history = createBrowserHistory();
-  //TODO check this so it redirects if youre already sign in
-  useEffect(() => {
-    if (sessionToken) {
-      setPageState(PageState.Home);
-      return;
-    }
-  }, []);
 
   const [isLoading, setIsLoading] = useState(false);
 
@@ -77,11 +70,32 @@ export default function Auth() {
   };
 
   // on success, set the session token and the self, and redirects to /
-  const onSuccess = (data: dataResponse) => {
+
+  const onSuccess = async (data: dataResponse) => {
+    await createSocketWithHeaders({
+      clientId: headers["client-id"],
+      clientToken: headers["client-token"]
+    });
+    socket.on("connect", async () => {
+      const url = `http://localhost:3000/auth/confirmID?previousID=${headers["client-id"]}&newID=${socket.id}`;
+      //Calls backend with our newly found 42 Authorization code
+      await fetch(url, {
+        method: "POST"
+      });
+      headers["client-id"] = socket.id;
+      if (data.firstConnexion === false) {
+        await chatGatewayLogin({
+          username: data.user.username,
+          avatar: data.user.avatar
+        });
+      }
+      await setEventListeners();
+    });
     setSessionToken(data.token);
     setSelf(data.user);
     if (data.twoFAenable) setPageState(PageState.Verify2FA);
     else {
+      setIsLoading(true);
       setPageState(PageState.Home);
     }
   };
@@ -119,16 +133,23 @@ export default function Auth() {
         }
         //Data received from the backend fetch by 42 api
         const client = await data.json();
-        if (client.user.firstConnection) setShowChooseUsernameModal(true);
+        //const client = await data.json();
+
+        if (client.user.firstConnection) await setShowChooseUsernameModal(true);
         //Choose username on first connection
-        else setFullscreen(false); // TODO is this necessary??
+        else {
+          setFullscreen(false);
+        }
+        // TODO is this necessary??
         //Creates the headers that will enable token authentification
         headers["client-id"] = socket.id;
-        headers["client-token"] = client.token; //42 Token
+        headers["client-token"] = client.token;
+        //PrepInfo
         const userProfile: dataResponse = {
           user: populateProfile(client),
           token: client.token,
-          twoFAenable: client.user.enable2fa
+          twoFAenable: client.user.enable2fa,
+          firstConnexion: client.user.firstConnection
         };
         //Set self for frontend usage
         self.username = userProfile.user.username;
@@ -190,6 +211,14 @@ export default function Auth() {
               disabled={isLoading}
               disableRipple={true}
               disableFocusRipple={true}
+              sx={{
+                color: "#FA7F08",
+                "&:hover": {
+                  backgroundColor: "#FA7F08",
+                  color: "#131313",
+                  opacity: "0.75"
+                }
+              }}
             >
               {isLoading ? "Logging in..." : "Login"}
             </Button>
