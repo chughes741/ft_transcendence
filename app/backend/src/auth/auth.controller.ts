@@ -84,7 +84,7 @@ export class AuthController {
     @Query("previousID") previousID: string,
     @Query("newID") newID: string
   ) {
-    logger.degub(`Confirming new Socket ID : [${newID}]`);
+    logger.debug(`Confirming new Socket ID : [${newID}]`);
     this.authService.confirmID(previousID, newID);
     return;
   }
