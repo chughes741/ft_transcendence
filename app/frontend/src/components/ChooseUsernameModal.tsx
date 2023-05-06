@@ -31,13 +31,10 @@ const validateUsername = (username: string): boolean => {
 export const ChooseUsernameModal: React.FC<ChooseUsernameModalProps> = ({
   showModal
 }) => {
-  if (!showModal) return null;
   const { self, setSelf, setShowChooseUsernameModal, setFullscreen } =
     useRootViewModelContext();
   const { chatGatewayLogin } = useChatContext();
   const [username, setUsername] = useState<string>("");
-
-  setFullscreen(true);
 
   const handleSubmit = useCallback(async () => {
     if (!validateUsername(username)) return;
@@ -66,12 +63,11 @@ export const ChooseUsernameModal: React.FC<ChooseUsernameModalProps> = ({
       });
       setShowChooseUsernameModal(false);
     }
-    setFullscreen(false);
   }, [username, setUsername, self, setSelf]);
 
   const handleKeyPress = useCallback(
     (e: KeyboardEvent) => {
-      if (e.key === "Enter") {
+      if (e.key === "Enter" && showModal) {
         handleSubmit().then();
       }
     },
@@ -81,9 +77,11 @@ export const ChooseUsernameModal: React.FC<ChooseUsernameModalProps> = ({
   useEffect(() => {
     if (showModal) {
       window.addEventListener("keydown", handleKeyPress);
+      setFullscreen(true);
     }
     return () => {
       window.removeEventListener("keydown", handleKeyPress);
+      setFullscreen(false);
     };
   }, [showModal, handleSubmit]);
 
