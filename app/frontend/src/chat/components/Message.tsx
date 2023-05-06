@@ -96,7 +96,7 @@ const Message = forwardRef<HTMLDivElement, MessageProps>(({ message }, ref) => {
             >
               <Avatar
                 alt={message.username}
-                src={`https://i.pravatar.cc/150?u=${message.username}`}
+                src={message.avatar ? message.avatar : undefined}
               />
             </Tooltip>
           )}

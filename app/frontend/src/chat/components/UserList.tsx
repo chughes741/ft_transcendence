@@ -310,23 +310,6 @@ export default function UserListView({ userList, handleClick }: UserListProps) {
             <List>
               {userList && renderSortedUsers()}
               {userList && renderBannedUsersSection()}
-              {/* Object.entries(userList).map(([username, user]) => (
-                 <ListItemButton
-                   onContextMenu={(e) => handleClick(e, user)}
-                   key={user.username}
-                   onClick={(e) => {
-                     handleClick(e, user);
-                   }}
-                 >
-                   <ListItemIcon>
-                     <Avatar src={`https://i.pravatar.cc/150?u=${username}`} />
-                   </ListItemIcon>
-                   <ListItemText
-                     primary={username}
-                     secondary={user.userStatus}
-                   />
-                 </ListItemButton>
-               ))} */}
             </List>
           </Box>
         </Box>
