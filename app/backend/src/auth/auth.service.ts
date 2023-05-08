@@ -15,7 +15,7 @@ export class AuthService {
   constructor(
     private prisma: PrismaService, // create(), findUnique()
     private tokenClass: TokenIsVerified
-  ) {}
+  ) { }
 
   async signup(
     req: AuthRequest
@@ -175,7 +175,6 @@ export class AuthService {
       return authEntity;
     } catch (error) {
       logger.debug("Axios request silenced");
-      console.log(error);
       return JSON.stringify({ error: error, ok: false });
     }
   }
