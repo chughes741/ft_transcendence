@@ -50,7 +50,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     private chatService: ChatService,
     private userConnectionsService: UserConnectionsService,
     private tokenVerify: TokenIsVerified
-  ) {}
+  ) { }
 
   @WebSocketServer()
   server: Server;
@@ -65,8 +65,6 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
       client.id,
       client.id
     );
-    if (typeof connections === "string") {
-    }
 
     //Check token storage
     const token = await this.tokenVerify.tokenStorage.getTokenbySocket(
@@ -345,18 +343,14 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   ): Promise<ChatRoomEntity | DevError> {
     // Log the request
     logger.debug(
-      `Received createRoom request from ${createDto.owner} for room ${
-        createDto.name
-      }: ${createDto.status} ${
-        createDto.password ? `, with password ${createDto.password}.` : "."
+      `Received createRoom request from ${createDto.owner} for room ${createDto.name
+      }: ${createDto.status} ${createDto.password ? `, with password ${createDto.password}.` : "."
       }`
     );
 
     logger.debug(
-      `Received createRoom request from ${createDto.owner} for room ${
-        createDto.name
-      }: ${createDto.status} ${
-        createDto.password ? `, with password ${createDto.password}.` : "."
+      `Received createRoom request from ${createDto.owner} for room ${createDto.name
+      }: ${createDto.status} ${createDto.password ? `, with password ${createDto.password}.` : "."
       }`
     );
 
@@ -429,8 +423,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
       client.id
     );
     logger.debug(
-      `Received joinRoom request from ${username} for room ${dto.roomName} ${
-        dto.password ? `: with password ${dto.password}` : ""
+      `Received joinRoom request from ${username} for room ${dto.roomName} ${dto.password ? `: with password ${dto.password}` : ""
       }`
     );
 
