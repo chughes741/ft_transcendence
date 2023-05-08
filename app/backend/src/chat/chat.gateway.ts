@@ -66,22 +66,28 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
       client.id
     );
     if (typeof connections === "string") {
-      logger.debug(
-        `Client ${client.id} has no more active connections, updating user status to OFFLINE`
-      );
-
-      this.prismaService.user.update({
-        where: { username: connections },
-        data: { status: UserStatus.OFFLINE }
-      });
-      this.userConnectionsService.removeUserEntries(connections);
     }
+
+    //Check token storage
     const token = await this.tokenVerify.tokenStorage.getTokenbySocket(
       client.id
     );
     if (token && token.token_type !== "transiting") {
       this.tokenVerify.tokenStorage.removeToken(client.id);
       logger.debug(`Client [${client.id}]'s Token Destroyed`);
+
+      //Update user Status to OFFLINE if no more active connextions
+      if (typeof connections === "string") {
+        logger.debug(
+          `Client ${client.id} has no more active connections, updating user status to OFFLINE`
+        );
+        const name = this.userConnectionsService.getUserBySocket(connections);
+        await this.prismaService.user.update({
+          where: { username: name },
+          data: { status: UserStatus.OFFLINE }
+        });
+        this.userConnectionsService.removeUserEntries(connections);
+      }
     }
   }
 
@@ -287,32 +293,32 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     );
     // FIXME: turn this back on for optimization
     // if (nbConnections === 1) {
-      // Load the list of blocked users and users blocking the logged-in user
-      const [blockedUsers, blockingUsers] = await Promise.all([
-        this.prismaService.getUsersBlockedBy(userId),
-        this.prismaService.getUsersBlocking(userId)
-      ]);
+    // Load the list of blocked users and users blocking the logged-in user
+    const [blockedUsers, blockingUsers] = await Promise.all([
+      this.prismaService.getUsersBlockedBy(userId),
+      this.prismaService.getUsersBlocking(userId)
+    ]);
 
-      blockedUsers.forEach((blockedUser) => {
-        logger.debug(
-          `Adding ${blockedUser.username} to blocked users of ${username}`
-        );
-        this.userConnectionsService.addUserToBlocked(
-          username,
-          blockedUser.username
-        );
-        this.userConnectionsService.loadBlockedSocketIds(client.id, req.username);
-      });
-      blockingUsers.forEach((blockingUser) => {
-        logger.debug(
-          `Adding ${blockingUser.username} as a blocking user of ${username}`
-        );
-        this.userConnectionsService.addUserToBlocked(
-          username,
-          blockingUser.username
-        );
-        this.userConnectionsService.loadBlockedSocketIds(client.id, req.username);
-      });
+    blockedUsers.forEach((blockedUser) => {
+      logger.debug(
+        `Adding ${blockedUser.username} to blocked users of ${username}`
+      );
+      this.userConnectionsService.addUserToBlocked(
+        username,
+        blockedUser.username
+      );
+      this.userConnectionsService.loadBlockedSocketIds(client.id, req.username);
+    });
+    blockingUsers.forEach((blockingUser) => {
+      logger.debug(
+        `Adding ${blockingUser.username} as a blocking user of ${username}`
+      );
+      this.userConnectionsService.addUserToBlocked(
+        username,
+        blockingUser.username
+      );
+      this.userConnectionsService.loadBlockedSocketIds(client.id, req.username);
+    });
     // }
 
     // load the current list of blocked socket ids

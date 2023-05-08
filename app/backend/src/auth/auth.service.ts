@@ -38,7 +38,11 @@ export class AuthService {
       newuser.firstConnection = true;
       return newuser;
     }
-    logger.debug("Returning user");
+    logger.debug("Returning user email: ", data.email);
+    await this.prisma.user.update({
+      where: { email: data.email },
+      data: { status: UserStatus.ONLINE }
+    });
     user.firstConnection = false;
     return user;
   }
@@ -171,6 +175,7 @@ export class AuthService {
       return authEntity;
     } catch (error) {
       logger.debug("Axios request silenced");
+      console.log(error);
       return JSON.stringify({ error: error, ok: false });
     }
   }
