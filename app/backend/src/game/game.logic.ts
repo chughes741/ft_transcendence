@@ -183,11 +183,17 @@ export class GameLogic {
         prevBall.pos,
         curBall.pos,
         new Vec2(
-          GameConfig.playAreaWidth / 2 - PaddleConfig.borderOffset,
+          GameConfig.playAreaWidth / 2 -
+            (PaddleConfig.borderOffset +
+              PaddleConfig.width / 2 +
+              BallConfig.radius),
           gamestate.paddle_right.pos.y + PaddleConfig.height / 2
         ),
         new Vec2(
-          GameConfig.playAreaWidth / 2 - PaddleConfig.borderOffset,
+          GameConfig.playAreaWidth / 2 -
+            (PaddleConfig.borderOffset +
+              PaddleConfig.width / 2 +
+              BallConfig.radius),
           gamestate.paddle_right.pos.y - PaddleConfig.height / 2
         )
       );
@@ -204,11 +210,17 @@ export class GameLogic {
         prevBall.pos,
         curBall.pos,
         new Vec2(
-          -(GameConfig.playAreaWidth / 2) + PaddleConfig.borderOffset,
+          -(GameConfig.playAreaWidth / 2) +
+            (PaddleConfig.borderOffset +
+              PaddleConfig.width / 2 +
+              BallConfig.radius),
           gamestate.paddle_left.pos.y + PaddleConfig.height / 2
         ),
         new Vec2(
-          -(GameConfig.playAreaWidth / 2) + PaddleConfig.borderOffset,
+          -(GameConfig.playAreaWidth / 2) +
+            (PaddleConfig.borderOffset +
+              PaddleConfig.width / 2 +
+              BallConfig.radius),
           gamestate.paddle_left.pos.y - PaddleConfig.height / 2
         )
       );
@@ -250,7 +262,9 @@ export class GameLogic {
         gamestate.score[1]++;
         return curBall;
       }
-    } else if (curBall.pos.y >= GameConfig.playAreaHeight / 2) {
+    } 
+    // Check intersect with top wall
+    else if (curBall.pos.y >= GameConfig.playAreaHeight / 2) {
       const intersect: Vec2 = checkIntersect(
         prevBall.pos,
         curBall.pos,
@@ -262,7 +276,9 @@ export class GameLogic {
         curBall.pos = Vec2.add(intersect, remainder);
         curBall.direction.y = -curBall.direction.y;
       }
-    } else if (curBall.pos.y <= -(GameConfig.playAreaHeight / 2)) {
+    }
+    //Check intersect with bottom wall 
+    else if (curBall.pos.y <= -(GameConfig.playAreaHeight / 2)) {
       const intersect: Vec2 = checkIntersect(
         prevBall.pos,
         curBall.pos,
