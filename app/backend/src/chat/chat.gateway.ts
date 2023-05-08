@@ -76,14 +76,18 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
       //Update user Status to OFFLINE if no more active connextions
       if (typeof connections === "string") {
-        logger.debug(
-          `Client ${client.id} has no more active connections, updating user status to OFFLINE`
-        );
         const name = this.userConnectionsService.getUserBySocket(connections);
-        await this.prismaService.user.update({
-          where: { username: name },
-          data: { status: UserStatus.OFFLINE }
-        });
+        const userSockets = this.userConnectionsService.getUserSockets(name);
+        if (userSockets.length === 1) {
+          logger.debug(
+            `Client ${client.id} has no more active connections, updating user status to OFFLINE`
+          );
+          await this.prismaService.user.update({
+            where: { username: name },
+            data: { status: UserStatus.OFFLINE }
+          });
+        }
+        this.userConnectionsService.removeUserConnection(name, connections);
         this.userConnectionsService.removeUserEntries(connections);
       }
     }
