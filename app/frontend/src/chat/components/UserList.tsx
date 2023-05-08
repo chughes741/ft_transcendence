@@ -201,20 +201,22 @@ export default function UserListView({ userList, handleClick }: UserListProps) {
 
   const onKickUser = () => {
     console.debug("Kick User");
+    const memberToKick = contextMenuUsersData.username;
     const req: KickMemberRequest = {
-      memberToKickUsername: contextMenuUsersData.username,
+      memberToKickUsername: memberToKick,
       memberToKickRank: contextMenuUsersData.rank,
       roomName: currentRoomName,
       queryingMemberRank: ownRank
     };
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    socket.emit("kickUser", req, (res: DevError | any) => {
+    socket.emit("kickChatMember", req, (res: DevError | any) => {
       if (handleSocketErrorResponse(res)) return console.warn(res);
       console.debug(`successfully kicked user ${res}`);
+      console.log(res);
       updateRooms((newRooms) => {
-        if (!newRooms[currentRoomName].users[res]) return newRooms;
-        delete newRooms[currentRoomName].users[res];
+        if (!newRooms[currentRoomName].users[memberToKick]) return newRooms;
+        delete newRooms[currentRoomName].users[memberToKick];
         return newRooms;
       });
     });
