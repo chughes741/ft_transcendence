@@ -15,7 +15,7 @@ export class AuthService {
   constructor(
     private prisma: PrismaService, // create(), findUnique()
     private tokenClass: TokenIsVerified
-  ) { }
+  ) {}
 
   async signup(
     req: AuthRequest
