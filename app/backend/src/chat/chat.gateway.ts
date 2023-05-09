@@ -473,7 +473,6 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
       req.pageSize
     );
     return messages.filter((m) => m.username !== username);
-    // return messages;
   }
 
   /**
