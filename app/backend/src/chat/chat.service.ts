@@ -563,16 +563,20 @@ export class ChatService {
     )
       throw new Error("Wrong rank: Can't request operation");
     try {
-      const chatMember = await this.prismaService.chatMember.delete({
+      const chatMember = await this.prismaService.getChatMemberByUsername(
+        kickDto.roomName,
+        kickDto.memberToKickUsername
+      );
+
+      await this.prismaService.chatMember.delete({
         where: {
-          id: kickDto.memberToKickUUID
-        },
-        include: {
-          member: true,
-          room: true
+          id: chatMember.id
         }
       });
       const entity: ChatMemberEntity = new ChatMemberEntity(chatMember);
+      logger.debug(
+        `Kicked ${kickDto.memberToKickUsername} from ${kickDto.roomName}`
+      );
       return entity;
     } catch (error) {
       logger.error("Error kicking chat member", error);
