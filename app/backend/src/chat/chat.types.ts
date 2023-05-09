@@ -89,7 +89,7 @@ export class BlockUserRequest {
 /******************************************************************************/
 
 export interface MessagePrismaType extends Message {
-  sender: { username: string };
+  sender: { username: string; avatar: string };
   room: { name: string };
 }
 
@@ -121,6 +121,7 @@ export interface IMessageEntity {
   username: string;
   roomName: string;
   content: string;
+  avatar: string;
   timestamp: Date;
 }
 

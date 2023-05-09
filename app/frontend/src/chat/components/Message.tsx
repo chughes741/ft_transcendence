@@ -58,6 +58,7 @@ const Message = forwardRef<HTMLDivElement, MessageProps>(({ message }, ref) => {
     }
   );
 
+  if (!message) return <></>;
   return (
     <div
       className={`message-wrapper ${message.isOwn ? "own-message" : ""}`}
@@ -96,7 +97,7 @@ const Message = forwardRef<HTMLDivElement, MessageProps>(({ message }, ref) => {
             >
               <Avatar
                 alt={message.username}
-                src={message.avatar ? message.avatar : undefined}
+                src={message.avatar}
               />
             </Tooltip>
           )}

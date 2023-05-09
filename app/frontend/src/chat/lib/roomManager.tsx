@@ -85,8 +85,7 @@ export const RoomManagerProvider = ({ children }) => {
       displayUser: true,
       displayTimestamp: true,
       displayDate: true,
-      avatar:
-        rooms[messagePayload.roomName]?.users[messagePayload.username]?.avatar
+      avatar: messagePayload.avatar
     };
   };
 

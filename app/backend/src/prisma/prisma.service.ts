@@ -324,7 +324,7 @@ export class PrismaService extends PrismaClient {
       },
       include: {
         sender: {
-          select: { username: true }
+          select: { username: true, avatar: true }
         },
         room: { select: { name: true } }
       },
@@ -475,7 +475,7 @@ export class PrismaService extends PrismaClient {
       where: { roomId },
       orderBy: { createdAt: "desc" },
       include: {
-        sender: { select: { username: true } },
+        sender: { select: { username: true, avatar: true } },
         room: { select: { name: true } }
       }
     });
