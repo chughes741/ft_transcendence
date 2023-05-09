@@ -287,32 +287,32 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     );
     // FIXME: turn this back on for optimization
     // if (nbConnections === 1) {
-      // Load the list of blocked users and users blocking the logged-in user
-      const [blockedUsers, blockingUsers] = await Promise.all([
-        this.prismaService.getUsersBlockedBy(userId),
-        this.prismaService.getUsersBlocking(userId)
-      ]);
+    // Load the list of blocked users and users blocking the logged-in user
+    const [blockedUsers, blockingUsers] = await Promise.all([
+      this.prismaService.getUsersBlockedBy(userId),
+      this.prismaService.getUsersBlocking(userId)
+    ]);
 
-      blockedUsers.forEach((blockedUser) => {
-        logger.debug(
-          `Adding ${blockedUser.username} to blocked users of ${username}`
-        );
-        this.userConnectionsService.addUserToBlocked(
-          username,
-          blockedUser.username
-        );
-        this.userConnectionsService.loadBlockedSocketIds(client.id, req.username);
-      });
-      blockingUsers.forEach((blockingUser) => {
-        logger.debug(
-          `Adding ${blockingUser.username} as a blocking user of ${username}`
-        );
-        this.userConnectionsService.addUserToBlocked(
-          username,
-          blockingUser.username
-        );
-        this.userConnectionsService.loadBlockedSocketIds(client.id, req.username);
-      });
+    blockedUsers.forEach((blockedUser) => {
+      logger.debug(
+        `Adding ${blockedUser.username} to blocked users of ${username}`
+      );
+      this.userConnectionsService.addUserToBlocked(
+        username,
+        blockedUser.username
+      );
+      this.userConnectionsService.loadBlockedSocketIds(client.id, req.username);
+    });
+    blockingUsers.forEach((blockingUser) => {
+      logger.debug(
+        `Adding ${blockingUser.username} as a blocking user of ${username}`
+      );
+      this.userConnectionsService.addUserToBlocked(
+        username,
+        blockingUser.username
+      );
+      this.userConnectionsService.loadBlockedSocketIds(client.id, req.username);
+    });
     // }
 
     // load the current list of blocked socket ids
@@ -463,12 +463,17 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     client: Socket,
     req: { roomName: string; date: Date; pageSize: number }
   ): Promise<MessageEntity[]> {
+    const username = this.userConnectionsService.getUserBySocket(client.id);
+    if (!username) return [];
+    const blockedUsernames =
+      this.userConnectionsService.getBlockedUsers(username);
     const messages = await this.chatService.getRoomMessagesPage(
       req.roomName,
       req.date,
       req.pageSize
     );
-    return messages;
+    return messages.filter((m) => m.username !== username);
+    // return messages;
   }
 
   /**
