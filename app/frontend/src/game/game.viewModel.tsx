@@ -39,10 +39,10 @@ export const GameViewModelProvider = ({ children }) => {
     setDisplayGame,
     setGameState,
     setScoreLeft,
-    setScoreRight
+    setScoreRight,
   } = gameModel;
 
-  const { self } = useRootViewModelContext();
+  const { self, setFullscreen } = useRootViewModelContext();
 
   //Functionnalities that can set event listeners to another socket.
   const setEventListeners = () => {
@@ -149,6 +149,7 @@ export const GameViewModelProvider = ({ children }) => {
       setDisplayGame(false);
       setDisplayLobby(false);
       setDisplayQueue(true);
+      setFullscreen(false);
     });
 
     return () => {

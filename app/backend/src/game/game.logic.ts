@@ -9,7 +9,7 @@ import { degToRad, checkIntersect } from "./game.utils";
 import { GameEvents, GameState } from "kingpong-lib";
 import { GameType } from "@prisma/client";
 import { PrismaService } from "../prisma/prisma.service";
-
+import { GameModuleData } from "./game.data";
 const logger = new Logger("gameLogic");
 
 @WebSocketGateway({
@@ -21,7 +21,8 @@ const logger = new Logger("gameLogic");
 export class GameLogic {
   constructor(
     private schedulerRegistry: SchedulerRegistry,
-    private prismaService: PrismaService
+    private prismaService: PrismaService,
+    private gameModuleData: GameModuleData,
   ) {}
 
   @WebSocketServer()
@@ -112,11 +113,15 @@ export class GameLogic {
       const player2Id = await this.prismaService.getUserIdByUsername(
         lobby.gamestate.players[1]
       );
+      
+      //Send gameEnded event to players
       this.server.to(lobby.lobby_id).emit(GameEvents.GameEnded, {
         match_id: lobby.lobby_id,
         lobby_id: lobby.lobby_id,
         game_state: gamestate
       });
+
+      //Add match results to the database
       const match: MatchType = {
         player1Id,
         player2Id,
@@ -133,6 +138,10 @@ export class GameLogic {
         logger.error("Problem with sendServerUpdate", error);
       }
 
+      //Remove clients from websocket room
+      
+      //Remove lobby and game from server memory
+      this.gameModuleData.removeLobby(lobby.lobby_id);
       return;
     }
 
