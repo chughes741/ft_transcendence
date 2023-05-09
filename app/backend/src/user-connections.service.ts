@@ -44,8 +44,12 @@ export class UserConnectionsService {
     return this.getUserSockets(username).length;
   }
 
-  removeUserConnection(username: string, socketId: string): number | string {
+  removeUserConnection(username: string, socketId: string): number | Error {
+    logger.log(`Removing ${socketId} from ${username}`);
     const connections = this.userConnections.get(username);
+    if (!connections) {
+      return Error(`User ${username} does not exist`);
+    }
     if (connections) {
       const index = connections.indexOf(socketId);
       if (index > -1) {
@@ -61,7 +65,8 @@ export class UserConnectionsService {
     this.blockedSocketIds.delete(socketId);
     // For performance reasons (and b/c I'm lazy), we don't delete the socketId
     // from the blockedSocketIds of the blocked users. We could. But we don't.
-    return connections && connections.length ? connections.length : username;
+    logger.log(`Returning ${connections.length}`);
+    return connections.length;
   }
 
   userIsBlockedBy(blockedUsername: string, blockingUsername: string): boolean {

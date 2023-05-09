@@ -50,7 +50,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     private chatService: ChatService,
     private userConnectionsService: UserConnectionsService,
     private tokenVerify: TokenIsVerified
-  ) { }
+  ) {}
 
   @WebSocketServer()
   server: Server;
@@ -61,10 +61,29 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
   async handleDisconnect(client: Socket) {
     logger.debug(`Client disconnected: ${client.id}`);
-    const connections = this.userConnectionsService.removeUserConnection(
-      client.id,
+    const clientName = this.userConnectionsService.getUserBySocket(client.id);
+    if (!clientName) return;
+    const nbConnections = this.userConnectionsService.removeUserConnection(
+      clientName,
       client.id
     );
+    if (nbConnections instanceof Error) return;
+
+    //Update user Status to OFFLINE if no more active connextions
+    if (nbConnections === 0) {
+      logger.debug(
+        `Client ${client.id} has no more active connections, updating user status to ${UserStatus.OFFLINE}`
+      );
+      try {
+        await this.prismaService.user.update({
+          where: { username: clientName },
+          data: { status: UserStatus.OFFLINE }
+        });
+      } catch (e) {
+        logger.error(`Error updating user status to OFFLINE: ${e}`);
+      }
+      this.userConnectionsService.removeUserEntries(clientName);
+    }
 
     //Check token storage
     const token = await this.tokenVerify.tokenStorage.getTokenbySocket(
@@ -73,23 +92,6 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     if (token && token.token_type !== "transiting") {
       this.tokenVerify.tokenStorage.removeToken(client.id);
       logger.debug(`Client [${client.id}]'s Token Destroyed`);
-
-      //Update user Status to OFFLINE if no more active connextions
-      if (typeof connections === "string") {
-        const name = this.userConnectionsService.getUserBySocket(connections);
-        const userSockets = this.userConnectionsService.getUserSockets(name);
-        if (userSockets.length === 1) {
-          logger.debug(
-            `Client ${client.id} has no more active connections, updating user status to OFFLINE`
-          );
-          await this.prismaService.user.update({
-            where: { username: name },
-            data: { status: UserStatus.OFFLINE }
-          });
-        }
-        this.userConnectionsService.removeUserConnection(name, connections);
-        this.userConnectionsService.removeUserEntries(connections);
-      }
     }
   }
 
@@ -347,14 +349,18 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   ): Promise<ChatRoomEntity | DevError> {
     // Log the request
     logger.debug(
-      `Received createRoom request from ${createDto.owner} for room ${createDto.name
-      }: ${createDto.status} ${createDto.password ? `, with password ${createDto.password}.` : "."
+      `Received createRoom request from ${createDto.owner} for room ${
+        createDto.name
+      }: ${createDto.status} ${
+        createDto.password ? `, with password ${createDto.password}.` : "."
       }`
     );
 
     logger.debug(
-      `Received createRoom request from ${createDto.owner} for room ${createDto.name
-      }: ${createDto.status} ${createDto.password ? `, with password ${createDto.password}.` : "."
+      `Received createRoom request from ${createDto.owner} for room ${
+        createDto.name
+      }: ${createDto.status} ${
+        createDto.password ? `, with password ${createDto.password}.` : "."
       }`
     );
 
@@ -427,7 +433,8 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
       client.id
     );
     logger.debug(
-      `Received joinRoom request from ${username} for room ${dto.roomName} ${dto.password ? `: with password ${dto.password}` : ""
+      `Received joinRoom request from ${username} for room ${dto.roomName} ${
+        dto.password ? `: with password ${dto.password}` : ""
       }`
     );
 
