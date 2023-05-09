@@ -2,6 +2,7 @@ import * as GameTypes from "./game.types";
 import { Logger } from "@nestjs/common";
 import { UserStatus } from "@prisma/client";
 import { PlayerReadyRequest, ClientGameStateUpdateRequest } from "kingpong-lib";
+import { elementAt } from "rxjs";
 import { PrismaService } from "src/prisma/prisma.service";
 const logger = new Logger("gameData");
 
@@ -225,14 +226,15 @@ export class GameModuleData {
    *
    */
   getInvitePair(username: string): PlayerPair {
-    GameModuleData.invite.forEach((element) => {
-      if (
-        element.at(0).username === username ||
-        element.at(1).username === username
-      ) {
-        return element;
-      }
-    });
-    return null;
+    // GameModuleData.invite.forEach((element) => {
+    //   // if (
+    //   //   element.at(0).username === username ||
+    //   //   element.at(1).username === username
+    //   // ) {
+    //   //   return element;
+    //   console.log(element);
+    //   return element;
+    // });
+    return GameModuleData.invite.at(0);
   }
 }

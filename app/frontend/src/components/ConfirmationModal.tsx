@@ -20,11 +20,11 @@ export const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
   showModal,
   message
 }) => {
-  const { self, setDisplayGameInvite } =
+  const { self, displayGameInvite, setDisplayGameInvite } =
     useRootViewModelContext();
-  const { inviter } = useGameViewModelContext();
-  if (!showModal) return null;
+  const { inviter, setDisplayQueue } = useGameViewModelContext();
 
+  if (!showModal) return null;
   const handleAccept = () => {
     console.warn("handleAccept");
     //Emit event to server
@@ -33,6 +33,9 @@ export const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
       invited_username: self.username,
       isAccepted: true
     });
+    setDisplayQueue(true);
+    setDisplayGameInvite(false);
+    
   };
 
   const handleDecline = () => {
@@ -44,6 +47,7 @@ export const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
       invited_username: self.username,
       isAccepted: false
     });
+    setDisplayGameInvite(false);
   };
   const handleKeyPress = useCallback(
     (e: KeyboardEvent) => {

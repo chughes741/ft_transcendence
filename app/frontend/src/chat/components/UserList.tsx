@@ -192,7 +192,6 @@ export default function UserListView({ userList, handleClick }: UserListProps) {
 
     //Set state so that lobbyCreated listener is turned on
     setDisplayQueue(true);
-
     //FIXME: What else needs to happen here?
     // setPageState(PageState.Game);
     // setCurrentRoomName("");

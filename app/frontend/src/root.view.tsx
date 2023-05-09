@@ -82,12 +82,13 @@ export function RootView(): JSX.Element {
     setSessionToken,
     setPageState,
     setSelf,
+    self,
     /* Username */
     showChooseUsernameModal,
     displayGameInvite,
     setDisplayGameInvite
   } = useRootViewModelContext();
-  const { inviter, setInviter } = useGameViewModelContext();
+  const { inviter, setInviter, setDisplayQueue } = useGameViewModelContext();
   const { addSocketListener, removeSocketListener } = useWebSocketContext();
   const history = createBrowserHistory();
   const handleSetSocketHandler = () => {
@@ -117,13 +118,16 @@ export function RootView(): JSX.Element {
   }, [socket]);
 
   //Add listener for gameInvite
-  socket.on("sendGameInviteEvent", (payload) => {
-    console.log("Game invite received");
-    //Enable the modal
-    setDisplayGameInvite(true);
-
-    //Store the inviters name
-    setInviter(payload.inviter_username);
+  socket.on("sendGameInviteEvent", (payload: any) => {
+    if (payload.invited_username === self.username) {
+      console.log("Game invite received");
+      //Enable the modal
+      setDisplayGameInvite(true);
+  
+      //Store the inviters name
+      setInviter(payload.inviter_username);
+      setDisplayQueue(true);
+    }
   });
 
   return (

@@ -1,4 +1,4 @@
-import { Logger, Injectable } from "@nestjs/common";
+import { Logger, Injectable, ConsoleLogger } from "@nestjs/common";
 import { WebSocketServer, WebSocketGateway } from "@nestjs/websockets";
 import { SchedulerRegistry } from "@nestjs/schedule";
 import { Server, Socket } from "socket.io";
@@ -215,12 +215,7 @@ export class GameService {
     logger.debug("sendGameInvite() called");
 
     //Check if invited player is already in a game
-    // if (this.gameModuleData.isPlayerAvailable(payload.invited_username)) {
-    // }
-      // this.server.to(payload.invited_username).emit("sendGameInviteEvent", {
-      //   inviter_username: payload.inviter_username,
-      //   invited_username: payload.invited_username
-      // });
+    if (this.gameModuleData.isPlayerAvailable(payload.invited_username)) {
       // this.sendEventToAllUserSockets(payload.invited_username, "sendGameInviteEvent", {
       //   inviter_username: payload.inviter_username,
       //   invited_username: payload.invited_username
@@ -229,7 +224,7 @@ export class GameService {
       this.server.emit("sendGameInviteEvent", {
         inviter_username: payload.inviter_username,
         invited_username: payload.invited_username
-      })
+      });
 
       //Create new playerPair and add to invite array
       const players: PlayerPair = [
@@ -245,6 +240,7 @@ export class GameService {
         }
       ];
       this.gameModuleData.addInvitePair(players);
+    }
   }
 
   /**
@@ -255,24 +251,30 @@ export class GameService {
     payload: AcceptGameInviteRequest
   ): Promise<void> {
     logger.debug("acceptGameInvite() called");
-
+    logger.log(payload);
     //If accept is true
     if (payload.isAccepted === true) {
       //Add invitee socket info to player pair
       const players: PlayerPair = this.gameModuleData.getInvitePair(
         payload.inviter_username
       );
+      logger.log(players);
       if (players) {
         players.at(1).socket_id = client.id;
+        console.log("Before create lobby");
         this.createLobby(players, {
           username: players.at(0).username,
           join_time: null
         });
       }
     }
+    //Emit to inviter so they can set state for game
+    // this.server.to(players.at(0).)
 
     this.gameModuleData.removeInvitePair(payload.inviter_username);
     //Remove players from invite array
+
+    //Create new lobby
   }
 
   /****************************************************************************/
