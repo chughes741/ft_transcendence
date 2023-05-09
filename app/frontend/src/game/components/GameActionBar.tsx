@@ -3,9 +3,6 @@ import Box from "@mui/material/Box";
 import ReadyButton from "./game.readyButton";
 import PlayerDetail from "./game.playerDetails";
 import ScoreBoard from "./game.scoreboard";
-import { useState } from "react";
-import { useGameViewModelContext } from "../game.viewModel";
-
 /**
  * GameActionBar component
  *
@@ -13,7 +10,6 @@ import { useGameViewModelContext } from "../game.viewModel";
  */
 
 export default function GameActionBar() {
-  const { displayGame } = useGameViewModelContext();
   return (
     <Box
       sx={{
@@ -45,7 +41,8 @@ export default function GameActionBar() {
       {/* ReadyButton component  Or  ScoreComponent*/}
 
       <Box sx={{ display: "flex", flexGrow: 1, justifyContent: "center" }}>
-        {(!displayGame && <ReadyButton />) || <ScoreBoard />}
+        <ReadyButton />
+        <ScoreBoard />
       </Box>
       {/* Right Player */}
       <Box
