@@ -18,6 +18,7 @@ import { useSettingsViewModelContext } from "../settings/settings.viewModel";
 import { socket } from "src/contexts/WebSocket.context";
 import { createBrowserHistory } from "history";
 import { createSocketWithHeaders } from "src/contexts/WebSocket.context";
+import { UserStatus } from "kingpong-lib";
 
 //Set css flexbox options for the toolbar component to create proper object positioning for child elements
 const toolbarStyle = {
@@ -62,7 +63,12 @@ export default function TopBar() {
     setSessionToken("");
     setPageState(PageState.Auth);
     history.replace("/auth");
-    setSelf({ username: "", avatar: "", createdAt: "", status: 0 });
+    setSelf({
+      username: "",
+      avatar: "",
+      createdAt: "",
+      status: UserStatus.ONLINE
+    });
     handleCloseUserMenu();
     socket.disconnect();
     socket.close();

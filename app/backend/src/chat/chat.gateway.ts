@@ -61,21 +61,31 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
   async handleDisconnect(client: Socket) {
     logger.debug(`Client disconnected: ${client.id}`);
-    const connections = this.userConnectionsService.removeUserConnection(
-      client.id,
+    const clientName = this.userConnectionsService.getUserBySocket(client.id);
+    if (!clientName) return;
+    const nbConnections = this.userConnectionsService.removeUserConnection(
+      clientName,
       client.id
     );
-    if (typeof connections === "string") {
-      logger.debug(
-        `Client ${client.id} has no more active connections, updating user status to OFFLINE`
-      );
+    if (nbConnections instanceof Error) return;
 
-      this.prismaService.user.update({
-        where: { username: connections },
-        data: { status: UserStatus.OFFLINE }
-      });
-      this.userConnectionsService.removeUserEntries(connections);
+    //Update user Status to OFFLINE if no more active connextions
+    if (nbConnections === 0) {
+      logger.debug(
+        `Client ${client.id} has no more active connections, updating user status to ${UserStatus.OFFLINE}`
+      );
+      try {
+        await this.prismaService.user.update({
+          where: { username: clientName },
+          data: { status: UserStatus.OFFLINE }
+        });
+      } catch (e) {
+        logger.error(`Error updating user status to OFFLINE: ${e}`);
+      }
+      this.userConnectionsService.removeUserEntries(clientName);
     }
+
+    //Check token storage
     const token = await this.tokenVerify.tokenStorage.getTokenbySocket(
       client.id
     );

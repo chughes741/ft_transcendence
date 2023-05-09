@@ -20,6 +20,7 @@ import Enable2FA from "./components/Enable2FA";
 import Verify2FA from "./components/Verify2FA";
 import { socket, useWebSocketContext } from "./contexts/WebSocket.context";
 import { createBrowserHistory } from "history";
+import { UserStatus } from "kingpong-lib";
 
 /**
  * Root view content
@@ -91,7 +92,12 @@ export function RootView(): JSX.Element {
       setSessionToken("");
       setPageState(PageState.Auth);
       history.replace("/auth");
-      setSelf({ username: "", avatar: "", createdAt: "", status: 0 });
+      setSelf({
+        username: "",
+        avatar: "",
+        createdAt: "",
+        status: UserStatus.ONLINE
+      });
     };
     addSocketListener("unauthorized", handleUnauthorized);
   };
