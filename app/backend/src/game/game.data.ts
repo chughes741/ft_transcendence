@@ -168,15 +168,19 @@ export class GameModuleData {
    * Check if a player is currently in a game
    */
   async isPlayerAvailable(username: string): Promise<boolean> {
-    const user = await GameModuleData.prismaService.user.findUnique({
-      where: {
-        username
-      },
-      select: {
-        status: true
-      }
-    });
-    return user.status === UserStatus.ONLINE;
+    try {
+      const user = await GameModuleData.prismaService.user.findUnique({
+        where: {
+          username
+        },
+        select: {
+          status: true
+        }
+      });
+      return user.status === UserStatus.ONLINE;
+    } catch (err) {
+      console.error("Prisma err in isPlayerAvailable");
+    }
   }
 
   /**
@@ -222,10 +226,13 @@ export class GameModuleData {
    */
   getInvitePair(username: string): PlayerPair {
     GameModuleData.invite.forEach((element) => {
-      if (element.at(0).username === username || element.at(1).username === username) {
+      if (
+        element.at(0).username === username ||
+        element.at(1).username === username
+      ) {
         return element;
       }
-    })
+    });
     return null;
   }
 }

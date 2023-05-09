@@ -182,10 +182,10 @@ export default function UserListView({ userList, handleClick }: UserListProps) {
   };
 
   const onInviteToGame = () => {
-    console.debug("Invite to game");
+    console.debug("Invite to game clicked");
 
     //Send invite event to server
-    this.socket.emit("sendGameInviteEventEvent", {
+    socket.emit("sendGameInviteEvent", {
       inviter_username: self.username,
       invited_username: contextMenuUsersData.username
     });

@@ -215,13 +215,22 @@ export class GameService {
     logger.debug("sendGameInvite() called");
 
     //Check if invited player is already in a game
-    if (this.gameModuleData.isPlayerAvailable(payload.invited_username)) {
-    } else {
+    // if (this.gameModuleData.isPlayerAvailable(payload.invited_username)) {
+    // }
+      // this.server.to(payload.invited_username).emit("sendGameInviteEvent", {
+      //   inviter_username: payload.inviter_username,
+      //   invited_username: payload.invited_username
+      // });
+      // this.sendEventToAllUserSockets(payload.invited_username, "sendGameInviteEvent", {
+      //   inviter_username: payload.inviter_username,
+      //   invited_username: payload.invited_username
+      // });
 
-      this.sendEventToAllUserSockets(payload.invited_username, "sendGameInviteEvent", {
+      this.server.emit("sendGameInviteEvent", {
         inviter_username: payload.inviter_username,
         invited_username: payload.invited_username
-      });
+      })
+
       //Create new playerPair and add to invite array
       const players: PlayerPair = [
         {
@@ -236,7 +245,6 @@ export class GameService {
         }
       ];
       this.gameModuleData.addInvitePair(players);
-    }
   }
 
   /**

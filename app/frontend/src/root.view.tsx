@@ -118,6 +118,7 @@ export function RootView(): JSX.Element {
 
   //Add listener for gameInvite
   socket.on("sendGameInviteEvent", (payload) => {
+    console.log("Game invite received");
     //Enable the modal
     setDisplayGameInvite(true);
 
