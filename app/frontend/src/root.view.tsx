@@ -20,6 +20,11 @@ import Enable2FA from "./components/Enable2FA";
 import Verify2FA from "./components/Verify2FA";
 import { socket, useWebSocketContext } from "./contexts/WebSocket.context";
 import { createBrowserHistory } from "history";
+import { ConfirmationModal } from "./components/ConfirmationModal";
+import {
+  GameViewModelContext,
+  useGameViewModelContext
+} from "./game/game.viewModel";
 import { UserStatus } from "kingpong-lib";
 
 /**
@@ -30,7 +35,6 @@ import { UserStatus } from "kingpong-lib";
 
 function RootViewContent(): JSX.Element {
   const { pageState, setFullscreen } = useRootViewModelContext();
-
   switch (pageState) {
     case PageState.Auth: {
       setFullscreen(true);
@@ -79,9 +83,11 @@ export function RootView(): JSX.Element {
     setPageState,
     setSelf,
     /* Username */
-    showChooseUsernameModal
+    showChooseUsernameModal,
+    displayGameInvite,
+    setDisplayGameInvite
   } = useRootViewModelContext();
-
+  const { inviter, setInviter } = useGameViewModelContext();
   const { addSocketListener, removeSocketListener } = useWebSocketContext();
   const history = createBrowserHistory();
   const handleSetSocketHandler = () => {
@@ -109,6 +115,15 @@ export function RootView(): JSX.Element {
       removeSocketListener("unauthorized");
     };
   }, [socket]);
+
+  //Add listener for gameInvite
+  socket.on("sendGameInviteEvent", (payload) => {
+    //Enable the modal
+    setDisplayGameInvite(true);
+
+    //Store the inviters name
+    setInviter(payload.inviter_username);
+  });
 
   return (
     <>
@@ -147,6 +162,10 @@ export function RootView(): JSX.Element {
         </Box>
       </Container>
       <ChooseUsernameModal showModal={showChooseUsernameModal} />
+      <ConfirmationModal
+        showModal={displayGameInvite}
+        message={"You have been invited to a game by " + inviter}
+      />
     </>
   );
 }

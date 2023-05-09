@@ -48,6 +48,9 @@ export interface GameModelType {
 
   gameState: GameState;
   setGameState: (gameState: GameState) => void;
+
+  inviter: string;
+  setInviter: (inviter: string) => void;
 }
 
 export const useGameModel = (): GameModelType => {
@@ -76,6 +79,7 @@ export const useGameModel = (): GameModelType => {
     score_left: 0,
     score_right: 0
   });
+  const [inviter, setInviter] = useState<string>(null);
 
   return {
     lobbyId,
@@ -107,6 +111,8 @@ export const useGameModel = (): GameModelType => {
     scoreRight,
     setScoreRight,
     gameState,
-    setGameState
+    setGameState,
+    inviter,
+    setInviter
   };
 };

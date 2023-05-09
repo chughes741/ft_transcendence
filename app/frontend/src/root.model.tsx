@@ -36,6 +36,9 @@ export interface RootModelType {
 
   sessionToken?: string;
   setSessionToken?: (sessionToken: string) => void;
+
+  displayGameInvite: boolean;
+  setDisplayGameInvite: (displayGameInvite: boolean) => void;
 }
 
 /**
@@ -51,7 +54,7 @@ export const useRootModel = (): RootModelType => {
   const [showChooseUsernameModal, setShowChooseUsernameModal] =
     useState<boolean>(false);
   const [sessionToken, setSessionToken] = useState<string>("");
-
+  const [displayGameInvite, setDisplayGameInvite] = useState<boolean>(false);
   return {
     self,
     setSelf,
@@ -62,6 +65,8 @@ export const useRootModel = (): RootModelType => {
     showChooseUsernameModal,
     setShowChooseUsernameModal,
     sessionToken,
-    setSessionToken
+    setSessionToken,
+    displayGameInvite,
+    setDisplayGameInvite
   };
 };

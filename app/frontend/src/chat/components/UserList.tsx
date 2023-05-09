@@ -23,6 +23,7 @@ import { handleSocketErrorResponse } from "../lib/helperFunctions";
 import { useRoomManager } from "../lib/roomManager";
 import UserListItem from "./UserListItem";
 import { ExpandLess, ExpandMore } from "@mui/icons-material";
+import { useGameViewModelContext } from "src/game/game.viewModel";
 
 export interface UserListProps {
   userList: { [key: string]: ChatMemberEntity };
@@ -48,6 +49,7 @@ export default function UserListView({ userList, handleClick }: UserListProps) {
   const { updateRooms } = useRoomManager();
   const { setUser, addFriend } = useProfileViewModelContext();
   const { self, setPageState } = useRootViewModelContext();
+  const { setDisplayQueue } = useGameViewModelContext();
 
   // Find your own rank by looking for your username in the userlist
   const ownRank = userList[self.username]?.rank;
@@ -180,10 +182,20 @@ export default function UserListView({ userList, handleClick }: UserListProps) {
   };
 
   const onInviteToGame = () => {
-    // FIXME: Logic for inviting users needs to be implemented
     console.debug("Invite to game");
-    setPageState(PageState.Game);
-    setCurrentRoomName("");
+
+    //Send invite event to server
+    this.socket.emit("sendGameInviteEventEvent", {
+      inviter_username: self.username,
+      invited_username: contextMenuUsersData.username
+    });
+
+    //Set state so that lobbyCreated listener is turned on
+    setDisplayQueue(true);
+
+    //FIXME: What else needs to happen here?
+    // setPageState(PageState.Game);
+    // setCurrentRoomName("");
     setContextMenuUsersVisible(false);
   };
 

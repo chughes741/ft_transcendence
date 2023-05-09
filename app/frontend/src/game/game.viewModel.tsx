@@ -106,7 +106,6 @@ export const GameViewModelProvider = ({ children }) => {
       setLobbyId(payload.lobby_id);
       setPlayerSide(payload.player_side);
       setOpponentUsername(payload.opponent_username);
-
       setInQueue(false);
       setDisplayQueue(false);
       setDisplayLobby(true);

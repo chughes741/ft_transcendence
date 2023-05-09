@@ -7,50 +7,56 @@ import {
   DialogActions,
   Button
 } from "@mui/material";
+import { socket } from "src/contexts/WebSocket.context";
+import { useRootViewModelContext } from "src/root.context";
+import { useGameViewModelContext } from "src/game/game.viewModel";
 
 interface ConfirmationModalProps {
   showModal: boolean;
   message: string;
-  closeModal: () => void;
-  onConfirmation: (confirmed: boolean) => void;
 }
 
 export const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
   showModal,
-  message,
-  closeModal,
-  onConfirmation
+  message
 }) => {
+  const { self, setDisplayGameInvite } =
+    useRootViewModelContext();
+  const { inviter } = useGameViewModelContext();
   if (!showModal) return null;
-  if (!onConfirmation) {
-    // setShowConfirmationModal(false);
-    return null;
-  }
 
-  const handleConfirm = () => {
-    if (onConfirmation) {
-      onConfirmation(true);
-    }
+  const handleAccept = () => {
+    console.warn("handleAccept");
+    //Emit event to server
+    socket.emit("acceptGameInviteEvent", {
+      inviter_username: inviter,
+      invited_username: self.username,
+      isAccepted: true
+    });
   };
 
-  const handleCancel = () => {
-    console.warn("handleCancel");
-    if (onConfirmation) {
-      onConfirmation(false);
-    }
+  const handleDecline = () => {
+    console.warn("handleDecline");
+
+    //Emit event to server
+    socket.emit("acceptGameInviteEvent", {
+      inviter_username: inviter,
+      invited_username: self.username,
+      isAccepted: false
+    });
   };
   const handleKeyPress = useCallback(
     (e: KeyboardEvent) => {
       if (e.key === "Escape") {
-        handleCancel();
-        closeModal();
+        handleDecline();
+        setDisplayGameInvite(false);
       } else if (e.key === "Enter") {
         e.preventDefault();
-        handleConfirm();
-        closeModal();
+        handleAccept();
+        setDisplayGameInvite(false);
       }
     },
-    [handleCancel, handleConfirm, closeModal]
+    [handleDecline, handleAccept]
   );
 
   useEffect(() => {
@@ -61,7 +67,7 @@ export const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
     return () => {
       window.removeEventListener("keydown", handleKeyPress);
     };
-  }, [showModal, handleCancel, closeModal]);
+  }, [showModal, handleDecline]);
 
   return (
     <Dialog
@@ -75,7 +81,7 @@ export const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
         }
       }}
     >
-      <DialogTitle alignContent={"center"}>Confirmation</DialogTitle>
+      <DialogTitle alignContent={"center"}>Join Game?</DialogTitle>
       <DialogContent>
         <DialogContentText>{message}</DialogContentText>
       </DialogContent>
@@ -83,16 +89,16 @@ export const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
         <Button
           variant="contained"
           color="error"
-          onClick={handleCancel}
+          onClick={handleDecline}
         >
-          Cancel
+          Decline
         </Button>
         <Button
           variant="contained"
           color="success"
-          onClick={handleConfirm}
+          onClick={handleAccept}
         >
-          Confirm
+          Accept
         </Button>
       </DialogActions>
     </Dialog>
