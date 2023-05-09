@@ -23,5 +23,6 @@ export class GameConfig {
 export class GameColours {
   static readonly paddle: string = "white";
   static readonly background: string = "black";
+  static readonly background2: string = "blue";
   static readonly ball: string = "white";
 }
