@@ -58,6 +58,7 @@ const UserContextMenu: React.FC<UserContextMenuProps> = ({
   onInviteToGame,
   onSendDirectMessage,
   onBlockUser,
+  onKickUser,
   sendUpdateRequest,
   onPromoteToAdmin,
   onDemoteToUser,
@@ -167,7 +168,15 @@ const UserContextMenu: React.FC<UserContextMenuProps> = ({
 
   if (ownRank === ChatMemberRank.OWNER || ownRank === ChatMemberRank.ADMIN) {
     if (contextMenuData.rank !== ChatMemberRank.OWNER) {
-      adminOptions = [{ label: "---" }, muteOption, banOption];
+      adminOptions = [
+        { label: "---" },
+        muteOption,
+        banOption,
+        {
+          label: "Kick user",
+          onClick: onKickUser
+        }
+      ];
     }
   }
 

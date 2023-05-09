@@ -8,6 +8,7 @@ import "./Enable2FA.tsx.css";
 import { socket } from "src/contexts/WebSocket.context";
 import { headers } from "./Auth";
 import { createBrowserHistory } from "history";
+import { UserStatus } from "kingpong-lib";
 
 //Prevent hazardous inputs
 export const validateCode = (code: string): boolean => {
@@ -54,7 +55,12 @@ export default function Verify2FA() {
         });
         setSessionToken("");
         setPageState(PageState.Auth);
-        setSelf({ username: "", avatar: "", createdAt: "", status: 0 });
+        setSelf({
+          username: "",
+          avatar: "",
+          createdAt: "",
+          status: UserStatus.ONLINE
+        });
         return;
       }
       return true;
@@ -92,7 +98,12 @@ export default function Verify2FA() {
         });
         setSessionToken("");
         setPageState(PageState.Auth);
-        setSelf({ username: "", avatar: "", createdAt: "", status: 0 });
+        setSelf({
+          username: "",
+          avatar: "",
+          createdAt: "",
+          status: UserStatus.ONLINE
+        });
         return;
       } else {
         alert("There was an error with the code you provided");

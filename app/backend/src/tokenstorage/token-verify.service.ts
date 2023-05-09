@@ -1,6 +1,5 @@
 import { CanActivate, Injectable, Logger } from "@nestjs/common";
 import { Token, TokenStorageService } from "./token-storage.service";
-import { UnauthorizedException } from "@nestjs/common";
 import { ExecutionContext } from "@nestjs/common";
 
 const logger = new Logger("TokenVerification");
@@ -47,7 +46,7 @@ export default class TokenIsVerified implements CanActivate {
       if (isWebSocket) client.emit("unauthorized");
       return false;
     }
-    logger.debug("Token verification Success");
+    // logger.debug("Token verification Success");
     await this.refreshToken(clientId, token);
     return true;
   }

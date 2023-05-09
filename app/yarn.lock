@@ -8509,6 +8509,11 @@ kind-of@^6.0.2:
   resolved "https://registry.yarnpkg.com/kind-of/-/kind-of-6.0.3.tgz#07c05034a6c349fa06e24fa35aa76db4580ce4dd"
   integrity sha512-dcS1ul+9tmeD95T+x28/ehLgd9mENa3LsvDTtzm3vyBEO7RPptvAD+t44WVXaUjTBRcrpFeFlC8WCruUR456hw==
 
+kingpong-lib@1.1.10:
+  version "1.1.10"
+  resolved "https://registry.yarnpkg.com/kingpong-lib/-/kingpong-lib-1.1.10.tgz#6d46399ed947dc81044770c7f40e4648b511520c"
+  integrity sha512-voJgmG4CQc9CX/YmPiYRuivBMf2k4gCWMtXs1xEQZSWiz/g11KRzIzvFRuPWF09e+c4PXnCC8z/tK2vwEHxKsQ==
+
 kingpong-lib@1.1.9:
   version "1.1.9"
   resolved "https://registry.yarnpkg.com/kingpong-lib/-/kingpong-lib-1.1.9.tgz#01a0a84e24effaa5f6d6eb6febdb3950b6183881"

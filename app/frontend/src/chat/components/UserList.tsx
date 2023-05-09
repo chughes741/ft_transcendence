@@ -201,20 +201,21 @@ export default function UserListView({ userList, handleClick }: UserListProps) {
 
   const onKickUser = () => {
     console.debug("Kick User");
+    const memberToKick = contextMenuUsersData.username;
     const req: KickMemberRequest = {
-      memberToKickUsername: contextMenuUsersData.username,
+      memberToKickUsername: memberToKick,
       memberToKickRank: contextMenuUsersData.rank,
       roomName: currentRoomName,
       queryingMemberRank: ownRank
     };
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    socket.emit("kickUser", req, (res: DevError | any) => {
+    socket.emit("kickChatMember", req, (res: DevError | any) => {
       if (handleSocketErrorResponse(res)) return console.warn(res);
       console.debug(`successfully kicked user ${res}`);
       updateRooms((newRooms) => {
-        if (!newRooms[currentRoomName].users[res]) return newRooms;
-        delete newRooms[currentRoomName].users[res];
+        if (!newRooms[currentRoomName].users[memberToKick]) return newRooms;
+        delete newRooms[currentRoomName].users[memberToKick];
         return newRooms;
       });
     });
@@ -228,8 +229,6 @@ export default function UserListView({ userList, handleClick }: UserListProps) {
       blocker: self.username,
       blockee: contextMenuUsersData.username
     };
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     socket.emit("blockUser", req, (res: DevError | DevSuccess) => {
       if (handleSocketErrorResponse(res)) return console.warn(res);
       console.debug(`successfully blocked user ${res}`);
@@ -310,23 +309,6 @@ export default function UserListView({ userList, handleClick }: UserListProps) {
             <List>
               {userList && renderSortedUsers()}
               {userList && renderBannedUsersSection()}
-              {/* Object.entries(userList).map(([username, user]) => (
-                 <ListItemButton
-                   onContextMenu={(e) => handleClick(e, user)}
-                   key={user.username}
-                   onClick={(e) => {
-                     handleClick(e, user);
-                   }}
-                 >
-                   <ListItemIcon>
-                     <Avatar src={`https://i.pravatar.cc/150?u=${username}`} />
-                   </ListItemIcon>
-                   <ListItemText
-                     primary={username}
-                     secondary={user.userStatus}
-                   />
-                 </ListItemButton>
-               ))} */}
             </List>
           </Box>
         </Box>

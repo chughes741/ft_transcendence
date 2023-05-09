@@ -58,7 +58,7 @@ const RoomContextMenu: React.FC<RoomContextMenuProps> = ({
     {
       label:
         contextMenuData.status === ChatRoomStatus.DIALOGUE
-          ? "Quit Conversation"
+          ? "Hide Conversation"
           : "Leave Room",
       onClick: onLeaveRoom
     },

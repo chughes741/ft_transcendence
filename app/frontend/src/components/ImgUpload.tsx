@@ -9,6 +9,7 @@ import { socket } from "src/contexts/WebSocket.context";
 import { createBrowserHistory } from "history";
 import "./ImgUpload.tsx.css";
 import UploadFileIcon from "@mui/icons-material/UploadFile";
+import { UserStatus } from "kingpong-lib";
 
 function ImgUpload() {
   const [file, setFile] = useState(null); //Contains the img file
@@ -56,7 +57,12 @@ function ImgUpload() {
           setPageState(PageState.Auth);
           history.push("/auth");
           setFullscreen(true);
-          setSelf({ username: "", avatar: "", createdAt: "", status: 0 });
+          setSelf({
+            username: "",
+            avatar: "",
+            createdAt: "",
+            status: UserStatus.ONLINE
+          });
           return;
         }
       } catch (error) {

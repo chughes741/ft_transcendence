@@ -21,7 +21,7 @@
     "@react-three/fiber": "^8.12.1",
     "@types/jquery": "^3.5.16",
     "history": "^5.3.0",
-    "kingpong-lib": "1.1.9",
+    "kingpong-lib": "1.1.10",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-error-boundary": "^4.0.3",

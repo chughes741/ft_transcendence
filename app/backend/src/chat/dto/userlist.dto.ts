@@ -12,7 +12,6 @@ export class UpdateChatMemberRequest {
 }
 
 export class KickMemberRequest {
-  memberToKickUUID?: number;
   memberToKickUsername: string;
   memberToKickRank: ChatMemberRank;
   roomName: string;

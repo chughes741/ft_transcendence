@@ -129,17 +129,21 @@ export const ChatViewModelProvider = ({ children }) => {
 
     return new Promise<boolean>((resolve) => {
       setContextMenuRoomsVisible(false);
-      const req: LeaveRoomRequest = {
-        roomName: roomName,
-        username: self.username
-      };
-      console.debug("Leaving room: ", req);
-      socket.emit("leaveRoom", req, (response: DevError | string) => {
-        if (handleSocketErrorResponse(response)) {
-          console.warn("Error response from leave room: ", response.error);
-          resolve(false);
-        }
-      });
+      if (roomName === "" || roomName === undefined) return false;
+      if (contextMenuData.status !== ChatRoomStatus.DIALOGUE) {
+        const req: LeaveRoomRequest = {
+          roomName: roomName,
+          username: self.username
+        };
+        console.debug("Leaving room: ", req);
+        socket.emit("leaveRoom", req, (response: DevError | string) => {
+          if (handleSocketErrorResponse(response)) {
+            console.warn("Error response from leave room: ", response.error);
+            resolve(false);
+          }
+        });
+      }
+      currentRoomName === roomName && setCurrentRoomName("");
       setRooms((prevRooms) => {
         const newRooms = { ...prevRooms };
         delete newRooms[roomName];
@@ -176,6 +180,8 @@ export const ChatViewModelProvider = ({ children }) => {
               response
             );
             addChatRoom(response);
+            setCurrentRoomName(response.name);
+            setCurrentRoomMessages(rooms[response.name].messages);
             resolve(response.name);
           }
         }
