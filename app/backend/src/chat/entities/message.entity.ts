@@ -10,6 +10,7 @@ export class MessageEntity implements IMessageEntity {
   username: string;
   roomName: string;
   content: string;
+  avatar: string;
   timestamp: Date;
 
   constructor(prismaMessage: MessagePrismaType) {
@@ -17,6 +18,7 @@ export class MessageEntity implements IMessageEntity {
     this.roomName = prismaMessage.room.name;
     this.content = prismaMessage.content;
     this.timestamp = prismaMessage.createdAt;
+    this.avatar = prismaMessage.sender.avatar;
   }
 }
 
