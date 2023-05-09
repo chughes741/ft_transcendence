@@ -482,7 +482,10 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
       req.date,
       req.pageSize
     );
-    return messages.filter((m) => m.username !== username);
+    const filteredMessages = messages.filter((m) =>
+      !blockedUsernames.includes(m.username)
+    );
+    return filteredMessages;
   }
 
   /**
@@ -618,9 +621,6 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
         room,
         member.rank
       );
-
-      logger.debug(`roomInfo: `, roomInfo);
-
       this.sendEventToAllUserSockets(
         member.username,
         "addedToNewChatRoom",
@@ -751,6 +751,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     );
     const ret = await this.chatService.blockUser(req);
     if (ret instanceof Error) return { error: ret.message };
+    this.userConnectionsService.addUserToBlocked(req.blocker, req.blockee);
     return { success: "User blocked successfully" };
   }
 }
