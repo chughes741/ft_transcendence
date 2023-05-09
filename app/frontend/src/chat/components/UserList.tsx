@@ -235,6 +235,11 @@ export default function UserListView({ userList, handleClick }: UserListProps) {
       updateRooms((newRooms) => {
         if (!newRooms[currentRoomName].users[req.blockee]) return newRooms;
         delete newRooms[currentRoomName].users[req.blockee];
+        Object.keys(newRooms).forEach((roomName) => {
+          newRooms[roomName].messages = newRooms[roomName].messages.filter(
+            (m) => m.username !== req.blockee
+          );
+        });
         return newRooms;
       });
     });

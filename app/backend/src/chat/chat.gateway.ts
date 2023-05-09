@@ -752,6 +752,8 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     const ret = await this.chatService.blockUser(req);
     if (ret instanceof Error) return { error: ret.message };
     this.userConnectionsService.addUserToBlocked(req.blocker, req.blockee);
+    this.userConnectionsService.loadBlockedSocketIds(client.id, req.blocker);
+    this.userConnectionsService.loadBlockedSocketIds(client.id, req.blockee);
     return { success: "User blocked successfully" };
   }
 }
