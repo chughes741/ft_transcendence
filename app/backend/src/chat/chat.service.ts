@@ -574,7 +574,7 @@ export class ChatService {
         }
       });
       const entity: ChatMemberEntity = new ChatMemberEntity(chatMember);
-      logger.log(
+      logger.debug(
         `Kicked ${kickDto.memberToKickUsername} from ${kickDto.roomName}`
       );
       return entity;
