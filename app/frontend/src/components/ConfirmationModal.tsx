@@ -1,15 +1,9 @@
-import React, { useCallback, useEffect } from "react";
-import {
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogContentText,
-  DialogActions,
-  Button
-} from "@mui/material";
-import { socket } from "src/contexts/WebSocket.context";
-import { useRootViewModelContext } from "src/root.context";
-import { useGameViewModelContext } from "src/game/game.viewModel";
+import React, {useCallback, useEffect} from "react";
+import {Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle} from "@mui/material";
+import {socket} from "src/contexts/WebSocket.context";
+import {useRootViewModelContext} from "src/root.context";
+import {useGameViewModelContext} from "src/game/game.viewModel";
+import {PageState} from "../root.model";
 
 interface ConfirmationModalProps {
   showModal: boolean;
@@ -20,7 +14,7 @@ export const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
   showModal,
   message
 }) => {
-  const { self, displayGameInvite, setDisplayGameInvite } =
+  const { self, displayGameInvite, setDisplayGameInvite, setPageState } =
     useRootViewModelContext();
   const { inviter, setDisplayQueue } = useGameViewModelContext();
 
@@ -35,7 +29,8 @@ export const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
     });
     setDisplayQueue(true);
     setDisplayGameInvite(false);
-    
+    setPageState(PageState.Game);
+
   };
 
   const handleDecline = () => {
