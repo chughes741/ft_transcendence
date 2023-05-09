@@ -1,4 +1,4 @@
-import { useRef, useEffect } from "react";
+import { useRef, useEffect, useState } from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
 import { Mesh } from "three";
 
@@ -120,14 +120,22 @@ function PaddleRight() {
  */
 function Floor() {
   const mesh = useRef<Mesh>(null!);
+  const [color, setColor] = useState(GameColours.background);
+
+  const onDoubleClick = () => {
+    setColor((prevColor) =>
+      prevColor === GameColours.background ? GameColours.background2 : GameColours.background
+    );
+  };
 
   return (
     <mesh
+      onDoubleClick={onDoubleClick}
       ref={mesh}
       position={[0, 0, -5]}
     >
       <planeGeometry args={[50, 30]} />
-      <meshStandardMaterial color={GameColours.background} />
+      <meshStandardMaterial color={color} />
     </mesh>
   );
 }
