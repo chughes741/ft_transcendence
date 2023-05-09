@@ -59,6 +59,7 @@ const UserContextMenu: React.FC<UserContextMenuProps> = ({
   onSendDirectMessage,
   onBlockUser,
   onKickUser,
+  onAddFriend,
   sendUpdateRequest,
   onPromoteToAdmin,
   onDemoteToUser,
@@ -102,7 +103,7 @@ const UserContextMenu: React.FC<UserContextMenuProps> = ({
         ? [
             {
               label: "Add friend",
-              onClick: onSendDirectMessage
+              onClick: onAddFriend
             }
           ]
         : [])
