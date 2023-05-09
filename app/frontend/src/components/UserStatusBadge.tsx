@@ -17,11 +17,9 @@ const UserStatusBadge: React.FC<UserStatusBadgeProps> = ({
     <Badge
       color={
         status === UserStatus.ONLINE
-          ? // status === "ONLINE"
-            "success"
+          ? "success"
           : status === UserStatus.OFFLINE
-          ? // : status === "OFFLINE"
-            "error"
+          ? "error"
           : "warning"
       }
       anchorOrigin={anchorOrigin}

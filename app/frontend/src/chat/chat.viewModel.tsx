@@ -180,6 +180,8 @@ export const ChatViewModelProvider = ({ children }) => {
               response
             );
             addChatRoom(response);
+            setCurrentRoomName(response.name);
+            setCurrentRoomMessages(rooms[response.name].messages);
             resolve(response.name);
           }
         }
