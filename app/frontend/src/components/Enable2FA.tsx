@@ -10,6 +10,7 @@ import { headers } from "./Auth";
 import { createBrowserHistory } from "history";
 import Button from "@mui/material/Button";
 import { validateCode } from "./Verify2FA";
+import { UserStatus } from "kingpong-lib";
 
 export default function Enable2FA() {
   const {
@@ -57,7 +58,12 @@ export default function Enable2FA() {
         setPageState(PageState.Auth);
         history.push("/auth");
         setFullscreen(true);
-        setSelf({ username: "", avatar: "", createdAt: "", status: 0 });
+        setSelf({
+          username: "",
+          avatar: "",
+          createdAt: "",
+          status: UserStatus.ONLINE
+        });
         return;
       }
       setQRCode(data["qrcode"]);
@@ -92,7 +98,12 @@ export default function Enable2FA() {
         setSessionToken("");
         setPageState(PageState.Auth);
         history.push("/auth");
-        setSelf({ username: "", avatar: "", createdAt: "", status: 0 });
+        setSelf({
+          username: "",
+          avatar: "",
+          createdAt: "",
+          status: UserStatus.ONLINE
+        });
         return;
       }
       if (data.validated) {
