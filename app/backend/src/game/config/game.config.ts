@@ -20,7 +20,7 @@ export class GameConfig {
     x: GameConfig.playAreaWidth / 2,
     y: -(GameConfig.playAreaHeight / 2)
   };
-  static readonly maxScore: number = 11;
+  static readonly maxScore: number = 3;
 }
 export class PaddleConfig {
   static readonly height: number = 2;
@@ -46,7 +46,7 @@ export class PaddleConfig {
 }
 
 export class BallConfig {
-  static readonly initialSpeed: number = 2.5;
+  static readonly initialSpeed: number = 3.5;
   static readonly maxSpeed: number = 10;
   static readonly speedIncreaseInterval: number = 1.1;
   static readonly maxServeAngle: number = 120;

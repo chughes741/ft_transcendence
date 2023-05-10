@@ -18,6 +18,25 @@ import {
 } from "kingpong-lib";
 import { GameModuleData } from "./game.data";
 
+
+export const AcceptGameInvite = "acceptGameInviteEvent";
+export class AcceptGameInviteRequest {
+  inviter_username: string;
+  invited_username: string;
+  isAccepted: boolean;
+}
+
+export const SendGameInvite = "sendGameInviteEvent";
+export class SendGameInviteRequest {
+  inviter_username: string;
+  invited_username: string;
+}
+
+
+
+
+
+
 /**
  * Websocket gateway for game module
  */
@@ -42,15 +61,24 @@ export class GameGateway {
 
   /**
    * Handle direct game invite event
-   * @param {JoinGameInviteDto} joinGameInviteDto
-   * @returns {Promise<LobbyCreatedEvent>}
-   * @listens sendGameInvite
    */
-  @SubscribeMessage(GameEvents.SendGameInvite)
+  @SubscribeMessage(SendGameInvite)
   async sendGameInvite(
-    @MessageBody() payload: JoinGameInviteRequest
-  ): Promise<LobbyCreatedEvent> {
-    return this.gameService.sendGameInvite(payload);
+    @MessageBody() payload: SendGameInviteRequest,
+    @ConnectedSocket() client: Socket
+  ): Promise<void> {
+    this.gameService.sendGameInvite(client, payload);
+  }
+
+  /**
+   * Handle accept game invite event
+   */
+  @SubscribeMessage(AcceptGameInvite)
+  async acceptGameInvite(
+      @MessageBody() payload: AcceptGameInviteRequest,
+      @ConnectedSocket() client: Socket,
+  ) {
+    this.gameService.acceptGameInvite(client, payload)
   }
 
   /**

@@ -1,8 +1,12 @@
 import * as GameTypes from "./game.types";
 import { Logger } from "@nestjs/common";
+import { UserStatus } from "@prisma/client";
 import { PlayerReadyRequest, ClientGameStateUpdateRequest } from "kingpong-lib";
-
+import { elementAt } from "rxjs";
+import { PrismaService } from "src/prisma/prisma.service";
 const logger = new Logger("gameData");
+
+export type PlayerPair = GameTypes.PlayerQueue[];
 
 /**
  * Storage class for handling runtime volatile service data
@@ -11,6 +15,8 @@ export class GameModuleData {
   public static queue: GameTypes.PlayerQueue[] = [];
   public static games: GameTypes.GameData[] = [];
   public static lobbies: GameTypes.gameLobby[] = [];
+  public static invite: PlayerPair[] = [];
+  public static prismaService: PrismaService;
 
   /****************************************************************************/
   /**                                Queue                                   **/
@@ -157,5 +163,78 @@ export class GameModuleData {
       return true;
     }
     return false;
+  }
+
+  /**
+   * Check if a player is currently in a game
+   */
+  async isPlayerAvailable(username: string): Promise<boolean> {
+    try {
+      const user = await GameModuleData.prismaService.user.findUnique({
+        where: {
+          username
+        },
+        select: {
+          status: true
+        }
+      });
+      return user.status === UserStatus.ONLINE;
+    } catch (err) {
+      console.error("Prisma err in isPlayerAvailable");
+    }
+  }
+
+  /**
+   * Remove a lobby and match from memory
+   */
+  removeLobby(lobby_id: string) {
+    GameModuleData.lobbies.forEach((element) => {
+      if (element.lobby_id === lobby_id) {
+        const match_id = element.match_id;
+        GameModuleData.games = GameModuleData.games.filter(
+          (element) => element.match_id !== match_id
+        );
+        GameModuleData.lobbies = GameModuleData.lobbies.filter(
+          (element) => element.lobby_id !== lobby_id
+        );
+      }
+    });
+  }
+
+  /*****************************************************************************/
+  /**                               Invites                                  **/
+  /*****************************************************************************/
+
+  /**
+   * Add a pair of players to invite list
+   */
+  addInvitePair(pair: GameTypes.PlayerQueue[]) {
+    GameModuleData.invite.push(pair);
+  }
+
+  /**
+   * Remove a pair of players from invite list
+   */
+  removeInvitePair(username: string) {
+    GameModuleData.invite = GameModuleData.invite.filter(
+      (element) =>
+        element.at(0).username !== username && element.at(1).username !== username
+    );
+  }
+
+  /**
+   *
+   */
+  getInvitePair(username: string): PlayerPair {
+    // GameModuleData.invite.forEach((element) => {
+    //   // if (
+    //   //   element.at(0).username === username ||
+    //   //   element.at(1).username === username
+    //   // ) {
+    //   //   return element;
+    //   console.log(element);
+    //   return element;
+    // });
+    return GameModuleData.invite.at(0);
   }
 }

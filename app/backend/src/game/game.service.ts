@@ -1,4 +1,4 @@
-import { Logger, Injectable } from "@nestjs/common";
+import { Logger, Injectable, ConsoleLogger } from "@nestjs/common";
 import { WebSocketServer, WebSocketGateway } from "@nestjs/websockets";
 import { SchedulerRegistry } from "@nestjs/schedule";
 import { Server, Socket } from "socket.io";
@@ -17,9 +17,12 @@ import {
   GameEvents
 } from "kingpong-lib";
 import { ChatService } from "../chat/chat.service";
-import { ChatMemberRank } from "@prisma/client";
+import { ChatMemberRank, UserStatus } from "@prisma/client";
 import { SendDirectMessageRequest } from "../chat/chat.types";
-
+import { PrismaService } from "src/prisma/prisma.service";
+import { SendGameInviteRequest, AcceptGameInviteRequest } from "./game.gateway";
+import { UserConnectionsService } from "src/user-connections.service";
+type PlayerPair = GameTypes.PlayerQueue[];
 const logger = new Logger("gameService");
 
 /**
@@ -36,7 +39,9 @@ export class GameService {
     private schedulerRegistry: SchedulerRegistry,
     private gameLogic: GameLogic,
     private gameModuleData: GameModuleData,
-    private chatService: ChatService
+    private chatService: ChatService,
+    private prismaService: PrismaService,
+    private userConnectionsService: UserConnectionsService
   ) {}
 
   //Get local instance of websocket server
@@ -44,6 +49,18 @@ export class GameService {
   public server: Server;
   public socket: Socket;
   private gameState: GameTypes.GameData;
+
+  async sendEventToAllUserSockets(username: string, event: string, data: any) {
+    logger.debug(`Sending event ${event} to user ${username}`);
+    const userSockets = this.userConnectionsService.getUserSockets(username);
+    if (!userSockets) {
+      logger.warn(`User ${username} has no sockets`);
+      return;
+    }
+    userSockets.forEach((socketId) => {
+      this.server.to(socketId).emit(event, data);
+    });
+  }
 
   /****************************************************************************/
   /**                                     Lobby                              **/
@@ -99,17 +116,32 @@ export class GameService {
     this.server.to(playerPair[0].socket_id).emit(GameEvents.LobbyCreated, {
       lobby_id: newLobby.lobby_id,
       opponent_username: newLobby.players[1],
-      player_side: "left",
+      player_side: "left"
     });
 
     this.server.to(playerPair[1].socket_id).emit(GameEvents.LobbyCreated, {
       lobby_id: newLobby.lobby_id,
       opponent_username: newLobby.players[0],
-      player_side: "right",
+      player_side: "right"
     });
 
-    
-    // this.server.to(newLobby.lobby_id).emit(GameEvents.LobbyCreated, payload);
+    try {
+      await this.prismaService.user.update({
+        where: { username: playerPair[0].username },
+        data: { status: UserStatus.AWAY }
+      });
+    } catch (err) {
+      logger.error("Error updating user status: ", err);
+    }
+
+    try {
+      await this.prismaService.user.update({
+        where: { username: playerPair[1].username },
+        data: { status: UserStatus.AWAY }
+      });
+    } catch (err) {
+      logger.error("Error updating user status: ", err);
+    }
   }
 
   /****************************************************************************/
@@ -177,13 +209,72 @@ export class GameService {
    * @returns {Promise<LobbyCreatedEvent>}
    */
   async sendGameInvite(
-    payload: JoinGameInviteRequest
-  ): Promise<LobbyCreatedEvent> {
-    logger.debug("joinGameInvite() called");
+    client: Socket,
+    payload: SendGameInviteRequest
+  ): Promise<void> {
+    logger.debug("sendGameInvite() called");
 
-    // If the invited client responds then create lobby
-    /** @todo something? */
-    return new LobbyCreatedEvent();
+    //Check if invited player is already in a game
+    if (this.gameModuleData.isPlayerAvailable(payload.invited_username)) {
+      // this.sendEventToAllUserSockets(payload.invited_username, "sendGameInviteEvent", {
+      //   inviter_username: payload.inviter_username,
+      //   invited_username: payload.invited_username
+      // });
+
+      this.server.emit("sendGameInviteEvent", {
+        inviter_username: payload.inviter_username,
+        invited_username: payload.invited_username
+      });
+
+      //Create new playerPair and add to invite array
+      const players: PlayerPair = [
+        {
+          username: payload.inviter_username,
+          join_time: Date.now(),
+          socket_id: client.id
+        },
+        {
+          username: payload.invited_username,
+          join_time: Date.now(),
+          socket_id: null
+        }
+      ];
+      this.gameModuleData.addInvitePair(players);
+    }
+  }
+
+  /**
+   *
+   */
+  async acceptGameInvite(
+    client: Socket,
+    payload: AcceptGameInviteRequest
+  ): Promise<void> {
+    logger.debug("acceptGameInvite() called");
+    logger.log(payload);
+    //If accept is true
+    if (payload.isAccepted === true) {
+      //Add invitee socket info to player pair
+      const players: PlayerPair = this.gameModuleData.getInvitePair(
+        payload.inviter_username
+      );
+      logger.log(players);
+      if (players) {
+        players.at(1).socket_id = client.id;
+        console.log("Before create lobby");
+        this.createLobby(players, {
+          username: players.at(0).username,
+          join_time: null
+        });
+      }
+    }
+    //Emit to inviter so they can set state for game
+    // this.server.to(players.at(0).)
+
+    this.gameModuleData.removeInvitePair(payload.inviter_username);
+    //Remove players from invite array
+
+    //Create new lobby
   }
 
   /****************************************************************************/
