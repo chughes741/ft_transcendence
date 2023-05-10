@@ -39,7 +39,7 @@ export const GameViewModelProvider = ({ children }) => {
     setDisplayGame,
     setGameState,
     setScoreLeft,
-    setScoreRight,
+    setScoreRight
   } = gameModel;
 
   const { self, setFullscreen } = useRootViewModelContext();
@@ -57,27 +57,34 @@ export const GameViewModelProvider = ({ children }) => {
       setDisplayQueue(false);
       setDisplayLobby(true);
     });
-    
+
     socket.on(GameEvents.GameStarted, (payload: GameStartedEvent) => {
       console.debug("gameStarted event received. Payload:", payload);
       setPlayerSide(payload.player_side);
       setDisplayGame(true);
     });
-    
-    socket.on(GameEvents.GameEnded, (payload: GameEndedEvent) => {
-      console.debug("gameEnded event received. Payload:", payload);
-      setGameState(payload.game_state);
-      setScoreLeft(payload.game_state.score_left);
-      setScoreRight(payload.game_state.score_right);
-      setOpponentUsername('');
-      setDisplayGame(false);
-      setDisplayLobby(false);
-      setDisplayQueue(true);
-      setFullscreen(false);
-      setInQueue(false);
-      setPlayerReady(false);
-      setPlayerSide('');
-    });
+
+    // socket.on(GameEvents.GameEnded, (payload: GameEndedEvent) => {
+    //   console.log("gameEnded event received");
+    //   setGameState({
+    //     ball_x: 0,
+    //     ball_y: 0,
+    //     paddle_left_y: 0,
+    //     paddle_right_y: 0,
+    //     score_left: 0,
+    //     score_right: 0
+    //   });
+    //   setScoreLeft(0);
+    //   setScoreRight(0);
+    //   setOpponentUsername("");
+    //   setDisplayGame(false);
+    //   setDisplayLobby(false);
+    //   setDisplayQueue(true);
+    //   setFullscreen(false);
+    //   setInQueue(false);
+    //   setPlayerReady(false);
+    //   setPlayerSide("");
+    // });
 
     socket.on(GameEvents.ServerGameStateUpdate, (payload: GameState) => {
       setGameState(payload);
@@ -89,7 +96,7 @@ export const GameViewModelProvider = ({ children }) => {
       socket.off(GameEvents.ServerGameStateUpdate);
       socket.off(GameEvents.LobbyCreated);
       socket.off(GameEvents.GameStarted);
-      socket.off(GameEvents.GameEnded);
+      // socket.off(GameEvents.GameEnded);
     };
   };
 
@@ -144,22 +151,35 @@ export const GameViewModelProvider = ({ children }) => {
    * @event "gameEnded"
    * @dependency displayGame
    */
-  useEffect(() => {
-    if (!displayGame) return;
+  // useEffect(() => {
+  //   if (!displayGame) return;
 
     socket.on(GameEvents.GameEnded, (payload: GameEndedEvent) => {
-        console.debug("gameEnded event received. Payload:", payload);
-  
-        setDisplayGame(false);
-        setDisplayLobby(false);
-        setDisplayQueue(true);
-        setFullscreen(false);
+      console.log("gameEnded event received 2");
+      setGameState({
+        ball_x: 0,
+        ball_y: 0,
+        paddle_left_y: 0,
+        paddle_right_y: 0,
+        score_left: 0,
+        score_right: 0
+      });
+      setScoreLeft(0);
+      setScoreRight(0);
+      setOpponentUsername("");
+      setDisplayGame(false);
+      setDisplayLobby(false);
+      setDisplayQueue(true);
+      setFullscreen(false);
+      setInQueue(false);
+      setPlayerReady(false);
+      setPlayerSide("");
     });
 
-    return () => {
-      socket.off(GameEvents.GameEnded);
-    };
-  }, [displayGame]);
+  //   return () => {
+  //     socket.off(GameEvents.GameEnded);
+  //   };
+  // }, [displayGame]);
 
   /**
    * Manage ready toggle

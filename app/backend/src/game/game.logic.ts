@@ -120,6 +120,7 @@ export class GameLogic {
         lobby_id: lobby.lobby_id,
         game_state: gamestate
       });
+      logger.debug("gameEnded event sent");
 
       //Add match results to the database
       const match: MatchType = {
