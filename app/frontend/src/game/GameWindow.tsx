@@ -145,6 +145,7 @@ function Floor() {
 
   return (
     <mesh
+      onDoubleClick={onDoubleClick}
       ref={mesh}
       position={[0, 0, -5]}
     >
