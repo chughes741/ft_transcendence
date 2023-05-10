@@ -61,7 +61,8 @@ const ChatMessagesContainerView = () => {
     if (rooms[currentRoomName]) {
       setCurrentRoomMessages(rooms[currentRoomName].messages);
     }
-  }, [currentRoomName]);
+  }, [currentRoomName, currentRoomMessages]);
+  
   const groupedMessages = groupMessages(currentRoomMessages);
 
   useEffect(() => {
