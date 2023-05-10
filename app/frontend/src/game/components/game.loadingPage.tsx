@@ -1,5 +1,6 @@
 import { Box } from "@mui/system";
 import "./game.loadingPage.tsx.css";
+import { useGameViewModelContext } from "../game.viewModel";
 
 /**
  * Component that renders the loading page for the game
@@ -7,11 +8,21 @@ import "./game.loadingPage.tsx.css";
  * @returns {JSX.Element}
  */
 export default function LoadingPage() {
+  const { opponentUsername } = useGameViewModelContext();
+  console.log(opponentUsername);
   return (
     <>
       <Box className="body-page">
         <Box className="body-text">
-          <h2 data-text="Looking for a match...">Looking for a match...</h2>
+          <h2
+            data-text={
+              opponentUsername.length > 0
+                ? `Waiting for ${opponentUsername}...`
+                : "Looking for a match..."
+            }
+          >
+            Looking for a match...
+          </h2>
         </Box>
         <Box className="body-loader">
           <Box className="loader">

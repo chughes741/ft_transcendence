@@ -49,7 +49,7 @@ export default function UserListView({ userList, handleClick }: UserListProps) {
   const { updateRooms } = useRoomManager();
   const { setUser, addFriend } = useProfileViewModelContext();
   const { self, setPageState } = useRootViewModelContext();
-  const { setDisplayQueue } = useGameViewModelContext();
+  const { setDisplayQueue, setInQueue, setOpponentUsername } = useGameViewModelContext();
 
   // Find your own rank by looking for your username in the userlist
   const ownRank = userList[self.username]?.rank;
@@ -191,10 +191,10 @@ export default function UserListView({ userList, handleClick }: UserListProps) {
     });
 
     //Set state so that lobbyCreated listener is turned on
+    setOpponentUsername(contextMenuUsersData.username);
     setDisplayQueue(true);
-    //FIXME: What else needs to happen here?
+    setInQueue(true);
     setPageState(PageState.Game);
-    // setCurrentRoomName("");
     setContextMenuUsersVisible(false);
   };
 

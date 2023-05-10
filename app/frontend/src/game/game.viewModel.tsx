@@ -57,21 +57,26 @@ export const GameViewModelProvider = ({ children }) => {
       setDisplayQueue(false);
       setDisplayLobby(true);
     });
-
+    
     socket.on(GameEvents.GameStarted, (payload: GameStartedEvent) => {
       console.debug("gameStarted event received. Payload:", payload);
       setPlayerSide(payload.player_side);
       setDisplayGame(true);
     });
-
+    
     socket.on(GameEvents.GameEnded, (payload: GameEndedEvent) => {
       console.debug("gameEnded event received. Payload:", payload);
       setGameState(payload.game_state);
       setScoreLeft(payload.game_state.score_left);
       setScoreRight(payload.game_state.score_right);
+      setOpponentUsername('');
       setDisplayGame(false);
       setDisplayLobby(false);
       setDisplayQueue(true);
+      setFullscreen(false);
+      setInQueue(false);
+      setPlayerReady(false);
+      setPlayerSide('');
     });
 
     socket.on(GameEvents.ServerGameStateUpdate, (payload: GameState) => {
@@ -143,12 +148,12 @@ export const GameViewModelProvider = ({ children }) => {
     if (!displayGame) return;
 
     socket.on(GameEvents.GameEnded, (payload: GameEndedEvent) => {
-      console.debug("gameEnded event received. Payload:", payload);
-
-      setDisplayGame(false);
-      setDisplayLobby(false);
-      setDisplayQueue(true);
-      setFullscreen(false);
+        console.debug("gameEnded event received. Payload:", payload);
+  
+        setDisplayGame(false);
+        setDisplayLobby(false);
+        setDisplayQueue(true);
+        setFullscreen(false);
     });
 
     return () => {
