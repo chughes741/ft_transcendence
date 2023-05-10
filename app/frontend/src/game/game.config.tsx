@@ -22,7 +22,18 @@ export class GameConfig {
 //Colours
 export class GameColours {
   static readonly paddle: string = "white";
-  static readonly background: string = "black";
-  static readonly background2: string = "blue";
+  static readonly backgrounds: string[] = [
+    "Black",
+    "DarkSlateGray",
+    "SteelBlue",
+    "RoyalBlue",
+    "DarkCyan",
+    "DarkGoldenrod",
+    "DarkOliveGreen",
+    "SaddleBrown",
+    "Sienna",
+    "DarkMagenta",
+    "MidnightBlue",
+  ];
   static readonly ball: string = "white";
 }

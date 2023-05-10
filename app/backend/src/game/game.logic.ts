@@ -282,7 +282,8 @@ export class GameLogic {
   getRandomBallDirection(gamestate: GameData): BallData {
     const ballData: BallData = new BallData();
     ballData.pos = new Vec2(0, 0);
-    ballData.speed = BallConfig.initialSpeed;
+    const speedMultiplier = (gamestate.score[0] + gamestate.score[1]) * 0.05;
+    ballData.speed = BallConfig.initialSpeed * (1 + speedMultiplier);
 
     //Angle needs to be centered on x axis, so need to get offset from y-axis (half the remainder when angle is subracted from 180)
     const angle_offset = (180 - BallConfig.maxServeAngle) / 2;

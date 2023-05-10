@@ -1,4 +1,4 @@
-import { useRef, useEffect, useState } from "react";
+import { useRef, useEffect, useState, useCallback } from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
 import { Mesh } from "three";
 
@@ -120,13 +120,28 @@ function PaddleRight() {
  */
 function Floor() {
   const mesh = useRef<Mesh>(null!);
-  const [color, setColor] = useState(GameColours.background);
+  const [color, setColor] = useState(GameColours.backgrounds[0]);
 
-  const onDoubleClick = () => {
-    setColor((prevColor) =>
-      prevColor === GameColours.background ? GameColours.background2 : GameColours.background
-    );
-  };
+  const onDoubleClick = useCallback(() => {
+    const randomColorIndex = Math.floor(Math.random() * GameColours.backgrounds.length);
+    setColor(GameColours.backgrounds[randomColorIndex]);
+  }, []);
+  
+  const onKeyPress = useCallback((event) => {
+    if (event.key === "c") {
+      onDoubleClick();
+    }
+  }, [onDoubleClick]);
+
+  useEffect(() => {
+    document.addEventListener("dblclick", onDoubleClick);
+    document.addEventListener("keydown", onKeyPress);
+  
+    return () => {
+      document.removeEventListener("dblclick", onDoubleClick);
+      document.removeEventListener("keydown", onKeyPress);
+    };
+  }, [onDoubleClick, onKeyPress]);
 
   return (
     <mesh
