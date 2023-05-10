@@ -9,20 +9,14 @@ import { useGameViewModelContext } from "../game.viewModel";
  */
 export default function LoadingPage() {
   const { opponentUsername } = useGameViewModelContext();
-  console.log(opponentUsername);
+  const dataText =
+    "Waiting for " +
+    (opponentUsername && opponentUsername.length > 0 ? `${opponentUsername}...` : "an opponent...");
   return (
     <>
       <Box className="body-page">
         <Box className="body-text">
-          <h2
-            data-text={
-              opponentUsername.length > 0
-                ? `Waiting for ${opponentUsername}...`
-                : "Looking for a match..."
-            }
-          >
-            Looking for a match...
-          </h2>
+          <h2 data-text={dataText}>{dataText}</h2>
         </Box>
         <Box className="body-loader">
           <Box className="loader">
