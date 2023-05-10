@@ -11,7 +11,9 @@ export default function LoadingPage() {
   const { opponentUsername } = useGameViewModelContext();
   const dataText =
     "Waiting for " +
-    (opponentUsername && opponentUsername.length > 0 ? `${opponentUsername}...` : "an opponent...");
+    (opponentUsername && opponentUsername.length > 0
+      ? `${opponentUsername}...`
+      : "an opponent...");
   return (
     <>
       <Box className="body-page">
