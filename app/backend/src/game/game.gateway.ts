@@ -19,14 +19,14 @@ import {
 import { GameModuleData } from "./game.data";
 
 
-export const AcceptGameInvite: string = "acceptGameInviteEvent";
+export const AcceptGameInvite = "acceptGameInviteEvent";
 export class AcceptGameInviteRequest {
   inviter_username: string;
   invited_username: string;
   isAccepted: boolean;
 }
 
-export const SendGameInvite: string = "sendGameInviteEvent";
+export const SendGameInvite = "sendGameInviteEvent";
 export class SendGameInviteRequest {
   inviter_username: string;
   invited_username: string;

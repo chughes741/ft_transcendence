@@ -192,10 +192,10 @@ export class GameModuleData {
       if (element.lobby_id === lobby_id) {
         const match_id = element.match_id;
         GameModuleData.games = GameModuleData.games.filter(
-          (element) => element.match_id != match_id
+          (element) => element.match_id !== match_id
         );
         GameModuleData.lobbies = GameModuleData.lobbies.filter(
-          (element) => element.lobby_id != lobby_id
+          (element) => element.lobby_id !== lobby_id
         );
       }
     });
@@ -218,7 +218,7 @@ export class GameModuleData {
   removeInvitePair(username: string) {
     GameModuleData.invite = GameModuleData.invite.filter(
       (element) =>
-        element.at(0).username != username && element.at(1).username != username
+        element.at(0).username !== username && element.at(1).username !== username
     );
   }
 

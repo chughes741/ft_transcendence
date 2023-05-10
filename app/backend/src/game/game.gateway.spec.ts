@@ -6,6 +6,7 @@ import { GameLogic } from "./game.logic";
 import { GameService } from "./game.service";
 import { ChatModule } from "../chat/chat.module";
 import { PrismaModule } from "../prisma/prisma.module";
+import { UserConnectionsService } from "src/user-connections.service";
 
 describe("GameGateway", () => {
   let gateway: GameGateway;
@@ -18,7 +19,8 @@ describe("GameGateway", () => {
         GameService,
         SchedulerRegistry,
         GameLogic,
-        GameModuleData
+        GameModuleData,
+        UserConnectionsService
       ]
     }).compile();
 
