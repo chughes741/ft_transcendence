@@ -2,7 +2,7 @@ import { Vec2 } from "../vector";
 
 export class GameConfig {
   static readonly playAreaWidth: number = 16;
-  static readonly playAreaHeight: number = 8;
+  static readonly playAreaHeight: number = 7.4;
   static readonly serverUpdateRate: number = 17;
   static readonly topLeft: Vec2 = {
     x: -(GameConfig.playAreaWidth / 2),

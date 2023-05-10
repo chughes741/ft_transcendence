@@ -166,10 +166,10 @@ function OuterFrameTop() {
   return (
     <mesh
       ref={mesh}
-      position={[0, 3.7, 0]}
+      position={[0, 3.8, 0]}
     >
-      <boxGeometry args={[18, 0.25, 0.5]} />
-      <meshPhongMaterial color={"red"} />
+      <boxGeometry args={[30, 0.25, 0.5]} />
+      <meshPhongMaterial color={0xFA7F08} />
     </mesh>
   );
 }
@@ -185,10 +185,10 @@ function OuterFrameBottom() {
   return (
     <mesh
       ref={mesh}
-      position={[0, -3.7, 0]}
+      position={[0, -3.8, 0]}
     >
-      <boxGeometry args={[18, 0.25, 0.5]} />
-      <meshPhongMaterial color={"red"} />
+      <boxGeometry args={[30, 0.25, 0.5]} />
+      <meshPhongMaterial color={0xFA7F08} />
     </mesh>
   );
 }
@@ -204,10 +204,10 @@ function OuterFrameLeft() {
   return (
     <mesh
       ref={mesh}
-      position={[-7.5, 0, 0]}
+      position={[-8, 0, 0]}
     >
       <boxGeometry args={[0.25, 18, 0.5]} />
-      <meshPhongMaterial color={"blue"} />
+      <meshPhongMaterial transparent={true} opacity={0.25} color={0x22BBABB} />
     </mesh>
   );
 }
@@ -223,10 +223,10 @@ function OuterFrameRight() {
   return (
     <mesh
       ref={mesh}
-      position={[7.5, 0, 0]}
+      position={[8, 0, 0]}
     >
       <boxGeometry args={[0.25, 18, 0.5]} />
-      <meshPhongMaterial color={"blue"} />
+      <meshPhongMaterial transparent={true} opacity={0.25} color={0x22BBABB} />
     </mesh>
   );
 }
@@ -280,19 +280,19 @@ export default function Game() {
 
       {/* Scene Objects */}
       <Floor />
-      {/* <OuterFrameTop />
+      <OuterFrameTop />
       <OuterFrameBottom />
       <OuterFrameLeft />
-      <OuterFrameRight /> */}
+      <OuterFrameRight />
 
       {/* Lighting */}
       <ambientLight
         args={[0xffffff]}
-        intensity={0.1}
+        intensity={0.5}
       />
       <directionalLight
-        position={[0, 5, 3]}
-        intensity={0.5}
+        position={[0, 0, 5]}
+        intensity={1}
       />
     </Canvas>
   );
